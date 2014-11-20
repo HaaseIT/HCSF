@@ -1,0 +1,52 @@
+<?php
+
+include_once('base.inc.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+include_once('shop/functions.shoppingcart.inc.php');
+
+$sH = '';
+
+$iId = cED($_GET["id"]);
+$sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
+$sQ .= "WHERE o_id = '".$iId."' AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
+
+$hResult = $DB->query($sQ);
+
+if ($hResult->rowCount() == 1) {
+    $aOrder = $hResult->fetch();
+    $fGesamtbrutto = calculateTotalFromDB($aOrder);
+
+    $sH .= T("misc_paypaypal_greeting").'<br><br>';
+
+    $FORM->sFormaction = $C["paypal"]["url"];
+    $sH .= $FORM->openForm();
+    $sH .= $FORM->makeHidden('cmd', '_xclick');
+    $sH .= $FORM->makeHidden('rm', '2');
+    $sH .= $FORM->makeHidden('custom', $iId);
+    $sH .= $FORM->makeHidden('business', $C["paypal"]["business"]);
+    $sH .= $FORM->makeHidden('return_url', $C["paypal_return"]);
+    $sH .= $FORM->makeHidden('notify_url', $C["paypal_notify"]);
+    $sH .= $FORM->makeHidden('item_name', 'Ihre Bestellung');
+    $sH .= $FORM->makeHidden('currency_code', 'EUR');
+    $sH .= $FORM->makeHidden('amount', ''.number_format($fGesamtbrutto, 2, '.','').'');
+    $sH .= $FORM->makeSubmit('', T("misc_paypaypal"), 200);
+    $sH .= $FORM->closeForm();
+} else $sH .= T("misc_paypaypal_paymentnotavailable");
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $FORM);
+
+echo $twig->render($C["template_base"], $aP);

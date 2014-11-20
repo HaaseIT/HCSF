@@ -1,0 +1,28 @@
+<?php
+
+mb_internal_encoding('UTF-8');
+header("Content-Type: text/html; charset=UTF-8");
+
+if (ini_get('session.auto_start') == 1) {
+    die('Please disable session.autostart for this to work.');
+}
+
+if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+// Session handling
+// session.use_trans_sid wenn nötig aktivieren
+    session_name('sid');
+    if(ini_get('session.use_trans_sid') == 1) {
+        ini_set('session.use_trans_sid', 0);
+    }
+// Session wenn nötig starten
+    if (session_id() == '') {
+        session_start();
+    }
+
+    foreach ($_POST as $key => $value) {
+        if ($key !== "submit") {
+            $value = htmlentities(stripslashes(strip_tags($value)));
+            $_SESSION["formsave_addrform"][$key] = $value;
+        }
+    }
+}

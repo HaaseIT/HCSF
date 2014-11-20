@@ -1,0 +1,60 @@
+<?php
+
+include_once('base.inc.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+if (isset($_SESSION["user"])) {
+    $sH = T("denied_default");
+} else {
+    if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !validateEmail($_GET["email"])) {
+        $sH = T("denied_default");
+    } else {
+        $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
+        $hResult = $DB->prepare($sQ);
+        $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
+        $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
+        $hResult->execute();
+        if ($hResult->rowCount() != 1) {
+            $sH = T("denied_default");
+        } else {
+            $sH = '';
+            $aErr = array();
+            $aResult = $hResult->fetch();
+            $iTimestamp = time();
+            if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
+                $sH = T("pwreset_error_expired");
+            } else {
+                $P["base"]["cb_customcontenttemplate"] = 'customer/resetpassword';
+                $P["base"]["cb_customdata"]["pwreset"]["minpwlength"] = $C["minimum_length_password"];
+                if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
+                    $aErr = handlePasswordReset($DB, $C, $aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
+                    if (count($aErr) == 0) {
+                        $P["base"]["cb_customdata"]["pwreset"]["showsuccessmessage"] = true;
+                    } else {
+                        $P["base"]["cb_customdata"]["pwreset"]["errors"] = $aErr;
+                    }
+                }
+            }
+        }
+
+
+
+    }
+}
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $FORM);
+
+echo $twig->render($C["template_base"], $aP);

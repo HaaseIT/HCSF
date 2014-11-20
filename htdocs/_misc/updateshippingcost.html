@@ -1,0 +1,34 @@
+<?php
+
+include_once('base.inc.php');
+include_once('shop/functions.shoppingcart.inc.php');
+
+mb_internal_encoding('UTF-8');
+header("Content-Type: text/html; charset=UTF-8");
+
+if (ini_get('session.auto_start') == 1) {
+    die('Please disable session.autostart for this to work.');
+}
+
+if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+// Session handling
+// session.use_trans_sid wenn nötig aktivieren
+    session_name('sid');
+    if(ini_get('session.use_trans_sid') == 1) {
+        ini_set('session.use_trans_sid', 0);
+    }
+// Session wenn nötig starten
+    if (session_id() == '') {
+        session_start();
+    }
+
+    $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
+    $aData = buildShoppingCartTable($_SESSION["cart"]);
+
+    echo '<div>';
+    echo '<div id="shippingcostbrutto_new">'.number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"], 2, ',', '.').'</div>';
+    echo '<div id="vatfull_new">'.number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2), 2, ',', '.').'</div>';
+    echo '<div id="totalbrutto_new">'.number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2), 2, ',', '.').'</div>';
+    echo '</div>';
+
+}

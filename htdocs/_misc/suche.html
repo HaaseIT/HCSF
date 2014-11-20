@@ -1,0 +1,20 @@
+<?php
+
+include_once('base.inc.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'itemoverview',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+$aP = generatePage($C, $P, $sLang, $FORM);
+$aP["debug"] = true;
+
+echo $twig->render($C["template_base"], $aP);

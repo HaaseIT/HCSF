@@ -1,0 +1,9 @@
+AuthName "AuthName"
+	AuthType Digest
+	AuthDigestProvider file
+	AuthUserFile /home/www/pathtositeroot/users/digest
+	#require user mhaase pierre
+	require valid-user
+
+DirectoryIndex index.php
+RewriteEngine Off
