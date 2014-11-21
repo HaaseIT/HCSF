@@ -104,14 +104,21 @@ function generatePage($C, $P, $sLang)
     // Language selector
     // TODO: move content of langselector out of php script
     $aP["langselector"] = '';
-    if ($sLang != 'de') {
-        $aP["langselector"] .= '<a href="'.makeLinkHRefWithAddedGetVars('', array('language' => 'de')).'">'.T("misc_language_de").'</a> ';
+    if ($C["lang_detection_method"] == 'domain') {
+        $aSessionGetVarsForLangSelector = array();
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            $aSessionGetVarsForLangSelector[session_name()] = session_id();
+        }
+        $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
     }
-    if ($sLang != 'en') {
-        $aP["langselector"] .= '<a href="'.makeLinkHRefWithAddedGetVars('', array('language' => 'en')).'">'.T("misc_language_en").'</a> ';
-    } 
-    if ($sLang != 'es') {
-        $aP["langselector"] .= '<a href="'.makeLinkHRefWithAddedGetVars('', array('language' => 'es')).'">'.T("misc_language_es").'</a> ';
+    foreach ($C["lang_available"] as $sKey => $sValue) {
+        if ($sLang != $sKey) {
+            if ($C["lang_detection_method"] == 'domain') {
+                $aP["langselector"] .= '<a href="//'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.T("misc_language_".$sKey).'</a> ';
+            } else {
+                $aP["langselector"] .= '<a href="'.makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.T("misc_language_".$sKey).'</a> ';
+            }
+        }
     }
     $aP["langselector"] = cutStringend($aP["langselector"], 1);
 
