@@ -184,7 +184,8 @@ oi_id int(11) NOT NULL,
 DROP TABLE IF EXISTS textcat_base;
 CREATE TABLE IF NOT EXISTS textcat_base (
 tc_id int(11) NOT NULL,
-  tc_key varchar(64) NOT NULL
+  tc_key varchar(64) NOT NULL,
+  tcl_group varchar(16) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS textcat_lang;
