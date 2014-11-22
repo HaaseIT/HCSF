@@ -111,7 +111,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             if ($iRows > 0) $sErr = 'Dieser Textschlüssel ist bereits angelegt.<br>';
         }
         if ($sErr == '') {
-            $aData = array('tc_key' => $_POST["key"],);
+            $aData = array('tc_key' => trim($_POST["key"]),);
             $sQ = buildInsertQuery($aData, 'textcat_base');
             //debug($sQ);
             $DB->exec($sQ);
