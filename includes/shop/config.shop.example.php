@@ -173,6 +173,7 @@ $TMP = array(
     'vat' => array( // default vat of country first!!
         '19' => '0',
         '7' => '0',
+        // '0' => '0', // if vat is disabled please uncomment this!
     ),
 );
 
