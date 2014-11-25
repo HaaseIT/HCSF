@@ -47,6 +47,8 @@ $C = array(
         'en' => 'English',
         'es' => 'Español'
     ),
+    'lang_detection_method' => 'legacy', // legacy / domain
+    'lang_by_domain' => array('de' => 'domain.de', 'en' => 'domain.com', 'es' => 'domain.es'), // only needed if lang_detection_method == domain
 
     'admin_page_groups' => array(
         '_|_Keine_',
