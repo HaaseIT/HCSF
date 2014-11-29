@@ -46,7 +46,7 @@ function handleShopAdmin($CSA)
             $k = 0;
             $fGesamtnetto = 0.0;
             while ($aRow = $hResult->fetch()) {
-                if ($aRow["o_ordercompleted"] == 'y') '<span style="color: green; font-weight: bold;">'.T("order_status_completed").'</span>';
+                if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.T("order_status_completed").'</span>';
                 elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.T("order_status_open").'</span>';
                 elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.T("order_status_inwork").'</span>';
                 elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.T("order_status_canceled").'</span>';
