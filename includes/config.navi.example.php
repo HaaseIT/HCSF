@@ -13,6 +13,7 @@ $TMP = array(
 //			'Artikelgruppen' => '/_admin/shop/itemgroupadmin.php',
             'Seite bearbeiten' => '/_admin/pageadmin.php',
             'Textkataloge bearbeiten' => '/_admin/textcatadmin.php',
+            'Templatecache leeren' => '/_admin/cleartemplatecache.php',
         ),
     ),
 );
