@@ -1,0 +1,23 @@
+<form action="{{requesturiarray.path}}" method="GET">
+<table>
+    <tr>
+        <td>
+            Anzeigen:<br>
+            <select name="type">
+                <option value="all"{{ customdata.customeradmin.type == 'all' ? ' selected' : '' }}>Alle</option>
+                <option value="active"{{ customdata.customeradmin.type == 'active' ? ' selected' : '' }}>Aktive</option>
+                <option value="inactive"{{ customdata.customeradmin.type == 'inactive' ? ' selected' : '' }}>Inaktive</option>
+            </select>
+        </td>
+        <td>&nbsp;<br /><input type="submit" value="Los"></td>
+    </tr>
+</table>
+</form>
+<br>
+
+{{content}}
+
+{% if customdata.customerform is defined %}
+{% include 'customer/customerform.twig' %}
+{% endif %}
+                

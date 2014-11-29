@@ -1,0 +1,14 @@
+<div>
+    <div id="shoppingcartamount_new">
+        {{ cart|length }} {{ T("topnav_shoppingcart_numberofitems") }}, {{ (cartsums.sumvoll + cartsums.sumerm + cartsums.taxvoll + cartsums.taxerm)|number_format(2, ',', '.') }} {{ currency }}
+    </div>
+    <div id="infobox_new">
+        {{ reply == 'requiredfieldmissing' ? 'REQUIRED FIELD MISSING' : '' }}
+        {{ reply == 'noactiontaken' ? 'NO ACTION TAKEN' : '' }}
+        {{ reply == 'removed' ? 'REMOVED: ' ~ subject : '' }}
+        {{ reply == 'updated' ? 'UPDATED, ' ~ subject ~ ', new amount: ' ~ amount : '' }}
+        {{ reply == 'added' ? 'ADDED, ' ~ subject ~ ', amount: ' ~ amount : '' }}
+        {{ reply == 'itemnotfound' ? 'ITEMNOTFOUND' : '' }}
+        {{ reply == 'noitemnooramount' ? 'NO ITEMNO OR AMOUNT' : '' }}
+    </div>
+</div>

@@ -1,0 +1,147 @@
+<form action="{{ requesturiarray.path }}" method="get">
+    <table>
+        <tr>
+            {% set searchform_types = ['openinwork|'~T("order_status_open_or_inwork"), 'open|'~T("order_status_open"), 'inwork|'~T("order_status_inwork"),
+            'closed|'~T("order_status_completed"), 'all|'~T("order_status_all_valid"), 'storno|'~T("order_status_canceled"), 'deleted|'~T("order_status_deleted"),] %}
+            <td>
+                Zustand:<br>
+                {{ macro.select('type', searchform_types, customdata.searchform_type) }}
+            </td>
+            <td>
+                Von:<br>
+                <input type="text" name="fromday" maxlength="2" value="{{ customdata.searchform_fromday }}" style="width: 30px;">
+            </td>
+            <td>
+                &nbsp;<br>
+                <input type="text" name="frommonth" maxlength="2" value="{{ customdata.searchform_frommonth }}" style="width: 30px;">
+            </td>
+            <td>
+                &nbsp;<br>
+                <input type="text" name="fromyear" maxlength="4" value="{{ customdata.searchform_fromyear }}" style="width: 50px;">
+            </td>
+            <td>&nbsp;</td>
+            <td>
+                Bis:<br>
+                <input type="text" name="today" maxlength="2" value="{{ customdata.searchform_today }}" style="width: 30px;">
+            </td>
+            <td>
+                &nbsp;<br>
+                <input type="text" name="tomonth" maxlength="2" value="{{ customdata.searchform_tomonth }}" style="width: 30px;">
+            </td>
+            <td>
+                &nbsp;<br>
+                <input type="text" name="toyear" maxlength="4" value="{{ customdata.searchform_toyear }}" style="width: 50px;">
+            </td>
+            <td>
+                &nbsp;<br>
+                <input type="submit" value="los...">
+            </td>
+        </tr>
+    </table>
+</form>
+(Datumseingrenzung nur bei Filtern nach Zustand "Alle", "Abgeschlossen" oder "Gelöschte" berücksichtigt.)<br>
+<br>
+<style type="text/css">
+    #shadm_remarks_internal, #shadm_transaction_no, #shadm_order_paymentcompleted, #shadm_order_completed,
+    #shadm_order_shipping_service, #shadm_order_shipping_trackingno, #shadm_submit {width: 210px;}
+    #shadm_remarks_internal{height: 150px;}
+
+</style>
+{% if customdata.customerform is defined and customdata.shoppingcart is defined %}
+    <hr><br>
+    <form action="{{ requesturiarray.path }}" method="post">
+        <input type="hidden" name="id" value="{{ customdata.orderdata.o_id }}">
+        {% if customdata.orderdata.o_authed == 'y' %}
+            Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
+        {% else %}
+            Der Kunde war nicht angemeldet.<br>
+            Die AGBs wurden {{ customdata.orderdata.o_tos != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
+            Die Widerrufsbelehrung wurde {{ customdata.orderdata.o_cancellationdisclaimer != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
+        {% endif %}
+        <br>
+        <table id="shcaddressformtable">
+            <tr>
+                <td valign="top">
+                    {% include 'customer/customerform.twig' %}
+                </td>
+                <td style="padding-right: 5px;" valign="top">
+                    <table>
+                        <tr>
+                            <td class="shcaddressformtabletext" valign="top">
+                                Bemerkungen<br>
+                                intern
+                            </td>
+                            <td class="shcaddressformtableform">
+                                <textarea name="remarks_internal" id="shadm_remarks_internal">{{ customdata.orderdata.o_remarks_internal }}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtabletext">Interne Vorgnr</td>
+                            <td class="shcaddressformtableform"><input type="text" name="transaction_no" value="{{ customdata.orderdata.o_transaction_no }}" id="shadm_transaction_no"></td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtabletext">Zahlungsstatus</td>
+                            <td class="shcaddressformtableform">
+                                {% set orderform_paymentmethod_options = ['n|Offen', 'y|Bezahlt'] %}
+                                {{ macro.select('order_paymentcompleted', orderform_paymentmethod_options, customdata.orderdata.o_paymentcompleted, 'shadm_order_paymentcompleted') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtabletext">Status</td>
+                            <td class="shcaddressformtableform">
+                                {% set orderform_completed_options = ['n|'~T("order_status_open"), 'i|'~T("order_status_inwork"), 'y|'~T("order_status_completed"), 's|'~T("order_status_canceled"), 'd|'~T("order_status_deleted")] %}
+                                {{ macro.select('order_completed', orderform_completed_options, customdata.orderdata.o_ordercompleted, 'shadm_order_completed') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtabletext">Paketdienst</td>
+                            <td class="shcaddressformtableform">
+                                {{ macro.select('order_shipping_service', customdata.orderdata.options_shippingservices, customdata.orderdata.o_shipping_service, 'shadm_order_shipping_service') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtabletext">Trackingnr</td>
+                            <td class="shcaddressformtableform">
+                                <input type="text" name="order_shipping_trackingno" value="{{ customdata.orderdata.o_shipping_trackingno }}" id="shadm_order_shipping_trackingno">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="shcaddressformtableform" colspan="2" style="text-align: right;">
+                                <input type="submit" name="change" value="Bearbeiten" id="shadm_submit">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% if customdata.orderdata.o_remarks|trim != '' %}
+                <tr>
+                    <td colspan="2">
+                        <br>
+                        Bemerkungen des Kunden:<br>
+                        <textarea readonly style="width: 385px; height: 150px;">{{ customdata.orderdata.o_remarks }}</textarea>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    </form>
+    <br>
+    Die folgenden Artikel wurden bestellt:<br>
+    {% include 'shop/shoppingcarttable.twig' %}
+    Die Bestellung wurde aufgegeben am: {{ customdata.orderdata.o_ordertimestamp|date("d.m.Y H:i") }}{{
+    customdata.orderdata.o_lastedit_timestamp != '' ? ', die letzte Bearbeitung erfolgte am: '~customdata.orderdata.o_lastedit_timestamp|date("d.m.Y H:i")~'.' : '.' }}
+    {{ customdata.orderdata.o_lastedit_user != '<br>Die letzte Bearbeitung erfolgte durch: '~customdata.orderdata.o_lastedit_user ? '' : '' }}
+    <br><br>
+    {% if customdata.orderdata.o_paymentmethod != '' %}
+        <strong>Die vom Kunden gewünschte Zahlungsmethode ist: {{ customdata.orderdata.o_paymentmethod }}</strong><br>
+        {% if customdata.orderdata.o_paymentmethod == 'paypal' %}
+            {% if customdata.orderdata.o_paymentcompleted == 'y' and customdata.orderdata.o_paypal_tx|trim != '' %}
+                <div style="color: green; font-weight: bold;">Laut PayPal ist die Zahlung bereits erfolgt, die Transaktions ID des Vorgangs ist: {{ customdata.orderdata.o_paypal_tx }}</div>
+            {% elseif customdata.orderdata.o_paymentcompleted == 'n' %}
+                <div style="color: red; font-weight: bold;">Laut PayPal ist die Zahlung noch nicht erfolgt.</div>
+            {% endif %}
+        {% endif %}
+        <br>
+    {% endif %}
+    {{ customdata.orderdata.o_srv_hostname|trim != '' ? 'Die Bestellung wurde &uuml;ber die Domain: <strong>'~customdata.orderdata.o_srv_hostname~'</strong> aufgegeben.' : '' }}
+{% endif %}
+{{content}}

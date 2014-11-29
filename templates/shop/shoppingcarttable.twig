@@ -1,0 +1,103 @@
+<link rel="stylesheet" type="text/css" href="/screen-shc.css">
+{% if customdata.shoppingcart.readonly == false %}
+<script language="JavaScript" async="async">
+    function removeFromCart(id) {
+        var o = new Option("0", "0");
+/// jquerify the DOM object 'o' so we can use the html method
+        $(o).html("0");
+        $("#shc_amount_"+id).append(o);
+        $("#shc_amount_"+id).val("0");
+        $("#shc_form_"+id).submit();
+    }
+</script>
+    {% set formcounter = 0 %}
+{% endif %}
+{% for thiscartkey, thiscart in customdata.shoppingcart.cart %}
+    {% if customdata.shoppingcart.readonly == false %}
+        <form action="/_misc/update-cart.html" method="POST" id="shc_form_{{ formcounter }}">
+        {% if custom_order_fields is defined and custom_order_fields|length > 0 %}
+            {% set thiscartkeys = thiscartkey|split('|') %}
+            <input type="hidden" name="itemno" value="{{thiscartkeys[0]}}">
+            {% for thiscartkeys_current in thiscartkeys %}
+                {% set thiscartkeys_current_split = thiscartkeys_current|split(':') %}
+                {% if thiscartkeys_current_split[0] in custom_order_fields %}
+                    <input type="hidden" name="{{ thiscartkeys_current_split[0] }}" value="{{ thiscartkeys_current_split[1] }}">
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <input type="hidden" name="itemno" value="{{thiscartkey}}">
+        {% endif %}
+    {% endif %}
+    <table class="shctable">
+        <tr>
+            <td class="shctablecol1">
+                <img src="{{ customdata.shoppingcart.readonly == false ? '/_img/items/90/' : '' }}{{ customdata.mail is defined ? 'cid:' : '' }}{{ thiscart.img }}">
+            </td>
+            <td class="shctablecol2">
+                <strong>{{thiscart.name}}</strong><br>
+                {% if custom_order_fields is defined and custom_order_fields|length > 0 %}
+                    {% set thiscartkeys = thiscartkey|split('|') %}
+                    {{T("shoppingcart_item_itemno")}} {{thiscartkeys[0]}}
+                    {% for thiscartkeys_current in thiscartkeys %}
+                        {% set thiscartkeys_current_split = thiscartkeys_current|split(':') %}
+                        {% if thiscartkeys_current_split[0] in custom_order_fields %}
+                            <br>{{ T("shoppingcart_item_" ~ thiscartkeys_current_split[0] )}}: {{ thiscartkeys_current_split[1] }}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    {{T("shoppingcart_item_itemno")}} {{thiscartkey}}
+                {% endif %}
+                <br>
+                {{thiscart.price.brutto_use|number_format(2, ",", ".")}} {{currency}}
+            </td>
+            <td class="shctablecol3">
+                {% if customdata.shoppingcart.readonly != false %}
+                    {{thiscart.amount}}x
+                {% else %}
+                    {{ macro.select('amount', orderamounts, thiscart.amount, 'shc_amount_'~formcounter, 'shcaddtocartamount') }}
+                    <input type="submit" name="{{T("shoppingcart_update_quantity")}}" value="{{T("shoppingcart_update_quantity")}}"><br>
+                    <a href="javascript:removeFromCart('{{ formcounter }}');">{{ T("shoppingcart_remove") }}</a>
+                {% endif %}
+                {% if (customdata.shoppingcart.readonly == true and customdata.shoppingcart.customergroup != '') %}
+                    {% if thiscart.rg_rebate != '' %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{thiscart.rg}}
+                        {{ thiscart.rg_rebate != '' and thiscart.rg != '' ? '/' : '' }}
+                        {{thiscart.rg_rebate}}%
+                    {% endif %}
+                {% elseif customdata.shoppingcart.readonly == true %}
+                    &nbsp;
+                {% endif %}
+            </td>
+            <td class="shctablecol4">{{(thiscart.price.brutto_use * thiscart.amount)|number_format(2, ",", ".")}} {{currency}}</td>
+        </tr>
+    </table>
+    {% if customdata.shoppingcart.readonly == false %}
+        </form>
+        {% set formcounter = formcounter + 1 %}
+    {% endif %}
+{% endfor %}
+{% if customdata.shoppingcart.additionalcoststoitems.fMindergebuehr > 0 %}
+    <table class="shctableminder">
+        <tr>
+            <td class="shctablecol1">{{T("shoppingcart_tablefoot_mindermengenzuschlag")}}</td>
+            <td class="shctablecol5">
+                {{customdata.shoppingcart.additionalcoststoitems.fMindergebuehr|number_format(2, ",", ".")}}
+                {{currency}}
+            </td>
+        </tr>
+    </table>
+{% endif %}
+<table id="shcsummary">
+    {% if customdata.shoppingcart.additionalcoststoitems.fVersandkostenbrutto > 0 %}
+        <tr>
+            <td>&nbsp;</td>
+            <td id="shcshippingtext">{{T("shoppingcart_tablefoot_shippingcost")}}</td>
+            <td id="shcshippingvalue">{{customdata.shoppingcart.additionalcoststoitems.fVersandkostenbrutto|number_format(2, ",", ".")}} {{currency}}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td>&nbsp;</td>
+        <td id="shcbruttotext">{{T("shoppingcart_tablefoot_sumbrutto")}}</td>
+        <td id="shcbruttovalue">{{customdata.shoppingcart.additionalcoststoitems.fGesamtbrutto|number_format(2, ",", ".")}} {{currency}}</td>
+    </tr>
+</table>

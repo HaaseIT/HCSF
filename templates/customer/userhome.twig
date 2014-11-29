@@ -1,0 +1,21 @@
+<h1>{{T("headline_userhome")}}</h1>
+<hr>
+{% if customdata.userhome.display_logingreeting %}
+<strong>{{T("login_welcome")}}</strong><br><br>
+{% endif %}
+<h3>{{T("headline_userhome_sub")}}</h3>
+<hr>
+{{customdata.userhome.text_aboveform}}
+{% include 'customer/customerform.twig' %}
+{# {{customdata.userhome.text_belowform}} #}
+{% if customdata.userhome.showlinktoreferer is defined and customdata.userhome.showlinktoreferer and referer is defined %}
+<br>
+<a href="{{referer}}" style="text-decoration: underline;">{{T("misc_continue")}}</a>
+{% endif %}
+{% if customdata.userhome.showprofilelinks %}
+<hr>
+<a href="{{requesturiarray.path}}?editprofile">{{T("userprofile_editlink")}}</a>
+&middot;
+<a href="/_misc/myorders.html">{{T("userprofile_myorders")}}</a>
+{% endif %}
+

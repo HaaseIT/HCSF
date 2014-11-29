@@ -1,0 +1,61 @@
+<br><br>
+{% set itemsperrow = 3 %}
+{% for thisitem in items.item %}
+    {% if nthiteminrow is not defined %}
+        {% set nthiteminrow = 0 %}
+    {% endif %}
+    {% set nthiteminrow = nthiteminrow + 1 %}
+    <div class="item-overview{% if nthiteminrow == itemsperrow %} norightmargin{% endif %}">
+        <a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html"><img src="/_img/items/200/{{thisitem.itm_img}}"></a><br>
+        {% if thisitem.itml_name_override|trim == '' %}
+            {{thisitem.itm_name}}<br>
+        {% else %}
+            {{thisitem.itml_name_override}}<br>
+        {% endif %}
+        {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '<div class="sale-listprice">' : '' }}
+        {#Netto: {{thisitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
+        {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+        {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '</div>' : '' }}
+        {% if thisitem.pricedata.netto_sale is defined and (thisitem.pricedata.netto_rebated is not defined or thisitem.pricedata.netto_sale < thisitem.pricedata.netto_rebated) %}
+            {#Angebotspreis#}
+            {#Netto: {{thisitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
+            {#Brutto: #}<div class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</div>
+        {% endif %}
+        {% if thisitem.pricedata.netto_rebated is defined and (thisitem.pricedata.netto_sale is not defined or thisitem.pricedata.netto_rebated < thisitem.pricedata.netto_sale) %}
+            {#Ihr Preis:<br>#}
+            {#Netto: {{thisitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
+            {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+        {% endif %}
+    </div>
+    {% if nthiteminrow == itemsperrow %}
+        <br class="clearboth">
+        {% set nthiteminrow = 0 %}
+    {% endif %}
+{% endfor %}
+<div id="itemfooter">{{T("misc_disclaimer_prices")}}</div>
+{#
+No: {{thisitem.itm_no}}<br>
+Vatid: {{thisitem.itm_vatid}}<br>
+Rebategroup: {{thisitem.itm_rg}}<br>
+Imglarge: {{thisitem.itm_imglg}}<br>
+Group: {{thisitem.itm_group}}<br>
+Short text: {{thisitem.itml_shorttext}}<br>
+Details: {{thisitem.itml_details}}<br>
+#}
+{#
+
+foreach ( $aData["artikel"] as $aRow ) {
+if ( isset( $aRow["group"] ) && trim( $aRow["group"] ) != "" ) { // if gruppe
+$sH .= $this->showGroup( $aRow, $aData["groups"], $j, $bShowprices );
+$j++;
+} else { // endif gruppe - else
+$sH .= $this->showItem( $aRow, $i, $bShowprices );
+$i++;
+}
+}
+
+if ( $this->C["show_pricesonlytologgedin"] ) {
+if ( getUserData() ) $bShowprices = true;
+else $bShowprices = false;
+} else $bShowprices = true;
+#}

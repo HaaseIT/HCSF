@@ -1,0 +1,104 @@
+{% if customdata.pageselect is defined %}
+    <script>
+        function list(value, name) {
+            this.name = name;
+            this.value = value;
+        }
+        $(document).ready(function() {
+            $("#select_groups").change(function() {
+                trigger = document.form_page.groups;
+                target = document.form_page.page_id;
+                target.options.length = 0;
+                triggerSelected = trigger.options[trigger.selectedIndex].value;
+                eval("childrenLength = children_" + triggerSelected + ".length;");
+                for (var i=0;i<childrenLength;i++) {
+                    eval("target.options[i] = new Option(children_" + triggerSelected + "[i].name, children_" + triggerSelected + "[i].value)");
+                }
+            });
+        });
+        {% for key, value in customdata.pageselect.tree %}
+        var children_{{ key }} = new Array();
+        {% set i = 0 %}
+        {% for subvalue in value %}
+        children_{{ key }}[{{ i }}]  = new list("{{ subvalue.cb_id }}", "{{ subvalue.cb_key }}");
+        {% set i = i + 1 %}
+        {% endfor %}
+        {% endfor %}
+    </script>
+    <style type="text/css">
+        #select_groups{width: 150px;}
+        #select_page_id{width: 270px;}
+    </style>
+    <form action="{{ requesturi }}" method="get" name="form_page">
+        <input type="hidden" name="action" value="edit">
+        <table>
+            <tr>
+                <td class="small" valign="top">
+                    Page group:<br>
+                    {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', '', false, 15) }}
+                </td>
+                <td class="small" style="padding-left: 5px;">
+                    Please choose page to edit:<br>
+                    {{ macro.select('page_id', ['|Please choose group'], '', 'select_page_id', '', false, 15) }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    <input type="submit" value="continue">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <a href="{{ requesturiarray.path }}?action=addpage">Seite hinzufügen</a><br>
+{% endif %}
+{% if customdata.page is defined %}
+    {% if customdata.updated is defined %}
+        Changes committed: {{ macro.showClienttime() }}<br>
+    {% endif %}
+    <style type="text/css">
+        .pageformwidth{width: 740px;}
+        #pageform_html{height: 300px;}
+        fieldset{border: 1px solid;}
+        input[type=submit]{margin: 10px 11px 0 11px;}
+    </style>
+    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&action=edit" method="post">
+        <input type="hidden" name="action_a" value="true">
+        <div class="small">
+            current page: {{ customdata.page.base.cb_key }}
+        </div>
+        {% if customdata.page.text is defined %}
+            <fieldset>
+                <legend>Sprachspezifisch</legend>
+                <input type="hidden" name="textid" value="{{ customdata.page.text[constant('DB_CONTENTTABLE_LANG_PKEY')] }}">
+                <textarea name="page_html" class="pageformwidth" id="pageform_html">{{ customdata.page.text.cl_html }}</textarea>
+                <br>
+                Page title:<br>
+                <input type="text" name="page_title" value="{{ customdata.page.text.cl_title }}" class="pageformwidth">
+                <br>
+                Meta-Description:<br>
+                <input type="text" name="page_description" value="{{ customdata.page.text.cl_description }}" class="pageformwidth">
+                <br>
+                Meta-Keywords (comma seperated):<br>
+                <input type="text" name="page_keywords" value="{{ customdata.page.text.cl_keywords }}" class="pageformwidth">
+            </fieldset>
+        {% else %}
+            <br><a href="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun.</a><br><br>
+        {% endif %}
+        <fieldset>
+            <legend>Sprachunabhängig</legend>
+            Page type:<br>
+            {{ macro.select('page_type', customdata.page.admin_page_types, customdata.page.base.cb_pagetype, '', 'pageformwidth') }}
+            <br>
+            Page group:<br>
+            {{ macro.select('page_group', customdata.page.admin_page_groups, customdata.page.base.cb_group, '', 'pageformwidth') }}
+            <br>
+            Page config (json):<br>
+            <textarea name="page_config" class="pageformwidth">{{ customdata.page.base.cb_pageconfig }}</textarea>
+            <br>
+            Page Subnavarea:<br>
+            {{ macro.select('page_subnav', customdata.page.subnavarea_options, customdata.page.base.cb_subnav, '', 'pageformwidth') }}
+        </fieldset>
+        <input type="submit" value="edit" class="pageformwidth">
+    </form>
+{% endif %}
+{{content}}

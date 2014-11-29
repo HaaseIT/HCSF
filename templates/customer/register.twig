@@ -1,0 +1,8 @@
+{{content}}
+
+{% if customdata.register.showsuccessmessage is defined and customdata.register.showsuccessmessage %}
+    {{T("register_success")}}
+{% else %}
+    <h1>{{T("register_greeting")}}</h1>
+    {% include 'customer/customerform.twig' %}
+{% endif %}

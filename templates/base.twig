@@ -1,0 +1,203 @@
+{% if pagetype == 'contentnosubnav' %}
+    {% set widecontent = true %}
+{% else %}
+    {% set widecontent = false %}
+{% endif %}
+{% import "macros.twig" as macro %}
+{% if subnavkey == 'men' %}
+    {% set navarea = 'herren' %}
+{% elseif subnavkey == 'women' %}
+    {% set navarea = 'damen' %}
+{% elseif path.dirname == '/_admin' %}
+    {% set navarea = 'admin' %}
+{% elseif requesturi == '/about-us.html' %}
+    {% set navarea = 'ueberuns' %}
+{% elseif requesturi == '/kontakt.html' %}
+    {% set navarea = 'kontakt' %}
+{% else %}
+    {% set navarea = 'default' %}
+{% endif %}
+<!DOCTYPE html>
+<html lang="{{language}}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Marcus Haase">
+    <meta name="revisit-after" content="5 days">
+    <meta name="Robots" content="INDEX,FOLLOW">
+    {% if keywords is defined %}<meta name="Keywords" content="{{keywords}}">{% endif %}
+    {% if description is defined %}<meta name="Description" content="{{description}}">{% endif %}
+    <link rel="stylesheet" type="text/css" href="/screen.css">
+    <link href='//fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/highslide.css">
+    <!--[if lt IE 7]>
+    <link rel="stylesheet" type="text/css" href="//cdn.haase-it.com/highslide4/highslide-ie6.css">
+    <![endif]-->
+
+    <script type="text/javascript" src="//cdn.haase-it.com/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="//cdn.haase-it.com/polyfills/jquery.placeholder/2.0.8/jquery.placeholder.min.js"></script>
+    <script type="text/javascript" src="//cdn.haase-it.com/highslide4/highslide-full.packed.js"></script>
+    <script type="text/javascript" src="/highslide.config.js" charset="utf-8" async="async"></script>
+    <!-- 7296c4dbc4be3e892469548ac348672f -->
+    <script type="text/javascript">
+        $(function() {
+            $('input, textarea').placeholder();
+            function getCookie(cname) {
+                var name = cname + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0; i<ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1);
+                    if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+                }
+                return "";
+            }
+            var acceptscookies = getCookie('acceptscookies');
+            if (acceptscookies == 'yes') {
+                console.log('You have accepted to use cookies on this site. To opt out again, please clear your cookies for this site.');
+            } else {
+                function setCookie(cname, cvalue, exdays) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+                    var expires = "expires="+d.toUTCString();
+                    document.cookie = cname + "=" + cvalue + "; path=/; " + expires;
+                }
+                $( "#cookienoticecont" ).slideDown( "slow", function() {
+                    // Animation complete.
+                });
+                $("a").click(function(){
+                    setCookie('acceptscookies', 'yes', 365);
+                });
+            }
+        });
+    </script>
+    <title>{{pagetitle}}</title>
+    <meta name="msvalidate.01" content="3B09A5A407250427C112B402A058DE7A" />
+    {% if head_scripts is defined %}{{head_scripts}}{% endif %}
+</head>
+<body{% if whatarea is defined %} id="{{whatarea}}"{% endif %}>
+<div id="cookienoticecont">
+    <div id="cookienotice">{{ T("cookienotice_info_text") }}</div>
+</div>
+<div id="headcont">
+    <div id="headleft"><a href="/"><img src="/_img/la-affair.png" width="297" height="102" alt="L.A.Affair"></a></div>
+    <div id="headright">
+        <div id="headlangselector">{{langselector}}</div>
+        <div id="headutilities">
+            <div id="searchbox">
+                <form action="/_misc/suche.html" method="GET" name="search">
+                    <input type="text" id="search" name="searchtext" value="{{gFF('searchtext', '')}}" class="formtextsearch" style="width:151px;" placeholder="{{T("misc_suche")}}">
+                    <input type="image" name="searchsubmit" src="data:image/gif;base64,R0lGODlhEwAUALMAAHNzc1hYWCUlJIKCgmNjYxYWFkRERAEBATIyMXp6en5+fktLSggICHx8fDs7O2trayH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjEgNjQuMTQwOTQ5LCAyMDEwLzEyLzA3LTEwOjU3OjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBRkE2QkJDMjY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBRkE2QkJDMzY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkFGQTZCQkMwNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkFGQTZCQkMxNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAABMAFAAABLKQyTmLpfRoXdACChA4xSZtRxEo7NACiHZqwtMoSWAEhNIksVmh11gIGAdGwZAIHZEHA24BRSEGDUIBOQxVUYeF73gQsBxglCCRMCCvCkF60w28XfJ5qmcvN2N6AgBFXD0PelE+CFBiCWhpCE1aUAIFDgALJTIIAAkNi0gMCwYHDg0PBqkBbAqkJwYAAw5wLLUAbkkMDk0wAjsPAA8EAXlJkU50BZWaJkOyiGBKlhjUFAURADs=" alt="Submit" style="vertical-align: -5px;padding-left:5px;" class="formsearchsubmit">
+                </form>
+            </div>
+            <a href="/stores.html">{{ T("topnav_stores") }}</a> &nbsp; &middot; &nbsp;
+            {% if isloggedin %}
+                <a href="/_misc/logout.html">{{ T("nav_logout") }}</a> &nbsp; &middot; &nbsp;
+                <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a> &nbsp; &middot; &nbsp;
+            {% else %}
+                <a href="#" onclick="return hs.htmlExpand(this, { width: 200, anchor: 'right', wrapperClassName: 'no-titlebar no-footer' } )">{{ T("topnav_login") }}</a>
+                &nbsp; &middot; &nbsp;
+                <div class="highslide-maincontent">
+                    <form action="/_misc/login.html" method="POST" name="login">
+                        {{ T("misc_login") }}<br>
+                        <input type="hidden" name="sAction" value="login">
+                        <input type="text" name="user" value="" id="loginform-user" placeholder="{{ T("misc_loginform_username") }}">
+                        <input type="password" name="password" value="" id="loginform-password" placeholder="{{ T("misc_loginform_password") }}">
+                        <input type="image" alt="" id="loginform-submit" src="data:image/gif;base64,R0lGODlhFAAUANUAAP///5SVmf7+/pWWmv7//5SVl5OUmP///ZOUlpSVmqqqrObn6fLy8v7+/5ydn6+wssPExtna3MXGyJWVl5aWmOvs7qOkpra4t5SUlvf5+Pf4+ra3ubCxs9HS1N7e4Pn5+ZWWmJOUmZucnpWWm/39/fn5++zs7vz9/8rLzQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAUABQAAAaIQIKQACgaj8hkUYBkAphO5bM5VSpMRGO0isQUUIToNtmgBAYcxph7LBgCBkckLG0PEoYBYqOpAw4ACCEjeAMFDgtrRYADAXADBgmOECVKTI6YmAUSbEdnmQgWCyd1DY+YFxlLdZoiHk9ba2cgDwxsJFITBR1Jin8fChVEB2tQf4B+ycpFWctHQQA7">
+                    </form>
+                    <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
+                </div>
+                <a href="/_misc/register.html">{{ T("topnav_register") }}</a> &nbsp; &middot; &nbsp;
+            {% endif %}
+
+            <a href="/_misc/shoppingcart.html"><img src="/_img/shoppingcart.gif" alt="Shoppingcart" id="shoppingcarticon">
+                <span id="shoppingcartamount">{{cartinfo.numberofitems}} {{ T("topnav_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></a>
+        </div>
+        <div id="headnavcontainer">
+            <ul id="headnav">
+                <li><a href="/men/"{{ navarea == 'herren' ? ' class="active"' : '' }}>{{ T("topnav_herren") }}</a></li>
+                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
+                <li><a href="/women/"{{ navarea == 'damen' ? ' class="active"' : '' }}>{{ T("topnav_damen") }}</a></li>
+                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
+                <li><a href="/about-us.html"{{ navarea == 'ueberuns' ? ' class="active"' : '' }}>{{ T("topnav_ueberuns") }}</a></li>
+                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
+                <li><a href="/kontakt.html"{{ navarea == 'kontakt' ? ' class="active"' : '' }}>{{ T("topnav_kontakt") }}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<br class="clearboth">
+<div id="maincont">
+    <div id="main">
+        {% autoescape false %}
+        {% if widecontent == false %}
+            <div id="leftnavcontainer" class="bg{% if subnavkey is defined and subnavkey != '' %}{{subnavkey}}{% else %}default{% endif %}">
+                {% if subnav is defined %}
+                    <div id="leftnavtitle">{{ T("topnav_" ~ navarea) }}</div>
+                    <ul id="leftnav">
+                        {% for title, link in subnav %}
+                            <li><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="current"{% endif %}>{{title}}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div id="contentwithsubnav">
+        {% endif %}
+        {% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
+            {% include customcontenttemplate ~ '.twig' %}
+        {% else %}
+            {{content}}
+            {% if pagetype == 'itemoverview' %}
+                {% include 'shop/items-overview.twig' %}
+            {% elseif pagetype == 'itemdetail' %}
+                {% include 'shop/item-detail.twig' %}
+            {% endif %}
+        {% endif %}
+        {% if widecontent == false %}
+            </div>
+            <br class="clearboth">
+        {% endif %}
+        {% endautoescape %}
+    </div>
+</div>
+<div id="footcont">
+    <div id="footerleft">
+        <ul id="footeritemsleft">
+            <li><a href="/impressum.html">{{ T("footer_impressum") }}</a></li>
+            <li><a href="/widerruf.html">{{ T("footer_widerrufsbelehrung") }}</a></li>
+            <li><a href="/versandinformationen.html">{{ T("footer_versandinformationen") }}</a></li>
+            <li><a href="/datenschutz.html">{{ T("footer_datenschutzerklaerung") }}</a></li>
+            <li><a href="/agb.html">{{ T("footer_agb") }}</a></li>
+            <li><a href="/faq.html">{{ T("footer_faq") }}</a></li>
+        </ul>
+        <br>
+        <img src="/_img/logo-footer.jpg" alt="L.A. Affair" style="margin-top: 5px;">
+        <br><br>
+    </div>
+    <div id="footerright">
+        <ul id="footeritemsright">
+            <li><span style="vertical-align: -3px;">{{ T("footer_followus") }}&nbsp;&nbsp;</span></li>
+            <li><a href="https://www.facebook.com/laaffair" target="_blank"><img src="/_img/f_facebook.gif" width="30" height="30" alt="Facebook"></a></li>
+            <li><a href="https://www.twitter.com/laaffair" target="_blank"><img src="/_img/f_twitter.gif" width="30" height="30" alt="Twitter"></a></li>
+            <!-- <li><a href="#c" target="_blank"><img src="/_img/f_youtube.gif" width="30" height="30" alt="Youtube"></a></li> -->
+            <li><a href="http://instagram.com/laaffair" target="_blank"><img src="/_img/f_instagram.gif" width="30" height="30" alt="Instagram"></a></li>
+            <li><a href="http://es.pinterest.com/laaffair/" target="_blank"><img src="/_img/f_pinterest.gif" width="30" height="30" alt="Pinterest"></a></li>
+        </ul>
+        <br><br>
+        <img src="/_img/shipping-footer.jpg" alt="">
+        <br><br>
+    </div>
+    <br class="clearboth">
+</div>
+{% if debugdata is defined %}
+    {{debugdata}}
+{% endif %}
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-56699933-1', 'auto');
+    ga('send', 'pageview');
+</script>
+</body>
+</html>
