@@ -1,0 +1,46 @@
+<?php
+
+include_once('base.inc.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+include_once('shop/functions.shoppingcart.inc.php');
+
+$sH = '';
+
+$iId = cED($_GET["id"]);
+$sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
+$sQ .= "WHERE o_id = :id AND o_paymentmethod = 'sofortueberweisung' AND o_paymentcompleted = 'n'";
+
+$hResult = $DB->prepare($sQ);
+$hResult->bindValue(':id', $iId, PDO::PARAM_INT);
+
+$hResult->execute();
+
+if ($hResult->rowCount() == 1) {
+    $aOrder = $hResult->fetch();
+    $fGesamtbrutto = calculateTotalFromDB($aOrder);
+
+    $sH .= T("misc_paysofortueberweisung_greeting").'<br><br>';
+    $sH .= '<a href="https://www.sofortueberweisung.de/payment/start?user_id='.$C["sofortueberweisung"]["user_id"];
+    $sH .= '&amp;project_id='.$C["sofortueberweisung"]["project_id"].'&amp;amount='.number_format($fGesamtbrutto, 2, '.','');
+    $sH .= '&amp;currency_id='.$C["sofortueberweisung"]["currency_id"].'&amp;reason_1=';
+    $sH .= urlencode(T("misc_paysofortueberweisung_ueberweisungsbetreff").' ').$iId.'">'.T("misc_paysofortueberweisung").'</a>';
+
+} else $sH .= T("misc_paysofortueberweisung_paymentnotavailable");
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $FORM);
+
+echo $twig->render($C["template_base"], $aP);

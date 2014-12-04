@@ -1,43 +1,46 @@
 <style type="text/css">
-.emailcontent{font-size:x-small;font-family:Verdana, Arial, Helvetica, sans-serif;color:#939598;margin:0;padding:0 10px}
-table{border-collapse:collapse;}
-td{vertical-align: top;padding:0;}
-{{customdata.mail.shc_css}}
+    .emailcontent{font-size:x-small;font-family:Verdana, Arial, Helvetica, sans-serif;color:#939598;margin:0;padding:0 10px}
+    table{border-collapse:collapse;}
+    td{vertical-align: top;padding:0;}
+    {{customdata.mail.shc_css}}
 </style>
 <div id="emailcontent">
-{{ customdata.mail.customerversion ? T("mail_orderconf_greeting")~'<br>' : customdata.mail.datetime }}
-<br>
-{{ customdata.mail.custno != '' ? T("mail_orderconf_yourcustno")~' '~customdata.mail.custno~'<br><br>' : '' }}
-{{ customdata.mail.customerversion ? T("mail_orderconf_youraddress")~'<br>' : '' }}
-{{ customdata.mail.corpname != '' ? customdata.mail.corpname~'<br>' : '' }}
-{{ customdata.mail.name != '' ? customdata.mail.name~'<br>' : '' }}
-{{customdata.mail.street}}<br>
-{{customdata.mail.zip}} {{customdata.mail.town}}<br>
-{{ customdata.mail.phone != '' ? T("mail_orderconf_yourphone")~customdata.mail.phone~'<br>' : '' }}
-{{ customdata.mail.cellphone != '' ? T("mail_orderconf_yourcellphone")~customdata.mail.cellphone~'<br>' : '' }}
-{{ customdata.mail.fax != '' ? T("mail_orderconf_yourfax")~customdata.mail.fax~'<br>' : '' }}
-{{ customdata.mail.email != '' ? T("mail_orderconf_youremail")~customdata.mail.email~'<br>' : '' }}
-{{ customdata.mail.country != '' ? T("mail_orderconf_yourcountry")~customdata.mail.country~'<br>' : '' }}
-{{ customdata.mail.remarks != '' ? T("mail_orderconf_yourremarks")~'<br>'~customdata.mail.remarks~'<br>' : '' }}
-{{ customdata.mail.tos == 'y' ? T("mail_orderconf_tosaccepted")~'<br>' : '' }}
-{{ customdata.mail.cancellationdisclaimer == 'y' ? T("mail_orderconf_cancellationdisclaimeraccepted")~'<br>' : '' }}
-<br>
-{% include 'shop/shoppingcarttable.twig' %}
-{% if customdata.mail.paymentmethod != '' %}
-{{T("mail_orderconf_paymentmethod1")}}
-{{T("order_paymentmethod_"~customdata.mail.paymentmethod)}}
-{{T("mail_orderconf_paymentmethod2")}}
-<br><br>
-{% endif %}
-{{T("mail_orderconf_orderconf")}}{{ not customdata.mail.shippingcost ? ', '~T("mail_orderconf_orderconfshippingcost")~'. ' : '. ' }}
-{% if customdata.mail.paymentmethod != 'paypal' and customdata.mail.paymentmethod != 'rechnung' and customdata.mail.paymentmethod != 'bankeinzug' %}
-{{T("mail_orderconf_orderconfpaymentinfos")}}
-{% elseif customdata.mail.paymentmethod == 'paypal' %}
-<br><br>
-<a href="http://{{customdata.mail.paypallink}}" target="_blank">{{T("mail_orderconf_paypallinktext")}}</a>
-{% endif %}
-<br><br>
-{{T("mail_orderconf_footer")}}
-{{customdata.mail.SESSION}}
-{{customdata.mail.POST}}
+    {{ customdata.mail.customerversion ? T("mail_orderconf_greeting")~'<br>' : customdata.mail.datetime }}
+    <br>
+    {{ customdata.mail.custno != '' ? T("mail_orderconf_yourcustno")~' '~customdata.mail.custno~'<br><br>' : '' }}
+    {{ customdata.mail.customerversion ? T("mail_orderconf_youraddress")~'<br>' : '' }}
+    {{ customdata.mail.corpname != '' ? customdata.mail.corpname~'<br>' : '' }}
+    {{ customdata.mail.name != '' ? customdata.mail.name~'<br>' : '' }}
+    {{customdata.mail.street}}<br>
+    {{customdata.mail.zip}} {{customdata.mail.town}}<br>
+    {{ customdata.mail.phone != '' ? T("mail_orderconf_yourphone")~customdata.mail.phone~'<br>' : '' }}
+    {{ customdata.mail.cellphone != '' ? T("mail_orderconf_yourcellphone")~customdata.mail.cellphone~'<br>' : '' }}
+    {{ customdata.mail.fax != '' ? T("mail_orderconf_yourfax")~customdata.mail.fax~'<br>' : '' }}
+    {{ customdata.mail.email != '' ? T("mail_orderconf_youremail")~customdata.mail.email~'<br>' : '' }}
+    {{ customdata.mail.country != '' ? T("mail_orderconf_yourcountry")~customdata.mail.country~'<br>' : '' }}
+    {{ customdata.mail.remarks != '' ? T("mail_orderconf_yourremarks")~'<br>'~customdata.mail.remarks~'<br>' : '' }}
+    {{ customdata.mail.tos == 'y' ? T("mail_orderconf_tosaccepted")~'<br>' : '' }}
+    {{ customdata.mail.cancellationdisclaimer == 'y' ? T("mail_orderconf_cancellationdisclaimeraccepted")~'<br>' : '' }}
+    <br>
+    {% include 'shop/shoppingcarttable.twig' %}
+    {% if customdata.mail.paymentmethod != '' %}
+        {{T("mail_orderconf_paymentmethod1")}}
+        {{T("order_paymentmethod_"~customdata.mail.paymentmethod)}}
+        {{T("mail_orderconf_paymentmethod2")}}
+        <br><br>
+    {% endif %}
+    {{T("mail_orderconf_orderconf")}}{{ not customdata.mail.shippingcost ? ', '~T("mail_orderconf_orderconfshippingcost")~'. ' : '. ' }}
+    {% if customdata.mail.paymentmethod != 'paypal' and customdata.mail.paymentmethod != 'rechnung' and customdata.mail.paymentmethod != 'bankeinzug' and customdata.mail.paymentmethod != 'sofortueberweisung' %}
+        {{T("mail_orderconf_orderconfpaymentinfos")}}
+    {% elseif customdata.mail.paymentmethod == 'paypal' %}
+        <br><br>
+        <a href="http://{{customdata.mail.paypallink}}" target="_blank">{{T("mail_orderconf_paypallinktext")}}</a>
+    {% elseif customdata.mail.paymentmethod == 'sofortueberweisung' %}
+        <br><br>
+        <a href="http://{{customdata.mail.sofortueberweisunglink}}" target="_blank">{{T("mail_orderconf_sofortueberweisunglinktext")}}</a>
+    {% endif %}
+    <br><br>
+    {{T("mail_orderconf_footer")}}
+    {{customdata.mail.SESSION}}
+    {{customdata.mail.POST}}
 </div>

@@ -31,7 +31,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         $sH .= $sValue.', ';
                     } else {
                         $TMP = explode(':', $sValue);
-                        $sH .= T("shoppingcart_item_".$TMP[0]).': '.$TMP[1].', ';
+                        $sH .= T("shoppingcart_item_".$TMP[0]).' '.$TMP[1].', ';
                         unset($TMP);
                     }
                 }
@@ -196,7 +196,9 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 if (isset($_SESSION["sondercart"])) unset($_SESSION["sondercart"]);
 
                 if (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' && array_search('paypal', $C["paymentmethods"]) && isset($C["paypal_interactive"]) && $C["paypal_interactive"]) {
-                    header('Location: /_misc/paypal.html?id='.$iInsertID);
+                    header('Location: /_misc/paypal.html?id=' . $iInsertID);
+                } elseif (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $C["paymentmethods"])) {
+                    header('Location: /_misc/sofortueberweisung.html?id='.$iInsertID);
                 } else {
                     header('Location: /_misc/checkedout.html');
                 }

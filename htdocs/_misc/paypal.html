@@ -20,9 +20,12 @@ $sH = '';
 
 $iId = cED($_GET["id"]);
 $sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
-$sQ .= "WHERE o_id = '".$iId."' AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
+$sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
-$hResult = $DB->query($sQ);
+$hResult = $DB->prepare($sQ);
+$hResult->bindValue(':id', $iId, PDO::PARAM_INT);
+
+$hResult->execute();
 
 if ($hResult->rowCount() == 1) {
     $aOrder = $hResult->fetch();
@@ -38,8 +41,8 @@ if ($hResult->rowCount() == 1) {
     $sH .= $FORM->makeHidden('business', $C["paypal"]["business"]);
     $sH .= $FORM->makeHidden('return_url', $C["paypal_return"]);
     $sH .= $FORM->makeHidden('notify_url', $C["paypal_notify"]);
-    $sH .= $FORM->makeHidden('item_name', 'Ihre Bestellung');
-    $sH .= $FORM->makeHidden('currency_code', 'EUR');
+    $sH .= $FORM->makeHidden('item_name', T("misc_paypaypal_paypaltitle"));
+    $sH .= $FORM->makeHidden('currency_code', $C["paypal"]["currency_id"]);
     $sH .= $FORM->makeHidden('amount', ''.number_format($fGesamtbrutto, 2, '.','').'');
     $sH .= $FORM->makeSubmit('', T("misc_paypaypal"), 200);
     $sH .= $FORM->closeForm();

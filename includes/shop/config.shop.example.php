@@ -49,15 +49,27 @@ $TMP = array(
 
     'items_orderdirection_default' => 'ASC',
 
-    'paypal' => array('business' => 'paypalseller@domain.tld', 'url' => 'https://www.sandbox.paypal.com/de/cgi-bin/webscr', 'auth_token' => 'XXXXXXXXXXXXX'),
+    'paypal' => array(
+        'business' => 'paypalseller@domain.tld',
+        'url' => 'https://www.sandbox.paypal.com/de/cgi-bin/webscr',
+        'auth_token' => 'XXXXXXXXXXXXX',
+        'currency_id' => 'EUR',
+    ),
     'paypal_notify' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_notify.html',
     'paypal_return' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_return.html',
     'paypal_log' => '/_admin/ipnlogs/ipnlog.txt',
     'paypal_interactive' => true,
 
+    'sofortueberweisung' => array(
+        'user_id' => '27471',
+        'project_id' => '83464',
+        'currency_id' => 'EUR',
+    ),
+
     'paymentmethods' => array(
         'prepay',
         'paypal',
+        //'sofortueberweisung',
         // 'debit',
         // 'invoice',
     ),
