@@ -180,7 +180,7 @@ function getShippingcost($C) {
 
 function buildOrderMailBody($twig, $bCust = true, $iId = 0)
 {
-    global $C;
+    global $C, $sLang;
 
     $aSHC = buildShoppingCartTable($_SESSION["cart"], true);
 
@@ -198,7 +198,7 @@ function buildOrderMailBody($twig, $bCust = true, $iId = 0)
         'cellphone' => (isset($_POST["cellphone"]) && trim($_POST["cellphone"]) != '' ? $_POST["cellphone"] : ''),
         'fax' => (isset($_POST["fax"]) && trim($_POST["fax"]) != '' ? $_POST["fax"] : ''),
         'email' => (isset($_POST["email"]) && trim($_POST["email"]) != '' ? $_POST["email"] : ''),
-        'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ? $_POST["country"] : ''),
+        'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ? (isset($C["countries_".$sLang][$_POST["country"]]) ? $C["countries_".$sLang][$_POST["country"]] : $_POST["country"]) : ''),
         'remarks' => (isset($_POST["remarks"]) && trim($_POST["remarks"]) != '' ? $_POST["remarks"] : ''),
         'tos' => (isset($_POST["tos"]) && trim($_POST["tos"]) != '' ? $_POST["tos"] : ''),
         'cancellationdisclaimer' => (isset($_POST["cancellationdisclaimer"]) && trim($_POST["cancellationdisclaimer"]) != '' ? $_POST["cancellationdisclaimer"] : ''),
