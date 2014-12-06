@@ -1,1 +1,14 @@
 {{content}}
+
+{% if customdata.order is defined %}
+    {{ T("checkoutdone_greeting") }}
+    {% if customdata.order.o_paymentmethod == 'prepay' %}
+        <p>
+            {{ T("checkoutdone_prepay_1") }}
+            {{ customdata.gesamtbrutto|number_format(2, ",", ".") }} {{ currency }}
+            {{ T("checkoutdone_prepay_2") }}
+        </p>
+    {% endif %}
+    {{ T("checkoutdone_cancellationform") }}
+
+{% endif %}
