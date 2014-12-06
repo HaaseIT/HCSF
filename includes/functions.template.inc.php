@@ -60,7 +60,6 @@ function generatePage($C, $P, $sLang)
     if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
     if (isset($P["base"]["cb_key"])) $aP["path"] = pathinfo($P["base"]["cb_key"]);
     else $aP["path"] = pathinfo($aP["requesturi"]);
-    if (isset($P["base"]["cb_subnav"]) && isset($C["navstruct"][$P["base"]["cb_subnav"]])) $aP["subnav"] = $C["navstruct"][$P["base"]["cb_subnav"]];
     if (isset($P["base"]["cb_customcontenttemplate"]) && trim($P["base"]["cb_customcontenttemplate"]) != '') $aP["customcontenttemplate"] = $P["base"]["cb_customcontenttemplate"];
     if (isset($P["base"]["cb_customdata"])) $aP["customdata"] = $P["base"]["cb_customdata"];
     if (isset($_SERVER["HTTP_REFERER"])) $aP["referer"] = $_SERVER["HTTP_REFERER"];
@@ -86,6 +85,11 @@ function generatePage($C, $P, $sLang)
     } elseif($P["lang"][DB_CONTENTFIELD_LANG] != $sLang) {
         $P["lang"]["cl_html"] = T("misc_page_not_available_lang").'<br><br>'.$P["lang"]["cl_html"];
     }
+    if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $C["subnav_default"] != '') { // if there is no subnav defined but there is a default subnav defined, use it.
+        $aP["subnavkey"] = $C["subnav_default"];
+        $P["base"]["cb_subnav"] = $C["subnav_default"];
+    }
+    if (isset($P["base"]["cb_subnav"]) && isset($C["navstruct"][$P["base"]["cb_subnav"]])) $aP["subnav"] = $C["navstruct"][$P["base"]["cb_subnav"]];
 
     // Get page title, meta-keywords, meta-description
     $aP["pagetitle"] = buildTitle($P);

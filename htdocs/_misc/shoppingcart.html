@@ -200,7 +200,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 } elseif (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $C["paymentmethods"]) !== false) {
                     header('Location: /_misc/sofortueberweisung.html?id='.$iInsertID);
                 } else {
-                    header('Location: /_misc/checkedout.html');
+                    header('Location: /_misc/checkedout.html?id='.$iInsertID);
                 }
                 die();
             }
