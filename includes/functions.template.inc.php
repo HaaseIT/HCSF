@@ -64,10 +64,6 @@ function generatePage($C, $P, $sLang)
     if (isset($P["base"]["cb_customcontenttemplate"]) && trim($P["base"]["cb_customcontenttemplate"]) != '') $aP["customcontenttemplate"] = $P["base"]["cb_customcontenttemplate"];
     if (isset($P["base"]["cb_customdata"])) $aP["customdata"] = $P["base"]["cb_customdata"];
     if (isset($_SERVER["HTTP_REFERER"])) $aP["referer"] = $_SERVER["HTTP_REFERER"];
-    $aP["countrylist"][] = ' | ';
-    foreach ($C["countries_".$sLang] as $sKey => $sValue) {
-        $aP["countrylist"][] = $sKey.'|'.$sValue;
-    }
 
     reset($C["lang_available"]);
     if (!$P) {
@@ -132,6 +128,15 @@ function generatePage($C, $P, $sLang)
             'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
         );
         unset($aCartsums);
+        foreach ($_SESSION["cart"] as $sKey => $aValue) {
+            $aP["cartinfo"]["cartitems"][$sKey] = array(
+                'cartkey' => $sKey,
+                'name' => $aValue["name"],
+                'amount' => $aValue["amount"],
+                'img' => $aValue["img"],
+                'price' => $aValue["price"],
+            );
+        }
     } else {
         $aP["cartinfo"] = array(
             'numberofitems' => 0,
@@ -139,6 +144,11 @@ function generatePage($C, $P, $sLang)
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         );
+    }
+
+    $aP["countrylist"][] = ' | ';
+    foreach ($C["countries_".$sLang] as $sKey => $sValue) {
+        $aP["countrylist"][] = $sKey.'|'.$sValue;
     }
 
     if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail') {

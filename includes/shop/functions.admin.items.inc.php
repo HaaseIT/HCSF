@@ -207,7 +207,7 @@ function admin_showItem($aItemdata) { // no query
     $sH .= $FORM->makeSelect('group', $aGroupselect, $aItemdata["base"][DB_ITEMFIELD_GROUP], 300, 1, false, '', 'formselect_globalsetting');
     $sH .= '</td></tr></table>';
     $sH .= 'Zusatzdaten (JSON):<br>';
-    $sH .= $FORM->makeTextarea('data', $aItemdata["base"][DB_ITEMFIELD_DATA], 568, 100);
+    $sH .= $FORM->makeTextarea('data', $aItemdata["base"][DB_ITEMFIELD_DATA], 568, 200);
 
     if (isset($aItemdata["text"])) {
         $sH .= '<br>';
