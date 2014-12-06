@@ -73,6 +73,7 @@ $TMP = array(
         // 'debit',
         // 'invoice',
     ),
+    'interactive_paymentmethods_redirect_immediately' => false,
 
     'shipping_services' => array(
         'DHL',
