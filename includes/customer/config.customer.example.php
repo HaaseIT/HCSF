@@ -46,8 +46,8 @@ $TMP = array(
 
     'customer_groups' => array(
         '',
-        'grosskunde' => 'Großkunde',
-        'wiederverkaeufer' => 'Wiederverkäufer',
+        'grosskunde|Großkunde',
+        'wiederverkaeufer|Wiederverkäufer',
     ),
 );
 

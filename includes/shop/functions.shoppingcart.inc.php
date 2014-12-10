@@ -208,6 +208,7 @@ function buildOrderMailBody($twig, $bCust = true, $iId = 0)
         'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["HTTP_HOST"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
         'SESSION' => (!$bCust ? debug($_SESSION, true) : ''),
         'POST' => (!$bCust ? debug($_POST, true) : ''),
+        'orderid' => $iId,
     );
 
     $aM["customdata"] = $aSHC;

@@ -188,8 +188,8 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 } else $aFilesToSend = array();
 
                 // Send Mails
-                mailWrapper($_POST["email"], $C["email_sendername"], $C["email_sender"], T("shoppingcart_mail_subject"), $sMailbody_they, $aImagesToSend, $aFilesToSend);
-                mailWrapper($C["email_sender"], $C["email_sendername"], $C["email_sender"], 'Bestellung im Webshop', $sMailbody_us, $aImagesToSend);
+                mailWrapper($_POST["email"], $C["email_sendername"], $C["email_sender"], T("shoppingcart_mail_subject").' '.$iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+                mailWrapper($C["email_sender"], $C["email_sendername"], $C["email_sender"], 'Bestellung im Webshop Nr: '.$iInsertID, $sMailbody_us, $aImagesToSend);
 
                 if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
                 if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);
