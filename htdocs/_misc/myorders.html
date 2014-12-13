@@ -24,7 +24,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
     if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
         $iId = cED($_GET["id"]);
 
-        $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id AND o_custno = '".$_SESSION["user"]["cust_no"]."'";
+        $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id AND o_custno = '".$_SESSION["user"]["cust_no"]."' AND o_ordercompleted != 'd'";
         $hResult = $DB->prepare($sQ);
         $hResult->bindValue(':id', $iId);
         $hResult->execute();
