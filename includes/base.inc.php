@@ -14,6 +14,7 @@ if (ini_get('session.auto_start') == 1) {
 if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
+    ini_set('session.use_only_cookies', 0); // TODO find another way to pass session when language detection == domain
     session_name('sid');
     if(ini_get('session.use_trans_sid') == 1) {
         ini_set('session.use_trans_sid', 0);
@@ -27,8 +28,16 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Load core config
 include_once('config.core.inc.php');
 include_once('config.scrts.inc.php');
+include_once('functions.template.inc.php');
+include_once('functions.misc.inc.php');
+include_once('Tools.php');
+include_once('functions.db.inc.php');
+
 date_default_timezone_set($C["defaulttimezone"]);
 
+// ----------------------------------------------------------------------------
+// Begin Twig loading and init
+// ----------------------------------------------------------------------------
 require_once PATH_TWIGROOT.'lib/Twig/Autoloader.php';
 Twig_Autoloader::register();
 
@@ -45,30 +54,45 @@ if (isset($C["debug"]) && $C["debug"]) {
     $twig->addExtension(new Twig_Extension_Debug());
 }
 $twig->addFunction('T', new Twig_Function_Function('T'));
-$twig->addFunction('gFF', new Twig_Function_Function('getFormField'));
+$twig->addFunction('gFF', new Twig_Function_Function('Tools::getFormField'));
 
-if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
-    $sLang = strtolower($_GET["language"]);
-    setcookie('language', strtolower($_GET["language"]), 0, '/');
-} elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $C["lang_available"])) {
-    $sLang = strtolower($_COOKIE["language"]);
-} elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
-    $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
-} else {
+// ----------------------------------------------------------------------------
+// Begin language detection
+// ----------------------------------------------------------------------------
+if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is_array($C["lang_by_domain"])) { // domain based language detection
+    foreach ($C["lang_by_domain"] as $sKey => $sValue) {
+        if ($_SERVER["HTTP_HOST"] == $sValue || $_SERVER["HTTP_HOST"] == 'www.'.$sValue) {
+            $sLang = $sKey;
+            break;
+        }
+    }
+} elseif ($C["lang_detection_method"] == 'legacy') { // legacy language detection
+    if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
+        $sLang = strtolower($_GET["language"]);
+        setcookie('language', strtolower($_GET["language"]), 0, '/');
+    } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $C["lang_available"])) {
+        $sLang = strtolower($_COOKIE["language"]);
+    } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
+        $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
+    } else {
+        $sLang = key($C["lang_available"]);
+    }
+}
+if (!isset($sLang)) {
     $sLang = key($C["lang_available"]);
 }
 
-include_once('functions.template.inc.php');
-
+// ----------------------------------------------------------------------------
+// Begin database init
+// ----------------------------------------------------------------------------
 $DB = new PDO($C["db_type"].':host='.$C["db_server"].';dbname='.$C["db_name"], $C["db_user"], $C["db_password"], array( PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', ));
 $DB->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $DB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 $DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
 
-include_once('functions.misc.inc.php');
-include_once('functions.db.inc.php');
-
-// Routing stuff
+// ----------------------------------------------------------------------------
+// Begin routing
+// ----------------------------------------------------------------------------
 // Only do routing if original app.php is called. if not, no routing, no fetching db content
 if ($_SERVER["PHP_SELF"] == '/app.php') {
     $aURL = parse_url($_SERVER["REQUEST_URI"]);
@@ -108,20 +132,21 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     }
 }
 
+
+
+
 $T = loadTextcats();
 //debug($T);
 
 include_once('config.navi.inc.php');
 include_once('customer/config.customer.inc.php');
 include_once('customer/functions.customer.inc.php');
-
+include_once('shop/config.shop.inc.php');
+include_once('shop/class.item.inc.php');
+include_once('shop/functions.shoppingcart.inc.php');
 include_once('class.form.inc.php');
+
 $FORM = new Form();
 $FORM->bUsestyle = true;
 
-include_once('shop/config.shop.inc.php');
-// TODO: load and init Items only when needed!
-include_once('shop/class.item.inc.php');
 $oItem = new Item($C, $DB, $FORM, $sLang);
-
-include_once('shop/functions.shoppingcart.inc.php');

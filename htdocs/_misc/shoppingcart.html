@@ -35,7 +35,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         unset($TMP);
                     }
                 }
-                $sH = cutStringend($sH, 2);
+                $sH = Tools::cutStringend($sH, 2);
             } else {
                 $sH .= $_GET["cartkey"];
             }
@@ -72,22 +72,22 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 try {
                     $DB->beginTransaction();
                     $aDataOrder = array(
-                        'o_custno' => trim(getFormfield("custno")),
-                        'o_email' => trim(getFormfield("email")),
-                        'o_corpname' => trim(getFormfield("corpname")),
-                        'o_name' => trim(getFormfield("name")),
-                        'o_street' => trim(getFormfield("street")),
-                        'o_zip' => trim(getFormfield("zip")),
-                        'o_town' => trim(getFormfield("town")),
-                        'o_phone' => trim(getFormfield("phone")),
-                        'o_cellphone' => trim(getFormfield("cellphone")),
-                        'o_fax' => trim(getFormfield("fax")),
-                        'o_country' => trim(getFormfield("country")),
+                        'o_custno' => trim(Tools::getFormfield("custno")),
+                        'o_email' => trim(Tools::getFormfield("email")),
+                        'o_corpname' => trim(Tools::getFormfield("corpname")),
+                        'o_name' => trim(Tools::getFormfield("name")),
+                        'o_street' => trim(Tools::getFormfield("street")),
+                        'o_zip' => trim(Tools::getFormfield("zip")),
+                        'o_town' => trim(Tools::getFormfield("town")),
+                        'o_phone' => trim(Tools::getFormfield("phone")),
+                        'o_cellphone' => trim(Tools::getFormfield("cellphone")),
+                        'o_fax' => trim(Tools::getFormfield("fax")),
+                        'o_country' => trim(Tools::getFormfield("country")),
                         'o_group' => trim(getUserData(DB_CUSTOMERFIELD_GROUP)),
-                        'o_remarks' => trim(getFormfield("remarks")),
+                        'o_remarks' => trim(Tools::getFormfield("remarks")),
                         'o_tos' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y' || getUserData()) ? 'y' : 'n'),
                         'o_cancellationdisclaimer' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y' || getUserData()) ? 'y' : 'n'),
-                        'o_paymentmethod' => trim(getFormfield("paymentmethod")),
+                        'o_paymentmethod' => trim(Tools::getFormfield("paymentmethod")),
                         'o_sumvoll' => $_SESSION["cartpricesums"]["sumvoll"],
                         'o_sumerm' => $_SESSION["cartpricesums"]["sumerm"],
                         'o_sumnettoall' => $_SESSION["cartpricesums"]["sumnettoall"],
@@ -106,7 +106,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         'o_paymentcompleted' => 'n',
                         'o_srv_hostname' => $_SERVER["HTTP_HOST"],
                     );
-                    $sQ = buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
+                    $sQ = Tools::buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
                     //die($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aDataOrder as $sKey => $sValue) {
@@ -155,7 +155,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         }
                     }
                     foreach ($aDataOrderItems as $aV) {
-                        $sQ = buildPSInsertQuery($aV, DB_ORDERTABLE_ITEMS);
+                        $sQ = Tools::buildPSInsertQuery($aV, DB_ORDERTABLE_ITEMS);
                         $hResult = $DB->prepare($sQ);
                         foreach ($aV as $sKey => $sValue) {
                             $hResult->bindValue(':'.$sKey, $sValue);

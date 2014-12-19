@@ -20,7 +20,7 @@ function admin_updateGroup() {
         DB_ITEMGROUPTABLE_BASE_PKEY => $_REQUEST["gid"],
     );
 
-    $sQ = buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
+    $sQ = Tools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
     //debug($sQ);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) {
@@ -47,7 +47,7 @@ function admin_updateGroup() {
             DB_ITEMGROUPFIELD_DETAILS => $_REQUEST["details"],
             DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
         );
-        $sQ = buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
+        $sQ = Tools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
         //debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -67,26 +67,26 @@ function admin_showGroupForm($sErr = '', $sPurpose = 'none', $aData = array()) {
     $sH .= '<table border="0" cellspacing="0" cellpadding="0">';
 
     $FORM->sFormmethod = 'POST';
-    $FORM->sFormaction = makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
+    $FORM->sFormaction = Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
     $sH .= $FORM->openForm();
     $sH .= $FORM->makeHidden('do', 'true');
 
     $sH .= '<tr><td>Gruppenname:<br />';
-    $sH .= $FORM->makeText('name', getFormField('name', ((isset($aData[DB_ITEMGROUPFIELD_NAME])) ? $aData[DB_ITEMGROUPFIELD_NAME] : '')), 540, 0);
+    $sH .= $FORM->makeText('name', Tools::getFormField('name', ((isset($aData[DB_ITEMGROUPFIELD_NAME])) ? $aData[DB_ITEMGROUPFIELD_NAME] : '')), 540, 0);
     $sH .= '</td></tr>';
     $sH .= '<tr><td class="main">Gruppennummer:<br />';
-    $sH .= $FORM->makeText('no', getFormField('no', ((isset($aData[DB_ITEMGROUPFIELD_NUMBER])) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : '')), 540);
+    $sH .= $FORM->makeText('no', Tools::getFormField('no', ((isset($aData[DB_ITEMGROUPFIELD_NUMBER])) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : '')), 540);
     $sH .= '</tr>';
     $sH .= '<tr><td><table border="0" cellspacing="0" cellpadding="0"><tr><td class="main">Bild:<br>';
-    $sH .= $FORM->makeText('img', getFormField('img', ((isset($aData[DB_ITEMGROUPFIELD_IMG])) ? $aData[DB_ITEMGROUPFIELD_IMG] : '')), 265, 0, false, 'formtext_globalsetting');
+    $sH .= $FORM->makeText('img', Tools::getFormField('img', ((isset($aData[DB_ITEMGROUPFIELD_IMG])) ? $aData[DB_ITEMGROUPFIELD_IMG] : '')), 265, 0, false, 'formtext_globalsetting');
     $sH .= '</td></tr></table></td></tr>';
 
     if ($sPurpose == 'edit') {
         if ($aData[DB_ITEMGROUPTABLE_TEXT_PKEY] != '') {
             $sH .= '<tr><td class="main">Kurztext:<br>';
-            $sH .= $FORM->makeTextarea('shorttext', getFormField('shorttext', ((isset($aData[DB_ITEMGROUPFIELD_SHORTTEXT])) ? $aData[DB_ITEMGROUPFIELD_SHORTTEXT] : '')), 540, 150);
+            $sH .= $FORM->makeTextarea('shorttext', Tools::getFormField('shorttext', ((isset($aData[DB_ITEMGROUPFIELD_SHORTTEXT])) ? $aData[DB_ITEMGROUPFIELD_SHORTTEXT] : '')), 540, 150);
             $sH .= '<tr><td class="main">Details:<br>';
-            $sH .= $FORM->makeTextarea('details', getFormField('details', ((isset($aData[DB_ITEMGROUPFIELD_DETAILS])) ? $aData[DB_ITEMGROUPFIELD_DETAILS] : '')), 540, 150);
+            $sH .= $FORM->makeTextarea('details', Tools::getFormField('details', ((isset($aData[DB_ITEMGROUPFIELD_DETAILS])) ? $aData[DB_ITEMGROUPFIELD_DETAILS] : '')), 540, 150);
             $sH .= '</td></tr>';
         } else {
             $sH .= '<tr><td>In dieser Sprache sind noch keine Texte angelegt!';

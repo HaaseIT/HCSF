@@ -59,7 +59,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             DB_CONTENTFIELD_LANG => $sLang,
         );
         //debug($aData);
-        $sQ = buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
+        $sQ = Tools::buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
         //echo debug($sQ, false);
         $DB->exec($sQ);
         header('Location: '.$_SERVER["PHP_SELF"]."?page_id=".$_REQUEST["page_id"].'&action=edit');
@@ -89,7 +89,7 @@ if (!isset($_REQUEST["action"])) {
         if (strlen($_POST["pagekey"]) < 4) $sErr .= 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br>';
         else {
             $sQ = "SELECT ".DB_CONTENTFIELD_BASE_KEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = '";
-            $sQ .= cED(trim($_POST["pagekey"]))."'";
+            $sQ .= Tools::cED(trim($_POST["pagekey"]))."'";
             $hResult = $DB->query($sQ);
             $iRows = $hResult->rowCount();
             if ($iRows > 0) {
@@ -98,7 +98,7 @@ if (!isset($_REQUEST["action"])) {
                 $aData = array(
                     DB_CONTENTFIELD_BASE_KEY => trim($_POST["pagekey"]),
                 );
-                $sQ = buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
+                $sQ = Tools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
                 //debug($sQ);
                 $hResult = $DB->exec($sQ);
                 $iInsertID = $DB->lastInsertId();

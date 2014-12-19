@@ -17,7 +17,7 @@ $P = array(
 
 if (!$C["show_pricesonlytologgedin"] || getUserData()) {
     $sH = '';
-    $iId = cED($_GET["id"]);
+    $iId = Tools::cED($_GET["id"]);
     $sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
     $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
 

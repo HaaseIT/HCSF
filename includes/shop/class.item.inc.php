@@ -50,7 +50,7 @@ class Item
         $sQ = " WHERE ";
         if ($mItemno != '') {
             if (is_array($mItemno)) {
-                $sItemno = "'".implode("','", cED($mItemno))."'";
+                $sItemno = "'".implode("','", Tools::cED($mItemno))."'";
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." IN (".$sItemno.")";
             } else {
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." = :itemno";
@@ -69,11 +69,11 @@ class Item
         } else {
             if (is_array($mItemIndex)) {
                 $sQ .= "(";
-                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".cED($sAIndex)."%' OR ";
-                $sQ = cutStringend($sQ, 4);
+                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".Tools::cED($sAIndex)."%' OR ";
+                $sQ = Tools::cutStringend($sQ, 4);
                 $sQ .= ")";
             } else {
-                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".cED($mItemIndex)."%'";
+                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".Tools::cED($mItemIndex)."%'";
             }
         }
         $sQ .= " AND ".DB_ITEMFIELD_INDEX;

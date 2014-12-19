@@ -32,7 +32,7 @@ if (isset($_SESSION["user"])) {
     if ($iRows == 1) {
         $aRow = $hResult->fetch();
         $aData = array(DB_CUSTOMERFIELD_EMAILVERIFIED => 'y', DB_CUSTOMERTABLE_PKEY => $aRow[DB_CUSTOMERTABLE_PKEY]);
-        $sQ = buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+        $sQ = Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
         //debug( $sQ );
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) {

@@ -18,7 +18,7 @@ include_once('shop/functions.shoppingcart.inc.php');
 
 $sH = '';
 
-$iId = cED($_GET["id"]);
+$iId = Tools::cED($_GET["id"]);
 $sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
 $sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 

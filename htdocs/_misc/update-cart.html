@@ -101,7 +101,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         );
                         echo $twig->render('shop/update-cart.twig', $aAR);
                     } else {
-                        header('Location: '.makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'removed', 'cartkey' => $sCartKey), true, false));
+                        header('Location: '.Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'removed', 'cartkey' => $sCartKey), true, false));
                     }
                     die();
                 } else {
@@ -117,7 +117,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         );
                         echo $twig->render('shop/update-cart.twig', $aAR);
                     } else {
-                        header('Location: '.makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'updated', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
+                        header('Location: '.Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'updated', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
                     }
                     die();
                 }
@@ -136,7 +136,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 );
                 echo $twig->render('shop/update-cart.twig', $aAR);
             } else {
-                header('Location: '.makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'added', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
+                header('Location: '.Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'added', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
             }
         } else {
             if (isset($_REQUEST["ajax"])) {
@@ -148,7 +148,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 );
                 echo $twig->render('shop/update-cart.twig', $aAR);
             } else {
-                header('Location: '.makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'item'), true, false));
+                header('Location: '.Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'item'), true, false));
             }
         }
     } else {
@@ -161,7 +161,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             );
             echo $twig->render('shop/update-cart.twig', $aAR);
         } else {
-            header('Location: '.makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'amount'), true, false));
+            header('Location: '.Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'amount'), true, false));
         }
     }
 } else $sH = T("denied_notloggedin");

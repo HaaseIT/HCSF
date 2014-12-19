@@ -114,13 +114,13 @@ function generatePage($C, $P, $sLang)
     foreach ($C["lang_available"] as $sKey => $sValue) {
         if ($sLang != $sKey) {
             if ($C["lang_detection_method"] == 'domain') {
-                $aP["langselector"] .= '<a href="//www.'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.T("misc_language_".$sKey).'</a> ';
+                $aP["langselector"] .= '<a href="//www.'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.T("misc_language_".$sKey).'</a> ';
             } else {
-                $aP["langselector"] .= '<a href="'.makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.T("misc_language_".$sKey).'</a> ';
+                $aP["langselector"] .= '<a href="'.Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.T("misc_language_".$sKey).'</a> ';
             }
         }
     }
-    $aP["langselector"] = cutStringend($aP["langselector"], 1);
+    $aP["langselector"] = Tools::cutStringend($aP["langselector"], 1);
 
     // Shopping cart infos
     if ((!$C["show_pricesonlytologgedin"] || getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {

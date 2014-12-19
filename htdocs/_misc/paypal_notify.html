@@ -18,7 +18,7 @@ include_once('shop/functions.shoppingcart.inc.php');
 
 $sLogData = '';
 
-$iId = cED($_REQUEST["custom"]);
+$iId = Tools::cED($_REQUEST["custom"]);
 $sQ = "SELECT * FROM ".DB_ORDERTABLE;
 $sQ .= " WHERE ".DB_ORDERTABLE_PKEY." = '".$iId."' AND ".DB_ORDERFIELD_PAYMENTMETHOD." = 'paypal' AND o_paymentcompleted = 'n'";
 
@@ -72,7 +72,7 @@ if ($hResult->rowCount() == 1) {
                         'o_paymentcompleted' => 'y',
                         DB_ORDERTABLE_PKEY => $iId,
                     );
-                    $sQ = buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
+                    $sQ = Tools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aTxnUpdateData as $sKey => $sValue) {
                         $hResult->bindValue(':'.$sKey, $sValue);

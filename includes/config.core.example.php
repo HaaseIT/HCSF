@@ -36,6 +36,7 @@ $C = array(
     'default_pagetitle' => 'Sitetitle',
     'templatecache_enable' => false,
     'template_base' => 'base.twig',
+    'subnav_default' => '',
 
     'admin_users' => array('user1', 'user2'),
 

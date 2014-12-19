@@ -12,7 +12,7 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
                 DB_CUSTOMERTABLE_PKEY => $iID,
             );
             //debug($aData, false, '$aData');
-            $sQ = buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+            $sQ = Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
             //debug($sQ);
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -26,7 +26,7 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
 }
 
 function handleForgotPassword($DB, $C, $aErr) {
-    if (!validateEmail($_GET["email"])) {
+    if (!Tools::validateEmail($_GET["email"])) {
         $aErr[] = 'emailinvalid';
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
@@ -49,7 +49,7 @@ function handleForgotPassword($DB, $C, $aErr) {
                     DB_CUSTOMERTABLE_PKEY => $aResult[DB_CUSTOMERTABLE_PKEY],
                 );
                 //debug($aData, false, '$aData');
-                $sQ = buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                $sQ = Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                 //debug($sQ);
                 $hResult = $DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -76,7 +76,7 @@ function validateCustomerForm($aErr = array(), $bEdit = false)
 {
     global $C, $sLang;
 
-    if (!isset($_POST["email"]) || !validateEmail($_POST["email"])) $aErr["email"] = true;
+    if (!isset($_POST["email"]) || !Tools::validateEmail($_POST["email"])) $aErr["email"] = true;
     if ($C["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;
     if ($C["validate_name"] && (!isset($_POST["name"]) || strlen(trim($_POST["name"])) < 3)) $aErr["name"] = true;
     if ($C["validate_street"] && (!isset($_POST["street"]) || strlen(trim($_POST["street"])) < 3)) $aErr["street"] = true;
@@ -132,51 +132,51 @@ function buildCustomerForm($sPurpose = 'none', $sErr = '', $aUserData = false)
 
     // fv = field_value, fr = field_required
     $sDefaultCustno = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_NUMBER, "custno", $aUserData);
-    $aData["fv_custno"] = getFormField('custno', $sDefaultCustno, true);
+    $aData["fv_custno"] = Tools::getFormField('custno', $sDefaultCustno, true);
 
     $sDefaultEmail = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_EMAIL, "email", $aUserData);
-    $aData["fv_email"] = getFormField('email', $sDefaultEmail, true);
+    $aData["fv_email"] = Tools::getFormField('email', $sDefaultEmail, true);
 
     $sDefaultCorpname = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_CORP, "corpname", $aUserData);
-    $aData["fv_corpname"] = getFormField('corpname', $sDefaultCorpname, true);
+    $aData["fv_corpname"] = Tools::getFormField('corpname', $sDefaultCorpname, true);
     $aData["fr_corpname"] = $C["validate_corpname"];
 
     $sDefaultName = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_NAME, "name", $aUserData);
-    $aData["fv_name"] = getFormField('name', $sDefaultName, true);
+    $aData["fv_name"] = Tools::getFormField('name', $sDefaultName, true);
     $aData["fr_name"] = $C["validate_name"];
 
     $sDefaultStreet = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_STREET, "street", $aUserData);
-    $aData["fv_street"] = getFormField('street', $sDefaultStreet, true);
+    $aData["fv_street"] = Tools::getFormField('street', $sDefaultStreet, true);
     $aData["fr_street"] = $C["validate_street"];
 
     $sDefaultZip = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_ZIP, "zip", $aUserData);
-    $aData["fv_zip"] = getFormField('zip', $sDefaultZip, true);
+    $aData["fv_zip"] = Tools::getFormField('zip', $sDefaultZip, true);
     $aData["fr_zip"] = $C["validate_zip"];
 
     $sDefaultTown = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_TOWN, "town", $aUserData);
-    $aData["fv_town"] = getFormField('town', $sDefaultTown, true);
+    $aData["fv_town"] = Tools::getFormField('town', $sDefaultTown, true);
     $aData["fr_town"] = $C["validate_town"];
 
     $sDefaultPhone = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_PHONE, "phone", $aUserData);
-    $aData["fv_phone"] = getFormField('phone', $sDefaultPhone, true);
+    $aData["fv_phone"] = Tools::getFormField('phone', $sDefaultPhone, true);
     $aData["fr_phone"] = $C["validate_phone"];
 
     $sDefaultCellphone = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_CELLPHONE, "cellphone", $aUserData);
-    $aData["fv_cellphone"] = getFormField('cellphone', $sDefaultCellphone, true);
+    $aData["fv_cellphone"] = Tools::getFormField('cellphone', $sDefaultCellphone, true);
     $aData["fr_cellphone"] = $C["validate_cellphone"];
 
     $sDefaultFax = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_FAX, "fax", $aUserData);
-    $aData["fv_fax"] = getFormField('fax', $sDefaultFax, true);
+    $aData["fv_fax"] = Tools::getFormField('fax', $sDefaultFax, true);
     $aData["fr_fax"] = $C["validate_fax"];
 
     $sDefaultCountryByConfig = getDefaultCountryByConfig($C, $sLang);
     $sDefaultCountry = getCustomerFormDefaultValue(DB_CUSTOMERFIELD_COUNTRY, "country", $aUserData);
-    $aData["fv_country"] = getFormField('country', ($sDefaultCountry ? $sDefaultCountry : $sDefaultCountryByConfig), true);
+    $aData["fv_country"] = Tools::getFormField('country', ($sDefaultCountry ? $sDefaultCountry : $sDefaultCountryByConfig), true);
     $aData["fr_country"] = $C["validate_country"];
 
     if ($sPurpose == 'admin') {
         $aData["fv_custgroups"] = $C["customer_groups"];
-        $aData["fv_custgroup_selected"] = getFormField('custgroup', getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData), true);
+        $aData["fv_custgroup_selected"] = Tools::getFormField('custgroup', getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData), true);
     } elseif ($sPurpose == 'shopadmin') {
         if (isset($C["customer_groups"][getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData)])) {
             $aData["fv_custgroup"] = $C["customer_groups"][getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData)];
@@ -186,8 +186,8 @@ function buildCustomerForm($sPurpose = 'none', $sErr = '', $aUserData = false)
     }
 
     if ($sPurpose == 'admin' || $sPurpose == 'register' || $sPurpose == 'editprofile') {
-        $aData["fv_pwd"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : getFormField('pwd', ''));
-        $aData["fv_pwdc"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : getFormField('pwdc', ''));
+        $aData["fv_pwd"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : Tools::getFormField('pwd', ''));
+        $aData["fv_pwdc"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : Tools::getFormField('pwdc', ''));
     }
 
     if ($sPurpose == 'shoppingcart') {
@@ -195,19 +195,19 @@ function buildCustomerForm($sPurpose = 'none', $sErr = '', $aUserData = false)
         if (isset($_SESSION["formsave_addrform"]["remarks"])) {
             $sRememberedRemarks = $_SESSION["formsave_addrform"]["remarks"];
         }
-        $aData["fv_remarks"] = getFormField('remarks', $sRememberedRemarks, true);
+        $aData["fv_remarks"] = Tools::getFormField('remarks', $sRememberedRemarks, true);
     }
 
     if ($sPurpose == 'shoppingcart' || $sPurpose == 'register') {
         if (!getUserData()) {
-            $aData["fv_tos"] = getCheckbox('tos', 'y');
-            $aData["fv_cancellationdisclaimer"] = getCheckbox('cancellationdisclaimer', 'y');
+            $aData["fv_tos"] = Tools::getCheckbox('tos', 'y');
+            $aData["fv_cancellationdisclaimer"] = Tools::getCheckbox('cancellationdisclaimer', 'y');
         }
     }
 
     if ($sPurpose == 'shoppingcart') {
         $aData["fv_paymentmethods"] = $C["paymentmethods"];
-        $aData["fv_paymentmethod"] = getFormField('paymentmethod', '');
+        $aData["fv_paymentmethod"] = Tools::getFormField('paymentmethod', '');
     }
 
     if ($sPurpose == 'admin') {

@@ -89,7 +89,7 @@ function handleShopAdmin($CSA)
             }
         } else $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Bestell-Datensätze gefunden.<br>';
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-        $iId = cED($_GET["id"]);
+        $iId = Tools::cED($_GET["id"]);
         $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id";
 
         $hResult = $DB->prepare($sQ);

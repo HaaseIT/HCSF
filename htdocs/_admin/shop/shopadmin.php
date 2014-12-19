@@ -75,7 +75,7 @@ if (isset($_POST["change"])) {
         'o_id' => $_POST["id"],
     );
 
-    $sQ = buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
+    $sQ = Tools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
     //echo debug($sQ, true);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -85,13 +85,13 @@ if (isset($_POST["change"])) {
 }
 
 $aPData = [
-    'searchform_type' => getFormfield('type', 'openinwork'),
-    'searchform_fromday' => getFormfield('fromday', '01'),
-    'searchform_frommonth' => getFormfield('frommonth', '01'),
-    'searchform_fromyear' => getFormfield('fromyear', '2014'),
-    'searchform_today' => getFormfield('today', date("d")),
-    'searchform_tomonth' => getFormfield('tomonth', date("m")),
-    'searchform_toyear' => getFormfield('toyear', date("Y")),
+    'searchform_type' => Tools::getFormfield('type', 'openinwork'),
+    'searchform_fromday' => Tools::getFormfield('fromday', '01'),
+    'searchform_frommonth' => Tools::getFormfield('frommonth', '01'),
+    'searchform_fromyear' => Tools::getFormfield('fromyear', '2014'),
+    'searchform_today' => Tools::getFormfield('today', date("d")),
+    'searchform_tomonth' => Tools::getFormfield('tomonth', date("m")),
+    'searchform_toyear' => Tools::getFormfield('toyear', date("Y")),
 ];
 
 $aShopadmin = handleShopAdmin($CSA);
