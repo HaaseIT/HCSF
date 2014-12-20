@@ -45,7 +45,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
         );
         //debug($aData);
 
-        $sQ = Tools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
+        $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
         //echo debug($sQ, false);
         $DB->exec($sQ);
 
@@ -86,7 +86,7 @@ if (isset($_REQUEST["action"])) {
             if (strlen($_POST["itemno"]) < 4) $sErr .= 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br>';
             else {
                 $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = '";
-                $sQ .= Tools::cED(trim($_POST["itemno"]))."'";
+                $sQ .= \HaaseIT\Tools::cED(trim($_POST["itemno"]))."'";
                 $hResult = $DB->query($sQ);
                 $iRows = $hResult->rowCount();
                 if ($iRows > 0) {
@@ -95,7 +95,7 @@ if (isset($_REQUEST["action"])) {
                     $aData = array(
                         DB_ITEMFIELD_NUMBER => trim($_POST["itemno"]),
                     );
-                    $sQ = Tools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
+                    $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
                     //debug($sQ);
                     $hResult = $DB->exec($sQ);
                     $iInsertID = $DB->lastInsertId();

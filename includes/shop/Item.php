@@ -1,19 +1,19 @@
 <?php
 
+namespace HaaseIT\Shop;
+
 class Item
 {
     private $C;
     //private $P;
     private $DB;
-    private $FORM;
     private $sLang;
 
     // Initialize Class
-    function Item($C, $DB, $FORM, $sLang)
+    function __construct($C, $DB, $sLang)
     {
         $this->C = $C;
         $this->DB = $DB;
-        $this->FORM = $FORM;
         $this->sLang = $sLang;
     }
 
@@ -29,15 +29,15 @@ class Item
         $sQ .= " ORDER BY ".(($sOrderby == '') ? DB_ITEMFIELD_ORDER.", ".DB_ITEMFIELD_NUMBER : $sOrderby)." ".$this->C["items_orderdirection_default"];
         
         $hResult = $this->DB->prepare($sQ);
-        $hResult->bindValue(':lang', $this->sLang, PDO::PARAM_STR);
+        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         if ($mItemno != '') {
             if (!is_array($mItemno)) {
-                $hResult->bindValue(':itemno', $mItemno, PDO::PARAM_STR);
+                $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
             }
         }
         elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
-            $hResult->bindValue(':searchtext', $_REQUEST["searchtext"], PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild', '%'.$_REQUEST["searchtext"].'%', PDO::PARAM_STR);
+            $hResult->bindValue(':searchtext', $_REQUEST["searchtext"], \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
         //debug($hResult->errorinfo());
@@ -50,12 +50,12 @@ class Item
         $sQ = " WHERE ";
         if ($mItemno != '') {
             if (is_array($mItemno)) {
-                $sItemno = "'".implode("','", Tools::cED($mItemno))."'";
+                $sItemno = "'".implode("','", \HaaseIT\Tools::cED($mItemno))."'";
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." IN (".$sItemno.")";
             } else {
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." = :itemno";
             }
-        } elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
+        } elseif (isset($_REQUEST["searchtext"]) && \strlen($_REQUEST["searchtext"]) > 2) {
             if (isset($_REQUEST["artnoexact"])) $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." = :searchtext";
             else {
                 $sQ .= "(";
@@ -67,13 +67,13 @@ class Item
                 $sQ .= ")";
             }
         } else {
-            if (is_array($mItemIndex)) {
+            if (\is_array($mItemIndex)) {
                 $sQ .= "(";
-                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".Tools::cED($sAIndex)."%' OR ";
-                $sQ = Tools::cutStringend($sQ, 4);
+                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\HaaseIT\Tools::cED($sAIndex)."%' OR ";
+                $sQ = \HaaseIT\Tools::cutStringend($sQ, 4);
                 $sQ .= ")";
             } else {
-                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".Tools::cED($mItemIndex)."%'";
+                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\HaaseIT\Tools::cED($mItemIndex)."%'";
             }
         }
         $sQ .= " AND ".DB_ITEMFIELD_INDEX;
@@ -89,18 +89,18 @@ class Item
 
         while ($aRow = $hResult->fetch()) {
             if (isset($aRow[DB_ITEMFIELD_DATA])) {
-                $aRow[DB_ITEMFIELD_DATA] = json_decode($aRow[DB_ITEMFIELD_DATA], true);
+                $aRow[DB_ITEMFIELD_DATA] = \json_decode($aRow[DB_ITEMFIELD_DATA], true);
             }
             $aRow["pricedata"] = $this->calcPrice($aRow);
             $aAssembly["item"][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
-            if (trim($aRow[DB_ITEMFIELD_GROUP]) != 0) {
+            if (\trim($aRow[DB_ITEMFIELD_GROUP]) != 0) {
                 $aAssembly["groups"][$aRow[DB_ITEMFIELD_GROUP]][] = $aRow[DB_ITEMFIELD_NUMBER];
             }
         }
 
         if (isset($aAssembly)) {
-            $aAssembly["totalitems"] = count($aAssembly["item"]);
-            $aAssembly["itemkeys"] = array_keys($aAssembly["item"]);
+            $aAssembly["totalitems"] = \count($aAssembly["item"]);
+            $aAssembly["itemkeys"] = \array_keys($aAssembly["item"]);
             $aAssembly["firstitem"] = $aAssembly["itemkeys"][0];
             $aAssembly["lastitem"] = $aAssembly["itemkeys"][$aAssembly["totalitems"] - 1];
 
@@ -120,8 +120,8 @@ class Item
         //debug($sQ);
 
         $hResult = $this->DB->prepare($sQ);
-        $hResult->bindValue(':lang', $this->sLang, PDO::PARAM_STR);
-        $hResult->bindValue(':group', $sGroup, PDO::PARAM_INT);
+        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
+        $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();
         // echo debug($DB->error(), true);
 
@@ -136,19 +136,19 @@ class Item
         $sRG = $aData[DB_ITEMFIELD_RG];
 
         //if ($iMwstart == 0) return false;
-        if(trim($fPrice) != '' && trim($fPrice) != '0') {
+        if(\trim($fPrice) != '' && \trim($fPrice) != '0') {
             if (isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"]) && isset($aData["itm_data"]["sale"]["price"])) {
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
-                    $aPrice["brutto_sale"] =  round($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$iMwstart] / 100, 2) + $aData["itm_data"]["sale"]["price"];
+                    $aPrice["brutto_sale"] =  \round($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$iMwstart] / 100, 2) + $aData["itm_data"]["sale"]["price"];
                 }
             }
             if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][getUserData('cust_group')])) {
-                $aPrice["netto_rebated"] = round($fPrice * (100 - $this->C["rebate_groups"][$sRG][getUserData('cust_group')]) / 100, 2);
-                $aPrice["brutto_rebated"] = round($aPrice["netto_rebated"] * $this->C["vat"][$iMwstart] / 100, 2) + $aPrice["netto_rebated"];;
+                $aPrice["netto_rebated"] = \round($fPrice * (100 - $this->C["rebate_groups"][$sRG][\getUserData('cust_group')]) / 100, 2);
+                $aPrice["brutto_rebated"] = \round($aPrice["netto_rebated"] * $this->C["vat"][$iMwstart] / 100, 2) + $aPrice["netto_rebated"];;
             }
-            $fBrutto = round($fPrice * $this->C["vat"][$iMwstart] / 100, 2) + $fPrice;
+            $fBrutto = \round($fPrice * $this->C["vat"][$iMwstart] / 100, 2) + $fPrice;
             $aPrice["netto_list"] = $fPrice;
             $aPrice["brutto_list"] = $fBrutto;
         } else return false;

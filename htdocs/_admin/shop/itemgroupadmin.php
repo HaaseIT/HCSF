@@ -58,7 +58,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             DB_ITEMGROUPFIELD_LANGUAGE => $sLang,
         );
         //debug($aData);
-        $sQ = Tools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_TEXT);
+        $sQ = \HaaseIT\Tools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_TEXT);
         //echo debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -106,7 +106,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
                 DB_ITEMGROUPFIELD_NUMBER => $_REQUEST["no"],
                 DB_ITEMGROUPFIELD_IMG => $_REQUEST["img"],
             );
-            $sQ = Tools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
+            $sQ = \HaaseIT\Tools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
             //debug($sQ);
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);

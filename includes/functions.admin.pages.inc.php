@@ -6,10 +6,10 @@ function admin_showPageAddForm($sErr = '') {
     if ($sErr != '') $sH .= $sErr.'<br>';
     $sH .= 'Seitenschlüssel:<br>';
     $FORM->sFormmethod = 'POST';
-    $FORM->sFormaction = Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
+    $FORM->sFormaction = \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
     $sH .= $FORM->openForm('addpage');
     $sH .= $FORM->makeHidden('addpage', 'do');
-    $sH .= $FORM->makeText('pagekey', Tools::getFormfield('pagekey', ''), 400);
+    $sH .= $FORM->makeText('pagekey', \HaaseIT\Tools::getFormfield('pagekey', ''), 400);
     $sH .= ' ';
     $sH .= $FORM->makeSubmit();
     $sH .= $FORM->closeForm();
@@ -54,7 +54,7 @@ function updatePage($DB, $C, $sLang) {
             'cb_id' => $_REQUEST["page_id"],
         );
 
-        $sQ = Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
+        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
@@ -67,7 +67,7 @@ function updatePage($DB, $C, $sLang) {
             "cl_keywords" => $_REQUEST["page_keywords"],
         );
 
-        $sQ = Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_LANG);
+        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_LANG);
         $sQ .= "WHERE ".DB_CONTENTTABLE_LANG_PARENTPKEY." = :".DB_CONTENTTABLE_LANG_PARENTPKEY;
         $sQ .= " AND cl_lang = :cl_lang AND ".DB_CONTENTTABLE_LANG_PKEY." = :".DB_CONTENTTABLE_LANG_PKEY;
         $hResult = $DB->prepare($sQ);

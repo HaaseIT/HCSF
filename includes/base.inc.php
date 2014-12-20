@@ -54,7 +54,7 @@ if (isset($C["debug"]) && $C["debug"]) {
     $twig->addExtension(new Twig_Extension_Debug());
 }
 $twig->addFunction('T', new Twig_Function_Function('T'));
-$twig->addFunction('gFF', new Twig_Function_Function('Tools::getFormField'));
+$twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
 
 // ----------------------------------------------------------------------------
 // Begin language detection
@@ -85,10 +85,10 @@ if (!isset($sLang)) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
-$DB = new PDO($C["db_type"].':host='.$C["db_server"].';dbname='.$C["db_name"], $C["db_user"], $C["db_password"], array( PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', ));
-$DB->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-$DB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-$DB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
+$DB = new \PDO($C["db_type"].':host='.$C["db_server"].';dbname='.$C["db_name"], $C["db_user"], $C["db_password"], array( \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', ));
+$DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+$DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+$DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
 
 // ----------------------------------------------------------------------------
 // Begin routing
@@ -142,11 +142,11 @@ include_once('config.navi.inc.php');
 include_once('customer/config.customer.inc.php');
 include_once('customer/functions.customer.inc.php');
 include_once('shop/config.shop.inc.php');
-include_once('shop/class.item.inc.php');
+include_once('shop/Item.php');
 include_once('shop/functions.shoppingcart.inc.php');
 include_once('class.form.inc.php');
 
 $FORM = new Form();
 $FORM->bUsestyle = true;
 
-$oItem = new Item($C, $DB, $FORM, $sLang);
+$oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);

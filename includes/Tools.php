@@ -1,5 +1,7 @@
 <?php
 
+namespace HaaseIT;
+
 class Tools {
 
     public static function generateRandomString($length = 10) {

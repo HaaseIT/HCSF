@@ -13,7 +13,7 @@ function admin_showAddTextcatForm($sErr = '') {
     $sH .= $FORM->openForm('addtext');
     $sH .= $FORM->makeHidden('add', 'do');
     $sH .= 'Neuen Textschlüssel hinzufügen<br>';
-    $sH .= $FORM->makeText('key', Tools::getFormfield('key', ''), 350, 64);
+    $sH .= $FORM->makeText('key', \HaaseIT\Tools::getFormfield('key', ''), 350, 64);
     $sH .= $FORM->makeSubmit('submit', 'Submit');
     $sH .= $FORM->closeForm();
 
@@ -60,7 +60,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'tcl_tcid' => $_GET["id"],
             'tcl_lang' => $sLang
         );
-        $sQ = Tools::buildPSInsertQuery($aData, 'textcat_lang');
+        $sQ = \HaaseIT\Tools::buildPSInsertQuery($aData, 'textcat_lang');
         //echo $sQ;
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -71,7 +71,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'tcl_text' => $_POST["text"],
             'tcl_id' => $_POST["lid"],
         );
-        $sQ = Tools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
+        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
         //debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -112,7 +112,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         }
         if ($sErr == '') {
             $aData = array('tc_key' => trim($_POST["key"]),);
-            $sQ = Tools::buildInsertQuery($aData, 'textcat_base');
+            $sQ = \HaaseIT\Tools::buildInsertQuery($aData, 'textcat_base');
             //debug($sQ);
             $DB->exec($sQ);
             $iId = $DB->lastInsertId();

@@ -17,7 +17,7 @@ $P = array(
 if (isset($_SESSION["user"])) {
     $sH = T("denied_default");
 } else {
-    if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !Tools::validateEmail($_GET["email"])) {
+    if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\HaaseIT\Tools::validateEmail($_GET["email"])) {
         $sH = T("denied_default");
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";

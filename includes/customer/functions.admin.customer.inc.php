@@ -52,7 +52,7 @@ function handleUserAdmin($CUA) {
             $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>';
         }
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-        $iId = Tools::cED($_GET["id"]);
+        $iId = \HaaseIT\Tools::cED($_GET["id"]);
         $aErr = array();
         $sInfo = '';
         if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
@@ -107,7 +107,7 @@ function handleUserAdmin($CUA) {
                         $sInfo .= 'Das Passwort wurde geändert.<br>';
                     }
                     //debug($aData);
-                    $sQ = Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                     //debug($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);

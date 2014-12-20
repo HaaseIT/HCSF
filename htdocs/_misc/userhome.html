@@ -64,7 +64,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
                 $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
 
                 if (count($aData) > 1) {
-                    $sQ = Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                     //debug($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) {

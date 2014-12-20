@@ -160,7 +160,7 @@ function getShippingcost($C) {
     if (isset($_SESSION["user"]["cust_country"])) {
         $sCountry = $_SESSION["user"]["cust_country"];
     } elseif (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes' && isset($_POST["country"])) {
-        $sCountry = trim(Tools::getFormfield("country"));
+        $sCountry = trim(\HaaseIT\Tools::getFormfield("country"));
     } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
         $sCountry = $_SESSION["formsave_addrform"]["country"];
     } else {

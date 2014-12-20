@@ -6,10 +6,10 @@ function admin_showItemAddForm($sErr = '') {
     if ($sErr != '') $sH .= $sErr.'<br>';
     $sH .= 'Artikelnummer:<br>';
     $FORM->sFormmethod = 'POST';
-    $FORM->sFormaction = Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
+    $FORM->sFormaction = \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
     $sH .= $FORM->openForm('additem');
     $sH .= $FORM->makeHidden('additem', 'do');
-    $sH .= $FORM->makeText('itemno', Tools::getFormfield('itemno', ''));
+    $sH .= $FORM->makeText('itemno', \HaaseIT\Tools::getFormfield('itemno', ''));
     $sH .= ' ';
     $sH .= $FORM->makeSubmit();
     $sH .= $FORM->closeForm();
@@ -67,7 +67,7 @@ function admin_showItemlistsearchform() { // no query
 function admin_getItemlist() { // input filtered
     global $DB, $C, $sLang;
 
-    $sSearchstring = Tools::cED($_REQUEST["searchstring"]);
+    $sSearchstring = \HaaseIT\Tools::cED($_REQUEST["searchstring"]);
     $sSearchstring = str_replace('*', '%', $sSearchstring);
 
     $sQ = "SELECT ".DB_ITEMFIELD_NUMBER.", ".DB_ITEMFIELD_NAME;
@@ -129,7 +129,7 @@ function admin_getItem($sItemno = '') { // input filtered
     if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = $_REQUEST["itemno"];
     elseif ($sItemno == '') return false;
 
-    $sItemno = Tools::cED($sItemno);
+    $sItemno = \HaaseIT\Tools::cED($sItemno);
 
     $sQ = "SELECT * FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = :itemno";
     $hResult = $DB->prepare($sQ);
@@ -161,7 +161,7 @@ function admin_showItem($aItemdata) { // no query
     $sH = '';
     //debug($aItemdata);
 
-    $FORM->sFormaction = Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"], array('action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER]));
+    $FORM->sFormaction = \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"], array('action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER]));
 
     $sH .= $FORM->openForm('itemadmin');
     $sH .= $FORM->makeHidden('id', $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY]);
@@ -249,7 +249,7 @@ function admin_updateItem() { // query built by funtion
     );
     if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = $_REQUEST["vatid"];
     else $aData[DB_ITEMFIELD_VAT] = '0';
-    $sQ = Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
+    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
     //echo $sQ."\n";
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -261,7 +261,7 @@ function admin_updateItem() { // query built by funtion
             DB_ITEMFIELD_NAME_OVERRIDE => $_REQUEST["name_override"],
             DB_ITEMTABLE_TEXT_PKEY => $_REQUEST["textid"],
         );
-        $sQ = Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
+        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
         //echo $sQ."\n";
         //debug($DB->error());
         $hResult = $DB->prepare($sQ);
