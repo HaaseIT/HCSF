@@ -114,6 +114,6 @@ $sH .= $aShopadmin["html"];
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang, $FORM);
+$aP = generatePage($C, $P, $sLang);
 
 echo $twig->render($C["template_base"], $aP);

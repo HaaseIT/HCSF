@@ -135,6 +135,6 @@ $P = array(
     ),
 );
 
-$aP = generatePage($C, $P, $sLang, $FORM);
+$aP = generatePage($C, $P, $sLang);
 
 echo $twig->render($C["template_base"], $aP);

@@ -23,7 +23,7 @@ $P = array(
 
 $P["base"]["cb_customdata"] = $aPData;
 
-$aP = generatePage($C, $P, $sLang, $FORM);
+$aP = generatePage($C, $P, $sLang);
 $aP["debug"] = true;
 
 echo $twig->render($C["template_base"], $aP);
