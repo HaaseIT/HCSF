@@ -95,9 +95,7 @@ if (!isset($_REQUEST["action"])) {
             if ($iRows > 0) {
                 $sErr .= 'Dieser Seitenschlüssel ist bereits vergeben.<br>';
             } else {
-                $aData = array(
-                    DB_CONTENTFIELD_BASE_KEY => trim($_POST["pagekey"]),
-                );
+                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim($_POST["pagekey"]),);
                 $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
                 //debug($sQ);
                 $hResult = $DB->exec($sQ);

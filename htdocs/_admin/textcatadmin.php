@@ -2,23 +2,19 @@
 
 include_once('base.inc.php');
 
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => 'admin',
+        'cb_customcontenttemplate' => 'textcatadmin',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+    ),
+);
+
 $sH = '';
-
-function admin_showAddTextcatForm($sErr = '') {
-    global $FORM;
-
-    $sH = '';
-    if (trim($sErr) != '') $sH .= $sErr.'<br>';
-    $FORM->sFormaction = $_SERVER["PHP_SELF"].'?action=add';
-    $sH .= $FORM->openForm('addtext');
-    $sH .= $FORM->makeHidden('add', 'do');
-    $sH .= 'Neuen Textschlüssel hinzufügen<br>';
-    $sH .= $FORM->makeText('key', \HaaseIT\Tools::getFormfield('key', ''), 350, 64);
-    $sH .= $FORM->makeSubmit('submit', 'Submit');
-    $sH .= $FORM->closeForm();
-
-    return $sH;
-}
 
 if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang ORDER BY tc_key";
@@ -47,9 +43,12 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
 
     $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
 } elseif ($_GET["action"] == 'edit') {
+    $P["base"]["cb_customdata"]["edit"] = true;
     //debug($_REQUEST);
     $sQ = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
     //echo $sQ;
+
+    // Check if this textkey already has a child in the language table, if not, insert one
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':id', $_GET["id"]);
     $hResult->bindValue(':lang', $sLang);
@@ -65,6 +64,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
     }
+    // if post:edit is set, update
     if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
         $aData = array(
             'tcl_text' => $_POST["text"],
@@ -75,7 +75,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
-        $sH .= 'Der Wert wurde aktualisiert ('.showClienttime().').';
+        $P["base"]["cb_customdata"]["updated"] = true;
     }
 
     $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && ";
@@ -86,53 +86,42 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $hResult->execute();
     $aData = $hResult->fetch();
     //debug($aData);
-    $FORM->sFormaction = $_SERVER["PHP_SELF"].'?action=edit&amp;id='.$_REQUEST["id"];
-    $sH .= $FORM->openForm('edittextcat');
-    $sH .= $FORM->makeHidden('edit', 'do');
-    $sH .= $FORM->makeHidden('lid', $aData["tcl_id"]);
-    $sH .= $FORM->makeText('key', $aData["tc_key"], 350, 0, true);
-    $sH .= $FORM->makeText('lang', $sLang, 30, 0, true);
-    $sH .= '<br>';
-    $sH .= $FORM->makeTextarea('text', $aData["tcl_text"], 578, 150);
-    $sH .= '<br>';
-    $sH .= $FORM->makeSubmit('submit', 'Submit', 578, 's');
-    $sH .= $FORM->closeForm();
+    $P["base"]["cb_customdata"]["editform"] = array(
+        'id' => $_REQUEST["id"],
+        'lid' => $aData["tcl_id"],
+        'key' => $aData["tc_key"],
+        'lang' => $sLang,
+        'text' => $aData["tcl_text"],
+    );
 } elseif ($_GET["action"] == 'add') {
-    $sErr = '';
+    $P["base"]["cb_customdata"]["add"] = true;
+    $aErr = array();
     if (isset($_POST["add"]) && $_POST["add"] == 'do') {
-        if (strlen($_POST["key"]) < 3) $sErr = 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>';
-        if ($sErr == '') {
+        if (strlen($_POST["key"]) < 3) $aErr["keytooshort"] = true;
+        if (count($aErr) == 0) {
             $sQ = "SELECT tc_key FROM textcat_base WHERE tc_key = :key";
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':key', $_POST["key"]);
             $hResult->execute();
             $iRows = $hResult->rowCount();
-            if ($iRows > 0) $sErr = 'Dieser Textschlüssel ist bereits angelegt.<br>';
+            if ($iRows > 0) $aErr["keyalreadyexists"] = true;
         }
-        if ($sErr == '') {
+        if (count($aErr) == 0) {
             $aData = array('tc_key' => trim($_POST["key"]),);
             $sQ = \HaaseIT\Tools::buildInsertQuery($aData, 'textcat_base');
             //debug($sQ);
             $DB->exec($sQ);
             $iId = $DB->lastInsertId();
-            $sErr = 'Der Schlüssel "'.$_POST["key"].'" wurde hinzugefügt.<br><a href="'.$_SERVER["PHP_SELF"].'?action=edit&id='.$iId.'">Klicken Sie hier um ihn zu bearbeiten</a><br>';
+            $P["base"]["cb_customdata"]["addform"] = array(
+                'key' => $_POST["key"],
+                'id' => $iId,
+            );
         }
+        $P["base"]["cb_customdata"]["err"] = $aErr;
     }
-
-    $sH .= admin_showAddTextcatForm($sErr);
 }
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => $sH,
-    ),
-);
+$P["lang"]["cl_html"] = $sH;
 
 $aP = generatePage($C, $P, $sLang);
 

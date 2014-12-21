@@ -1,0 +1,31 @@
+{% if customdata.updated %}
+    Der Wert wurde aktualisiert ({{ macro.showClienttime() }}).
+{% endif %}
+{% if customdata.edit %}
+    <form action="/_admin/textcatadmin.php?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat">
+        <input type="hidden" name="edit" value="do">
+        <input type="hidden" name="lid" value="{{ customdata.editform.lid }}">
+        <input type="text" name="key" value="{{ customdata.editform.key }}" style="width:350px;" readonly>
+        <input type="text" name="lang" value="{{ customdata.editform.lang }}" style="width:30px;" readonly>
+        <br>
+        <textarea cols="8" rows="5" name="text" style="width:578px; height:150px;">{{ customdata.editform.text }}</textarea>
+        <br>
+        <input type="submit" value="Submit" style="width:578px;" accesskey="s">
+    </form>
+{% endif %}
+{% if customdata.add %}
+    {{ customdata.err.keytooshort ? 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>' : '' }}
+    {{ customdata.err.keyalreadyexists ? 'Dieser Textschlüssel ist bereits angelegt.<br>' : '' }}
+    {% if customdata.addform.key is defined %}
+        Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br>
+        <a href="/_admin/textcatadmin.php?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
+    {% endif %}
+    <br>
+    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext">
+    <input type="hidden" name="add" value="do">
+    Neuen Textschlüssel hinzufügen<br>
+    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" style="width:350px;">
+    <input type="submit" name="submit" value="Submit" class="formsubmit">
+    </form>
+{% endif %}
+{{ content }}
