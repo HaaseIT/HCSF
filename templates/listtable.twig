@@ -8,8 +8,7 @@
             if (b == -1) {
                 a.className += c;
             } else {
-                var reg = new RegExp('(\\b)' + c + '(\\b)');
-                a.className = a.className.replace(reg, "");
+                a.className = a.className.replace(c, "");
             }
         }
     </script>
