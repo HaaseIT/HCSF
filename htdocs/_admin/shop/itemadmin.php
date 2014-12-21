@@ -64,7 +64,7 @@ if (isset($_REQUEST["action"])) {
                 $aArtikeldaten = admin_getItem($aArtikelliste["data"][0][DB_ITEMFIELD_NUMBER]);
                 $sH .= admin_showItem($aArtikeldaten);
             } else {
-                $sH .= admin_showItemlist($aArtikelliste);
+                $sH .= admin_showItemlist($aArtikelliste, $twig);
             }
         } else $sH .= 'No matches found.';
         //$sH .= debug($aArtikelliste);

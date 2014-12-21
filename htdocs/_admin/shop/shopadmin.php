@@ -94,7 +94,7 @@ $aPData = [
     'searchform_toyear' => \HaaseIT\Tools::getFormfield('toyear', date("Y")),
 ];
 
-$aShopadmin = handleShopAdmin($CSA);
+$aShopadmin = handleShopAdmin($CSA, $twig);
 
 $P["base"]["cb_customdata"] = array_merge($aPData, $aShopadmin);
 

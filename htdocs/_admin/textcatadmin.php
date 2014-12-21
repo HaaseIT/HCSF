@@ -45,8 +45,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         ),
     );
 
-    $sH .= '<div style="text-align:right;width:100%;"><a href="?action=add">'.T("misc_add_new_value").'</a></div>';
-    $sH .= makeListtable($aListSetting, $aData, true);
+    $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
 } elseif ($_GET["action"] == 'edit') {
     //debug($_REQUEST);
     $sQ = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";

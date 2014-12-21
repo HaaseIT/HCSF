@@ -117,7 +117,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
     } else $sH .= admin_showGroupForm('', 'add');
 } else {
     $sH .= '<a href="'.$_SERVER["PHP_SELF"].'?action=addgroup">Click here to add a new group</a><br><br>';
-    $sH .= admin_showItemgroups(admin_getItemgroups());
+    $sH .= admin_showItemgroups(admin_getItemgroups(), $twig);
 }
 
 $P = array(

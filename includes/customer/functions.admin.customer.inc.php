@@ -20,7 +20,7 @@ $CUA = array(
    ),
 );
 
-function handleUserAdmin($CUA) {
+function handleUserAdmin($CUA, $twig) {
     global $DB, $C;
 
     $sType = 'all';
@@ -47,7 +47,7 @@ function handleUserAdmin($CUA) {
         if ($hResult->rowCount() != 0) {
             $aData = $hResult->fetchAll();
             //debug($aData);
-            $sH .= makeListtable($CUA, $aData);
+            $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
         } else {
             $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>';
         }

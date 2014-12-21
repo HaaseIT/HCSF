@@ -87,7 +87,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             ),
         );
 
-        $sH .= showMyOrders($COList);
+        $sH .= showMyOrders($COList, $twig);
     }
 
 } else {

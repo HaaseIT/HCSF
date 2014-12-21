@@ -1,0 +1,55 @@
+{% if C|length > 0 %}
+    <div style="text-align:right;width:100%;"><a href="?action=add">{{ T("misc_add_new_value") }}</a></div>
+    <script type="text/javascript">
+        function toggleHighlight(sRowID) {
+            var a = document.getElementById(sRowID);
+            var b = a.className.search(" listtable-marked")
+            var c = " listtable-marked";
+            if (b == -1) {
+                a.className += c;
+            } else {
+                var reg = new RegExp('(\\b)' + c + '(\\b)');
+                a.className = a.className.replace(reg, "");
+            }
+        }
+    </script>
+    <table class="listtable">
+        <thead>
+        <tr>
+            {% for value in C %}
+                <th class="listtable-head" style="width:{{ value.width }}px;"{{ value.style-head != '' ? ' style="'~value.style-head~'"' : '' }}>
+                    {{ value.linked != true ? value.title : '' }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% set j = 0 %}
+        {% for row in rows %}
+            <tr id="listtable_{{ counter_listtable }}_tr_{{ j }}"
+                onClick="toggleHighlight('listtable_{{ counter_listtable }}_tr_{{ j }}')">
+                {% for value in C %}
+                    <td class="listtable-data" valign="top"{{ value.style-data != '' ? ' style="'~value.style-data~'"' : '' }}>
+                        {% if value.linked %}
+                            <a href="{{ value.ltarget }}?{{ value.lkeyname }}={{ row[value.key]
+                            }}{% if value.lgetvars|length > 0 %}{% for lkey, lvalue in value.lgetvars %}&amp;{{ lkey
+                             }}={{ lvalue }}{% endfor %}{% endif %}" {{ value.levents != '' ? value.levents : '' }}>
+                                {{ value.title }}</a>
+                        {% else %}
+                            {% if value.escapehtmlspecialchars %}
+                                {% autoescape %}{{ row[value.key] }}{% endautoescape %}
+                            {% else %}
+                                {{ row[value.key] }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% set j = j + 1 %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <span style="background:red;color:white;font-weight:bold;padding:2px;">makeListtable() -> The configuration array is empty (first argument of the function call).</span>
+{% endif %}
+

@@ -103,7 +103,7 @@ function admin_getItemlist() { // input filtered
     } else return false;
 }
 
-function admin_showItemlist($aItemlist) { // no query
+function admin_showItemlist($aItemlist, $twig) { // no query
     global $C;
 
     $aList = array(
@@ -118,7 +118,7 @@ function admin_showItemlist($aItemlist) { // no query
         );
     }
     $sH = 'Displaying '.$aItemlist["numrows"].' results:<br><br>';
-    $sH .= makeListTable($aList, $aData);
+    $sH .= \HaaseIT\Tools::makeListTable($aList, $aData, $twig);
 
     return $sH;
 }

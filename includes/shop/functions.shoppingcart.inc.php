@@ -17,7 +17,7 @@ function showOrderStatusText($sStatusShort)
     return $sStatus;
 }
 
-function showMyOrders($COList)
+function showMyOrders($COList, $twig)
 {
     global $C, $DB;
 
@@ -53,7 +53,7 @@ function showMyOrders($COList)
                 'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
            );
         }	
-        $sH .= makeListtable($COList, $aData);
+        $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $twig);
         //$sH .= debug($aData, true);
     } else $sH .= T("myorders_no_orders_to_display");
 

@@ -122,7 +122,7 @@ function admin_getItemgroups($iGID = '') { // input filtered
     return $aGroups;
 }
 
-function admin_showItemgroups($aGroups) { // no query
+function admin_showItemgroups($aGroups, $twig) { // no query
     global $C;
     //debug($aGroups);
     $aList = array(
@@ -142,7 +142,7 @@ function admin_showItemgroups($aGroups) { // no query
                 //	'children' => $iChildren,
             );
         }
-        $sH = makeListTable($aList, $aData);
+        $sH = \HaaseIT\Tools::makeListTable($aList, $aData, $twig);
     } else {
         $sH = 'Zur Zeit sind keine Gruppen angelegt.';
     }

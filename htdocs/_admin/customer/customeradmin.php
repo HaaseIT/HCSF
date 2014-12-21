@@ -6,7 +6,7 @@ include_once('base.inc.php');
 include_once('customer/functions.admin.customer.inc.php');
 $sH = '';
 
-$aPData = handleUserAdmin($CUA);
+$aPData = handleUserAdmin($CUA, $twig);
 
 $P = array(
     'base' => array(

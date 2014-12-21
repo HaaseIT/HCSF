@@ -1,6 +1,6 @@
 <?php
 
-function handleShopAdmin($CSA)
+function handleShopAdmin($CSA, $twig)
 {
     global $DB, $C;
 
@@ -80,7 +80,7 @@ function handleShopAdmin($CSA)
                 $i++;
             }
             //debug($aData);
-            $sH .= makeListtable($CSA["list_orders"], $aData, 1);
+            $sH .= \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
 
             if ($i > 1) {
                 $sH .= '<br>'.$i.' Bestellung(en) angezeigt'.(($k != 0) ? ', davon '.$k.' stornierte (diese werden bei den Wertberechnungen nicht ber&uuml;cksichtigt)' : '').'.';
