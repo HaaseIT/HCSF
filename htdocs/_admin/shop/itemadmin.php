@@ -33,10 +33,21 @@ include_once('base.inc.php');
 include_once('shop/functions.admin.items.inc.php');
 include_once('shop/functions.admin.itemgroups.inc.php');
 
-$sH = '';
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => 'admin',
+        'cb_customcontenttemplate' => 'shop/itemadmin',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-    $aItemdata = admin_getItem();
+    $aItemdata = admin_getItem('', $DB, $sLang);
 
     if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
         $aData = array(
@@ -55,46 +66,41 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     //echo debug($aItemdata, false);
 }
 //debug($_GET);
-$sH .= admin_showItemlistsearchform();
+$P["base"]["cb_customdata"]["searchform"] = admin_prepareItemlistsearchform();
 
 if (isset($_REQUEST["action"])) {
     if ($_REQUEST["action"] == 'search') {
-        if ($aArtikelliste = admin_getItemlist()) {
-            if (count($aArtikelliste["data"]) == 1) {
-                $aArtikeldaten = admin_getItem($aArtikelliste["data"][0][DB_ITEMFIELD_NUMBER]);
-                $sH .= admin_showItem($aArtikeldaten);
+        $P["base"]["cb_customdata"]["searchresult"] = true;
+        if ($aItemlist = admin_getItemlist($DB, $sLang)) {
+            if (count($aItemlist["data"]) == 1) {
+                $aItemdata = admin_getItem($aItemlist["data"][0][DB_ITEMFIELD_NUMBER], $DB, $sLang);
+                $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);
             } else {
-                $sH .= admin_showItemlist($aArtikelliste, $twig);
+                $P["base"]["cb_customdata"]["itemlist"] = admin_prepareItemlist($aItemlist, $twig);
             }
-        } else $sH .= 'No matches found.';
-        //$sH .= debug($aArtikelliste);
+        }
     } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-        if (admin_updateItem()) $sH .= '<div class="small"><b>Der Artikel wurde aktualisiert ('.showClienttime().').</b></div><br>';
-        else $sH .= '<div class="small"><b>Beim Aktualisieren des Artikels ist ein Fehler aufgetreten,<br>bitte wenden Sie sich an den Systemadministrator.</b></div><br>';
+        admin_updateItem($C, $DB);
+        $P["base"]["cb_customdata"]["itemupdated"] = true;
 
-        $aArtikeldaten = admin_getItem();
-        $sH .= admin_showItem($aArtikeldaten);
-        //debug($aArtikeldaten);
+        $aItemdata = admin_getItem('', $DB, $sLang);
+        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);;
     } elseif ($_REQUEST["action"] == 'showitem') {
-        $aArtikeldaten = admin_getItem();
-
-        $sH .= admin_showItem($aArtikeldaten);
-        //$sH .= debug($aArtikeldaten);
+        $aItemdata = admin_getItem('', $DB, $sLang);
+        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);;
     } elseif ($_GET["action"] == 'additem') {
-        $sErr = '';
+        $aErr = array();
         if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {
-            if (strlen($_POST["itemno"]) < 4) $sErr .= 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br>';
+            if (strlen($_POST["itemno"]) < 4) $aErr["itemnotooshort"] = true;
             else {
                 $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = '";
                 $sQ .= \HaaseIT\Tools::cED(trim($_POST["itemno"]))."'";
                 $hResult = $DB->query($sQ);
                 $iRows = $hResult->rowCount();
                 if ($iRows > 0) {
-                    $sErr .= 'Diese Artikelnummer ist bereits vergeben.<br>';
+                    $aErr["itemnoalreadytaken"] = true;
                 } else {
-                    $aData = array(
-                        DB_ITEMFIELD_NUMBER => trim($_POST["itemno"]),
-                    );
+                    $aData = array(DB_ITEMFIELD_NUMBER => trim($_POST["itemno"]),);
                     $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
                     //debug($sQ);
                     $hResult = $DB->exec($sQ);
@@ -103,49 +109,15 @@ if (isset($_REQUEST["action"])) {
                     $hResult = $DB->query($sQ);
                     $aRow = $hResult->fetch();
                     header('Location: '.$_SERVER["PHP_SELF"].'?itemno='.$aRow[DB_ITEMFIELD_NUMBER].'&action=showitem');
+                    die();
                 }
             }
         }
-        $sH .= admin_showItemAddForm($sErr);
+        $P["base"]["cb_customdata"]["showaddform"] = true;
+        $P["base"]["cb_customdata"]["err"] = $aErr;
     }
-} else {
-    $sH .= '<a href="'.$_SERVER["PHP_SELF"].'?action=additem">Artikel hinzufügen</a><br>';
 }
-
-$sH .= '<pre>
-Zusatzdaten:
-{
-    "size":"|S|M|L|XL",
-    "suggestions":"0011|0012|0001|0002",
-    "sale": {
-        "price":79.99,
-        "start":"20140809",
-        "end":"20140826"
-    },
-    "detailimg":["image1.jpg","image2.jpg"],
-    "soldout":false
-}
-- set soldout to true and the item will not be orderable
-
-Artikelindex:
-Bei meherern Indizies, die einzelnen Indizies mit einer | trennen, z.B.: A020|A030
-Bei HTML Tags, die Anführungszeichen enthalten unbedingt single quotes (\') verwenden! Beispiel: &lt;img src=\'/_img/gr_damen_t-shirts.jpg\'>
-Keine Zeilenumbrüche in Zeichenketten, sonst funktioniert das ganze nicht!
-</pre>';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => $sH,
-    ),
-);
 
 $aP = generatePage($C, $P, $sLang);
-$aP["debug"] = true;
 
 echo $twig->render($C["template_base"], $aP);

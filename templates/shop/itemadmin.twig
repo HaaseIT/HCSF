@@ -1,0 +1,160 @@
+<form action="/_admin/shop/itemadmin.php" method="GET">
+    <input type="hidden" name="action" value="search">
+    <fieldset name="itemsearch">
+        <legend>Artikelsuche</legend>
+        <table>
+            <tr>
+                <td><label for="itemadmin-searchstring">Search for:</label><br><input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" style="width:200px;"></td>
+                <td>
+                    <label for="itemadmin-searchcats">Search in:</label><br>
+                    {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats') }}
+                </td>
+                <td>
+                    <label for="itemadmin-orderby">Order by:</label><br>
+                    {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby') }}
+                </td>
+                <td><br><input type="submit" value="Submit" style="width:100px;"></td>
+            </tr>
+        </table>
+    </fieldset>
+</form>
+<br>
+{% if customdata.itemupdated %}
+    <b>Der Artikel wurde aktualisiert ({{ macro.showClientTime() }}).</b><br><br>
+{% endif %}
+{% if customdata.searchresult and customdata.itemlist is not defined and customdata.item is not defined %}
+    No matches found.<br><br>
+{% endif %}
+{% if customdata.itemlist is defined %}
+    Displaying {{ customdata.itemlist.numrows }} results:<br><br>
+    {{ customdata.itemlist.listtable }}
+{% elseif customdata.item is defined %}
+    <style type="text/css">
+        #itemadmin-itemno{width: 120px;}
+        #itemadmin-name{width: 520px;}
+        #itemadmin-img{width: 400px;}
+        #itemadmin-price{width: 100px;}
+        #itemadmin-vatid{width: 70px;}
+        #itemadmin-rg{width: 70px;}
+        #itemadmin-index{width: 330px;}
+        #itemadmin-prio{width: 60px;}
+        #itemadmin-group{width: 250px;}
+        #itemadmin-data{width: 640px;height: 230px;}
+        #itemadmin-nameoverrride{width: 640px;}
+        #itemadmin-text1{width: 640px;height: 230px;}
+        #itemadmin-text2{width: 640px;height: 230px;}
+        #itemadmin-submit{width: 640px;}
+    </style>
+    <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin">
+        <input type="hidden" name="id" value="{{ customdata.item.id }}">
+        <input type="hidden" name="doaction" value="edititem">
+        <fieldset name="itemadmin-base">
+            <legend>Sprachunabhängig</legend>
+            <table>
+                <tr>
+                    <td>
+                        Artikelnr:<br>
+                        <input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly>
+                    </td>
+                    <td>
+                        Artikelname:<br>
+                        <input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name">
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Artikelbild:<br>
+                        <input type="text" name="bild" value="{{ customdata.item.img }}" id="itemadmin-img">
+                    </td>
+                    <td>
+                        Artikelpreis:<br>
+                        <input type="text" name="price" value="{{ customdata.item.price }}" id="itemadmin-price">
+                    </td>
+                    {% if vatoptions is defined %}
+                        <td>
+                            MwSt:<br>
+                            {{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vatid') }}
+                        </td>
+                    {% endif %}
+                    <td>
+                        RG:<br>
+                        {{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg') }}
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        Artikelindex:<br>
+                        <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index">
+                    </td>
+                    <td>
+                        Prio:<br>
+                        <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio">
+                    </td>
+                    <td>
+                        Artikelgruppe:<br>
+                        {{ macro.select('group', customdata.item.groupoptions, customdata.item.group, 'itemadmin-group') }}
+                    </td>
+                </tr>
+            </table>
+            Zusatzdaten (JSON):<br>
+            <textarea name="data", rows="10" cols="100" id="itemadmin-data">{{ customdata.item.data }}</textarea>
+        </fieldset>
+        {% if customdata.item.lang is defined %}
+            <br>
+            <fieldset name="itemadmin-lang">
+                <legend>Sprachspezifisch</legend>
+                <input type="hidden" name="textid" value="{{ customdata.item.lang.textid }}">
+                Name override:<br>
+                <input type="text" name="name_override" value="{{ customdata.item.lang.nameoverride }}" id="itemadmin-nameoverrride">
+                <br>
+                Text 1:<br>
+                <textarea name="text1" rows="10" cols="100" id="itemadmin-text1">{{ customdata.item.lang.text1 }}</textarea>
+                <br>
+                Text 2:<br>
+                <textarea name="text2" rows="10" cols="100" id="itemadmin-text2">{{ customdata.item.lang.text2 }}</textarea>
+            </fieldset>
+        {% else %}
+            <br>
+            In dieser Sprache sind noch keine Texte angelegt!
+            <a href="/_admin/shop/itemadmin.php?itemno={{ customdata.item.itemno }}&action=insert_lang">[Anlegen]</a>
+            <br>
+            <br>
+        {% endif %}
+        <input type="submit" value="Submit" id="itemadmin-submit">
+    </form>
+    <pre>
+Zusatzdaten:
+{
+    "size":"|S|M|L|XL",
+    "suggestions":"0011|0012|0001|0002",
+    "sale": {
+        "price":79.99,
+        "start":"20140809",
+        "end":"20140826"
+    },
+    "detailimg":["image1.jpg","image2.jpg"],
+    "soldout":false
+}
+- set soldout to true and the item will not be orderable
+
+Artikelindex:
+Bei meherern Indizies, die einzelnen Indizies mit einer | trennen, z.B.: A020|A030
+Bei HTML Tags, die Anführungszeichen enthalten unbedingt single quotes (\') verwenden! Beispiel: &lt;img src=\'/_img/gr_damen_t-shirts.jpg\'>
+Keine Zeilenumbrüche in Zeichenketten, sonst funktioniert das ganze nicht!
+</pre>
+{% elseif customdata.showaddform %}
+    {{ customdata.err.itemnotooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br><br>' : '' }}
+    {{ customdata.err.itemnoalreadytaken ? 'Diese Artikelnummer ist bereits vergeben.<br><br>' : '' }}
+    Artikelnummer:<br>
+    <form action="/_admin/shop/itemadmin.php?action=additem" method="POST" name="additem">
+        <input type="hidden" name="additem" value="do">
+        <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext">
+        <input type="submit" name="" value="Submit" class="formsubmit">
+    </form>
+{% else %}
+    <a href="/_admin/shop/itemadmin.php?action=additem">[Artikel hinzufügen]</a><br>
+{% endif %}
