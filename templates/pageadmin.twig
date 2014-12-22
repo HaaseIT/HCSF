@@ -49,7 +49,7 @@
             </tr>
         </table>
     </form>
-    <a href="{{ requesturiarray.path }}?action=addpage">Seite hinzufügen</a><br>
+    <a href="{{ requesturiarray.path }}?action=addpage">[Seite hinzufügen]</a><br>
 {% endif %}
 {% if customdata.page is defined %}
     {% if customdata.updated is defined %}
@@ -99,6 +99,16 @@
             {{ macro.select('page_subnav', customdata.page.subnavarea_options, customdata.page.base.cb_subnav, '', 'pageformwidth') }}
         </fieldset>
         <input type="submit" value="edit" class="pageformwidth">
+    </form>
+{% endif %}
+{% if customdata.showaddform %}
+    {{ customdata.err.keytooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für den Seitenschlüssel.<br><br>' : '' }}
+    {{ customdata.err.keyalreadyinuse ? 'Dieser Seitenschlüssel ist bereits vergeben.<br><br>' : '' }}
+    Seitenschlüssel:<br>
+    <form action="/_admin/pageadmin.php?action=addpage" method="POST" name="addpage">
+        <input type="hidden" name="addpage" value="do">
+        <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="formtext" style="width:400px;">
+        <input type="submit" name="" value="Submit" class="formsubmit">
     </form>
 {% endif %}
 {{content}}

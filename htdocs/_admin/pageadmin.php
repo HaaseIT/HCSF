@@ -45,10 +45,9 @@ $P = array(
     ),
     'lang' => array(
         'cl_lang' => $sLang,
+        'cl_html' => '',
     ),
 );
-
-$sH = '';
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $aPage = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
@@ -84,16 +83,16 @@ if (!isset($_REQUEST["action"])) {
 
     }
 } elseif ($_REQUEST["action"] == 'addpage') {
-    $sErr = '';
+    $aErr = array();
     if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
-        if (strlen($_POST["pagekey"]) < 4) $sErr .= 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br>';
+        if (strlen($_POST["pagekey"]) < 4) $aErr["keytooshort"] = true;
         else {
             $sQ = "SELECT ".DB_CONTENTFIELD_BASE_KEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = '";
             $sQ .= \HaaseIT\Tools::cED(trim($_POST["pagekey"]))."'";
             $hResult = $DB->query($sQ);
             $iRows = $hResult->rowCount();
             if ($iRows > 0) {
-                $sErr .= 'Dieser Seitenschlüssel ist bereits vergeben.<br>';
+                $aErr["keyalreadyinuse"] = true;
             } else {
                 $aData = array(DB_CONTENTFIELD_BASE_KEY => trim($_POST["pagekey"]),);
                 $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
@@ -106,11 +105,11 @@ if (!isset($_REQUEST["action"])) {
                 header('Location: '.$_SERVER["PHP_SELF"].'?page_id='.$aRow[DB_CONTENTTABLE_BASE_PKEY].'&action=edit');
             }
         }
+        $P["base"]["cb_customdata"]["err"] = $aErr;
+        unset($aErr);
     }
-    $sH .= admin_showPageAddForm($sErr);
+    $P["base"]["cb_customdata"]["showaddform"] = true;
 }
-
-$P["lang"]["cl_html"] = $sH;
 
 $aP = generatePage($C, $P, $sLang);
 

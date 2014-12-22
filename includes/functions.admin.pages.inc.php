@@ -1,22 +1,5 @@
 <?php
 
-function admin_showPageAddForm($sErr = '') {
-    global $FORM;
-    $sH = '';
-    if ($sErr != '') $sH .= $sErr.'<br>';
-    $sH .= 'Seitenschlüssel:<br>';
-    $FORM->sFormmethod = 'POST';
-    $FORM->sFormaction = \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]);
-    $sH .= $FORM->openForm('addpage');
-    $sH .= $FORM->makeHidden('addpage', 'do');
-    $sH .= $FORM->makeText('pagekey', \HaaseIT\Tools::getFormfield('pagekey', ''), 400);
-    $sH .= ' ';
-    $sH .= $FORM->makeSubmit();
-    $sH .= $FORM->closeForm();
-
-    return $sH;
-}
-
 function admin_getPage($iPage, $DB, $sLang) {
     $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTTABLE_BASE_PKEY." = :pid";
     $hResult = $DB->prepare($sQ);
