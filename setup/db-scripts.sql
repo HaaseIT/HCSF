@@ -77,8 +77,7 @@ CREATE TABLE IF NOT EXISTS itemgroups_base (
 itmg_id int(11) NOT NULL,
   itmg_no varchar(12) NOT NULL,
   itmg_name varchar(128) NOT NULL,
-  itmg_imgsm varchar(256) NOT NULL,
-  itmg_imglg varchar(256) NOT NULL
+  itmg_img varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS itemgroups_text;
