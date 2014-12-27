@@ -29,9 +29,9 @@ description: "2-Spaltige Tabelle 50/50"
 );
 */
 
-include_once('base.inc.php');
-include_once('shop/functions.admin.items.inc.php');
-include_once('shop/functions.admin.itemgroups.inc.php');
+include_once('base.php');
+include_once('shop/functions.admin.items.php');
+include_once('shop/functions.admin.itemgroups.php');
 
 $P = array(
     'base' => array(

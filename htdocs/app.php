@@ -1,6 +1,6 @@
 <?php
 
-include_once('base.inc.php');
+include_once('base.php');
 
 //debug($P);
 //debug($aURL);

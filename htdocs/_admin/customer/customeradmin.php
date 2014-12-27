@@ -2,8 +2,8 @@
 
 //error_reporting(E_ALL);
 
-include_once('base.inc.php');
-include_once('customer/functions.admin.customer.inc.php');
+include_once('base.php');
+include_once('customer/functions.admin.customer.php');
 $sH = '';
 
 $aPData = handleUserAdmin($CUA, $twig, $DB, $C, $sLang);

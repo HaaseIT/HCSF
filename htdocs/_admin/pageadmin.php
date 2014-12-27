@@ -33,8 +33,8 @@ description: "2-Spaltige Tabelle 50/50"
 );
 */
 
-include_once('base.inc.php');
-include_once('functions.admin.pages.inc.php');
+include_once('base.php');
+include_once('functions.admin.pages.php');
 
 $P = array(
     'base' => array(

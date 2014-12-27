@@ -44,9 +44,9 @@ body.innerHTML +
 );
 */
 
-include_once('base.inc.php');
-include_once('shop/functions.admin.shop.inc.php');
-include_once('shop/functions.shoppingcart.inc.php');
+include_once('base.php');
+include_once('shop/functions.admin.shop.php');
+include_once('shop/functions.shoppingcart.php');
 
 $P = array(
     'base' => array(

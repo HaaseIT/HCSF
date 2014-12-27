@@ -26,12 +26,12 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 }
 
 // Load core config
-include_once('config.core.inc.php');
-include_once('config.scrts.inc.php');
-include_once('functions.template.inc.php');
-include_once('functions.misc.inc.php');
+include_once('config.core.php');
+include_once('config.scrts.php');
+include_once('functions.template.php');
+include_once('functions.misc.php');
 include_once('Tools.php');
-include_once('functions.db.inc.php');
+include_once('functions.db.php');
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -135,11 +135,11 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 $T = loadTextcats($sLang, $C, $DB);
 //debug($T);
 
-include_once('config.navi.inc.php');
-include_once('customer/config.customer.inc.php');
-include_once('customer/functions.customer.inc.php');
-include_once('shop/config.shop.inc.php');
+include_once('config.navi.php');
+include_once('customer/config.customer.php');
+include_once('customer/functions.customer.php');
+include_once('shop/config.shop.php');
 include_once('shop/Item.php');
-include_once('shop/functions.shoppingcart.inc.php');
+include_once('shop/functions.shoppingcart.php');
 
 $oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
