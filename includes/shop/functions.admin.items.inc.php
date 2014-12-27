@@ -113,7 +113,7 @@ function admin_getItem($sItemno = '', $DB, $sLang)
     return $aItemdata;
 }
 
-function admin_prepareItem($aItemdata, $C)
+function admin_prepareItem($aItemdata, $C, $DB, $sLang)
 {
     $aData = array(
         'form' => array('action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"], array('action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER])),),
@@ -139,7 +139,7 @@ function admin_prepareItem($aItemdata, $C)
     $aData["rgoptions"][] = '';
     foreach ($C["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
 
-    $aGroups = admin_getItemgroups();
+    $aGroups = admin_getItemgroups('', $DB, $sLang);
     $aData["groupoptions"][] = '';
     foreach ($aGroups as $aValue) $aData["groupoptions"][] = $aValue[DB_ITEMGROUPTABLE_BASE_PKEY] . '|' . $aValue[DB_ITEMGROUPFIELD_NUMBER] . ' - ' . $aValue[DB_ITEMGROUPFIELD_NAME];
     unset($aGroups);

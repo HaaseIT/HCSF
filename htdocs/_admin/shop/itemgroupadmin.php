@@ -32,6 +32,19 @@ description: "2-Spaltige Tabelle 50/50"
 include_once('base.inc.php');
 include_once('shop/functions.admin.itemgroups.inc.php');
 
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => 'admin',
+        'cb_customcontenttemplate' => 'shop/itemgroupadmin',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
 $sH = '';
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $sQ = "SELECT ".DB_ITEMGROUPTABLE_BASE_PKEY." FROM ".DB_ITEMGROUPTABLE_BASE." WHERE ".DB_ITEMGROUPTABLE_BASE_PKEY." = :gid";
@@ -71,36 +84,29 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-        $sUpdatestatus = admin_updateGroup();
-        if ($sUpdatestatus == 'success') {
-            $sH .= '<div class="small"><b>Die Gruppe wurde aktualisiert.</b></div><br>';
-        } elseif ($sUpdatestatus == 'duplicateno') {
-            $sH .= '<div class="small"><b>Diese Gruppennummer wird bereits für eine andere Gruppe verwendet.</b></div><br>';
-        } else {
-            $sH .= '<div class="small"><b>Beim Aktualisieren der Gruppe ist ein Fehler aufgetreten,<br>bitte wenden Sie sich an den Systemadministrator.</b></div><br>';
-        }
+        $P["base"]["cb_customdata"]["updatestatus"] = admin_updateGroup($DB, $sLang);
     }
-    $aGroup = admin_getItemgroups($_REQUEST["gid"]);
-    if (isset($_REQUEST["added"])) $sH .= 'Die Gruppe wurde hinzugefügt.<br><br>';
-    $sH .= admin_showGroupForm('', 'edit', $aGroup[0]);
+    $aGroup = admin_getItemgroups($_REQUEST["gid"], $DB, $sLang);
+    if (isset($_REQUEST["added"])) {
+        $P["base"]["cb_customdata"]["groupjustadded"] = true;
+    }
+    $P["base"]["cb_customdata"]["showform"] = 'edit';
+    $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('edit', $aGroup[0]);
     //debug($aGroup);
-
-} elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'delete') {
-    $sH .= 'Delete Not implemented yet.';
 } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
-    $sErr = '';
+    $aErr = array();
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-        if (strlen($_REQUEST["name"]) < 3) $sErr .= 'Der Name ist zu kurz.<br>';
-        if (strlen($_REQUEST["no"]) < 3) $sErr .= 'Die Gruppennummer ist zu kurz.<br>';
-        if ($sErr == '') {
+        if (strlen($_REQUEST["name"]) < 3) $aErr["nametooshort"] = true;
+        if (strlen($_REQUEST["no"]) < 3) $aErr["grouptooshort"] = true;
+        if (count($aErr) == 0) {
             $sQ = "SELECT ".DB_ITEMGROUPFIELD_NUMBER." FROM ".DB_ITEMGROUPTABLE_BASE;
             $sQ .= " WHERE ".DB_ITEMGROUPFIELD_NUMBER." = :no";
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':no', $_REQUEST["no"]);
             $hResult->execute();
-            if ($hResult->rowCount() > 0) $sErr .= 'Diese Gruppennummer ist bereits vergeben.<br>';
+            if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
         }
-        if ($sErr == '') {
+        if (count($aErr) == 0) {
             $aData = array(
                 DB_ITEMGROUPFIELD_NAME => $_REQUEST["name"],
                 DB_ITEMGROUPFIELD_NUMBER => $_REQUEST["no"],
@@ -113,26 +119,24 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             $hResult->execute();
             $iLastInsertID = $DB->lastInsertId();
             header('Location: '.$_SERVER["PHP_SELF"].'?action=editgroup&added&gid='.$iLastInsertID);
-        } else $sH .= admin_showGroupForm($sErr, 'add');
-    } else $sH .= admin_showGroupForm('', 'add');
+        } else {
+            $P["base"]["cb_customdata"]["err"] = $aErr;
+            $P["base"]["cb_customdata"]["showform"] = 'add';
+            $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('add');
+        }
+    } else {
+        $P["base"]["cb_customdata"]["showform"] = 'add';
+        $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('add');
+    }
 } else {
-    $sH .= '<a href="'.$_SERVER["PHP_SELF"].'?action=addgroup">Click here to add a new group</a><br><br>';
-    $sH .= admin_showItemgroups(admin_getItemgroups(), $twig);
+    if (!$sH .= admin_showItemgroups(admin_getItemgroups('', $DB, $sLang), $twig)) {
+        $P["base"]["cb_customdata"]["err"]["nogroupsavaliable"] = true;
+    }
+
 }
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => $sH,
-    ),
-);
+$P["lang"]["cl_html"] = $sH;
 
 $aP = generatePage($C, $P, $sLang);
-$aP["debug"] = true;
 
 echo $twig->render($C["template_base"], $aP);

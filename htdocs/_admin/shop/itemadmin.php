@@ -74,7 +74,7 @@ if (isset($_REQUEST["action"])) {
         if ($aItemlist = admin_getItemlist($DB, $sLang)) {
             if (count($aItemlist["data"]) == 1) {
                 $aItemdata = admin_getItem($aItemlist["data"][0][DB_ITEMFIELD_NUMBER], $DB, $sLang);
-                $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);
+                $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
             } else {
                 $P["base"]["cb_customdata"]["itemlist"] = admin_prepareItemlist($aItemlist, $twig);
             }
@@ -84,10 +84,10 @@ if (isset($_REQUEST["action"])) {
         $P["base"]["cb_customdata"]["itemupdated"] = true;
 
         $aItemdata = admin_getItem('', $DB, $sLang);
-        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);;
+        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
     } elseif ($_REQUEST["action"] == 'showitem') {
         $aItemdata = admin_getItem('', $DB, $sLang);
-        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C);;
+        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
     } elseif ($_GET["action"] == 'additem') {
         $aErr = array();
         if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {

@@ -1,0 +1,42 @@
+{% if customdata.updatestatus == 'success' %}
+    <b>Die Gruppe wurde aktualisiert ({{ macro.showClientTime() }}).</b><br><br>
+{% elseif customdata.updatestatus == 'duplicateno' %}
+    <b>Diese Gruppennummer wird bereits für eine andere Gruppe verwendet.</b><br><br>
+{% elseif customdata.groupjustadded %}
+    Die Gruppe wurde hinzugefügt.<br><br>
+{% endif %}
+{{  customdata.err.nametooshort ? 'Der Name ist zu kurz.<br><br>' : '' }}
+{{  customdata.err.grouptooshort ? 'Die Gruppennummer ist zu kurz.<br><br>' : '' }}
+{{  customdata.err.duplicateno ? 'Diese Gruppennummer ist bereits vergeben.<br><br>' : '' }}
+{% if customdata.showform is defined %}
+    <style type="text/css">
+        #groupadmin-name, #groupadmin-no, #groupadmin-img{width: 520px;}
+        #groupadmin-shorttext, #groupadmin-details{width: 520px;height: 200px;}
+        #groupadmin-submit{width: 520px;}
+    </style>
+    <form action="{{ customdata.group.formaction }}" method="post">
+        <input type="hidden" name="do" value="true">
+        Gruppenname:<br>
+        <input type="text" name="name" value="{{ customdata.group.name }}" id="groupadmin-name"><br>
+        Gruppennummer:<br>
+        <input type="text" name="no" value="{{ customdata.group.no }}" id="groupadmin-no"><br>
+        Bild:<br>
+        <input type="text" name="img" value="{{ customdata.group.img }}" id="groupadmin-img"><br>
+        {% if customdata.showform == 'edit' %}
+            {% if customdata.group.lang is defined %}
+                Kurztext:<br>
+                <textarea name="shorttext" rows="8" cols="70" id="groupadmin-shorttext">{{ customdata.group.lang.shorttext }}</textarea><br>
+                Details:<br>
+                <textarea name="details" rows="8" cols="70" id="groupadmin-details">{{ customdata.group.lang.details }}</textarea><br>
+            {% else %}
+                In dieser Sprache sind noch keine Texte angelegt!
+                <a href="/_admin/shop/itemgroupadmin.php?action=insert_lang&gid={{ customdata.group.id }}">[Anlegen]</a><br>
+            {% endif %}
+        {% endif %}
+        <input type="submit" value="Submit" id="groupadmin-submit">
+    </form>
+{% else %}
+    <a href="/_admin/shop/itemgroupadmin.php?action=addgroup">[Eine neue Gruppe anlegen]</a><br><br>
+{% endif %}
+{{  customdata.err.nogroupsavaliable ? 'Zur Zeit sind keine Gruppen angelegt.' : '' }}
+{{ content }}
