@@ -41,7 +41,7 @@ define("DB_ORDERTABLE_PKEY", 'o_id');
 define("DB_ORDERFIELD_PAYMENTMETHOD", 'o_paymentmethod');
 define("DB_ORDERTABLE_ITEMS", 'orders_items');
 
-define("PATH_ORDERLOG", '/_admin/orderlogs/');
+define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
 
 $TMP = array(
     'email_orderconfirmation_attachment_cancellationform_de' => '',

@@ -177,7 +177,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 $sMailbody_they = buildOrderMailBody($C, $sLang, $twig, true, $iInsertID);
 
                 // write to file
-                $fp = fopen(PATH_DOCROOT.PATH_ORDERLOG.'shoplog_'.date("Y-m-d").'.html', 'a');
+                $fp = fopen(PATH_ORDERLOG.'shoplog_'.date("Y-m-d").'.html', 'a');
                 // Write $somecontent to our opened file.
                 fwrite($fp, $sMailbody_us."\n\n-------------------------------------------------------------------------\n\n");
                 fclose($fp);
