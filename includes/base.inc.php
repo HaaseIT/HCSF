@@ -132,9 +132,6 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     }
 }
 
-
-
-
 $T = loadTextcats($sLang, $C, $DB);
 //debug($T);
 
@@ -144,9 +141,5 @@ include_once('customer/functions.customer.inc.php');
 include_once('shop/config.shop.inc.php');
 include_once('shop/Item.php');
 include_once('shop/functions.shoppingcart.inc.php');
-include_once('class.form.inc.php');
-
-$FORM = new Form();
-$FORM->bUsestyle = true;
 
 $oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
