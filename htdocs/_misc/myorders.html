@@ -63,11 +63,11 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
                 );
             }
 
-            $aShoppingcart = buildShoppingCartTable($aItemsforShoppingcarttable, true);
+            $aShoppingcart = buildShoppingCartTable($aItemsforShoppingcarttable, $sLang, $C, true);
         }
-
-        else $sH .= T("myorders_order_not_found");
-
+        else {
+            $sH .= T("myorders_order_not_found");
+        }
     } else {
         $COList = array(
             array('title' => T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,),
@@ -87,7 +87,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             ),
         );
 
-        $sH .= showMyOrders($COList, $twig);
+        $sH .= showMyOrders($COList, $twig, $DB);
     }
 
 } else {
@@ -101,6 +101,6 @@ if (isset($aShoppingcart)) {
     $P["base"]["cb_customdata"] = $aShoppingcart;
 }
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

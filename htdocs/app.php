@@ -9,6 +9,6 @@ include_once('base.inc.php');
 //debug($aPath);
 //debug('Path: '.$sPath);
 
-$aP = generatePage($C, $P, $sLangr );
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

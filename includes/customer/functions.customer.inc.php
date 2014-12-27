@@ -72,10 +72,8 @@ function handleForgotPassword($DB, $C, $aErr) {
     return $aErr;
 }
 
-function validateCustomerForm($aErr = array(), $bEdit = false)
+function validateCustomerForm($C, $sLang, $aErr = array(), $bEdit = false)
 {
-    global $C, $sLang;
-
     if (!isset($_POST["email"]) || !\HaaseIT\Tools::validateEmail($_POST["email"])) $aErr["email"] = true;
     if ($C["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;
     if ($C["validate_name"] && (!isset($_POST["name"]) || strlen(trim($_POST["name"])) < 3)) $aErr["name"] = true;
@@ -113,11 +111,9 @@ function getCustomerFormDefaultValue($sKeyConfig, $sKeyForm, $aUserData) {
     return $sDefaultValue;
 }
 
-function buildCustomerForm($sPurpose = 'none', $sErr = '', $aUserData = false)
+function buildCustomerForm($C, $sLang, $sPurpose = 'none', $sErr = '', $aUserData = false)
 {
     // Purposes: shoppingcart, userhome, shopadmin, editprofile, register
-    global $C, $sLang;
-
     $aData["purpose"] = $sPurpose;
     $aData["errormessage"] = $sErr;
     $aData["readonly"] = false;
@@ -218,9 +214,8 @@ function buildCustomerForm($sPurpose = 'none', $sErr = '', $aUserData = false)
     return $aData;
 }
 
-function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $bCust = false)
+function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $bCust = false)
 {
-    global $C;
     if ($bCust) {
         $sSubject = T("register_mail_emailverification_subject");
         $sMessage = T("register_mail_emailverification_text1");
@@ -262,9 +257,8 @@ function handleLogout()
     return $sH;
 }
 
-function getLogin()
+function getLogin($C, $DB)
 {
-    global $C, $DB;
     $bTryEmail = false;
     if (DB_CUSTOMERFIELD_USER != DB_CUSTOMERFIELD_EMAIL) $bTryEmail = true;
     $sEnc = crypt($_POST["password"], $C["blowfish_salt"]);

@@ -17,10 +17,8 @@ function showOrderStatusText($sStatusShort)
     return $sStatus;
 }
 
-function showMyOrders($COList, $twig)
+function showMyOrders($COList, $twig, $DB)
 {
-    global $C, $DB;
-
     $sH = '';
     $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
     $sQ .= "o_custno = :custno ";
@@ -60,10 +58,8 @@ function showMyOrders($COList, $twig)
     return $sH;
 }
 
-function calculateTotalFromDB($aOrder)
+function calculateTotalFromDB($C, $aOrder)
 {
-    global $C;
-
     $fGesamtnetto = $aOrder["o_sumnettoall"];
     $fVoll = $aOrder["o_sumvoll"];
     $fSteuervoll = $aOrder["o_taxvoll"];
@@ -86,11 +82,8 @@ function calculateTotalFromDB($aOrder)
     return 	$fGesamtbrutto;
 }
 
-function addAdditionalCostsToItems($aSumme) // Benutzt in paypal payment Seite, da hier nur die Daten aus der DB zur verfügung stehen
+function addAdditionalCostsToItems($C, $sLang, $aSumme)
 {
-    global $C;
-    //debug($aOrder);
-
     $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
     $fSteuervoll = round($aSumme["sumvoll"] * $C["vat"]["19"] / 100, 2);
     $fSteuererm = round($aSumme["sumerm"] * $C["vat"]["7"] / 100, 2);
@@ -137,7 +130,7 @@ function addAdditionalCostsToItems($aSumme) // Benutzt in paypal payment Seite, 
 
     if (isset($C["shippingcoststandardrate"]) && $C["shippingcoststandardrate"] != 0 &&
     ((!isset($C["mindestbetragversandfrei"]) || !$C["mindestbetragversandfrei"]) || $fGesamtnettoitems < $C["mindestbetragversandfrei"]))  {
-        $aOrder["fVersandkostennetto"] = getShippingcost($C);
+        $aOrder["fVersandkostennetto"] = getShippingcost($C, $sLang);
         $aOrder["fVersandkostenvat"] = round($aOrder["fVersandkostennetto"] * $C["vat"]["19"] / 100, 2);
         $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
@@ -152,8 +145,7 @@ function addAdditionalCostsToItems($aSumme) // Benutzt in paypal payment Seite, 
     return $aOrder;
 }
 
-function getShippingcost($C) {
-    global $sLang;
+function getShippingcost($C, $sLang) {
     $fShippingcost = $C["shippingcoststandardrate"];
 
     $sCountry = '';
@@ -178,11 +170,9 @@ function getShippingcost($C) {
     return $fShippingcost;
 }
 
-function buildOrderMailBody($twig, $bCust = true, $iId = 0)
+function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
 {
-    global $C, $sLang;
-
-    $aSHC = buildShoppingCartTable($_SESSION["cart"], true);
+    $aSHC = buildShoppingCartTable($_SESSION["cart"], $sLang, $C, true);
 
     $aData = array(
         'customerversion' => $bCust,
@@ -222,9 +212,8 @@ function buildOrderMailBody($twig, $bCust = true, $iId = 0)
     return $sH;
 }
 
-function calculateCartItems($aCart)
+function calculateCartItems($C, $aCart)
 {
-    global $C;
     //debug($aCart);
     $fErm = 0;
     $fVoll = 0;
@@ -268,17 +257,15 @@ function refreshCartItems($C, $oItem) // bei login/logout ändern sich ggf die p
     }
 }
 
-function buildShoppingCartTable($aCart, $bReadonly = false, $sCustomergroup = '', $aErr = '')
+function buildShoppingCartTable($aCart, $sLang, $C, $bReadonly = false, $sCustomergroup = '', $aErr = '')
 {
-    global $C;
-
-    $aSumme = calculateCartItems($aCart);
+    $aSumme = calculateCartItems($C, $aCart);
     $aData["shoppingcart"] = array(
         'readonly' => $bReadonly,
         'customergroup' => $sCustomergroup,
         'cart' => $aCart,
         'rebategroups' => $C["rebate_groups"],
-        'additionalcoststoitems' => addAdditionalCostsToItems($aSumme),
+        'additionalcoststoitems' => addAdditionalCostsToItems($C, $sLang, $aSumme),
         'minimumorderamountnet' => $C["minimumorderamountnet"],
         'reducedorderamountnet1' => $C["reducedorderamountnet1"],
         'reducedorderamountnet2' => $C["reducedorderamountnet2"],
@@ -297,7 +284,7 @@ function buildShoppingCartTable($aCart, $bReadonly = false, $sCustomergroup = ''
     }
 
     if ($aData["shoppingcart"]["additionalcoststoitems"]["bMindesterreicht"] && !$bReadonly) {
-        $aData["customerform"] = buildCustomerForm('shoppingcart', $aErr);
+        $aData["customerform"] = buildCustomerForm($C, $sLang, 'shoppingcart', $aErr);
     }
     
     return $aData;

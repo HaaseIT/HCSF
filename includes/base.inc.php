@@ -135,7 +135,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 
 
 
-$T = loadTextcats();
+$T = loadTextcats($sLang, $C, $DB);
 //debug($T);
 
 include_once('config.navi.inc.php');

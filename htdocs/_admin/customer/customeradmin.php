@@ -6,7 +6,7 @@ include_once('base.inc.php');
 include_once('customer/functions.admin.customer.inc.php');
 $sH = '';
 
-$aPData = handleUserAdmin($CUA, $twig);
+$aPData = handleUserAdmin($CUA, $twig, $DB, $C, $sLang);
 
 $P = array(
     'base' => array(
@@ -23,8 +23,7 @@ $P = array(
 
 $P["base"]["cb_customdata"] = $aPData;
 
-$aP = generatePage($C, $P, $sLang);
-$aP["debug"] = true;
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);
 

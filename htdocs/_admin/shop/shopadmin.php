@@ -94,7 +94,7 @@ $aPData = [
     'searchform_toyear' => \HaaseIT\Tools::getFormfield('toyear', date("Y")),
 ];
 
-$aShopadmin = handleShopAdmin($CSA, $twig);
+$aShopadmin = handleShopAdmin($CSA, $twig, $DB, $C, $sLang);
 
 $P["base"]["cb_customdata"] = array_merge($aPData, $aShopadmin);
 
@@ -114,6 +114,6 @@ $sH .= $aShopadmin["html"];
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

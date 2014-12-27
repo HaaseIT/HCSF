@@ -123,6 +123,6 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

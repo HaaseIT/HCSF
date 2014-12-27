@@ -29,7 +29,7 @@ $hResult->execute();
 
 if ($hResult->rowCount() == 1) {
     $aOrder = $hResult->fetch();
-    $fGesamtbrutto = calculateTotalFromDB($aOrder);
+    $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
 
     $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id='.$C["sofortueberweisung"]["user_id"];
     $sPURL .= '&amp;project_id='.$C["sofortueberweisung"]["project_id"].'&amp;amount='.number_format($fGesamtbrutto, 2, '.','');
@@ -46,6 +46,6 @@ if ($hResult->rowCount() == 1) {
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

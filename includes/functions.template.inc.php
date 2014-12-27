@@ -1,9 +1,7 @@
 <?php
 
-function buildTitle($P)
+function buildTitle($P, $C)
 {
-    global $C;
-
     if (isset($P["lang"][DB_CONTENTFIELD_TITLE]) && trim($P["lang"][DB_CONTENTFIELD_TITLE]) != '') $sH = $P["lang"][DB_CONTENTFIELD_TITLE];
     else $sH = $C["default_pagetitle"];
 
@@ -40,10 +38,9 @@ function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $m
     return $mail->send();
 }
 
-function generatePage($C, $P, $sLang)
+function generatePage($C, $P, $sLang, $DB, $oItem)
 {
-    global $sDebug, $oItem, $DB;
-
+    global $sDebug;
     $aP = array(
         'language' => $sLang,
         'pageconfig' => $P["base"]["cb_pageconfig"],
@@ -92,7 +89,7 @@ function generatePage($C, $P, $sLang)
     if (isset($P["base"]["cb_subnav"]) && isset($C["navstruct"][$P["base"]["cb_subnav"]])) $aP["subnav"] = $C["navstruct"][$P["base"]["cb_subnav"]];
 
     // Get page title, meta-keywords, meta-description
-    $aP["pagetitle"] = buildTitle($P);
+    $aP["pagetitle"] = buildTitle($P, $C);
     if (isset($P["lang"][DB_CONTENTFIELD_KEYWORDS]) && trim($P["lang"][DB_CONTENTFIELD_KEYWORDS]) != '')
         $aP["keywords"] = trim($P["lang"][DB_CONTENTFIELD_KEYWORDS]);
     if (isset($P["lang"][DB_CONTENTFIELD_DESCRIPTION]) && trim($P["lang"][DB_CONTENTFIELD_DESCRIPTION]) != '')
@@ -124,7 +121,7 @@ function generatePage($C, $P, $sLang)
 
     // Shopping cart infos
     if ((!$C["show_pricesonlytologgedin"] || getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-        $aCartsums = calculateCartItems($_SESSION["cart"]);
+        $aCartsums = calculateCartItems($C, $_SESSION["cart"]);
         $aP["cartinfo"] = array(
             'numberofitems' => count($_SESSION["cart"]),
             'cartsums' => $aCartsums,

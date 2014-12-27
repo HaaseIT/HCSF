@@ -1,9 +1,7 @@
 <?php
 
-function handleShopAdmin($CSA, $twig)
+function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
 {
-    global $DB, $C;
-
     $sH = '';
     if (!isset($_GET["action"])) {
         $bIgnoreStorno = false;
@@ -119,7 +117,7 @@ function handleShopAdmin($CSA, $twig)
                 DB_CUSTOMERFIELD_COUNTRY => $aSData["orderdata"]["o_country"],
                 DB_CUSTOMERFIELD_GROUP => $aSData["orderdata"]["o_group"],
             ];
-            $aSData["customerform"] = buildCustomerForm('shopadmin', '', $aUserdata);
+            $aSData["customerform"] = buildCustomerForm($C, $sLang, 'shopadmin', '', $aUserdata);
 
             $aSData["orderdata"]["options_shippingservices"] = [''];
             foreach ($C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
@@ -150,7 +148,7 @@ function handleShopAdmin($CSA, $twig)
             }
             //debug($aItemsforShoppingcarttable);
 
-            $aSData = array_merge(buildShoppingCartTable($aItemsforShoppingcarttable, true, $aSData["orderdata"]["o_group"]), $aSData);
+            $aSData = array_merge(buildShoppingCartTable($aItemsforShoppingcarttable, $sLang, $C, true, $aSData["orderdata"]["o_group"]), $aSData);
         } else {
             $sH .= 'Keine entsprechende Bestellung gefunden.';
         }

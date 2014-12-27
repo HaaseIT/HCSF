@@ -52,7 +52,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                                 $aAR = array(
                                     'cart' => $_SESSION["cart"],
                                     'reply' => 'requiredfieldmissing',
-                                    'cartsums' => calculateCartItems($_SESSION["cart"]),
+                                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                                     'currency' => $C["waehrungssymbol"],
                                 );
                                 echo $twig->render('shop/update-cart.twig', $aAR);
@@ -70,7 +70,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                     $aAR = array(
                         'cart' => $_SESSION["cart"],
                         'reply' => 'noactiontaken',
-                        'cartsums' => calculateCartItems($_SESSION["cart"]),
+                        'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                         'currency' => $C["waehrungssymbol"],
                     );
                     echo $twig->render('shop/update-cart.twig', $aAR);
@@ -96,7 +96,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                             'cart' => $_SESSION["cart"],
                             'reply' => 'removed',
                             'subject' => $sCartKey,
-                            'cartsums' => calculateCartItems($_SESSION["cart"]),
+                            'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                             'currency' => $C["waehrungssymbol"],
                         );
                         echo $twig->render('shop/update-cart.twig', $aAR);
@@ -112,7 +112,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                             'reply' => 'updated',
                             'item' => $sCartKey,
                             'amount' => $iAmount,
-                            'cartsums' => calculateCartItems($_SESSION["cart"]),
+                            'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                             'currency' => $C["waehrungssymbol"],
                         );
                         echo $twig->render('shop/update-cart.twig', $aAR);
@@ -131,7 +131,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                     'reply' => 'added',
                     'item' => $sCartKey,
                     'amount' => $iAmount,
-                    'cartsums' => calculateCartItems($_SESSION["cart"]),
+                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                     'currency' => $C["waehrungssymbol"],
                 );
                 echo $twig->render('shop/update-cart.twig', $aAR);
@@ -143,7 +143,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 $aAR = array(
                     'cart' => $_SESSION["cart"],
                     'reply' => 'itemnotfound',
-                    'cartsums' => calculateCartItems($_SESSION["cart"]),
+                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                     'currency' => $C["waehrungssymbol"],
                 );
                 echo $twig->render('shop/update-cart.twig', $aAR);
@@ -156,7 +156,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             $aAR = array(
                 'cart' => $_SESSION["cart"],
                 'reply' => 'noitemnooramount',
-                'cartsums' => calculateCartItems($_SESSION["cart"]),
+                'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
                 'currency' => $C["waehrungssymbol"],
             );
             echo $twig->render('shop/update-cart.twig', $aAR);

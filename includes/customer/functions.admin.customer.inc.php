@@ -16,13 +16,12 @@ $CUA = array(
         'lkeyname' => 'id',
         'lgetvars' => array(
             'action' => 'edit',
-       ),
-   ),
+        ),
+    ),
 );
 
-function handleUserAdmin($CUA, $twig) {
-    global $DB, $C;
-
+function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
+{
     $sType = 'all';
     if (isset($_REQUEST["type"])) {
         if ($_REQUEST["type"] == 'active') {
@@ -33,13 +32,13 @@ function handleUserAdmin($CUA, $twig) {
     }
     $sH = '';
     if (!isset($_GET["action"])) {
-        $sQ = "SELECT ".DB_ADDRESSFIELDS." FROM ".DB_CUSTOMERTABLE;
+        $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
         if ($sType == 'active') {
-            $sQ .= " WHERE ".DB_CUSTOMERFIELD_ACTIVE." = 'y'";
+            $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'y'";
         } elseif ($sType == 'inactive') {
-            $sQ .= " WHERE ".DB_CUSTOMERFIELD_ACTIVE." = 'n'";
+            $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'n'";
         }
-        $sQ .= " ORDER BY ".DB_CUSTOMERFIELD_NUMBER." ASC";
+        $sQ .= " ORDER BY " . DB_CUSTOMERFIELD_NUMBER . " ASC";
         //debug($sQ);
         $hResult = $DB->query($sQ);
         //debug($DB->error());
@@ -56,12 +55,12 @@ function handleUserAdmin($CUA, $twig) {
         $aErr = array();
         $sInfo = '';
         if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
-            if (strlen(trim($_POST["custno"])) < $C["minimum_length_custno"]) { 
+            if (strlen(trim($_POST["custno"])) < $C["minimum_length_custno"]) {
                 $aErr["custnoinvalid"] = true;
             } else {
-                $sQ = "SELECT ".DB_ADDRESSFIELDS." FROM ".DB_CUSTOMERTABLE;
-                $sQ .= " WHERE ".DB_CUSTOMERTABLE_PKEY." != :id";
-                $sQ .= " AND ".DB_CUSTOMERFIELD_NUMBER." = :custno";
+                $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
+                $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
+                $sQ .= " AND " . DB_CUSTOMERFIELD_NUMBER . " = :custno";
                 $hResult = $DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->bindValue(':custno', trim($_POST["custno"]));
@@ -71,9 +70,9 @@ function handleUserAdmin($CUA, $twig) {
                 if ($iRows == 1) {
                     $aErr["custnoalreadytaken"] = true;
                 }
-                $sQ = "SELECT ".DB_ADDRESSFIELDS." FROM ".DB_CUSTOMERTABLE;
-                $sQ .= " WHERE ".DB_CUSTOMERTABLE_PKEY." != :id";
-                $sQ .= " AND ".DB_CUSTOMERFIELD_EMAIL." = :email";
+                $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
+                $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
+                $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
                 $hResult = $DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->bindValue(':email', trim($_POST["email"]));
@@ -83,7 +82,7 @@ function handleUserAdmin($CUA, $twig) {
                 if ($iRows == 1) {
                     $aErr["emailalreadytaken"] = true;
                 }
-                $aErr = validateCustomerForm($aErr, true);
+                $aErr = validateCustomerForm($C, $sLang, $aErr, true);
                 if (count($aErr) == 0) {
                     $aData = array(
                         DB_CUSTOMERFIELD_NUMBER => $_POST["custno"],
@@ -101,7 +100,7 @@ function handleUserAdmin($CUA, $twig) {
                         DB_CUSTOMERFIELD_EMAILVERIFIED => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
                         DB_CUSTOMERFIELD_ACTIVE => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
                         DB_CUSTOMERTABLE_PKEY => $iId,
-                   );
+                    );
                     if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
                         $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
                         $sInfo .= 'Das Passwort wurde geändert.<br>';
@@ -110,15 +109,15 @@ function handleUserAdmin($CUA, $twig) {
                     $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                     //debug($sQ);
                     $hResult = $DB->prepare($sQ);
-                    foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                    foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                     $hResult->execute();
                     //debug($hResult->errorInfo());
-                    $sInfo .= 'Die Änderungen wurden gespeichert ('.showClienttime().').<br>';
+                    $sInfo .= 'Die Änderungen wurden gespeichert (' . showClienttime() . ').<br>';
                 }
             }
         }
-        $sQ = "SELECT ".DB_ADDRESSFIELDS." FROM ".DB_CUSTOMERTABLE;
-        $sQ .= " WHERE ".DB_CUSTOMERTABLE_PKEY." = :id";
+        $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
+        $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " = :id";
         $hResult = $DB->prepare($sQ);
         $hResult->bindValue(':id', $iId);
         $hResult->execute();
@@ -127,7 +126,7 @@ function handleUserAdmin($CUA, $twig) {
             //$sH .= debug($aUser);
             if (isset($sInfo) && $sInfo != '') $sH .= $sInfo;
             $sH .= '<br>';
-            $aPData["customerform"] = buildCustomerForm('admin', $aErr, $aUser);
+            $aPData["customerform"] = buildCustomerForm($C, $sLang, 'admin', $aErr, $aUser);
         } else {
             $sH .= 'Keine entsprechender Benutzer gefunden.';
         }

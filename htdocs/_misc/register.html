@@ -21,7 +21,7 @@ if (isset($_SESSION["user"])) {
     $sH = '';
     $aErr = array();
     if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
-        $aErr = validateCustomerForm($aErr);
+        $aErr = validateCustomerForm($C, $sLang, $aErr);
         if (count($aErr) == 0) {
             $sQ = "SELECT ".DB_CUSTOMERFIELD_EMAIL." FROM ".DB_CUSTOMERTABLE;
             $sQ .= " WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
@@ -62,18 +62,18 @@ if (isset($_SESSION["user"])) {
                 }
                 $hResult->execute();
 
-                sendVerificationMail($sEmailVerificationcode, $_POST["email"]);
-                sendVerificationMail($sEmailVerificationcode, $_POST["email"], true);
+                sendVerificationMail($sEmailVerificationcode, $_POST["email"], $C);
+                sendVerificationMail($sEmailVerificationcode, $_POST["email"], $C, true);
                 $aPData["showsuccessmessage"] = true;
             } else {
                 $aErr["emailalreadyexists"] = true;
-                $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm('register', $aErr);
+                $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'register', $aErr);
             }
         } else {
-            $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm('register', $aErr);
+            $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'register', $aErr);
         }
     } else {
-        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm('register');
+        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'register');
     }
     if (isset($aPData) && count($aPData)) {
         $P["base"]["cb_customdata"]["register"] = $aPData;
@@ -82,6 +82,6 @@ if (isset($_SESSION["user"])) {
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

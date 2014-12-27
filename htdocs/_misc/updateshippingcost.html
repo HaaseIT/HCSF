@@ -23,7 +23,7 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
     }
 
     $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-    $aData = buildShoppingCartTable($_SESSION["cart"]);
+    $aData = buildShoppingCartTable($_SESSION["cart"], $sLang, $C);
 
     echo '<div>';
     echo '<div id="shippingcostbrutto_new">'.number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"], 2, ',', '.').'</div>';

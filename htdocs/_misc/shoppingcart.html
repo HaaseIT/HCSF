@@ -50,7 +50,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
     if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
         $aErr = array();
         if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
-            $aErr = validateCustomerForm($aErr, true);
+            $aErr = validateCustomerForm($C, $sLang, $aErr, true);
             if (!getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
                 $aErr["tos"] = true;
             }
@@ -61,7 +61,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 $aErr["paymentmethod"] = true;
             }
         }
-        $aShoppingcart = buildShoppingCartTable($_SESSION["cart"], false, '', $aErr);
+        $aShoppingcart = buildShoppingCartTable($_SESSION["cart"], $sLang, $C, false, '', $aErr);
     }
 
     if (!isset($aShoppingcart)) {
@@ -95,7 +95,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
                         'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
                         'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-                        'o_shippingcost' => getShippingcost($C),
+                        'o_shippingcost' => getShippingcost($C, $sLang),
                         'o_orderdate' => date("Y-m-d"),
                         'o_ordertimestamp' => time(),
                         'o_authed' => ((getUserData()) ? 'y' : 'n'),
@@ -173,8 +173,8 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                     $DB->rollBack();
                 }
                 //die(debug($aDataOrderClean, true).debug($aDataOrderItemsClean, true));
-                $sMailbody_us = buildOrderMailBody($twig, false, $iInsertID);
-                $sMailbody_they = buildOrderMailBody($twig, true, $iInsertID);
+                $sMailbody_us = buildOrderMailBody($C, $sLang, $twig, false, $iInsertID);
+                $sMailbody_they = buildOrderMailBody($C, $sLang, $twig, true, $iInsertID);
 
                 // write to file
                 $fp = fopen(PATH_DOCROOT.PATH_ORDERLOG.'shoplog_'.date("Y-m-d").'.html', 'a');
@@ -213,6 +213,6 @@ if (isset($aShoppingcart)) {
 }
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

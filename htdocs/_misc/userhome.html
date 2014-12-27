@@ -39,7 +39,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             //debug($sQ);
             $iRows = $hResult->rowCount();
             if ($iRows == 1) $sErr .= T("userprofile_emailalreadyinuse").'<br>';
-            $sErr = validateCustomerForm($sErr, true);
+            $sErr = validateCustomerForm($C, $sLang, $sErr, true);
 
             if ($sErr == '') {
                 if ($C["allow_edituserprofile"]) {
@@ -76,10 +76,10 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             }
         }
         if (isset($sInfo) && $sInfo != '') $aPData["text_aboveform"] = $sInfo;
-        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm('editprofile', $sErr);
+        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
         //if ($C["allow_edituserprofile"]) $sH .= '<br>'.T("userprofile_infoeditemail"); // Future implementation
     } else {
-        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm('userhome');
+        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
         $aPData["showlinktoreferer"] = true;
     }
     $aPData["showprofilelinks"] = false;
@@ -95,6 +95,6 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

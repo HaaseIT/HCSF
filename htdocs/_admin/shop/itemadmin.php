@@ -118,6 +118,6 @@ if (isset($_REQUEST["action"])) {
     }
 }
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

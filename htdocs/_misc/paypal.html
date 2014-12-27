@@ -29,7 +29,7 @@ $hResult->execute();
 
 if ($hResult->rowCount() == 1) {
     $aOrder = $hResult->fetch();
-    $fGesamtbrutto = calculateTotalFromDB($aOrder);
+    $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
 
 
     $sPaypalURL = $C["paypal"]["url"].'?cmd=_xclick&rm=2&custom='.$iId.'&business='.$C["paypal"]["business"];
@@ -62,6 +62,6 @@ if ($hResult->rowCount() == 1) {
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

@@ -15,7 +15,7 @@ $P = array(
 );
 
 if( isset( $_POST["sAction"] ) && $_POST["sAction"]=="login" ) {
-    $mLogin = getLogin();
+    $mLogin = getLogin($C, $DB);
     if( isset( $mLogin["status"] ) && $mLogin["status"] == 'success' ) {
         $sH = T("login_success").'<br>';
         header('Location: /_misc/userhome.html?login=true');
@@ -36,6 +36,6 @@ refreshCartItems($C, $oItem);
 
 $P["lang"]["cl_html"] = $sH;
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

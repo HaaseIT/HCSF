@@ -71,10 +71,8 @@ function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     return $sH;
 }
 
-function loadTextcats()
+function loadTextcats($sLang, $C, $DB)
 {
-    global $sLang, $C, $DB;
-
     $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang";
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);

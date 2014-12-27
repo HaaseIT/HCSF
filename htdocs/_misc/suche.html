@@ -14,7 +14,7 @@ $P = array(
     ),
 );
 
-$aP = generatePage($C, $P, $sLang);
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
 $aP["debug"] = true;
 
 echo $twig->render($C["template_base"], $aP);
