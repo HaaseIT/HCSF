@@ -26,7 +26,9 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 }
 
 // Load core config
+include_once('constants.fixed.php');
 include_once('config.core.php');
+include_once('config.countries.php');
 include_once('config.scrts.php');
 include_once('functions.template.php');
 include_once('functions.misc.php');

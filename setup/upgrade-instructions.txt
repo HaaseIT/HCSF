@@ -1,0 +1,24 @@
+
+V2.01 auf VX.XX
+itemgroups_base table remove itmg_imglg rename itmg_imgsm to itmg_img:
+ALTER TABLE `itemgroups_base` DROP `itmg_imglg`;
+ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img`;
+
+VATID:
+ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat_id` VARCHAR(16) NOT NULL;
+ALTER TABLE `item_base` CHANGE `itm_vatid` `itm_vatid` VARCHAR(16) NOT NULL;
+UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` = 'full'
+UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = 'reduced'
+UPDATE `item_base` SET `itm_vatid` = 'none' WHERE `itm_vatid` = '0'
+
+// ist dies hier korrekt??
+UPDATE `orders_items` SET `oi_vat_id` = 'full' WHERE `oi_vat_id` = '19'
+UPDATE `orders_items` SET `oi_vat_id` = 'reduced' WHERE `oi_vat_id` = '7'
+UPDATE `orders_items` SET `oi_vat_id` = 'none' WHERE `oi_vat_id` = '0'
+
+config änderung: config.shop.php:
+define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
+
+Most constants in config.core.php, config.customer.php and config.shop.php have been moved to a new file: constants.fixed.php
+
+Country Data has been moved from config.core.php to config.countries.php

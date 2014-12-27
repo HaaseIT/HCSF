@@ -69,13 +69,13 @@ function calculateTotalFromDB($C, $aOrder)
     if ($aOrder["o_mindermenge"] > 0) {
         $fVoll += $aOrder["o_mindermenge"];
         $fGesamtnetto += $aOrder["o_mindermenge"];
-        $fSteuervoll = ($fVoll * $C["vat"]["19"] / 100);
+        $fSteuervoll = ($fVoll * $C["vat"]["full"] / 100);
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm; 
     }
     if ($aOrder["o_shippingcost"] > 0) {
         $fVoll += $aOrder["o_shippingcost"];
         $fGesamtnetto += $aOrder["o_shippingcost"];
-        $fSteuervoll = ($fVoll * $C["vat"]["19"] / 100);
+        $fSteuervoll = ($fVoll * $C["vat"]["full"] / 100);
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
@@ -85,8 +85,8 @@ function calculateTotalFromDB($C, $aOrder)
 function addAdditionalCostsToItems($C, $sLang, $aSumme)
 {
     $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
-    $fSteuervoll = round($aSumme["sumvoll"] * $C["vat"]["19"] / 100, 2);
-    $fSteuererm = round($aSumme["sumerm"] * $C["vat"]["7"] / 100, 2);
+    $fSteuervoll = round($aSumme["sumvoll"] * $C["vat"]["full"] / 100, 2);
+    $fSteuererm = round($aSumme["sumerm"] * $C["vat"]["reduced"] / 100, 2);
     $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
     $aOrder = array(
@@ -115,14 +115,14 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     } elseif ($fGesamtnettoitems < $C["reducedorderamountnet1"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee1"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee1"];
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["19"] / 100, 2);
+        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2);
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 1;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee1"];
     } elseif($fGesamtnettoitems < $C["reducedorderamountnet2"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee2"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee2"];
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["19"] / 100, 2);
+        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2);
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 2;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee2"];
@@ -131,10 +131,10 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     if (isset($C["shippingcoststandardrate"]) && $C["shippingcoststandardrate"] != 0 &&
     ((!isset($C["mindestbetragversandfrei"]) || !$C["mindestbetragversandfrei"]) || $fGesamtnettoitems < $C["mindestbetragversandfrei"]))  {
         $aOrder["fVersandkostennetto"] = getShippingcost($C, $sLang);
-        $aOrder["fVersandkostenvat"] = round($aOrder["fVersandkostennetto"] * $C["vat"]["19"] / 100, 2);
+        $aOrder["fVersandkostenvat"] = round($aOrder["fVersandkostennetto"] * $C["vat"]["full"] / 100, 2);
         $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["19"] / 100, 2) + $aOrder["fVersandkostenvat"];
+        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2) + $aOrder["fVersandkostenvat"];
         $aOrder["fVoll"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtnetto"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
@@ -224,11 +224,11 @@ function calculateCartItems($C, $aCart)
             $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
             //$fTaxVoll += 0;
         } else {
-            if ($aValue["vat"] == "19") {
+            if ($aValue["vat"] == "full") {
                 $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
                 $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($aValue["vat"] / 100));
             }
-            if ($aValue["vat"] == "7") {
+            if ($aValue["vat"] == "reduced") {
                 $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
                 $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($aValue["vat"] / 100));
             }

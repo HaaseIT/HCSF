@@ -1,0 +1,15 @@
+Requirements:
+Apache 2.x with mod_rewrite enabled
+PHP 5.4.x
+PHPMailer 5.2.9 and higher
+Twig 1.16.2 and higher
+
+The following directories must be writeable by the webserver:
+htdocs/_admin/orderlogs
+templatecache
+
+
+Rename the config.*.example.php to config.*.php and edit them to your needs.
+Put the required libraries into their configured paths.
+Run the db-scripts.sql on your configured database to init the database.
+Configure user auth for the /_admin/ directory in the .htaccess file

@@ -1,46 +1,5 @@
 <?php
 
-define("DB_ITEMTABLE_BASE", 'item_base');
-define("DB_ITEMTABLE_BASE_PKEY", 'itm_id');
-define("DB_ITEMFIELD_NUMBER", 'itm_no');
-define("DB_ITEMFIELD_NAME", 'itm_name');
-define("DB_ITEMFIELD_GROUP", 'itm_group');
-define("DB_ITEMFIELD_INDEX", 'itm_index');
-define("DB_ITEMFIELD_PRICE", 'itm_price');
-define("DB_ITEMFIELD_VAT", 'itm_vatid');
-define("DB_ITEMFIELD_RG", 'itm_rg');
-define("DB_ITEMFIELD_ORDER", 'itm_order');
-define("DB_ITEMFIELD_IMG", 'itm_img');
-define("DB_ITEMFIELD_DATA", 'itm_data');
-
-define("DB_ITEMTABLE_TEXT", 'item_lang');
-define("DB_ITEMTABLE_TEXT_PKEY", 'itml_id');
-define("DB_ITEMTABLE_TEXT_PARENTPKEY", 'itml_pid');
-define("DB_ITEMFIELD_LANGUAGE", 'itml_lang');
-define("DB_ITEMFIELD_NAME_OVERRIDE", 'itml_name_override');
-define("DB_ITEMFIELD_TEXT1", 'itml_text1');
-define("DB_ITEMFIELD_TEXT2", 'itml_text2');
-define("DB_ITEMFIELDS", 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itml_name_override, itml_text1, itml_text2, itm_index');
-
-define("DB_ITEMGROUPTABLE_BASE", 'itemgroups_base');
-define("DB_ITEMGROUPTABLE_BASE_PKEY", 'itmg_id');
-define("DB_ITEMGROUPFIELD_NUMBER", 'itmg_no');
-define("DB_ITEMGROUPFIELD_NAME", 'itmg_name');
-define("DB_ITEMGROUPFIELD_IMG", 'itmg_img');
-
-define("DB_ITEMGROUPTABLE_TEXT", 'itemgroups_text');
-define("DB_ITEMGROUPTABLE_TEXT_PKEY", 'itmgt_id');
-define("DB_ITEMGROUPTABLE_TEXT_PARENTPKEY", 'itmgt_pid');
-define("DB_ITEMGROUPFIELD_SHORTTEXT", 'itmgt_shorttext');
-define("DB_ITEMGROUPFIELD_DETAILS", 'itmgt_details');
-define("DB_ITEMGROUPFIELD_LANGUAGE", 'itmgt_lang');
-define("DB_ITEMGROUPFIELDS", 'itmg_no, itmg_name, itmg_imgsm, itmg_imglg, itmgt_shorttext, itmgt_details');
-
-define("DB_ORDERTABLE", 'orders');
-define("DB_ORDERTABLE_PKEY", 'o_id');
-define("DB_ORDERFIELD_PAYMENTMETHOD", 'o_paymentmethod');
-define("DB_ORDERTABLE_ITEMS", 'orders_items');
-
 define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
 
 $TMP = array(
@@ -184,9 +143,9 @@ $TMP = array(
 
     'vat_disable' => true,
     'vat' => array( // default vat of country first!!
-        '19' => '0',
-        '7' => '0',
-        // '0' => '0', // if vat is disabled please uncomment this!
+        'full' => 19,
+        'reduced' => 7,
+        // 'none' => 0, // if vat is disabled please uncomment this!
     ),
 );
 

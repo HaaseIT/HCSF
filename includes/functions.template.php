@@ -52,8 +52,8 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         'isloggedin' => getUserData(),
         'orderamounts' => $C["orderamounts"],
     );
-    if (isset($C["vat"]["19"])) $aP["vatfull"] = $C["vat"]["19"];
-    if (isset($C["vat"]["7"])) $aP["vatreduced"] = $C["vat"]["7"];
+    if (isset($C["vat"]["full"])) $aP["vatfull"] = $C["vat"]["full"];
+    if (isset($C["vat"]["reduced"])) $aP["vatreduced"] = $C["vat"]["reduced"];
     if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
     if (isset($P["base"]["cb_key"])) $aP["path"] = pathinfo($P["base"]["cb_key"]);
     else $aP["path"] = pathinfo($aP["requesturi"]);
