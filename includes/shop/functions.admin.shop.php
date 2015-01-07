@@ -139,7 +139,7 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
                 $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = [
                     'amount' => $aValue["oi_amount"],
                     'price' => $aPrice,
-                    'vat' => $C["vat"][$aValue["oi_vat_id"]],
+                    'vat' => $aValue["oi_vat"],
                     'rg' => $aValue["oi_rg"],
                     'rg_rebate' => $aValue["oi_rg_rebate"],
                     'name' => $aValue["oi_itemname"],

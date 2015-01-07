@@ -72,7 +72,7 @@
                         Artikelpreis:<br>
                         <input type="text" name="price" value="{{ customdata.item.price }}" id="itemadmin-price">
                     </td>
-                    {% if vatoptions is defined %}
+                    {% if customdata.item.vatoptions is defined %}
                         <td>
                             MwSt:<br>
                             {{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vatid') }}

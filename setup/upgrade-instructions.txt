@@ -11,10 +11,9 @@ UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` = 'full'
 UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = 'reduced'
 UPDATE `item_base` SET `itm_vatid` = 'none' WHERE `itm_vatid` = '0'
 
-// ist dies hier korrekt??
-UPDATE `orders_items` SET `oi_vat_id` = 'full' WHERE `oi_vat_id` = '19'
-UPDATE `orders_items` SET `oi_vat_id` = 'reduced' WHERE `oi_vat_id` = '7'
-UPDATE `orders_items` SET `oi_vat_id` = 'none' WHERE `oi_vat_id` = '0'
+VAT / Orders:
+ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat` INT NOT NULL;
+Feldinhalte anpassen!!
 
 config änderung: config.shop.php:
 define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');

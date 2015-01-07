@@ -141,14 +141,14 @@ class Item
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
-                    $aPrice["brutto_sale"] =  \round($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$iMwstart] / 100, 2) + $aData["itm_data"]["sale"]["price"];
+                    $aPrice["brutto_sale"] =  ($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$iMwstart] / 100) + $aData["itm_data"]["sale"]["price"];
                 }
             }
             if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][getUserData('cust_group')])) {
-                $aPrice["netto_rebated"] = \round($fPrice * (100 - $this->C["rebate_groups"][$sRG][\getUserData('cust_group')]) / 100, 2);
-                $aPrice["brutto_rebated"] = \round($aPrice["netto_rebated"] * $this->C["vat"][$iMwstart] / 100, 2) + $aPrice["netto_rebated"];;
+                $aPrice["netto_rebated"] = $fPrice * (100 - $this->C["rebate_groups"][$sRG][\getUserData('cust_group')]) / 100;
+                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$iMwstart] / 100) + $aPrice["netto_rebated"];;
             }
-            $fBrutto = \round($fPrice * $this->C["vat"][$iMwstart] / 100, 2) + $fPrice;
+            $fBrutto = ($fPrice * $this->C["vat"][$iMwstart] / 100) + $fPrice;
             $aPrice["netto_list"] = $fPrice;
             $aPrice["brutto_list"] = $fBrutto;
         } else return false;

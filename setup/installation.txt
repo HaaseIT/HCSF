@@ -13,3 +13,5 @@ Rename the config.*.example.php to config.*.php and edit them to your needs.
 Put the required libraries into their configured paths.
 Run the db-scripts.sql on your configured database to init the database.
 Configure user auth for the /_admin/ directory in the .htaccess file
+
+For production use turn of display_errors at the beginning of includes/base.php

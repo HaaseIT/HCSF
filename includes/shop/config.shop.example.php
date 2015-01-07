@@ -145,7 +145,7 @@ $TMP = array(
     'vat' => array( // default vat of country first!!
         'full' => 19,
         'reduced' => 7,
-        // 'none' => 0, // if vat is disabled please uncomment this!
+        'none' => 0,
     ),
 );
 

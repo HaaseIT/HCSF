@@ -1,5 +1,9 @@
 <?php
 
+function addVAT($C, $fNetto, $sVatID) {
+
+}
+
 function showOrderStatusText($sStatusShort)
 {
     if ($sStatusShort == 'y') {
@@ -79,14 +83,14 @@ function calculateTotalFromDB($C, $aOrder)
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
-    return 	$fGesamtbrutto;
+    return $fGesamtbrutto;
 }
 
 function addAdditionalCostsToItems($C, $sLang, $aSumme)
 {
     $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
-    $fSteuervoll = round($aSumme["sumvoll"] * $C["vat"]["full"] / 100, 2);
-    $fSteuererm = round($aSumme["sumerm"] * $C["vat"]["reduced"] / 100, 2);
+    $fSteuervoll = $aSumme["sumvoll"] * $C["vat"]["full"] / 100;
+    $fSteuererm = $aSumme["sumerm"] * $C["vat"]["reduced"] / 100;
     $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
     $aOrder = array(
@@ -115,14 +119,14 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     } elseif ($fGesamtnettoitems < $C["reducedorderamountnet1"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee1"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee1"];
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2);
+        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $C["vat"]["full"] / 100;
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 1;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee1"];
     } elseif($fGesamtnettoitems < $C["reducedorderamountnet2"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee2"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee2"];
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2);
+        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $C["vat"]["full"] / 100;
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 2;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee2"];
@@ -131,16 +135,14 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     if (isset($C["shippingcoststandardrate"]) && $C["shippingcoststandardrate"] != 0 &&
     ((!isset($C["mindestbetragversandfrei"]) || !$C["mindestbetragversandfrei"]) || $fGesamtnettoitems < $C["mindestbetragversandfrei"]))  {
         $aOrder["fVersandkostennetto"] = getShippingcost($C, $sLang);
-        $aOrder["fVersandkostenvat"] = round($aOrder["fVersandkostennetto"] * $C["vat"]["full"] / 100, 2);
+        $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $C["vat"]["full"] / 100;
         $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
-        $aOrder["fSteuervoll"] = round($aOrder["fVoll"] * $C["vat"]["full"] / 100, 2) + $aOrder["fVersandkostenvat"];
+        $aOrder["fSteuervoll"] = ($aOrder["fVoll"] * $C["vat"]["full"] / 100) + $aOrder["fVersandkostenvat"];
         $aOrder["fVoll"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtnetto"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
     } else $aOrder["fVersandkosten"] = 0;
-
-    //debug($aOrder);
 
     return $aOrder;
 }
@@ -176,7 +178,7 @@ function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
 
     $aData = array(
         'customerversion' => $bCust,
-        'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
+        //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
         'datetime' => date("d.m.Y - H:i"),
         'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $C["minimum_length_custno"] ? $_POST["custno"] : ''),
         'corpname' => (isset($_POST["corpname"]) && trim($_POST["corpname"]) != '' ? $_POST["corpname"] : ''),

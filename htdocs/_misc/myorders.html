@@ -56,7 +56,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
                 $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = array(
                     'amount' => $aValue["oi_amount"],
                     'price' => $aPrice,
-                    'vat' => $C["vat"][$aValue["oi_vat_id"]],
+                    'vat' => $aValue["oi_vat"],
                     //'rg' => $aValue["oi_rg"],
                     'name' => $aValue["oi_itemname"],
                     'img' => $aValue["oi_img"],

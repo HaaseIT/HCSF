@@ -132,7 +132,7 @@ function admin_prepareItem($aItemdata, $C, $DB, $sLang)
 
     if (!$C["vat_disable"]) {
         $aOptions[] = '|';
-        foreach ($C["vat"] as $sKey => $sValue) $aOptions[] = $sValue . '|' . $sKey;
+        foreach ($C["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
         $aData["vatoptions"] = $aOptions;
         unset($aOptions);
     }
