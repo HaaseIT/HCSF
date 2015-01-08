@@ -105,6 +105,8 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         'o_ordercompleted' => 'n',
                         'o_paymentcompleted' => 'n',
                         'o_srv_hostname' => $_SERVER["HTTP_HOST"],
+                        'o_vatfull' => $C["vat"]["full"],
+                        'o_vatreduced' => $C["vat"]["reduced"],
                     );
                     $sQ = \HaaseIT\Tools::buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
                     //die($sQ);

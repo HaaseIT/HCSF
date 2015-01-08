@@ -156,7 +156,9 @@ o_id int(11) NOT NULL,
   o_lastedit_user varchar(16) NOT NULL,
   o_paypal_tx varchar(128) NOT NULL,
   o_shipping_service varchar(16) NOT NULL,
-  o_shipping_trackingno varchar(64) NOT NULL
+  o_shipping_trackingno varchar(64) NOT NULL,
+  o_vatfull int(11) NOT NULL,
+  o_vatreduced int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS orders_items;

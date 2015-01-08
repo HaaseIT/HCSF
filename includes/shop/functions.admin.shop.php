@@ -148,7 +148,18 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
             }
             //debug($aItemsforShoppingcarttable);
 
-            $aSData = array_merge(buildShoppingCartTable($aItemsforShoppingcarttable, $sLang, $C, true, $aSData["orderdata"]["o_group"]), $aSData);
+            $aSData = array_merge(
+                buildShoppingCartTable(
+                    $aItemsforShoppingcarttable,
+                    $sLang,
+                    $C,
+                    true,
+                    $aSData["orderdata"]["o_group"],
+                    '',
+                    $aSData["orderdata"]["o_vatfull"],
+                    $aSData["orderdata"]["o_vatreduced"]
+                ),
+                $aSData);
         } else {
             $sH .= 'Keine entsprechende Bestellung gefunden.';
         }

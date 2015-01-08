@@ -58,7 +58,7 @@ function showMyOrders($COList, $twig, $DB)
     return $sH;
 }
 
-function calculateTotalFromDB($C, $aOrder)
+function calculateTotalFromDB($aOrder)
 {
     $fGesamtnetto = $aOrder["o_sumnettoall"];
     $fVoll = $aOrder["o_sumvoll"];
@@ -69,24 +69,24 @@ function calculateTotalFromDB($C, $aOrder)
     if ($aOrder["o_mindermenge"] > 0) {
         $fVoll += $aOrder["o_mindermenge"];
         $fGesamtnetto += $aOrder["o_mindermenge"];
-        $fSteuervoll = ($fVoll * $C["vat"]["full"] / 100);
+        $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm; 
     }
     if ($aOrder["o_shippingcost"] > 0) {
         $fVoll += $aOrder["o_shippingcost"];
         $fGesamtnetto += $aOrder["o_shippingcost"];
-        $fSteuervoll = ($fVoll * $C["vat"]["full"] / 100);
+        $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
     return $fGesamtbrutto;
 }
 
-function addAdditionalCostsToItems($C, $sLang, $aSumme)
+function addAdditionalCostsToItems($C, $sLang, $aSumme, $iVATfull, $iVATreduced)
 {
     $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
-    $fSteuervoll = $aSumme["sumvoll"] * $C["vat"]["full"] / 100;
-    $fSteuererm = $aSumme["sumerm"] * $C["vat"]["reduced"] / 100;
+    $fSteuervoll = $aSumme["sumvoll"] * $iVATfull / 100;
+    $fSteuererm = $aSumme["sumerm"] * $iVATreduced / 100;
     $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
     $aOrder = array(
@@ -115,14 +115,14 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     } elseif ($fGesamtnettoitems < $C["reducedorderamountnet1"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee1"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee1"];
-        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $C["vat"]["full"] / 100;
+        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 1;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee1"];
     } elseif($fGesamtnettoitems < $C["reducedorderamountnet2"]) {
         $aOrder["fVoll"] += $C["reducedorderamountfee2"];
         $aOrder["fGesamtnetto"] += $C["reducedorderamountfee2"];
-        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $C["vat"]["full"] / 100;
+        $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
         $aOrder["iMindergebuehr_id"] = 2;
         $aOrder["fMindergebuehr"] = $C["reducedorderamountfee2"];
@@ -131,10 +131,10 @@ function addAdditionalCostsToItems($C, $sLang, $aSumme)
     if (isset($C["shippingcoststandardrate"]) && $C["shippingcoststandardrate"] != 0 &&
     ((!isset($C["mindestbetragversandfrei"]) || !$C["mindestbetragversandfrei"]) || $fGesamtnettoitems < $C["mindestbetragversandfrei"]))  {
         $aOrder["fVersandkostennetto"] = getShippingcost($C, $sLang);
-        $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $C["vat"]["full"] / 100;
+        $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
         $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
-        $aOrder["fSteuervoll"] = ($aOrder["fVoll"] * $C["vat"]["full"] / 100) + $aOrder["fVersandkostenvat"];
+        $aOrder["fSteuervoll"] = ($aOrder["fVoll"] * $iVATfull / 100) + $aOrder["fVersandkostenvat"];
         $aOrder["fVoll"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtnetto"] += $aOrder["fVersandkostennetto"];
         $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
@@ -252,15 +252,19 @@ function refreshCartItems($C, $oItem) // bei login/logout ändern sich ggf die p
     }
 }
 
-function buildShoppingCartTable($aCart, $sLang, $C, $bReadonly = false, $sCustomergroup = '', $aErr = '')
+function buildShoppingCartTable($aCart, $sLang, $C, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
 {
+    if ($iVATfull == '' && $iVATreduced == '') {
+        $iVATfull = $C["vat"]["full"];
+        $iVATreduced = $C["vat"]["reduced"];
+    }
     $aSumme = calculateCartItems($C, $aCart);
     $aData["shoppingcart"] = array(
         'readonly' => $bReadonly,
         'customergroup' => $sCustomergroup,
         'cart' => $aCart,
         'rebategroups' => $C["rebate_groups"],
-        'additionalcoststoitems' => addAdditionalCostsToItems($C, $sLang, $aSumme),
+        'additionalcoststoitems' => addAdditionalCostsToItems($C, $sLang, $aSumme, $iVATfull, $iVATreduced),
         'minimumorderamountnet' => $C["minimumorderamountnet"],
         'reducedorderamountnet1' => $C["reducedorderamountnet1"],
         'reducedorderamountnet2' => $C["reducedorderamountnet2"],

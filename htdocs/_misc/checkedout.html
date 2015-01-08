@@ -28,7 +28,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
 
     if ($hResult->rowCount() == 1) {
         $P["base"]["cb_customdata"]["order"] = $hResult->fetch();
-        $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($C, $P["base"]["cb_customdata"]["order"]);
+        $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($P["base"]["cb_customdata"]["order"]);
     }
 } else $sH = T("denied_notloggedin");
 

@@ -63,7 +63,16 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
                 );
             }
 
-            $aShoppingcart = buildShoppingCartTable($aItemsforShoppingcarttable, $sLang, $C, true);
+            $aShoppingcart = buildShoppingCartTable(
+                $aItemsforShoppingcarttable,
+                $sLang,
+                $C,
+                true,
+                '',
+                '',
+                $aOrder["o_vatfull"],
+                $aOrder["o_vatreduced"]
+            );
         }
         else {
             $sH .= T("myorders_order_not_found");

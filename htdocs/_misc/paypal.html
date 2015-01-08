@@ -29,7 +29,7 @@ $hResult->execute();
 
 if ($hResult->rowCount() == 1) {
     $aOrder = $hResult->fetch();
-    $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
+    $fGesamtbrutto = calculateTotalFromDB($aOrder);
 
 
     $sPaypalURL = $C["paypal"]["url"].'?cmd=_xclick&rm=2&custom='.$iId.'&business='.$C["paypal"]["business"];

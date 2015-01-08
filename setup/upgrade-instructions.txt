@@ -12,6 +12,7 @@ UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = '7'
 UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` != 'reduced'
 
 VAT / Orders:
+ALTER TABLE `orders` ADD `o_vatfull` INT NOT NULL , ADD `o_vatreduced` INT NOT NULL ;
 ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat` INT NOT NULL;
 Feldinhalte anpassen!!
 
