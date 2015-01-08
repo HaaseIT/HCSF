@@ -1,9 +1,5 @@
 <?php
 
-function addVAT($C, $fNetto, $sVatID) {
-
-}
-
 function showOrderStatusText($sStatusShort)
 {
     if ($sStatusShort == 'y') {
@@ -222,18 +218,15 @@ function calculateCartItems($C, $aCart)
     $fTaxErm = 0;
     $fTaxVoll = 0;
     foreach ($aCart as $aValue) {
-        if ($C["vat_disable"]) {
+        // Hmmmkay, so, if vat is not disabled and there is no vat id or none as vat id set to this item, then
+        // use the full vat as default. Only use reduced if it is set. Gotta use something as default or item
+        // will not add up to total price
+        if ($aValue["vat"] != "reduced") {
             $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-            //$fTaxVoll += 0;
+            $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($C["vat"]["full"] / 100));
         } else {
-            if ($aValue["vat"] == "full") {
-                $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($aValue["vat"] / 100));
-            }
-            if ($aValue["vat"] == "reduced") {
-                $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($aValue["vat"] / 100));
-            }
+            $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
+            $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($C["vat"]["reduced"] / 100));
         }
     }
     $aSumme = array('sumvoll' => $fVoll, 'sumerm' => $fErm, 'taxvoll' => $fTaxVoll, 'taxerm' => $fTaxErm);

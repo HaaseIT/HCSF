@@ -132,8 +132,11 @@ class Item
     {
         $aPrice = array();
         $fPrice = $aData[DB_ITEMFIELD_PRICE];
-        $iMwstart = $aData[DB_ITEMFIELD_VAT];
         $sRG = $aData[DB_ITEMFIELD_RG];
+        $sMwstart = $aData[DB_ITEMFIELD_VAT];
+        if ($sMwstart != 'reduced') {
+            $sMwstart = 'full';
+        }
 
         //if ($iMwstart == 0) return false;
         if(\trim($fPrice) != '' && \trim($fPrice) != '0') {
@@ -141,14 +144,14 @@ class Item
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
-                    $aPrice["brutto_sale"] =  ($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$iMwstart] / 100) + $aData["itm_data"]["sale"]["price"];
+                    $aPrice["brutto_sale"] =  ($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$sMwstart] / 100) + $aData["itm_data"]["sale"]["price"];
                 }
             }
             if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][getUserData('cust_group')])) {
                 $aPrice["netto_rebated"] = $fPrice * (100 - $this->C["rebate_groups"][$sRG][\getUserData('cust_group')]) / 100;
-                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$iMwstart] / 100) + $aPrice["netto_rebated"];;
+                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$sMwstart] / 100) + $aPrice["netto_rebated"];;
             }
-            $fBrutto = ($fPrice * $this->C["vat"][$iMwstart] / 100) + $fPrice;
+            $fBrutto = ($fPrice * $this->C["vat"][$sMwstart] / 100) + $fPrice;
             $aPrice["netto_list"] = $fPrice;
             $aPrice["brutto_list"] = $fBrutto;
         } else return false;

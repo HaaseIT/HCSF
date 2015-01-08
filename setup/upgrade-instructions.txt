@@ -5,18 +5,23 @@ ALTER TABLE `itemgroups_base` DROP `itmg_imglg`;
 ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img`;
 
 VATID:
+ALTER TABLE `item_base` CHANGE `itm_vatid` `itm_vatid` VARCHAR(16) NOT NULL DEFAULT 'full';
 ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat_id` VARCHAR(16) NOT NULL;
-ALTER TABLE `item_base` CHANGE `itm_vatid` `itm_vatid` VARCHAR(16) NOT NULL;
-UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` = 'full'
-UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = 'reduced'
-UPDATE `item_base` SET `itm_vatid` = 'none' WHERE `itm_vatid` = '0'
+
+UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = '7'
+UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` != 'reduced'
 
 VAT / Orders:
 ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat` INT NOT NULL;
 Feldinhalte anpassen!!
 
 config änderung: config.shop.php:
-define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
+    define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
+nach $TMP und vor $CSA die Folgende Bedingung einfügen:
+    if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
+        $TMP["vat"] = array("full" => 0, "reduced" => 0);
+    }
+den Schlüssel $C["vat"]["none"] mit Wert löschen
 
 Most constants in config.core.php, config.customer.php and config.shop.php have been moved to a new file: constants.fixed.php
 

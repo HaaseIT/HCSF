@@ -145,9 +145,12 @@ $TMP = array(
     'vat' => array( // default vat of country first!!
         'full' => 19,
         'reduced' => 7,
-        'none' => 0,
     ),
 );
+
+if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
+    $TMP["vat"] = array("full" => 0, "reduced" => 0);
+}
 
 $CSA = array(
     'list_orders' => array(

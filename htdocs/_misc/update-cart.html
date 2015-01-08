@@ -91,6 +91,9 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             if (isset($_SESSION["cart"][$sCartKey])) {
                 if ($iAmount == 0) {
                     unset($_SESSION["cart"][$sCartKey]);
+                    if (count($_SESSION["cart"]) == 0) {
+                        unset($_SESSION["cartpricesums"]);
+                    }
                     if (isset($_REQUEST["ajax"])) {
                         $aAR = array(
                             'cart' => $_SESSION["cart"],
