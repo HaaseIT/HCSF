@@ -1,5 +1,6 @@
-{% macro select(name, values, default, id, class, readonly, rows, multipleselections, events) %}
-    <select name="{{ name }}{{ readonly ? '_disabled' : '' }}"{{ id != '' ? ' id="'~id~'"' : '' }}
+{% macro select(name, values, default, id, class, readonly, rows, multipleselections, events)
+%}<select
+    name="{{ name }}{{ readonly ? '_disabled' : '' }}"{{ id != '' ? ' id="'~id~'"' : '' }}
             {{ class != '' ? ' class="'~class~'"' : '' }}{{ readonly ? ' disabled' : '' }}{{ rows ? ' size="' ~ rows ~ '"' : '' }}
             {{ multipleselections ? ' multiple' : '' }}{{ events ? ' ' ~ events : '' }}>
         {% for value in values %}
@@ -10,11 +11,10 @@
                 <option value="{{value}}"{{ value == default ? ' selected' : '' }}>{{value}}</option>
             {% endif %}
         {% endfor %}
-    </select>
-    {{ readonly ? '<input type="hidden" name="' ~ name ~ '" value="' ~ default ~ '">' : '' }}
-{% endmacro %}
-{% macro showClientTime() %}
-<script type="text/javascript">
+    </select>{{ readonly ? '<input type="hidden" name="' ~ name ~ '" value="' ~ default ~ '">' : '' }}{%
+endmacro %}
+{% macro showClientTime()
+%}<script type="text/javascript">
     <!--
     var Jetzt = new Date();
     var Tag = Jetzt.getDate();
@@ -28,5 +28,5 @@
     if (Jahr<2000) Jahr=Jahr+1900;
     document.write(Tag + "." + Monat + "." + Jahr + "  " + Stunden + NachVollMinuten + Minuten + NachVollSekunden + Sekunden);
     //-->
-</script>
-{% endmacro %}
+</script>{%
+endmacro %}
