@@ -1,5 +1,5 @@
 
-V2.01 auf VX.XX
+V2.01 auf V2.02
 itemgroups_base table remove itmg_imglg rename itmg_imgsm to itmg_img:
 ALTER TABLE `itemgroups_base` DROP `itmg_imglg`;
 ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img`;
