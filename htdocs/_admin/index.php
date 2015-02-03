@@ -30,6 +30,14 @@ if (file_exists(PATH_ORDERLOG)) {
 } else {
     $sH .= 'NO!';
 }
+
+$sH .= '<br><br>';
+$sH .= 'Log Directory for PayPal Transactions '.PATH_PAYPALLOG.' exists: ';
+if (file_exists(PATH_PAYPALLOG)) {
+    $sH .= 'YES, and it is '.(is_writable(PATH_PAYPALLOG) ? '' : 'NOT ').'writable.';
+} else {
+    $sH .= 'NO!';
+}
 $aApacheModules = apache_get_modules();
 $sH .= '<br><br>';
 $sH .= 'The Apache module mod_rewrite is '.(array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ').'enabled.';

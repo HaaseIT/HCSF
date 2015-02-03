@@ -1,6 +1,8 @@
 <?php
 
 define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
+define("PATH_PAYPALLOG", PATH_DOCROOT.'_admin/ipnlogs/');
+define("FILE_PAYPALLOG", PATH_DOCROOT.'ipnlog.txt');
 
 $TMP = array(
     'email_orderconfirmation_attachment_cancellationform_de' => '',
@@ -16,7 +18,6 @@ $TMP = array(
     ),
     'paypal_notify' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_notify.html',
     'paypal_return' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_return.html',
-    'paypal_log' => '/_admin/ipnlogs/ipnlog.txt',
     'paypal_interactive' => true,
 
     'sofortueberweisung' => array(
@@ -145,6 +146,7 @@ $TMP = array(
     'vat' => array( // default vat of country first!!
         'full' => 19,
         'reduced' => 7,
+        // 'none' => 0, // if vat is disabled please uncomment this!
     ),
 );
 

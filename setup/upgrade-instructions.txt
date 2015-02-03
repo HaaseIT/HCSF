@@ -1,8 +1,11 @@
 
+V2.02 auf 2.xx
+config.shop.example.php: removed paypal_log from config array, added PATH_PAYPALLOG, FILE_PAYPALLOG as constants
+
 V2.01 auf V2.02
 itemgroups_base table remove itmg_imglg rename itmg_imgsm to itmg_img:
 ALTER TABLE `itemgroups_base` DROP `itmg_imglg`;
-ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img`;
+ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img` VARCHAR(256) NOT NULL;
 
 VATID:
 ALTER TABLE `item_base` CHANGE `itm_vatid` `itm_vatid` VARCHAR(16) NOT NULL DEFAULT 'full';
