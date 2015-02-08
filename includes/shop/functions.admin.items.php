@@ -170,7 +170,7 @@ function admin_updateItem($C, $DB)
         DB_ITEMTABLE_BASE_PKEY => $_REQUEST["id"],
     );
     if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = $_REQUEST["vatid"];
-    else $aData[DB_ITEMFIELD_VAT] = '0';
+    else $aData[DB_ITEMFIELD_VAT] = 'full';
     $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
     //echo $sQ."\n";
     $hResult = $DB->prepare($sQ);
