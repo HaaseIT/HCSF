@@ -1,0 +1,10 @@
+
+conf
+logs
+users
+app/config/config.core.php
+app/config/config.scrts.php
+app/config/config.navi.php
+app/config/config.customer.php
+app/config/config.shop.php
+vendor

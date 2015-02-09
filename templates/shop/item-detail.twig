@@ -1,21 +1,7 @@
 <script type="text/javascript" language="javascript">
-    {% if item.data.itm_data.detailimg|length > 0 %}
-    function preload(arrayOfImages) {
-        $(arrayOfImages).each(function(){
-            (new Image()).src = this;
-        });
-    }
-
-    preload([
-        '/_img/items/300/{{ item.data.itm_data.detailimg|join("','/_img/items/300/") }}'
-    ]);
-    function chimg (img) {
-        window.document.images["item-detail-img"].src = img;
-    }
-    {% endif %}
     {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
     $( function() {
-        $( '#addtoshoppingcart' ).submit(function() {
+        $( '#addtoshoppingcartsubmit' ).click(function() {
             $.ajax( {
                 url : '/_misc/update-cart.html?ajax', // your ajax file
                 type : 'post',
@@ -26,106 +12,148 @@
                         $('#item-detail-infobox').prepend("{{ T("itemdetail_submit_error") }}<br><br>");
                     } else {
                         $('#shoppingcartamount').html($('#shoppingcartamount_new' , resp).html());
+                        $('#shoppingcartinfo').html($('#shoppingcartinfo_new' , resp).html());
                         infoboxhtmlnew = '{{ T("itemdetail_infobox_addedtocart") }}<br><br><ul><li><a href="/_misc/shoppingcart.html">{{ T("itemdetail_infobox_paynow") }}</a></li><li><a href="../">{{ T("itemdetail_infobox_backtoshop") }}</a></li></ul>';
                         $('#item-detail-infobox').html(infoboxhtmlnew);
                     }
                 }
             });
-            return false;
         });
     });
     {% endif %}
+    function openFirstPanel(){
+        $('.accordion > dt:first-child').next().addClass('active').slideDown();
+    }
+    $( function() {
+        var allPanels = $('.accordion > dd').hide();
+        openFirstPanel();
+
+        $('.accordion > dt > a').click(function() {
+            $this = $(this);
+            $target =  $this.parent().next();
+
+            if($target.hasClass('active')){
+                $target.removeClass('active').slideUp();
+            }else{
+                allPanels.removeClass('active').slideUp();
+                $target.addClass('active').slideDown();
+            }
+            return false;
+        });
+    });
 </script>
-<br><br>
-<div id="item-detail-mainimgcont">
-    <img src="/_img/items/300/{{item.data.itm_img}}" id="item-detail-img">
-    {% if item.data.itm_data.detailimg|length > 0 %}
-        <div id="item-detail-detailimg">
-            <img src="/_img/items/90/{{ item.data.itm_img }}" onmouseover="chimg('/_img/items/300/{{ item.data.itm_img }}')">
-            {% for detailimg in item.data.itm_data.detailimg %}
-                <img src="/_img/items/90/{{ detailimg }}" onmouseover="chimg('/_img/items/300/{{ detailimg }}')">
-            {% endfor %}
-        </div>
-    {% endif %}
-    <div id="item-detail-versandinfo">
-        {{ T("itemdetail_shippingcost_headline") }}:<br>
-        {{ T("itemdetail_shippingcost_text") }}
-    </div>
-</div>
-<div id="item-detail-rightcont">
-    {% if items.totalitems > 1 %}
-        <div id="item-detail-itemnav">
-            <a href="{{ item.previtem }}.html"><img src="/_img/itemnav_left.gif"></a> {{ T("itemdetail_itemnav_item") }} {{ item.currentitem }} / {{ items.totalitems }} <a href="{{ item.nextitem }}.html"><img src="/_img/itemnav_right.gif"></a>
-        </div>
-    {% endif %}
-    <h1 id="item-detail-name">{% if item.data.itml_name_override|trim == '' %}
+
+<div class="pure-u-4-5">
+    <h2 id="item-detail-title">
+        {% if item.data.itml_name_override|trim == '' %}
             {{item.data.itm_name}}
         {% else %}
             {{item.data.itml_name_override}}
         {% endif %}
-    </h1>
-    <div id="item-detail-price">
-        {% if item.data.pricedata.netto_sale is defined and (item.data.pricedata.netto_rebated is not defined or item.data.pricedata.netto_sale < item.data.pricedata.netto_rebated) %}
-            {#Angebotspreis:<br>#}
-            {#Netto: {{item.data.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
-            {#Brutto: #}<span class="salesprice">{{item.data.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
-        {% endif %}
-        {% if item.data.pricedata.netto_rebated is defined and (item.data.pricedata.netto_sale is not defined or item.data.pricedata.netto_rebated < item.data.pricedata.netto_sale) %}
-            {#Ihr Preis:<br>#}
-            {#Netto: {{item.data.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
-            {#Brutto: #}{{item.data.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
-        {% endif %}
-        {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? ' <span class="sale-listprice">' : '' }}
-        {#Netto: {{item.data.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
-        {#Brutto: #}{{item.data.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
-        {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? '</span>' : '' }}
+    </h2>
+</div><div
+        class="pure-u-1-5" id="item-detail-no">{{ T("itemdetail_number") }} {{item.data.itm_no}}</div>
+
+<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
+    <div class="pure-u-1" id="item-detail-img-main">
+        <img src="/_img/items/336/{{ item.data.itm_img }}" class="pure-u-1" id="item-detail-img-main-img">
     </div>
-    <div id="item-detail-text">
-        {{ T("itemdetail_description") }}<br>
-        <br>
-        {{item.data.itml_text1}}
-    </div>
-    <br>
-    <div id="item-detail-itemno">{{ T("itemdetail_number") }} {{item.data.itm_no}}</div>
-    {#
-    Vatid: {{item.data.itm_vatid}}<br>
-    Rebategroup: {{item.data.itm_rg}}<br>
-    Group: {{item.data.itm_group}}<br>
-    Details: {{item.data.itml_details}}<br>
-    Sizes: {{item.data.itm_data.sizes}}<br>
-    #}
-    {% if item.data.itm_data.size is defined %}
-        {% set itemsizes = item.data.itm_data.size|split('|') %}
-    {% endif %}
-    <div id="item-detail-infobox">
-        {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
-        <form id="addtoshoppingcart" method="POST" target="/_misc/update-cart.html">
-            <input type="hidden" name="itemno" value="{{item.data.itm_no}}">
-            {% if itemsizes is defined %}
-                {{ macro.select('size', itemsizes, '', 'item-detail-form-size') }}
+    <script type="text/javascript">
+        function chimg (img) {
+            window.document.images["item-detail-img-main-img"].src = img;
+        }
+    </script>
+    <ul id="item-detail-img-thumbs">
+        <li class="pure-u-1-3"><img src="/_img/items/336/{{ item.data.itm_img }}" onclick="chimg('/_img/items/336/{{ item.data.itm_img }}')" class="pointer"></li>{%
+        for detailimg in item.data.itm_data.detailimg %}<li
+                class="pure-u-1-3"><img src="/_img/items/336/{{ detailimg }}" onclick="chimg('/_img/items/336/{{ detailimg }}')" class="pointer"></li>{% endfor %}
+    </ul>
+</div><div class="pure-u-1 pure-u-md-1-2 pure-u-lg-3-5">
+    <form id="addtoshoppingcart" method="POST" target="/_misc/update-cart.html" class="pure-form pure-form-stacked">
+        <div id="item-detail-text">
+            {{item.data.itml_text1}}
+            {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
+                {% if item.data.itm_data.size is defined %}
+                    {% set itemsizes = item.data.itm_data.size|split('|') %}
+                {% endif %}
+                <input type="hidden" name="itemno" value="{{item.data.itm_no}}">
+                <div class="pure-u-1-2">
+                <label class="block">{{ T("itemdetail_label_amount") }}</label>
+                {{ macro.select('amount', orderamounts, '', 'item-detail-amount', 'block') }}
+                </div>{% if itemsizes is defined %}<div class="pure-u-1-2"><div
+                        id="item-detail-size-cont">
+                    <label class="block">{{ T("itemdetail_label_size") }}</label>
+                    {{ macro.select('size', itemsizes, '', 'item-detail-size', 'block') }}
+                </div></div>
             {% endif %}
-            {{ macro.select('amount', orderamounts, '', 'item-detail-form-amount') }}
-            <input type="submit" value="{{ T("itemdetail_button_submit") }}" id="item-detail-form-submit">
-        </form>
-        {% else %}
-            <div id="item-detail-soldout">{{ T("itemdetail_soldout") }}</div>
-        {% endif %}
-    </div>
-    {% if item.data.itml_text2|trim != '' %}
-        <div id="item-detail-text2">
-            {{ item.data.itml_text2 }}
+            {% endif %}
+
+            <div class="pure-u-1-2">
+                <!--
+                <ul class="socialnav">
+                    <li><a href="https://www.facebook.com/pages/Makaya/481944855182018" id="facebook" target="_blank"> facebook</a></li>
+                    <li><a href="http://m-a-k-a-y-a.tumblr.com/" id="tumblr" target="_blank"> tumblr </a></li>
+                    <li><a href="http://instagram.com/m.a.k.a.y.a/" id="instagram" target="_blank"> instagram </a></li>
+                </ul>
+                //-->
+            </div><div class="pure-u-1-2"><div
+                        id="item-detail-price-cont">
+                    <h4 id="item-detail-price">
+                        {% if item.data.pricedata.netto_sale is defined and (item.data.pricedata.netto_rebated is not defined or item.data.pricedata.netto_sale < item.data.pricedata.netto_rebated) %}
+                            {#Angebotspreis:<br>#}
+                            {#Netto: {{item.data.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
+                            {#Brutto: #}<span class="salesprice">{{item.data.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                        {% endif %}
+                        {% if item.data.pricedata.netto_rebated is defined and (item.data.pricedata.netto_sale is not defined or item.data.pricedata.netto_rebated < item.data.pricedata.netto_sale) %}
+                            {#Ihr Preis:<br>#}
+                            {#Netto: {{item.data.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
+                            {#Brutto: #}{{item.data.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                        {% endif %}
+                        {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? ' <span class="sale-listprice">' : '' }}
+                        {#Netto: {{item.data.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
+                        {#Brutto: #}{{item.data.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                        {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? '</span>' : '' }}
+                    </h4>
+
+                    <div id="item-detail-versandmwst">{{ T("itemdetail_info_versandmwst") }}</div>
+
+                    {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
+                        <button data-target="#modal-cart" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="addtoshoppingcartsubmit">
+                            {{ T("itemdetail_button_submit") }}
+                        </button>
+                    {% else %}
+                        {{ T("itemdetail_soldout") }}
+                    {% endif %}
+                </div></div>
+
+            <dl class="accordion">
+                {% if item.data.itm_data.groessentabelle is defined %}
+                    <dt><a href="">{{ T("itemdetail_headline_groessentabelle") }}</a></dt>
+                    <dd>{{ item.data.itm_data.groessentabelle }}</dd>
+                {% endif %}
+                <dt><a href="">{{ T("itemdetail_headline_shippingcost") }}</a></dt>
+                <dd>{{ T("itemdetail_shippingcost_text") }}</dd>
+                {% if item.data.itm_data.pflegehinweise is defined %}
+                    <dt><a href="">{{ T("itemdetail_headline_pflegehinweise") }}</a></dt>
+                    <dd>{{ item.data.itm_data.pflegehinweise }}</dd>
+                {% endif %}
+            </dl>
         </div>
-    {% endif %}
+    </form>
 </div>
+
+<!-- MODAL BOX CART -->
+<div class="modal fade" id="modal-cart" tabindex="-1" role="dialog" aria-labelledby="addToCart" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><h4>{{ T("itemdetail_added_to_cart") }}</h4></h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="pure-button button-orange" data-dismiss="modal">{{ T("itemdetail_continue_shopping") }}!</button>
+                <a href="/_misc/shoppingcart.html"class="pure-button button-green">{{ T("itemdetail_goto_cart") }}</a>
+            </div>
+        </div>
+    </div>
 </div>
-<br class="clearboth">
-<div id="item-detail-hr">
-  <span id="item-detail-hr-text">
-    {{ T("itemdetail_wesuggest") }}
-  </span>
-</div><div id="item-detail-suggestions">
-    {% for suggestion in item.suggestions %}
-        <a href="{{ suggestion.path }}{{ suggestion.itm_no }}.html"><img src="/_img/items/200/{{ suggestion.itm_img }}"></a>
-    {% endfor %}
-</div>
-<div id="itemfooter">{{T("misc_disclaimer_prices")}}
+<!-- /MODAL BOX CART -->

@@ -1,240 +1,164 @@
 {% if customdata.customerform.errormessage|length != 0 %}
-    <div class="errortext" xmlns="http://www.w3.org/1999/html">
-        {% for error, errorstate in customdata.customerform.errormessage %}
-            {{T("adrform_error_"~error)}}<br>
-        {% endfor %}
+    <div class="pure-u-1">
+        <div id="customerform-errortext">
+            {% for error, errorstate in customdata.customerform.errormessage %}
+                {{T("adrform_error_"~error)}}<br>
+            {% endfor %}
+        </div>
     </div>
 {% endif %}
 
 {% if customdata.customerform.purpose != 'shopadmin' %}
-<form action="{{requesturi}}" name="customerform" id="customerform" method="POST">
-<script language="JavaScript">
-    $(document).ready(function() {
-        $(".customerformfield").change(function() {
-            $.post("/_misc/formsaver.html", $("#customerform").serialize());
-        });
-        {% if customdata.customerform.purpose == 'shoppingcart' %}
-        $("#addrform-country").change(function() {
-            $.ajax({
-                type: "POST",
-                url: "/_misc/updateshippingcost.html",
-                data: $("#addrform-country").serialize(),
-                success : function( resp ) {
-                    $('#shcshippingvalue').html($('#shippingcostbrutto_new' , resp).html() + ' {{ currency }}');
-                    $('#shcvatfullvalue').html($('#vatfull_new' , resp).html() + ' {{ currency }}');
-                    $('#shcbruttovalue').html($('#totalbrutto_new' , resp).html() + ' {{ currency }}');
-                }
+<form action="{{requesturi}}" name="customerform" id="customerform" method="POST" class="pure-form pure-form-aligned">
+    <script language="JavaScript">
+        $(document).ready(function() {
+            $(".customerformfield").change(function() {
+                $.post("/_misc/formsaver.html", $("#customerform").serialize());
             });
+            {% if customdata.customerform.purpose == 'shoppingcart' %}
+            $("#addrform-country").change(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/_misc/updateshippingcost.html",
+                    data: $("#addrform-country").serialize(),
+                    success : function( resp ) {
+                        $('#shcshippingvalue').html($('#shippingcostbrutto_new' , resp).html() + ' {{ currency }}');
+                        $('#shcvatfullvalue').html($('#vatfull_new' , resp).html() + ' {{ currency }}');
+                        $('#shcbruttovalue').html($('#totalbrutto_new' , resp).html() + ' {{ currency }}');
+                    }
+                });
+            });
+            {% endif %}
         });
-        {% endif %}
-    });
-</script>
-{{ customdata.customerform.purpose == 'shoppingcart' ? '<div id="shc-addrform-container"><div id="shc-addrform-container-left">' : '' }}
-<fieldset class="addrform" id="addrform-address">
-    {% if customdata.customerform.purpose == 'shoppingcart' %}
-        <input type="hidden" name="doCheckout" value="yes">
-        <div class="formheadline">{{T("shoppingcart_adrform_headline")}}</div>
-    {% elseif customdata.customerform.purpose == 'register' %}
-        <input type="hidden" name="doRegister" value="yes">
-    {% elseif customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'editprofile' %}
-        <input type="hidden" name="doEdit" value="yes">
-    {% endif %}
-    {% endif %}
-    {% if customdata.customerform.purpose != 'register' %}
-        <label for="addrform-custno">{{T("adrform_accountnumber")}}</label>
-        <input type="text" name="custno"
-               value="{{customdata.customerform.fv_custno}}"
-               class="customerformfield{{ customdata.customerform.errormessage.custnoinvalid is defined or customdata.customerform.errormessage.custnoalreadytaken ? ' formerror' : '' }}"
-               id="addrform-custno" maxlength="5"{{ customdata.customerform.readonlycustno ? ' readonly' : ''}}>
-        <span class="addrform-rightmargin-custno">
-            {{ customdata.customerform.purpose != 'admin' and isloggedin == false ? T("adrform_ifavailable") : '*' }}
-            </span>
-    {% endif %}
-    <br>
-    <label for="addrform-email">{{T("adrform_email")}}</label>
-    <input type="text" name="email"
-           value="{{customdata.customerform.fv_email}}"
-           class="customerformfield{{ customdata.customerform.errormessage.email is defined or customdata.customerform.errormessage.emailalreadytaken is defined ? ' formerror' : '' }}"
-           id="addrform-email"{{ customdata.customerform.purpose == 'editprofile' or customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-    {{ not (customdata.customerform.readonly or customdata.customerform.purpose == 'editprofile') ? '*' : '' }}
-    </span>
-    <br>
-    <label for="addrform-corpname">{{T("adrform_corpname")}}</label>
-    <input type="text" name="corpname"
-           value="{{customdata.customerform.fv_corpname}}"
-           class="customerformfield{{ customdata.customerform.errormessage.corpname is defined ? ' formerror' : '' }}"
-           id="addrform-corpname"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_corpname and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-name">{{T("adrform_yourname")}}</label>
-    <input type="text" name="name"
-           value="{{customdata.customerform.fv_name}}"
-           class="customerformfield{{ customdata.customerform.errormessage.name is defined ? ' formerror' : '' }}"
-           id="addrform-name"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_name and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-street">{{T("adrform_street")}}</label>
-    <input type="text" name="street"
-           value="{{customdata.customerform.fv_street}}"
-           class="customerformfield{{ customdata.customerform.errormessage.street is defined ? ' formerror' : '' }}"
-           id="addrform-street"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_street and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-zip">{{T("adrform_town")}}</label>
-    <input type="text" name="zip"
-           value="{{customdata.customerform.fv_zip}}"
-           class="customerformfield{{ customdata.customerform.errormessage.zip is defined ? ' formerror' : '' }}"
-           id="addrform-zip"{{ customdata.customerform.readonly ? ' readonly' : '' }}><input type="text" name="town"
-                                                                                             value="{{customdata.customerform.fv_town}}"
-                                                                                             class="customerformfield{{ customdata.customerform.errormessage.town is defined ? ' formerror' : '' }}"
-                                                                                             id="addrform-town"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ (customdata.customerform.fr_zip or customdata.customerform.fr_town) and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-phone">{{T("adrform_fon")}}</label>
-    <input type="text" name="phone"
-           value="{{customdata.customerform.fv_phone}}"
-           class="customerformfield{{ customdata.customerform.errormessage.phone is defined ? ' formerror' : '' }}"
-           id="addrform-phone"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_phone and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-cellphone">{{T("adrform_cellular")}}</label>
-    <input type="text" name="cellphone"
-           value="{{customdata.customerform.fv_cellphone}}"
-           class="customerformfield{{ customdata.customerform.errormessage.cellphone is defined ? ' formerror' : '' }}"
-           id="addrform-cellphone"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_cellphone and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-fax">{{T("adrform_fax")}}</label>
-    <input type="text" name="fax"
-           value="{{customdata.customerform.fv_fax}}"
-           class="customerformfield{{ customdata.customerform.errormessage.fax is defined ? ' formerror' : '' }}"
-           id="addrform-fax"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-    <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_fax and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    <br>
-    <label for="addrform-country">{{T("adrform_country")}}</label>
-    {% if customdata.customerform.readonly %}
-        {{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", '', true) }}
-        <span class="addrform-rightmargin"></span>
-    {% else %}
-        {{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", (customdata.customerform.errormessage.country is defined ? 'customerformfield formerror' : 'customerformfield')) }}
-        <span class="addrform-rightmargin">
-        {{ customdata.customerform.fr_country and not customdata.customerform.readonly ? ' *' : '' }}
-        </span>
-    {% endif %}
-    {% if customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'shopadmin' %}
-        <br>
-        <label for="addrform-custgroup">{{T("adrform_custgroup")}}</label>
-        {% if customdata.customerform.purpose == 'admin' %}
-            {{ macro.select('custgroup', customdata.customerform.fv_custgroups, customdata.customerform.fv_custgroup_selected, 'addrform-custgroup') }}
-            <span class="addrform-rightmargin"></span>
-        {% elseif customdata.customerform.purpose == 'shopadmin' %}
-            <input type="text" name="custgroup" id="addrform-custgroup" value="{{customdata.customerform.fv_custgroup}}"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
-            <span class="addrform-rightmargin"></span>
-        {% endif %}
-    {% endif %}
-    {% if customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'register' or customdata.customerform.purpose == 'editprofile' %}
-        <br>
-        <label for="addrform-pwd">{{T("adrform_password")}}</label>
-        <input type="password" name="pwd"
-               value="{{customdata.customerform.fv_pwd}}"{{ customdata.customerform.errormessage.passwordlength is defined ? ' class="formerror"' : '' }}
-               id="addrform-pwd">
-        <span class="addrform-rightmargin">
-            {{ not (customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'editprofile') ? ' *' : '' }}
-            </span>
-        <br>
-        <label for="addrform-pwdc">{{T("adrform_passwordconfirm")}}</label>
-        <input type="password" name="pwdc"
-               value="{{customdata.customerform.fv_pwdc}}"{{ customdata.customerform.errormessage.passwordmatch is defined ? ' class="formerror"' : '' }}
-               id="addrform-pwdc">
-        <span class="addrform-rightmargin"></span>
-    {% endif %}
-    {% if customdata.customerform.purpose == 'shoppingcart' %}
-        <br>
-        <div id="addrform-remarks-cont">
-            <label for="addrform-remarks">{{T("adrform_remarks")}}</label>
-            <textarea cols="8" rows="5" id="addrform-remarks" name="remarks" class="customerformfield">{{customdata.customerform.fv_remarks}}</textarea>
-            <span class="addrform-rightmargin"></span>
-            <br>
-        </div>
-    {% endif %}
-</fieldset>
-    {% if customdata.customerform.purpose == 'shoppingcart' or customdata.customerform.purpose == 'register' %}
-{{ customdata.customerform.purpose == 'shoppingcart' ? '</div><div id="shc-addrform-container-right">' : '' }}
-    {% if not isloggedin %}
-<fieldset class="addrform" id="addrform-legal">
-    <label for="addrform-tos">{{T("adrform_tos")}}</label>
-            <span{{ customdata.customerform.errormessage.tos is defined ? ' class="formerror"' : '' }}>
-                        <input type="checkbox" name="tos" id="addrform-tos"
-                               value="y"{{ customdata.customerform.fv_tos ? ' checked' : '' }}>
-                        </span>
-    <span class="addrform-rightmargin"></span>
-    <br>
-    <label for="addrform-cancellationdisclaimer">{{T("adrform_cancellationdisclaimer")}}</label>
-            <span{{ customdata.customerform.errormessage.cancellationdisclaimer is defined ? ' class="formerror"' : '' }}>
-                        <input type="checkbox" name="cancellationdisclaimer" id="addrform-cancellationdisclaimer" value="y"{{ customdata.customerform.fv_cancellationdisclaimer ? ' checked' : '' }}>
-                        </span>
-    <span class="addrform-rightmargin"></span>
-    <br>
-    {% endif %}
-    {% endif %}
-    {% if customdata.customerform.purpose == 'shoppingcart' %}
-</fieldset>
-<fieldset class="addrform" id="addrform-payment">
-    {% set paymentmethodcount = customdata.customerform.fv_paymentmethods|length %}
-    {% set paymentmethodloopfirst = true %}
-    {% for paymentmethod in customdata.customerform.fv_paymentmethods %}
-        {% if paymentmethodloopfirst %}
-            <div class="formheadline">{{T("adrform_paymentmethod")}}</div>
-        {% endif %}
-        <label for="addrform-paymentmethod-{{paymentmethod}}">{{T("order_paymentmethod_" ~ paymentmethod)}}</label>
-        <span{{ customdata.customerform.errormessage.paymentmethod is defined ? ' class="formerror"' : '' }}>
-                    <input type="radio" name="paymentmethod" id="addrform-paymentmethod-{{paymentmethod}}" value="{{paymentmethod}}"{{ paymentmethodcount == 1 or paymentmethod == customdata.customerform.fv_paymentmethod ? ' checked' : '' }}>
-                    </span>
-        <span class="addrform-rightmargin"></span>
-        <br>
-        {% set paymentmethodloopfirst = false %}
-    {% endfor %}
-    {% endif %}
-    {% if customdata.customerform.purpose == 'admin' %}
-        <label for="addrform-active">Aktiv</label>
-        <input type="checkbox" name="active" id="addrform-active" value="y"{{ customdata.customerform.fv_active ? ' checked' : '' }}>
-        <label for="addrform-emailverified">E-Mail bestätigt</label>
-        <input type="checkbox" name="emailverified" id="addrform-emailverified" value="y"{{ customdata.customerform.fv_emailverified ? ' checked' : '' }}>
-    {% endif %}
-    {% if customdata.customerform.purpose != 'shopadmin' and customdata.customerform.purpose != 'userhome' %}
-        {% if customdata.customerform.purpose == 'shoppingcart' %}
-            {% set customerform_submitstring = T("adrform_submit_shoppingcart") %}
-        {% elseif customdata.customerform.purpose == 'register' %}
-            {% set customerform_submitstring = T("adrform_submit_register") %}
-        {% elseif customdata.customerform.purpose == 'editprofile' or customdata.customerform.purpose == 'admin' %}
-            {% set customerform_submitstring = T("adrform_submit_editprofile") %}
-        {% endif %}
-        <br>
-        <input type="submit" name="{{customerform_submitstring}}" value="{{customerform_submitstring}}" id="addrform-submit">
-        <span class="addrform-rightmargin"></span>
-    {% endif %}
-</fieldset>
-{{ customdata.customerform.purpose == 'shoppingcart' ? '</div></div><br class="clearboth">' : '' }}
+    </script>
+    <div class="pure-u-1 pure-u-md-1-2">
+        <div id="customerform-address-wrapper">
+            {% if customdata.customerform.purpose == 'shoppingcart' %}
+                <input type="hidden" name="doCheckout" value="yes">
+                <div id="customerform-address-header">
+                    {{ T("shoppingcart_adrform_headline") }}
+                </div>
+            {% elseif customdata.customerform.purpose == 'register' %}
+                <input type="hidden" name="doRegister" value="yes">
+            {% elseif customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'editprofile' %}
+                <input type="hidden" name="doEdit" value="yes">
+            {% endif %}
+            {% endif %}
+            <fieldset>
 
-{% if not customdata.customerform.readonly or customdata.customerform.purpose == 'admin' %}
-    * {{T("adrform_requiredfield")}}<br><br>
-{% endif %}
-{% if customdata.customerform.purpose != 'shopadmin' %}
+                <div class="pure-control-group">
+                    <label id="label-mail" for="addrform-email">{{T("adrform_email")}}
+                    </label><input type="email" name="email"
+                           value="{{customdata.customerform.fv_email}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.email is defined or customdata.customerform.errormessage.emailalreadytaken is defined ? ' formerror' : '' }}"
+                           id="addrform-email"{{ customdata.customerform.purpose == 'editprofile' or customdata.customerform.readonly ? ' readonly' : '' }}>
+                </div>
+
+                <div class="pure-control-group">
+                    <label id="label-Name" for="addrform-name">{{T("adrform_yourname")}}
+                    </label><input type="text" name="name"
+                           value="{{customdata.customerform.fv_name}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.name is defined ? ' formerror' : '' }}"
+                           id="addrform-name"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                </div>
+
+                <div class="pure-control-group">
+                    <label id="label-Strasse" for="addrform-street">{{T("adrform_street")}}
+                    </label><input type="text" name="street"
+                           value="{{customdata.customerform.fv_street}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.street is defined ? ' formerror' : '' }}"
+                           id="addrform-street"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                </div>
+
+                <div class="pure-control-group">
+                    <label id="label-PLZ" for="addrform-zip">{{T("adrform_zip")}}
+                    </label><input type="text" name="zip"
+                           value="{{customdata.customerform.fv_zip}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.zip is defined ? ' formerror' : '' }}"
+                           id="addrform-zip"{{ customdata.customerform.readonly ? ' readonly' : '' }}>                        </div>
+
+                <div class="pure-control-group">
+                    <label id="label-Ort" for="addrform-town">{{T("adrform_town")}}
+                    </label><input type="text" name="town"
+                           value="{{customdata.customerform.fv_town}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.town is defined ? ' formerror' : '' }}"
+                           id="addrform-town"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                </div>
+
+                <div class="pure-control-group">
+                    <label id="label-country" for="addrform-country">{{T("adrform_country")}}
+                    </label>{% if customdata.customerform.readonly
+                    %}{{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", 'pure-u-1 pure-u-md-3-4', true) }}{%
+                    else %}{{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", (customdata.customerform.errormessage.country is defined ? 'pure-u-1 pure-u-md-3-4 formerror customerformfield' : 'pure-u-1 pure-u-md-3-4 customerformfield')) }}{%
+                    endif %}
+                </diV>
+
+                <div class="pure-control-group">
+                    <label id="label-telefon" for="addrform-phone">{{T("adrform_fon")}}
+                    </label><input type="text" name="phone"
+                           value="{{customdata.customerform.fv_phone}}"
+                           class="pure-u-1 pure-u-md-3-4 customerformfield{{ customdata.customerform.errormessage.phone is defined ? ' formerror' : '' }}"
+                           id="addrform-phone"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                </div>
+
+                <div class="pure-control-group">
+                    <label id="label-nachricht" for="addrform-remarks">{{T("adrform_remarks")}}
+                    </label><textarea cols="20" rows="10" id="addrform-remarks" name="remarks" class="pure-u-1 pure-u-md-3-4 customerformfield">{{customdata.customerform.fv_remarks}}</textarea>
+                </div>
+            </fieldset>
+        </div>
+    </div>{% if customdata.customerform.purpose == 'shoppingcart' %}<div
+            class="pure-u-1 pure-u-md-1-2">
+        {% set paymentmethodcount = customdata.customerform.fv_paymentmethods|length %}
+        {% set paymentmethodloopfirst = true %}
+        <div id="customerform-paymeht-wrapper">
+            <div id="customerform-payment-header" for="zahlungsmethode" id="label-zahlung" class="required">
+                {{T("adrform_paymentmethod")}}
+            </div>
+
+            {% for paymentmethod in customdata.customerform.fv_paymentmethods %}
+            <div class="pure-controls customerform-payment">
+                <label for="addrform-paymentmethod-{{paymentmethod}}" class="{{ customdata.customerform.errormessage.paymentmethod is defined ? ' formerror' : '' }}">
+                    <input class="col-md-1 col-xs-1" type="radio" name="paymentmethod" id="addrform-paymentmethod-{{paymentmethod}}" value="{{paymentmethod}}"{{ paymentmethodcount == 1 or paymentmethod == customdata.customerform.fv_paymentmethod ? ' checked' : '' }}> {{T("order_paymentmethod_" ~ paymentmethod)}}<span class="pull-right"><img src="/_img/misc/icon_{{ paymentmethod }}.png" width="82px"></span>
+                </label>
+                {% set paymentmethodloopfirst = false %}
+            </div>
+            {% endfor %}
+
+            <br class="clear">
+        </div>
+        {% endif %}
+
+        <div id="customerform-tos-wrapper">
+            <div class="pure-controls">
+                <label{{ customdata.customerform.errormessage.tos is defined ? ' class=" formerror"' : '' }} id="label-agbs" for="addrform-tos">
+                <input type="checkbox" name="tos" id="addrform-tos" value="y"{{ customdata.customerform.fv_tos ? ' checked' : '' }}>
+                    {{T("adrform_tos")}}</label>
+            </div>
+
+            <div class="pure-controls">
+                <label{{ customdata.customerform.errormessage.cancellationdisclaimer is defined ? ' class=" formerror"' : '' }} id="label-widerruf" for="addrform-cancellationdisclaimer">
+                <input type="checkbox" name="cancellationdisclaimer" id="addrform-cancellationdisclaimer" value="y"{{ customdata.customerform.fv_cancellationdisclaimer ? ' checked' : '' }}>
+                    {{T("adrform_cancellationdisclaimer")}}</label>
+            </div>
+        </div>
+        <div id="customerform-info-wrapper">
+            <strong>{{ T("adrform_shippingcost_headline") }}</strong>
+            <br><br>
+            {{ T("adrform_shippingcost_text") }}
+        </div>
+        {% if customdata.customerform.purpose != 'shopadmin' and customdata.customerform.purpose != 'userhome' %}
+            {% if customdata.customerform.purpose == 'shoppingcart' %}
+                {% set customerform_submitstring = T("adrform_submit_shoppingcart") %}
+            {% elseif customdata.customerform.purpose == 'register' %}
+                {% set customerform_submitstring = T("adrform_submit_register") %}
+            {% elseif customdata.customerform.purpose == 'editprofile' or customdata.customerform.purpose == 'admin' %}
+                {% set customerform_submitstring = T("adrform_submit_editprofile") %}
+            {% endif %}
+        {% endif %}
+        <input id="customerform-submit" type="submit" value="{{customerform_submitstring}}" class="pure-u-1 pure-u-md-1-2 pure-button button-orange pull-right">
+    </div>
+    {% if customdata.customerform.purpose != 'shopadmin' %}
 </form>
 {% endif %}
 

@@ -1,3 +1,0 @@
-HITShop
-
-Dependencies go here.

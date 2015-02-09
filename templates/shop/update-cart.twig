@@ -2,6 +2,26 @@
     <div id="shoppingcartamount_new">
         {{ cart|length }} {{ T("topnav_shoppingcart_numberofitems") }}, {{ (cartsums.sumvoll + cartsums.sumerm + cartsums.taxvoll + cartsums.taxerm)|number_format(2, ',', '.') }} {{ currency }}
     </div>
+    <div id="shoppingcartinfo_new">
+        {% if cart is defined and cart|length > 0 %}
+            {% for item in cart %}
+                <li>
+                    <a href="/_misc/shoppingcart.html">
+                        <b>{{ item.amount }}x {{ item.name }}</b>
+                        <span>{{ item.price.brutto_use|number_format(2, ',', '.') }} {{ currency }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>
+                {{ T("topnav_shoppingcart_empty") }}
+            </li>
+        {% endif %}
+        <li class="divider"></li>
+        <li><a href="/_misc/shoppingcart.html">{{ T("toputilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ (cartsums.sumvoll + cartsums.sumerm + cartsums.taxvoll + cartsums.taxerm)|number_format(2, ',', '.') }}&nbsp;{{ currency }}</span></a></li>
+        <li class="divider"></li>
+        <li><a href="/_misc/shoppingcart.html"><button type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-green">{{ T("toputilities_gotoshoppingcart") }}</button></a></li>
+    </div>
     <div id="infobox_new">
         {{ reply == 'requiredfieldmissing' ? 'REQUIRED FIELD MISSING' : '' }}
         {{ reply == 'noactiontaken' ? 'NO ACTION TAKEN' : '' }}

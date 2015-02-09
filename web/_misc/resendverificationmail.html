@@ -1,0 +1,46 @@
+<?php
+
+include_once($_SERVER['DOCUMENT_ROOT'].'/../app/init.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+$sH = '';
+
+if ( isset( $_SESSION["user"] ) ) $sH = T("denied_default");
+else {
+    $sQ = "SELECT ".DB_ADDRESSFIELDS.", ".DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE." FROM ".DB_CUSTOMERTABLE;
+    $sQ .= " WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
+    $sQ .= " AND ".DB_CUSTOMERFIELD_EMAILVERIFIED." = 'n'";
+    //debug( $sQ );
+    $hResult = $DB->prepare( $sQ );
+    $hResult->bindValue( ':email', trim( $_GET["email"] ), PDO::PARAM_STR );
+    $hResult->execute();
+    $iRows = $hResult->rowCount();
+    //debug( $DB->error() );
+    if ( $iRows == 1 ) {
+        $aRow = $hResult->fetch();
+        //debug($aRow);
+        $sEmailVerificationcode = $aRow[DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE];
+        sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C);
+
+        $sH .= T("register_verificationmailresent");
+    }
+}
+
+//if (clientIsLocal()) debug($_SERVER);
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
+
+echo $twig->render($C["template_base"], $aP);

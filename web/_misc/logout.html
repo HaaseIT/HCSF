@@ -1,0 +1,30 @@
+<?php
+
+include_once($_SERVER['DOCUMENT_ROOT'].'/../app/init.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+    ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+    ),
+);
+
+$sH = '';
+
+unset($_SESSION["user"]);
+if (isset($_SESSION["cart"])) {
+    refreshCartItems($C, $oItem);
+}
+
+$sH .= T("logout_message");
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
+
+echo $twig->render($C["template_base"], $aP);

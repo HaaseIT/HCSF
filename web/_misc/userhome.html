@@ -1,0 +1,100 @@
+<?php
+
+include_once($_SERVER['DOCUMENT_ROOT'].'/../app/init.php');
+
+$P = array(
+    'base' => array(
+        'cb_pagetype' => 'content',
+        'cb_pageconfig' => '',
+        'cb_subnav' => '',
+   ),
+    'lang' => array(
+        'cl_lang' => $sLang,
+        'cl_html' => '',
+   ),
+);
+
+$sH = '';
+
+if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
+    $P["base"]["cb_customcontenttemplate"] = 'customer/userhome';
+    //debug($_SESSION["user"]);
+    $aPData["display_logingreeting"] = false;
+    if (isset($_GET["login"]) && $_GET["login"]) {
+        $aPData["display_logingreeting"] = true;
+    }
+    if (isset($_GET["editprofile"])) {
+        $sErr = '';
+        $sInfo = '';
+
+        if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
+            $sQ = "SELECT ".DB_ADDRESSFIELDS." FROM ".DB_CUSTOMERTABLE;
+            $sQ .= " WHERE ".DB_CUSTOMERTABLE_PKEY." != :id";
+            $sQ .= " AND ".DB_CUSTOMERFIELD_EMAIL." = :email";
+
+            $hResult = $DB->prepare($sQ);
+            $hResult->bindValue(':id', $_SESSION["user"][DB_CUSTOMERTABLE_PKEY], PDO::PARAM_INT);
+            $hResult->bindValue(':email', trim($_POST["email"]), PDO::PARAM_STR);
+            $hResult->execute();
+            //debug($sQ);
+            $iRows = $hResult->rowCount();
+            if ($iRows == 1) $sErr .= T("userprofile_emailalreadyinuse").'<br>';
+            $sErr = validateCustomerForm($C, $sLang, $sErr, true);
+
+            if ($sErr == '') {
+                if ($C["allow_edituserprofile"]) {
+                    $aData = array(
+                        //DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]), // disabled until renwewd email verification implemented
+                        DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
+                        DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
+                        DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
+                        DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
+                        DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
+                        DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
+                        DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
+                        DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
+                        DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
+                   );
+                }
+                if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
+                    $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
+                    $sInfo .= 'Das Passwort wurde geändert.<br>';
+                }
+                //debug($aData);
+                $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
+
+                if (count($aData) > 1) {
+                    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    //debug($sQ);
+                    $hResult = $DB->prepare($sQ);
+                    foreach ($aData as $sKey => $sValue) {
+                        $hResult->bindValue(':'.$sKey, $sValue);
+                    }
+                    $hResult->execute();
+                    $sInfo .= T("userprofile_changessaved").' ('.showClienttime().').<br>';
+                } else $sInfo .= T("userprofile_nothingchanged").'<br>';
+            }
+        }
+        if (isset($sInfo) && $sInfo != '') $aPData["text_aboveform"] = $sInfo;
+        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
+        //if ($C["allow_edituserprofile"]) $sH .= '<br>'.T("userprofile_infoeditemail"); // Future implementation
+    } else {
+        $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
+        $aPData["showlinktoreferer"] = true;
+    }
+    $aPData["showprofilelinks"] = false;
+    if (!isset($_GET["editprofile"])) {
+        $aPData["showprofilelinks"] = true;
+    }
+    if (isset($aPData) && count($aPData)) {
+        $P["base"]["cb_customdata"]["userhome"] = $aPData;
+    }
+} else {
+    $sH .= T("denied_notloggedin");
+}
+
+$P["lang"]["cl_html"] = $sH;
+
+$aP = generatePage($C, $P, $sLang, $DB, $oItem);
+
+echo $twig->render($C["template_base"], $aP);

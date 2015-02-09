@@ -1,0 +1,13 @@
+{% if item.suggestions is defined and item.suggestions|length > 0 %}
+    <hr>
+    {% set i = 1 %}
+    <!-- related products -->
+<div class="pure-u-1-2">
+    {% for suggestion in item.suggestions %}{% if i == 5 %}</div><div
+        class="pure-u-1-2">{% endif %}<div
+            class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-4"><div class="item-detail-suggestion">
+            <a href="{{ suggestion.path }}{{ suggestion.itm_no }}.html"><img src="/_img/items/336/{{ suggestion.itm_img }}" class="item-detail-suggestion-img"></a>
+        </div></div>{% set i = i + 1 %}{% endfor %}
+</div>
+    <hr>
+{% endif %}

@@ -1,46 +1,69 @@
-{% if pagetype == 'contentnosubnav' %}
-    {% set widecontent = true %}
-{% else %}
-    {% set widecontent = false %}
-{% endif %}
-{% import "macros.twig" as macro %}
-{% if subnavkey == 'men' %}
-    {% set navarea = 'herren' %}
-{% elseif subnavkey == 'women' %}
-    {% set navarea = 'damen' %}
-{% elseif path.dirname == '/_admin' %}
-    {% set navarea = 'admin' %}
-{% elseif requesturi == '/about-us.html' %}
-    {% set navarea = 'ueberuns' %}
-{% elseif requesturi == '/kontakt.html' %}
-    {% set navarea = 'kontakt' %}
-{% else %}
-    {% set navarea = 'default' %}
-{% endif %}
-<!DOCTYPE html>
+{% if pagetype == 'contentnosubnav' %}{%
+    set widecontent = true %}{%
+else %}{%
+    set widecontent = false %}{%
+endif %}{%
+import "macros.twig" as macro %}<!DOCTYPE html>
 <html lang="{{language}}">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8">
     <meta name="author" content="Marcus Haase">
+    {% if item.data.itm_data.pagetitle is defined and item.data.itm_data.pagetitle != '' %}
+        <title>{{item.data.itm_data.pagetitle}}</title>
+    {% else %}
+        <title>{{pagetitle}}</title>
+    {% endif %}
     <meta name="revisit-after" content="5 days">
     <meta name="Robots" content="INDEX,FOLLOW">
-    {% if keywords is defined %}<meta name="Keywords" content="{{keywords}}">{% endif %}
-    {% if description is defined %}<meta name="Description" content="{{description}}">{% endif %}
-    <link rel="stylesheet" type="text/css" href="/screen.css">
-    <link href='//fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/highslide.css">
-    <!--[if lt IE 7]>
-    <link rel="stylesheet" type="text/css" href="//cdn.haase-it.com/highslide4/highslide-ie6.css">
+    {% if keywords is defined %}
+        <meta name="Keywords" content="{{keywords}}">
+    {% elseif item.data.itm_data.pagekeywords is defined and item.data.itm_data.pagekeywords != '' %}
+        <meta name="Keywords" content="{{item.data.itm_data.pagekeywords}}">
+    {% endif %}
+    {% if description is defined and description != '' %}
+        <meta name="Description" content="{{description}}">
+    {% elseif item.data.itm_data.pagedescription is defined and item.data.itm_data.pagedescription != '' %}
+        <meta name="Description" content="{{item.data.itm_data.pagedescription}}">
+    {% endif %}
+    <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+    <link rel="stylesheet" href="//cdn.haase-it.com/purecss/0.5.0/pure-min.css">
+    <link rel="stylesheet" href="//cdn.haase-it.com/purecss/0.5.0/grids-responsive-min.css">
+    <link rel="stylesheet" href="//cdn.haase-it.com/fontawesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/global.css">
+    <link rel="stylesheet" href="/_libs/modal.css">
+    <script src="//cdn.haase-it.com/jquery/jquery-1.11.1.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/_libs/jquery.dropdown.css">
+    <script type="text/javascript" src="/_libs/jquery.dropdown.js"></script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//cdn.haase-it.com/polyfills/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//cdn.haase-it.com/polyfills/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
-    <script type="text/javascript" src="//cdn.haase-it.com/jquery/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="//cdn.haase-it.com/polyfills/jquery.placeholder/2.0.8/jquery.placeholder.min.js"></script>
-    <script type="text/javascript" src="//cdn.haase-it.com/highslide4/highslide-full.packed.js"></script>
-    <script type="text/javascript" src="/highslide.config.js" charset="utf-8" async="async"></script>
-    <!-- 7296c4dbc4be3e892469548ac348672f -->
     <script type="text/javascript">
         $(function() {
-            $('input, textarea').placeholder();
+            // Avoid `console` errors in browsers that lack a console.
+            (function() {
+                var method;
+                var noop = function () {};
+                var methods = [
+                    'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+                    'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+                    'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+                    'timeStamp', 'trace', 'warn'
+                ];
+                var length = methods.length;
+                var console = (window.console = window.console || {});
+
+                while (length--) {
+                    method = methods[length];
+
+                    // Only stub undefined methods.
+                    if (!console[method]) {
+                        console[method] = noop;
+                    }
+                }
+            }());
             function getCookie(cname) {
                 var name = cname + "=";
                 var ca = document.cookie.split(';');
@@ -70,134 +93,247 @@
             }
         });
     </script>
-    <title>{{pagetitle}}</title>
-    <meta name="msvalidate.01" content="3B09A5A407250427C112B402A058DE7A" />
     {% if head_scripts is defined %}{{head_scripts}}{% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/_libs/bootstrap.min.js"></script>
+    <script language="JavaScript">
+        $(function() {
+            $("#button-head-topnav").click(function(){
+                $("#row-topnav").toggle();
+            });
+        });
+    </script>
 </head>
-<body{% if whatarea is defined %} id="{{whatarea}}"{% endif %}>
-<div id="cookienoticecont">
-    <div id="cookienotice">{{ T("cookienotice_info_text") }}</div>
+<body>
+<div class="pure-g">
+    <div id="cookienoticecont" style="display: none;" class="pure-u-1">
+        <div id="cookienotice" class="fs">{{ T("cookienotice_info_text") }}</div>
+    </div>
 </div>
-<div id="headcont">
-    <div id="headleft"><a href="/"><img src="/_img/la-affair.png" width="297" height="102" alt="L.A.Affair"></a></div>
-    <div id="headright">
-        <div id="headlangselector">{{langselector}}</div>
-        <div id="headutilities">
-            <div id="searchbox">
-                <form action="/_misc/suche.html" method="GET" name="search">
-                    <input type="text" id="search" name="searchtext" value="{{gFF('searchtext', '')}}" class="formtextsearch" style="width:151px;" placeholder="{{T("misc_suche")}}">
-                    <input type="image" name="searchsubmit" src="data:image/gif;base64,R0lGODlhEwAUALMAAHNzc1hYWCUlJIKCgmNjYxYWFkRERAEBATIyMXp6en5+fktLSggICHx8fDs7O2trayH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjEgNjQuMTQwOTQ5LCAyMDEwLzEyLzA3LTEwOjU3OjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBRkE2QkJDMjY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBRkE2QkJDMzY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkFGQTZCQkMwNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkFGQTZCQkMxNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAABMAFAAABLKQyTmLpfRoXdACChA4xSZtRxEo7NACiHZqwtMoSWAEhNIksVmh11gIGAdGwZAIHZEHA24BRSEGDUIBOQxVUYeF73gQsBxglCCRMCCvCkF60w28XfJ5qmcvN2N6AgBFXD0PelE+CFBiCWhpCE1aUAIFDgALJTIIAAkNi0gMCwYHDg0PBqkBbAqkJwYAAw5wLLUAbkkMDk0wAjsPAA8EAXlJkU50BZWaJkOyiGBKlhjUFAURADs=" alt="Submit" style="vertical-align: -5px;padding-left:5px;" class="formsearchsubmit">
-                </form>
-            </div>
-            <a href="/stores.html">{{ T("topnav_stores") }}</a> &nbsp; &middot; &nbsp;
-            {% if isloggedin %}
-                <a href="/_misc/logout.html">{{ T("nav_logout") }}</a> &nbsp; &middot; &nbsp;
-                <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a> &nbsp; &middot; &nbsp;
-            {% else %}
-                <a href="#" onclick="return hs.htmlExpand(this, { width: 200, anchor: 'right', wrapperClassName: 'no-titlebar no-footer' } )">{{ T("topnav_login") }}</a>
-                &nbsp; &middot; &nbsp;
-                <div class="highslide-maincontent">
-                    <form action="/_misc/login.html" method="POST" name="login">
-                        {{ T("misc_login") }}<br>
-                        <input type="hidden" name="sAction" value="login">
-                        <input type="text" name="user" value="" id="loginform-user" placeholder="{{ T("misc_loginform_username") }}">
-                        <input type="password" name="password" value="" id="loginform-password" placeholder="{{ T("misc_loginform_password") }}">
-                        <input type="image" alt="" id="loginform-submit" src="data:image/gif;base64,R0lGODlhFAAUANUAAP///5SVmf7+/pWWmv7//5SVl5OUmP///ZOUlpSVmqqqrObn6fLy8v7+/5ydn6+wssPExtna3MXGyJWVl5aWmOvs7qOkpra4t5SUlvf5+Pf4+ra3ubCxs9HS1N7e4Pn5+ZWWmJOUmZucnpWWm/39/fn5++zs7vz9/8rLzQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAUABQAAAaIQIKQACgaj8hkUYBkAphO5bM5VSpMRGO0isQUUIToNtmgBAYcxph7LBgCBkckLG0PEoYBYqOpAw4ACCEjeAMFDgtrRYADAXADBgmOECVKTI6YmAUSbEdnmQgWCyd1DY+YFxlLdZoiHk9ba2cgDwxsJFITBR1Jin8fChVEB2tQf4B+ycpFWctHQQA7">
-                    </form>
-                    <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
-                </div>
-                <a href="/_misc/register.html">{{ T("topnav_register") }}</a> &nbsp; &middot; &nbsp;
-            {% endif %}
-
-            <a href="/_misc/shoppingcart.html"><img src="/_img/shoppingcart.gif" alt="Shoppingcart" id="shoppingcarticon">
-                <span id="shoppingcartamount">{{cartinfo.numberofitems}} {{ T("topnav_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></a>
+<div class="pure-g" id="row-topbar">
+    <div class="container">
+        <div class="pure-u-1 pure-u-md-3-4" id="logo-head">
+            <a href="/"><img src="/_img/haase-it-logo.gif"></a>
         </div>
-        <div id="headnavcontainer">
-            <ul id="headnav">
-                <li><a href="/men/"{{ navarea == 'herren' ? ' class="active"' : '' }}>{{ T("topnav_herren") }}</a></li>
-                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
-                <li><a href="/women/"{{ navarea == 'damen' ? ' class="active"' : '' }}>{{ T("topnav_damen") }}</a></li>
-                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
-                <li><a href="/about-us.html"{{ navarea == 'ueberuns' ? ' class="active"' : '' }}>{{ T("topnav_ueberuns") }}</a></li>
-                <li>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</li>
-                <li><a href="/kontakt.html"{{ navarea == 'kontakt' ? ' class="active"' : '' }}>{{ T("topnav_kontakt") }}</a></li>
+        <div class="pure-u-1 pure-u-md-1-4">
+            <div class="pure-u-1-3 pure-u-md-1 button-head-container">
+                <button data-target="#myModal" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="button-contact">
+                    <i class="fa fa-info-circle"></i>
+                    <span class="hidden-sm">{{ T("toputilities_beratungundbestellung") }}</span>
+                </button>
+            </div><div class="pure-u-1-3 pure-u-md-1 button-head-container">
+                <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-dropdown="#dropdown-1">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("topnav_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></button>
+                <div id="dropdown-1" class="dropdown dropdown-tip">
+                    <div class="dropdown-panel fs">
+                        <ul id="shoppingcartinfo">
+                            {% if cartinfo.cartitems is defined and cartinfo.cartitems|length > 0 %}
+                                {% for item in cartinfo.cartitems %}
+                                    <li>
+                                        <a href="/_misc/shoppingcart.html">
+                                            <b>{{ item.amount }}x {{ item.name }}</b>
+                                            <span id="shoppingcartsum">{{ item.price.brutto_use|number_format(2, ',', '.') }}&nbsp;{{ currency }}</span>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                                <li class="divider"></li>
+                                <li><a href="/_misc/shoppingcart.html">{{ T("toputilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }}</span> {{ currency }}</a></li>
+                                <li class="divider"></li>
+                                <li><a href="/_misc/shoppingcart.html" class="pure-button button-green">{{ T("toputilities_gotoshoppingcart") }}</a></li>
+                            {% else %}
+                                <li>
+                                    <a href="#">{{ T("topnav_shoppingcart_empty") }}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div></div>
+            </div><div class="pure-u-1-3 pure-u-md-1 button-head-container">
+                <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" id="button-head-topnav">
+                    <i class="fa fa-list"></i>
+                    <span class="hidden-sm">Navigation</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="myModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        {{ T("misc_infobox_beratungundbestellung") }}
+        <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
+    </div>
+</div>
+<div class="pure-g" id="row-topnav">
+    <div class="container">
+        <div class="pure-u-1 fs">
+            <ul id="topnav">
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/herren-shirts/" id="topnav-1"{{ subnavkey == 'herrenshirts' ? ' class="active"' : '' }}>{{ T("topnav_herenshirts") }}</a>
+                    {% if subnavkey == 'herrenshirts' %}
+                        <ul id="topnav-sub">
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>{% endif %}</li>
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/damen-shirts/" id="topnav-2"{{ subnavkey == 'damenshirts' ? ' class="active"' : '' }}>{{ T("topnav_damenshirts") }}</a>
+                    {% if subnavkey == 'damenshirts' %}
+                        <ul id="topnav-sub">
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>{% endif %}</li>
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/kapuzenpullover/" id="topnav-3"{{ subnavkey == 'kapuzenpullover' ? ' class="active"' : '' }}>{{ T("topnav_kapuzenpullover") }}</a>
+                    {% if subnavkey == 'kapuzenpullover' %}
+                        <ul id="topnav-sub">
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>{% endif %}</li>
+                <li class="pure-u-1 pure-u-md-3-24"><a href="/accessoires/" id="topnav-4"{{ subnavkey == 'accessoires' ? ' class="active"' : '' }}>{{ T("topnav_accessoires") }}</a>
+                    {% if subnavkey == 'accessoires' %}
+                        <ul id="topnav-sub">
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>{% endif %}</li>
+                <li class="pure-u-1 pure-u-md-3-24"><a href="/top-angebot/" id="topnav-5"{{ subnavkey == 'topangebot' ? ' class="active"' : '' }}>{{ T("topnav_topangebot") }}</a>
+                    {% if subnavkey == 'topangebot' %}
+                        <ul id="topnav-sub">
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>{% endif %}</li>
+                <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
+                <li class="pure-u-1 pure-u-md-3-24"><a href="/ueber-uns.html" id="topnav-7"{{ requesturi == '/ueber-uns.html' ? ' class="active"' : '' }}>{{ T("topnav_ueberuns") }}</a></li>
             </ul>
         </div>
     </div>
 </div>
-<br class="clearboth">
-<div id="maincont">
-    <div id="main">
-        {% autoescape false %}
+<div class="pure-g" id="row-main">
+    <div class="container">
         {% if widecontent == false %}
-            <div id="leftnavcontainer" class="bg{% if subnavkey is defined and subnavkey != '' %}{{subnavkey}}{% else %}default{% endif %}">
-                {% if subnav is defined %}
-                    <div id="leftnavtitle">{{ T("topnav_" ~ navarea) }}</div>
-                    <ul id="leftnav">
-                        {% for title, link in subnav %}
-                            <li><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="current"{% endif %}>{{title}}</a></li>
-                        {% endfor %}
+        <div class="pure-u-1 pure-u-md-1-4" id="col-leftnav">
+            <div id="col-leftnav-content">
+                <div class="pure-menu pure-menu-open fs" id="leftnav">
+                    <ul>
+                        {% if subnav is defined %}
+                            {% for title, link in subnav %}
+                                <li{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="pure-menu-selected"{% endif %}><a href="{{link}}">{{title}}</a></li>
+                            {% endfor %}
+                        {% endif %}
                     </ul>
+                </div>
+                <div class="well fs" id="infobox-left">
+                    {{ T("misc_infobox_payment") }}
+                    <br class="clear">
+                </div>
+            </div>
+        </div>
+        <div class="pure-u-1 pure-u-md-3-4">
+            <div id="col-main">
+                {% else %}
+                <div class="pure-u-1">
+                    <div id="col-main">
+                        {% endif %}
+
+                        {% autoescape false %}
+                        {% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
+                            <div class="fs">
+                                {% include customcontenttemplate ~ '.twig' %}
+                            </div>
+                        {% else %}
+                            {% if pagetype == 'itemoverview' %}
+                                <div class="fs">
+                                    {{content}}
+                                    {% include 'shop/items-overview.twig' %}
+                                </div>
+                            {% elseif pagetype == 'itemdetail' %}
+                                <div class="fs">
+                                    {% include 'shop/item-detail.twig' %}
+                                </div>
+                            {% else %}
+                                <div class="fs">
+                                    {{content}}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endautoescape %}
+                {% if pagetype == 'itemdetail' %}
+                    {% include 'shop/item-detail-suggestions.twig' %}
                 {% endif %}
             </div>
-            <div id="contentwithsubnav">
-        {% endif %}
-        {% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
-            {% include customcontenttemplate ~ '.twig' %}
-        {% else %}
-            {{content}}
-            {% if pagetype == 'itemoverview' %}
-                {% include 'shop/items-overview.twig' %}
-            {% elseif pagetype == 'itemdetail' %}
-                {% include 'shop/item-detail.twig' %}
-            {% endif %}
-        {% endif %}
-        {% if widecontent == false %}
+        </div>
+        <div class="pure-g" id="row-footernav">
+            <div class="container">
+                <br>
+                <div class="pure-u-md-1-4 pure-u-1-2">
+                    <div class="fs">
+                        <h4>{{ T("footer_title_information") }}</h4>
+                        <ul class="list-unstyled">
+                            <li><a href="/ueber-uns.html">{{ T("footer_ueberuns") }}</a></li>
+                            <li><a href="/datenschutz.html">{{ T("footer_datenschutz") }}</a></li>
+                            <li><a href="/agb.html">{{ T("footer_agb") }}</a></li>
+                            <li><a href="/versanddauer.html">{{ T("footer_versanddauer") }}</a></li>
+                            <li><a href="/versandkosten.html">{{ T("footer_versandkosten") }}</a></li>
+                            <li><a href="/impressum.html">{{ T("footer_impressum") }}</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="pure-u-md-1-4 pure-u-1-2">
+                    <div class="fs">
+                        <h4>{{ T("footer_title_kategorien") }}</h4>
+                        <ul class="list-unstyled">
+                            <li><a href="/herren-shirts/">{{ T("footer_herrenshirts") }}</a></li>
+                            <li><a href="/damen-shirts/">{{ T("footer_damenshirts") }}</a></li>
+                            <li><a href="/kapuzenpullover/">{{ T("footer_kapuzenpullover") }}</a></li>
+                            <li><a href="/top-angebot/">{{ T("footer_topangebot") }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pure-u-md-1-4 pure-u-1-2">
+                    <div class="fs">
+                        <h4>{{ T("footer_title_contact") }}</h4>
+                        <ul class="list-unstyled">
+                            <li>{{ T("footer_contact1") }}</li>
+                            <li>{{ T("footer_contact2") }}</li>
+                            <li>{{ T("footer_contact3") }}</li>
+                            <li>{{ T("footer_contact4") }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pure-u-md-1-4 pure-u-1-2">
+                    <div class="fs">
+                        <h4>{{ T("footer_title_followus") }}</h4>
+                        <ul class="list-unstyled">
+                            <li><a href="http://www.instagram.com/">{{ T("footer_instagram") }}</a></li>
+                            <li><a href="http://www.tumblr.com/">{{ T("footer_tumblr") }}</a></li>
+                            <li><a href="https://www.facebook.com/">{{ T("footer_facebook") }}</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <br class="clearboth">
-        {% endif %}
-        {% endautoescape %}
-    </div>
-</div>
-<div id="footcont">
-    <div id="footerleft">
-        <ul id="footeritemsleft">
-            <li><a href="/impressum.html">{{ T("footer_impressum") }}</a></li>
-            <li><a href="/widerruf.html">{{ T("footer_widerrufsbelehrung") }}</a></li>
-            <li><a href="/versandinformationen.html">{{ T("footer_versandinformationen") }}</a></li>
-            <li><a href="/datenschutz.html">{{ T("footer_datenschutzerklaerung") }}</a></li>
-            <li><a href="/agb.html">{{ T("footer_agb") }}</a></li>
-            <li><a href="/faq.html">{{ T("footer_faq") }}</a></li>
-        </ul>
-        <br>
-        <img src="/_img/logo-footer.jpg" alt="L.A. Affair" style="margin-top: 5px;">
-        <br><br>
-    </div>
-    <div id="footerright">
-        <ul id="footeritemsright">
-            <li><span style="vertical-align: -3px;">{{ T("footer_followus") }}&nbsp;&nbsp;</span></li>
-            <li><a href="https://www.facebook.com/laaffair" target="_blank"><img src="/_img/f_facebook.gif" width="30" height="30" alt="Facebook"></a></li>
-            <li><a href="https://www.twitter.com/laaffair" target="_blank"><img src="/_img/f_twitter.gif" width="30" height="30" alt="Twitter"></a></li>
-            <!-- <li><a href="#c" target="_blank"><img src="/_img/f_youtube.gif" width="30" height="30" alt="Youtube"></a></li> -->
-            <li><a href="http://instagram.com/laaffair" target="_blank"><img src="/_img/f_instagram.gif" width="30" height="30" alt="Instagram"></a></li>
-            <li><a href="http://es.pinterest.com/laaffair/" target="_blank"><img src="/_img/f_pinterest.gif" width="30" height="30" alt="Pinterest"></a></li>
-        </ul>
-        <br><br>
-        <img src="/_img/shipping-footer.jpg" alt="">
-        <br><br>
-    </div>
-    <br class="clearboth">
-</div>
-{% if debugdata is defined %}
-    {{debugdata}}
-{% endif %}
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-56699933-1', 'auto');
-    ga('send', 'pageview');
-</script>
+        </div>
+        <div class="pure-g" id="row-footer"><div class="pure-u-1 fs" id="footer-text">{{ T("footer_copyright") }}</div></div>
+        <script src="/_libs/jquery.lazyload.min.js" type="text/javascript"></script>
+        <script type="text/javascript" charset="utf-8">
+            $(function () {
+                $("img.lazy").lazyload({
+                    effect: "fadeIn",
+                    threshold: 200
+                });
+                $("[rel='tooltip']").tooltip();
+            });
+        </script>
 </body>
 </html>

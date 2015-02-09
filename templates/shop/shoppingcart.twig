@@ -1,64 +1,9 @@
-<div class="defaultpadding">
-    {{content}}
-
-    {% if customdata.shoppingcart.cart|length > 0 %}
-        {% if customdata.shoppingcart.readonly == false %}{{T("shoppingcart_headline")}}<br><br>{% endif %}
-        {% include 'shop/shoppingcarttable.twig' %}
-        {% if customdata.shoppingcart.readonly == false %}
-            <br><br>
-            <div id="shcmiddle">
-                {% if customdata.shoppingcart.additionalcoststoitems.bMindesterreicht != true %}
-                    {{T("shoppingcart_error_ammounttoolow_1")}}
-                    {{customdata.shoppingcart.minimumorderamountnet|number_format(2, ",", ".")}}
-                    {{currency}}
-                    {{T("shoppingcart_error_ammounttoolow_2")}}
-                {% endif %}
-
-                <div id="shcadrform">
-                    {% if customdata.shoppingcart.additionalcoststoitems.bMindesterreicht == true %}
-                        {% include 'customer/customerform.twig' %}
-                    {% endif %}
-                </div>
-
-                <div id="shctext1">
-                {% if customdata.shoppingcart.minimumorderamountnet > 0 %}
-                        {{T("shoppingcart_shippingcost")}}
-                        <br><br>
-                        {{T("shoppingcart_lowammountinfo_1")}}
-                        {{customdata.shoppingcart.minimumorderamountnet|number_format(2, ",", ".")}}
-                        {{currency}}
-                        {{T("shoppingcart_lowammountinfo_2")}}
-                        <br><br>
-                        {% if customdata.shoppingcart.reducedorderamountnet1 != 0 %}
-                            {{T("shoppingcart_lowammountinfo_3")}}
-                            {{customdata.shoppingcart.reducedorderamountnet1|number_format(2, ",", ".")}}
-                            {{currency}}
-                            {{T("shoppingcart_lowammountinfo_4")}}
-                            {{customdata.shoppingcart.reducedorderamountfee1|number_format(2, ",", ".")}}
-                            {{currency}}
-                            {{T("shoppingcart_lowammountinfo_5")}}
-                            {% if customdata.shoppingcart.reducedorderamountnet2 != 0 %}
-                                {{T("shoppingcart_lowammountinfo_6")}}
-                                {{customdata.shoppingcart.reducedorderamountnet2|number_format(2, ",", ".")}}
-                                {{currency}}
-                                {{T("shoppingcart_lowammountinfo_7")}}
-                                {{customdata.shoppingcart.reducedorderamountfee2|number_format(2, ",", ".")}}
-                                {{currency}}
-                                {{T("shoppingcart_lowammountinfo_8")}}
-                            {% endif %}
-                        {% endif %}
-                        <br><br>
-                        {% if customdata.shoppingcart.minimumamountforfreeshipping is defined and minimumamountforfreeshipping != 0 %}
-                            {{T("shoppingcart_freeshippinginfo_1")}}
-                            {{customdata.shoppingcart.minimumamountforfreeshipping}}
-                            {{currency}}
-                            {{T("shoppingcart_freeshippinginfo_2")}}
-                            <br><br>
-                        {% endif %}
-                {% endif %}
-                    {{T("shoppingcart_infotextcomment")}}
-                </div>
-            </div>
-        {% endif %}
+<!-- Cart -->
+{% if customdata.shoppingcart.readonly == false %}<h1>{{T("shoppingcart_headline")}}</h1>{% endif %}
+{{content}}
+{% if customdata.shoppingcart.cart|length > 0 %}
+    {% include 'shop/shoppingcarttable.twig' %}
+    {% if customdata.shoppingcart.readonly == false %}
+        {% include 'customer/customerform.twig' %}
     {% endif %}
-</div>
+{% endif %}

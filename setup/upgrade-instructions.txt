@@ -1,5 +1,6 @@
 
-V2.02 auf 2.xx
+V2.02 auf 2.03d1
+directory structure has been changed to symfony style
 config.shop.example.php: removed paypal_log from config array, added PATH_PAYPALLOG, FILE_PAYPALLOG as constants
 
 V2.01 auf V2.02
