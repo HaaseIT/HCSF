@@ -22,7 +22,7 @@ define("PATH_BASEDIR", '/home/www/hostroot/');
 define("PATH_DOCROOT", PATH_BASEDIR.'web/');
 //define("PATH_LIBRARIESROOT", PATH_BASEDIR.'libs/');
 //define("PATH_TWIGROOT", PATH_LIBRARIESROOT.'twig/');
-define("PATH_TEMPLATEROOT", PATH_BASEDIR.'templates/');
+define("PATH_TEMPLATEROOT", PATH_BASEDIR.'src/views/');
 define("PATH_TEMPLATECACHE", PATH_BASEDIR.'templatecache/');
 define("DIRNAME_IMAGES", '_img/');
 define("DIRNAME_ITEMS", 'items/');
@@ -35,7 +35,7 @@ $C = array(
     'default_pagetitle' => 'Sitetitle',
     'templatecache_enable' => false,
     'template_base' => 'base.twig',
-    'subnav_default' => '',
+    'subnav_default' => 'root',
 
     'admin_users' => array('user1', 'user2'),
 

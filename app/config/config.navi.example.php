@@ -20,6 +20,10 @@
 
 $TMP = array(
     'navstruct' => array(
+        'root' => array(
+            T("sidenav_root_01") => '/page1/',
+            T("sidenav_root_02") => '/page2/',
+        ),
         'navarea1' => array(
             T("sidenav_navarea1_01") => '/navarea1/page1/',
             T("sidenav_navarea1_02") => '/navarea1/page2/',
