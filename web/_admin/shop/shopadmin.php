@@ -1,48 +1,22 @@
 <?php
 
-//error_reporting(E_ALL);
+/*
+    Contanto - A modular CMS and Shopsystem
+    Copyright (C) 2015  Marcus Haase - mail@marcus.haase.name
 
-/* Druckansicht für Acrylx
-$P = array(
-'head_scripts' => '<script type="text/javascript">
-hs.Expander.prototype.printHtml = function ()
-{
-var pw = window.open("about:blank", "_new");
-pw.document.open();
-pw.document.write(this.getHtmlPrintPage());
-pw.document.close();
-return false;
-};
-hs.Expander.prototype.getHtmlPrintPage = function()
-{
-// We break the closing script tag in half to prevent
-// the HTML parser from seeing it as a part of
-// the *main* page.
-var body = hs.getElementByClass(this.innerContent, \'DIV\', \'highslide-body\')
-|| this.innerContent;
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-return "<html>\n" +
-"<head>\n" +
-"<title>Shop Bestellung</title>\n" +
-"<link rel=\'stylesheet\' type=\'text/css\' href=\'/screen-global.css\'>\n" +
-"<style type=\'text/css\'>html,body{margin-bottom:0;}body{min-height:100%;}</style>" +
-"<script>\n" +"function step1() {\n" +
-"  setTimeout(\'step2()\', 10);\n" +
-"}\n" +
-"function step2() {\n" +
-"  window.print();\n" +
-"  window.close();\n" +
-"}\n" +
-"</scr" + "ipt>\n" +
-"</head>\n" +
-"<body onLoad=\'step1()\'>\n" +
-body.innerHTML +
-"</body>\n" +
-"</html>\n";
-};
-</script>',
-);
-*/
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 include_once($_SERVER['DOCUMENT_ROOT'].'/../app/init.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/shop/functions.admin.shop.php');
