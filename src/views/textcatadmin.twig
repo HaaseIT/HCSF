@@ -12,8 +12,7 @@
         <br>
         <input type="submit" value="Submit" style="width:578px;" accesskey="s">
     </form>
-{% endif %}
-{% if customdata.add %}
+{% elseif customdata.add %}
     {{ customdata.err.keytooshort ? 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>' : '' }}
     {{ customdata.err.keyalreadyexists ? 'Dieser Textschlüssel ist bereits angelegt.<br>' : '' }}
     {% if customdata.addform.key is defined %}
@@ -27,6 +26,7 @@
     <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" style="width:350px;">
     <input type="submit" name="submit" value="Submit" class="formsubmit">
     </form>
-{% endif %}
+{% else %}
 <div style="text-align:right;width:100%;"><a href="?action=add">{{ T("misc_add_new_value") }}</a></div>
+{% endif %}
 {{ content }}
