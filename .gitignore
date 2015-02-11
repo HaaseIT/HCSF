@@ -8,3 +8,4 @@ app/config/config.navi.php
 app/config/config.customer.php
 app/config/config.shop.php
 vendor
+setup/important.txt
