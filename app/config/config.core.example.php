@@ -37,8 +37,6 @@ $C = array(
     'template_base' => 'base.twig',
     'subnav_default' => 'root',
 
-    'admin_users' => array('user1', 'user2'),
-
     'email_sendername' => 'Sitename Webshop',
     'email_sender' => 'mail@domain.tld',
 

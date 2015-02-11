@@ -90,7 +90,7 @@ if (!isset($_REQUEST["action"])) {
     $P["base"]["cb_customdata"]["pageselect"] = showPageselect($DB, $C);
 } elseif ($_REQUEST["action"] == 'edit' && isset($_REQUEST["page_id"]) && $_REQUEST["page_id"] != '') {
     if (admin_getPage($_REQUEST["page_id"], $DB, $sLang)) {
-        if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P["base"]["cb_customdata"]["updated"] = updatePage($DB, $C, $sLang);
+        if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P["base"]["cb_customdata"]["updated"] = updatePage($DB, $sLang);
         $P["base"]["cb_customdata"]["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
         $P["base"]["cb_customdata"]["page"]["admin_page_types"] = $C["admin_page_types"];
         $P["base"]["cb_customdata"]["page"]["admin_page_groups"] = $C["admin_page_groups"];
@@ -98,8 +98,6 @@ if (!isset($_REQUEST["action"])) {
         foreach ($C["navstruct"] as $sKey => $aValue) $aOptions[] = $sKey;
         $P["base"]["cb_customdata"]["page"]["subnavarea_options"] = $aOptions;
         unset($aOptions);
-    } else {
-
     }
 } elseif ($_REQUEST["action"] == 'addpage') {
     $aErr = array();

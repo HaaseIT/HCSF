@@ -45,21 +45,20 @@ function admin_getPage($iPage, $DB, $sLang) {
     }
 }
 
-function updatePage($DB, $C, $sLang) {
-    if (array_search($_SERVER["REMOTE_USER"], $C["admin_users"]) !== false) {
-        $aData = array(
-            "cb_pagetype" => $_REQUEST["page_type"],
-            "cb_group" => $_REQUEST["page_group"],
-            "cb_pageconfig" => $_REQUEST["page_config"],
-            "cb_subnav" => $_REQUEST["page_subnav"],
-            'cb_id' => $_REQUEST["page_id"],
-        );
+function updatePage($DB, $sLang) {
+    $aData = array(
+        "cb_pagetype" => $_REQUEST["page_type"],
+        "cb_group" => $_REQUEST["page_group"],
+        "cb_pageconfig" => $_REQUEST["page_config"],
+        "cb_subnav" => $_REQUEST["page_subnav"],
+        'cb_id' => $_REQUEST["page_id"],
+    );
 
-        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
-        $hResult = $DB->prepare($sQ);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
-        $hResult->execute();
-    }
+    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
+    $hResult = $DB->prepare($sQ);
+    foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+    $hResult->execute();
+
     if (isset($_REQUEST["textid"])) {
         $aData = array(
             "cl_html" => $_REQUEST["page_html"],
