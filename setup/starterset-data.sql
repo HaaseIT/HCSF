@@ -13,7 +13,7 @@ INSERT INTO content_base (cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, c
 --
 
 INSERT INTO content_lang (cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title, cl_background, cl_pdf) VALUES
-(1, 1, 'en', 'Willkommen bei Contanto by Haase IT', '', '', '', '', '');
+(1, 1, 'en', 'Willkommen bei HCSF by Haase IT', '', '', '', '', '');
 
 --
 -- Daten für Tabelle textcat_base

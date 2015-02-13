@@ -1,4 +1,4 @@
-Contanto - A multilingual CMS and Shopsystem
+HCSF - A multilingual CMS and Shopsystem
 Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
 
 This program is free software: you can redistribute it and/or modify
