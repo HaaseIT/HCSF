@@ -2,6 +2,6 @@
   "require": {
     "twig/twig": "1.*",
     "phpmailer/phpmailer": "5.2.*",
-    "symfony/yaml": "*"
+    "symfony/yaml": "@stable"
   }
 }
