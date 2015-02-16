@@ -43,17 +43,24 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
     }
 }
 
+include_once($_SERVER['DOCUMENT_ROOT'].'/../vendor/autoload.php');
+
+use Symfony\Component\Yaml\Yaml;
+
 // Load core config
 include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/constants.fixed.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.core.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.countries.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.scrts.php');
+
+$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.countries.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.scrts.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.customer.yml')));
+
+include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.shop.php');
+
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.template.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.misc.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/Tools.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.db.php');
-
-include_once($_SERVER['DOCUMENT_ROOT'].'/../vendor/autoload.php');
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -158,9 +165,8 @@ $T = loadTextcats($sLang, $C, $DB);
 //debug($T);
 
 include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.navi.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.customer.php');
+
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/customer/functions.customer.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.shop.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/shop/Item.php');
 include_once($_SERVER['DOCUMENT_ROOT'].'/../src/shop/functions.shoppingcart.php');
 

@@ -192,7 +192,7 @@ function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
 
     $aData = array(
         'customerversion' => $bCust,
-        //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
+        //'shc_css' => file_get_contents($_SERVER['DOCUMENT_ROOT'].'screen-shc.css'),
         'datetime' => date("d.m.Y - H:i"),
         'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $C["minimum_length_custno"] ? $_POST["custno"] : ''),
         'corpname' => (isset($_POST["corpname"]) && trim($_POST["corpname"]) != '' ? $_POST["corpname"] : ''),

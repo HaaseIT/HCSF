@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
-define("PATH_PAYPALLOG", PATH_DOCROOT.'_admin/ipnlogs/');
-define("FILE_PAYPALLOG", PATH_DOCROOT.'ipnlog.txt');
+define("PATH_ORDERLOG", $_SERVER['DOCUMENT_ROOT'].'_admin/orderlogs/');
+define("PATH_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'_admin/ipnlogs/');
+define("FILE_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'ipnlog.txt');
 
 $TMP = array(
     'email_orderconfirmation_attachment_cancellationform_de' => '',

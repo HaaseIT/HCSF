@@ -21,6 +21,7 @@ PHP 5.4.x
 Dependencies:
 TWIG 1.16.2 and up, see: http://twig.sensiolabs.org/ (install via composer)
 PHPMailer 5.2.9 and up, see: https://github.com/PHPMailer/PHPMailer (install via composer)
+Symfony YAML Component (installed via composer)
 
 In the setup directory you will find scripts for setting up the database.
 

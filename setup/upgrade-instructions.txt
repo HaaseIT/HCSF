@@ -1,5 +1,10 @@
 
-V2.02 auf 2.03
+V2.03 auf V2.04dev
+config.countries.php changed to config.countries.yml
+config.customer.php changed to config.customer.yml
+config.scrts.php changed to config.scrts.yml
+
+V2.02 auf V2.03
 directory structure has been changed to symfony style
 config.shop.example.php: removed paypal_log from config array, added PATH_PAYPALLOG, FILE_PAYPALLOG as constants
 

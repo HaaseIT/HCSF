@@ -40,7 +40,7 @@ function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $m
 
     if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
         foreach ($aImagesToEmbed as $sValue) {
-            if (getimagesize(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue)) $mail->AddEmbeddedImage(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue, $sValue);
+            if (getimagesize($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue)) $mail->AddEmbeddedImage($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue, $sValue);
         }
     }
 
