@@ -43,24 +43,24 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
     }
 }
 
-include_once($_SERVER['DOCUMENT_ROOT'].'/../vendor/autoload.php');
+include_once(__DIR__.'/../vendor/autoload.php');
 
 use Symfony\Component\Yaml\Yaml;
 
 // Load core config
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/constants.fixed.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.core.php');
+include_once(__DIR__.'/config/constants.fixed.php');
+include_once(__DIR__.'/config/config.core.php');
 
-$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.countries.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.scrts.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.customer.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
 
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.shop.php');
+include_once(__DIR__.'/config/config.shop.php');
 
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.template.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.misc.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/Tools.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/functions.db.php');
+include_once(__DIR__.'/../src/functions.template.php');
+include_once(__DIR__.'/../src/functions.misc.php');
+include_once(__DIR__.'/../src/Tools.php');
+include_once(__DIR__.'/../src/functions.db.php');
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -164,10 +164,10 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 $T = loadTextcats($sLang, $C, $DB);
 //debug($T);
 
-include_once($_SERVER['DOCUMENT_ROOT'].'/../app/config/config.navi.php');
+include_once(__DIR__.'/config/config.navi.php');
 
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/customer/functions.customer.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/shop/Item.php');
-include_once($_SERVER['DOCUMENT_ROOT'].'/../src/shop/functions.shoppingcart.php');
+include_once(__DIR__.'/../src/customer/functions.customer.php');
+include_once(__DIR__.'/../src/shop/Item.php');
+include_once(__DIR__.'/../src/shop/functions.shoppingcart.php');
 
 $oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
