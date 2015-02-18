@@ -126,7 +126,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         'o_vatfull' => $C["vat"]["full"],
                         'o_vatreduced' => $C["vat"]["reduced"],
                     );
-                    $sQ = \HaaseIT\Tools::buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
+                    $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
                     //die($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aDataOrder as $sKey => $sValue) {
@@ -175,7 +175,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         }
                     }
                     foreach ($aDataOrderItems as $aV) {
-                        $sQ = \HaaseIT\Tools::buildPSInsertQuery($aV, DB_ORDERTABLE_ITEMS);
+                        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aV, DB_ORDERTABLE_ITEMS);
                         $hResult = $DB->prepare($sQ);
                         foreach ($aV as $sKey => $sValue) {
                             $hResult->bindValue(':'.$sKey, $sValue);

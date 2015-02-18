@@ -30,7 +30,7 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
                 DB_CUSTOMERTABLE_PKEY => $iID,
             );
             //debug($aData, false, '$aData');
-            $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
             //debug($sQ);
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -67,7 +67,7 @@ function handleForgotPassword($DB, $C, $aErr) {
                     DB_CUSTOMERTABLE_PKEY => $aResult[DB_CUSTOMERTABLE_PKEY],
                 );
                 //debug($aData, false, '$aData');
-                $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                 //debug($sQ);
                 $hResult = $DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);

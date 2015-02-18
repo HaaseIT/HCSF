@@ -71,7 +71,7 @@ if (isset($_SESSION["user"])) {
                     DB_CUSTOMERFIELD_REGISTRATIONTIMESTAMP => time(),
                 );
                 //debug( $aData );
-                $sQ = \HaaseIT\Tools::buildPSInsertQuery($aData, DB_CUSTOMERTABLE);
+                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_CUSTOMERTABLE);
                 //debug( $sQ );
 
                 $hResult = $DB->prepare( $sQ );

@@ -90,7 +90,7 @@ if ($hResult->rowCount() == 1) {
                         'o_paymentcompleted' => 'y',
                         DB_ORDERTABLE_PKEY => $iId,
                     );
-                    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
+                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aTxnUpdateData as $sKey => $sValue) {
                         $hResult->bindValue(':'.$sKey, $sValue);

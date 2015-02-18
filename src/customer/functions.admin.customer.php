@@ -124,7 +124,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                         $sInfo .= 'Das Passwort wurde geändert.<br>';
                     }
                     //debug($aData);
-                    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                     //debug($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);

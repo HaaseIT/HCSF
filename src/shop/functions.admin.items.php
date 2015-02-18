@@ -189,7 +189,7 @@ function admin_updateItem($C, $DB)
     );
     if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = $_REQUEST["vatid"];
     else $aData[DB_ITEMFIELD_VAT] = 'full';
-    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
+    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
     //echo $sQ."\n";
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
@@ -201,7 +201,7 @@ function admin_updateItem($C, $DB)
             DB_ITEMFIELD_NAME_OVERRIDE => $_REQUEST["name_override"],
             DB_ITEMTABLE_TEXT_PKEY => $_REQUEST["textid"],
         );
-        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
         //echo $sQ."\n";
         //debug($DB->error());
         $hResult = $DB->prepare($sQ);

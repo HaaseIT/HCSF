@@ -49,7 +49,7 @@ if (isset($_POST["change"])) {
         'o_id' => $_POST["id"],
     );
 
-    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
+    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
     //echo debug($sQ, true);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);

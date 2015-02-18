@@ -54,7 +54,7 @@ function updatePage($DB, $sLang) {
         'cb_id' => $_REQUEST["page_id"],
     );
 
-    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
+    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
     $hResult->execute();
@@ -67,7 +67,7 @@ function updatePage($DB, $sLang) {
             "cl_keywords" => $_REQUEST["page_keywords"],
         );
 
-        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_LANG);
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_LANG);
         $sQ .= "WHERE ".DB_CONTENTTABLE_LANG_PARENTPKEY." = :".DB_CONTENTTABLE_LANG_PARENTPKEY;
         $sQ .= " AND cl_lang = :cl_lang AND ".DB_CONTENTTABLE_LANG_PKEY." = :".DB_CONTENTTABLE_LANG_PKEY;
         $hResult = $DB->prepare($sQ);

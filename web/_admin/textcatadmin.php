@@ -76,7 +76,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'tcl_tcid' => $_GET["id"],
             'tcl_lang' => $sLang
         );
-        $sQ = \HaaseIT\Tools::buildPSInsertQuery($aData, 'textcat_lang');
+        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
         //echo $sQ;
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -88,7 +88,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'tcl_text' => $_POST["text"],
             'tcl_id' => $_POST["lid"],
         );
-        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
         //debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -125,8 +125,8 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             if ($iRows > 0) $aErr["keyalreadyexists"] = true;
         }
         if (count($aErr) == 0) {
-            $aData = array('tc_key' => trim($_POST["key"]),);
-            $sQ = \HaaseIT\Tools::buildInsertQuery($aData, 'textcat_base');
+            $aData = array('tc_key' => trim(\HaaseIT\Tools::cED($_POST["key"])),);
+            $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
             //debug($sQ);
             $DB->exec($sQ);
             $iId = $DB->lastInsertId();

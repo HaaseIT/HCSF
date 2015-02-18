@@ -60,6 +60,7 @@ include_once(__DIR__.'/config/config.shop.php');
 include_once(__DIR__.'/../src/functions.template.php');
 include_once(__DIR__.'/../src/functions.misc.php');
 include_once(__DIR__.'/../src/Tools.php');
+include_once(__DIR__.'/../src/DBTools.php');
 include_once(__DIR__.'/../src/functions.db.php');
 
 date_default_timezone_set($C["defaulttimezone"]);

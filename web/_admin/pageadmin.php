@@ -77,7 +77,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             DB_CONTENTFIELD_LANG => $sLang,
         );
         //debug($aData);
-        $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
         //echo debug($sQ, false);
         $DB->exec($sQ);
         header('Location: '.$_SERVER["PHP_SELF"]."?page_id=".$_REQUEST["page_id"].'&action=edit');
@@ -111,8 +111,8 @@ if (!isset($_REQUEST["action"])) {
             if ($iRows > 0) {
                 $aErr["keyalreadyinuse"] = true;
             } else {
-                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim($_POST["pagekey"]),);
-                $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
+                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim(\HaaseIT\Tools::cED($_POST["pagekey"])),);
+                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
                 //debug($sQ);
                 $hResult = $DB->exec($sQ);
                 $iInsertID = $DB->lastInsertId();

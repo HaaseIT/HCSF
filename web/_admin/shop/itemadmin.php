@@ -75,7 +75,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
         );
         //debug($aData);
 
-        $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
         //echo debug($sQ, false);
         $DB->exec($sQ);
 
@@ -119,8 +119,8 @@ if (isset($_REQUEST["action"])) {
                 if ($iRows > 0) {
                     $aErr["itemnoalreadytaken"] = true;
                 } else {
-                    $aData = array(DB_ITEMFIELD_NUMBER => trim($_POST["itemno"]),);
-                    $sQ = \HaaseIT\Tools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
+                    $aData = array(DB_ITEMFIELD_NUMBER => trim(\HaaseIT\Tools::cED($_POST["itemno"])),);
+                    $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
                     //debug($sQ);
                     $hResult = $DB->exec($sQ);
                     $iInsertID = $DB->lastInsertId();

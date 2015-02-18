@@ -37,7 +37,7 @@ function admin_updateGroup($DB, $sLang)
         DB_ITEMGROUPTABLE_BASE_PKEY => $_REQUEST["gid"],
     );
 
-    $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
+    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
     //debug($sQ);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) {
@@ -64,7 +64,7 @@ function admin_updateGroup($DB, $sLang)
             DB_ITEMGROUPFIELD_DETAILS => $_REQUEST["details"],
             DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
         );
-        $sQ = \HaaseIT\Tools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
         //debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
