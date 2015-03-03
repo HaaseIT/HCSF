@@ -29,10 +29,10 @@ class DBTools
         $sValues = '';
         foreach ($aData as $sKey => $sValue) {
             $sFields .= $sKey . ", ";
-            $sValues .= "'" . self::cED($sValue, $bKeepAT) . "', ";
+            $sValues .= "'" . Tools::cED($sValue, $bKeepAT) . "', ";
         }
-        $sQ = "INSERT INTO " . $sTable . " (" . self::cutStringend($sFields, 2) . ") ";
-        $sQ .= "VALUES (" . self::cutStringend($sValues, 2) . ")";
+        $sQ = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
+        $sQ .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
         return $sQ;
     }
 
@@ -44,7 +44,7 @@ class DBTools
             $sFields .= $sKey . ', ';
             $sValues .= ":" . $sKey . ", ";
         }
-        $sQ = "INSERT INTO " . $sTable . " (" . self::cutStringend($sFields, 2) . ") VALUES (" . self::cutStringend($sValues, 2) . ")";
+        $sQ = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") VALUES (" . Tools::cutStringend($sValues, 2) . ")";
         return $sQ;
     }
 
@@ -52,13 +52,13 @@ class DBTools
     {
         $sQ = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {
-            $sQ .= $sKey . " = '" . self::cED($sValue, $bKeepAT) . "', ";
+            $sQ .= $sKey . " = '" . Tools::cED($sValue, $bKeepAT) . "', ";
         }
-        $sQ = self::cutStringend($sQ, 2);
+        $sQ = Tools::cutStringend($sQ, 2);
         if ($sPKey == '') {
             $sQ .= ' ';
         } else {
-            $sQ .= " WHERE " . $sPKey . " = '" . self::cED($sPValue, $bKeepAT) . "'";
+            $sQ .= " WHERE " . $sPKey . " = '" . Tools::cED($sPValue, $bKeepAT) . "'";
         }
         return $sQ;
     }
@@ -72,7 +72,7 @@ class DBTools
             }
             $sQ .= $sKey . " = :" . $sKey . ", ";
         }
-        $sQ = self::cutStringend($sQ, 2);
+        $sQ = Tools::cutStringend($sQ, 2);
         if ($sPKey == '') {
             $sQ .= ' ';
         } else {
