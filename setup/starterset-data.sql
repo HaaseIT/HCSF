@@ -38,7 +38,3 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
 (7, 3, 'en', 'We are sorry, but at this time there is no english version of this page available. Instead, we are displaying this page in its original language.'),
 (8, 3, 'es', 'Lo sentimos, pero de momento no tenemos una versión de esta página disponible en español, como reemplazo se le mostrará la página en el idioma predeterminado.'),
 (9, 3, 'de', 'Es tut uns leid, aber zur Zeit ist keine deutsche Version dieser Seite verfügbar, als Ersatz zeigen wir Ihnen die Seite in der Standardsprache.');
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
