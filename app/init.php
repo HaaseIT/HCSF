@@ -56,7 +56,15 @@ if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
-if ($C["enable_module_shop"]) include_once(__DIR__.'/config/config.shop.php');
+if ($C["enable_module_shop"]) {
+    define("PATH_ORDERLOG", $_SERVER['DOCUMENT_ROOT'].'/_admin/orderlogs/');
+    define("PATH_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'/_admin/ipnlogs/');
+    define("FILE_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'/ipnlog.txt');
+    include_once(__DIR__.'/config/config.shop.php');
+    if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
+        $TMP["vat"] = array("full" => 0, "reduced" => 0);
+    }
+}
 
 include_once(__DIR__.'/../src/functions.template.php');
 include_once(__DIR__.'/../src/functions.misc.php');
@@ -71,13 +79,14 @@ date_default_timezone_set($C["defaulttimezone"]);
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$loader = new Twig_Loader_Filesystem(PATH_TEMPLATEROOT);
+$loader = new Twig_Loader_Filesystem(__DIR__.'/../src/views/');
 $twig_options = array(
     'autoescape' => false,
     'debug' => (isset($C["debug"]) && $C["debug"] ? true : false)
 );
-if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] && PATH_TEMPLATECACHE != '') {
-    $twig_options["cache"] = PATH_TEMPLATECACHE;
+if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] &&
+    is_dir(__DIR__.'/../templatecache/') && is_writable(__DIR__.'/../templatecache/')) {
+    $twig_options["cache"] = __DIR__.'/../templatecache/';
 }
 $twig = new Twig_Environment($loader, $twig_options);
 if (isset($C["debug"]) && $C["debug"]) {

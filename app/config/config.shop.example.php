@@ -18,10 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define("PATH_ORDERLOG", $_SERVER['DOCUMENT_ROOT'].'_admin/orderlogs/');
-define("PATH_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'_admin/ipnlogs/');
-define("FILE_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'ipnlog.txt');
-
 $TMP = array(
     'email_orderconfirmation_attachment_cancellationform_de' => '',
     'email_orderconfirmation_embed_itemimages' => true,
@@ -34,8 +30,6 @@ $TMP = array(
         'auth_token' => 'XXXXXXXXXXXXX',
         'currency_id' => 'EUR',
     ),
-    'paypal_notify' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_notify.html',
-    'paypal_return' => 'http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_return.html',
     'paypal_interactive' => true,
 
     'sofortueberweisung' => array(
@@ -165,38 +159,6 @@ $TMP = array(
         'full' => 19,
         'reduced' => 7,
         // 'none' => 0, // if vat is disabled please uncomment this!
-    ),
-);
-
-if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
-    $TMP["vat"] = array("full" => 0, "reduced" => 0);
-}
-
-$CSA = array(
-    'list_orders' => array(
-        array('title' => 'Besteller', 'key' => 'o_cust', 'width' => 280, 'linked' => false,),
-        array('title' => 'Netto', 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,),
-        array('title' => 'Status', 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
-        array('title' => 'Zeit/VorgNr', 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,),
-        array('title' => '', 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,),
-        array(
-            'title' => 'bearb.',
-            'key' => 'o_id',
-            'width' => 45,
-            'linked' => true,
-            'ltarget' => $_SERVER["PHP_SELF"],
-            'lkeyname' => 'id',
-            'lgetvars' => array(
-                'action' => 'edit',
-            ),
-        ),
-    ),
-    'list_orderitems' => array(
-        array('title' => 'Art Nr', 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,),
-        array('title' => 'Art Name', 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,),
-        array('title' => 'Menge', 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',),
-        array('title' => 'Netto', 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,),
-        array('title' => 'Ges. Netto', 'key' => 'ges_netto', 'width' => 75, 'linked' => false,),
     ),
 );
 

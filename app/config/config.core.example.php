@@ -19,8 +19,6 @@
  */
 
 define("PATH_BASEDIR", '/home/www/hostroot/');
-define("PATH_TEMPLATEROOT", PATH_BASEDIR.'src/views/');
-define("PATH_TEMPLATECACHE", PATH_BASEDIR.'templatecache/');
 define("DIRNAME_IMAGES", '_img/');
 define("DIRNAME_ITEMS", 'items/');
 define("DIRNAME_ITEMSSMALLEST", '100/');

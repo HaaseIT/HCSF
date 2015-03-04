@@ -68,6 +68,34 @@ $aPData = [
     'searchform_toyear' => \HaaseIT\Tools::getFormfield('toyear', date("Y")),
 ];
 
+$CSA = array(
+    'list_orders' => array(
+        array('title' => 'Besteller', 'key' => 'o_cust', 'width' => 280, 'linked' => false,),
+        array('title' => 'Netto', 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,),
+        array('title' => 'Status', 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
+        array('title' => 'Zeit/VorgNr', 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,),
+        array('title' => '', 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,),
+        array(
+            'title' => 'bearb.',
+            'key' => 'o_id',
+            'width' => 45,
+            'linked' => true,
+            'ltarget' => $_SERVER["PHP_SELF"],
+            'lkeyname' => 'id',
+            'lgetvars' => array(
+                'action' => 'edit',
+            ),
+        ),
+    ),
+    'list_orderitems' => array(
+        array('title' => 'Art Nr', 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,),
+        array('title' => 'Art Name', 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,),
+        array('title' => 'Menge', 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',),
+        array('title' => 'Netto', 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,),
+        array('title' => 'Ges. Netto', 'key' => 'ges_netto', 'width' => 75, 'linked' => false,),
+    ),
+);
+
 $aShopadmin = handleShopAdmin($CSA, $twig, $DB, $C, $sLang);
 
 $P["base"]["cb_customdata"] = array_merge($aPData, $aShopadmin);
