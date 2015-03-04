@@ -64,15 +64,19 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         'pageconfig' => $P["base"]["cb_pageconfig"],
         'pagetype' => $P["base"]["cb_pagetype"],
         'subnavkey' => $P["base"]["cb_subnav"],
-        'currency' => $C["waehrungssymbol"],
         'requesturi' => $_SERVER["REQUEST_URI"],
         'requesturiarray' => parse_url($_SERVER["REQUEST_URI"]),
-        'isloggedin' => getUserData(),
-        'orderamounts' => $C["orderamounts"],
     );
-    if (isset($C["vat"]["full"])) $aP["vatfull"] = $C["vat"]["full"];
-    if (isset($C["vat"]["reduced"])) $aP["vatreduced"] = $C["vat"]["reduced"];
-    if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
+    if ($C["enable_module_customer"]) {
+        $aP["isloggedin"] = getUserData();
+    }
+    if ($C["enable_module_shop"]) {
+        $aP["currency"] = $C["waehrungssymbol"];
+        $aP["orderamounts"] = $C["orderamounts"];
+        if (isset($C["vat"]["full"])) $aP["vatfull"] = $C["vat"]["full"];
+        if (isset($C["vat"]["reduced"])) $aP["vatreduced"] = $C["vat"]["reduced"];
+        if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
+    }
     if (isset($P["base"]["cb_key"])) $aP["path"] = pathinfo($P["base"]["cb_key"]);
     else $aP["path"] = pathinfo($aP["requesturi"]);
     if (isset($P["base"]["cb_customcontenttemplate"]) && trim($P["base"]["cb_customcontenttemplate"]) != '') $aP["customcontenttemplate"] = $P["base"]["cb_customcontenttemplate"];
@@ -82,19 +86,13 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     reset($C["lang_available"]);
     if (!$P) {
         $P["base"]['cb_pagetype'] = 'error';
-        $P["lang"] = array(
-            'cl_html' => T("misc_page_not_found"),
-        );
+        $P["lang"]["cl_html"] = T("misc_page_not_found");
         header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
     } elseif (isset($P["base"]) && !isset($P["lang"])) {
         if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail') {
-            $P["lang"] = array(
-                'cl_html' => '',
-            );
+            $P["lang"]["cl_html"] = '';
         } else {
-            $P["lang"] = array(
-                'cl_html' => T("misc_content_not_found"),
-            );
+            $P["lang"]["cl_html"] = T("misc_content_not_found");
             header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
         }
     } elseif($P["lang"][DB_CONTENTFIELD_LANG] != $sLang) {
@@ -138,31 +136,33 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     $aP["langselector"] = \HaaseIT\Tools::cutStringend($aP["langselector"], 1);
 
     // Shopping cart infos
-    if ((!$C["show_pricesonlytologgedin"] || getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-        $aCartsums = calculateCartItems($C, $_SESSION["cart"]);
-        $aP["cartinfo"] = array(
-            'numberofitems' => count($_SESSION["cart"]),
-            'cartsums' => $aCartsums,
-            'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
-            'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
-        );
-        unset($aCartsums);
-        foreach ($_SESSION["cart"] as $sKey => $aValue) {
-            $aP["cartinfo"]["cartitems"][$sKey] = array(
-                'cartkey' => $sKey,
-                'name' => $aValue["name"],
-                'amount' => $aValue["amount"],
-                'img' => $aValue["img"],
-                'price' => $aValue["price"],
+    if ($C["enable_module_shop"]) {
+        if ((!$C["show_pricesonlytologgedin"] || getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+            $aCartsums = calculateCartItems($C, $_SESSION["cart"]);
+            $aP["cartinfo"] = array(
+                'numberofitems' => count($_SESSION["cart"]),
+                'cartsums' => $aCartsums,
+                'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
+                'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
+            );
+            unset($aCartsums);
+            foreach ($_SESSION["cart"] as $sKey => $aValue) {
+                $aP["cartinfo"]["cartitems"][$sKey] = array(
+                    'cartkey' => $sKey,
+                    'name' => $aValue["name"],
+                    'amount' => $aValue["amount"],
+                    'img' => $aValue["img"],
+                    'price' => $aValue["price"],
+                );
+            }
+        } else {
+            $aP["cartinfo"] = array(
+                'numberofitems' => 0,
+                'cartsums' => array(),
+                'cartsumnetto' => 0,
+                'cartsumbrutto' => 0,
             );
         }
-    } else {
-        $aP["cartinfo"] = array(
-            'numberofitems' => 0,
-            'cartsums' => array(),
-            'cartsumnetto' => 0,
-            'cartsumbrutto' => 0,
-        );
     }
 
     $aP["countrylist"][] = ' | ';
@@ -170,7 +170,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         $aP["countrylist"][] = $sKey.'|'.$sValue;
     }
 
-    if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail') {
+    if ($C["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail')) {
         if (isset($P["base"]["cb_pageconfig"]["itemindex"])) {
             $mItemIndex = $P["base"]["cb_pageconfig"]["itemindex"];
         } else {

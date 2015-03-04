@@ -51,11 +51,12 @@ use Symfony\Component\Yaml\Yaml;
 include_once(__DIR__.'/config/constants.fixed.php');
 include_once(__DIR__.'/config/config.core.php');
 
+if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
+
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
-
-include_once(__DIR__.'/config/config.shop.php');
+if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
+if ($C["enable_module_shop"]) include_once(__DIR__.'/config/config.shop.php');
 
 include_once(__DIR__.'/../src/functions.template.php');
 include_once(__DIR__.'/../src/functions.misc.php');
@@ -68,8 +69,6 @@ date_default_timezone_set($C["defaulttimezone"]);
 // ----------------------------------------------------------------------------
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
-//require_once PATH_TWIGROOT.'lib/Twig/Autoloader.php';
-//Twig_Autoloader::register();
 
 $loader = new Twig_Loader_Filesystem(PATH_TEMPLATEROOT);
 $twig_options = array(
@@ -131,7 +130,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     if (strpos($aPath[count($aPath)-1], '.') === false && $aPath[count($aPath)-1] != '') $sPath .= '/';
 
     // /women/item/0010.html
-    if (mb_strpos($sPath, '/item/') !== false) {
+    if ($C["enable_module_shop"] && mb_strpos($sPath, '/item/') !== false) {
         $aTMP["exploded_request_path"] = explode('/', $sPath);
         $aTMP["position_of_itemsstring_in_path"] = count($aTMP["exploded_request_path"])-2;
         if ($aTMP["exploded_request_path"][$aTMP["position_of_itemsstring_in_path"]] == 'item') {
@@ -167,8 +166,13 @@ $T = loadTextcats($sLang, $C, $DB);
 
 include_once(__DIR__.'/config/config.navi.php');
 
-include_once(__DIR__.'/../src/customer/functions.customer.php');
-include_once(__DIR__.'/../src/shop/Item.php');
-include_once(__DIR__.'/../src/shop/functions.shoppingcart.php');
+if ($C["enable_module_customer"]) include_once(__DIR__.'/../src/customer/functions.customer.php');
 
-$oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
+if ($C["enable_module_shop"]) {
+    include_once(__DIR__ . '/../src/shop/Item.php');
+    include_once(__DIR__ . '/../src/shop/functions.shoppingcart.php');
+
+    $oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
+} else {
+    $oItem = '';
+}

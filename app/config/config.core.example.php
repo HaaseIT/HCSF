@@ -28,6 +28,10 @@ define("PATH_EMAILATTACHMENTS", $_SERVER['DOCUMENT_ROOT'].'_assets/');
 
 $C = array(
     'debug' => (isset($_SERVER["REMOTE_USER"]) && $_SERVER["REMOTE_USER"] == 'user1' ? true : false),
+
+    'enable_module_shop' => true,
+    'enable_module_customer' => true,
+
     'defaulttimezone' => 'Europe/Berlin',
     'default_pagetitle' => 'Sitetitle',
     'templatecache_enable' => false,

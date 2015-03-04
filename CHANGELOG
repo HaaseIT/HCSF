@@ -3,3 +3,4 @@ V2.03 auf V2.04dev
 config.countries.php changed to config.countries.yml
 config.customer.php changed to config.customer.yml
 config.scrts.php changed to config.scrts.yml
+added config parameters enable_module_shop, enable_module_customer and enabled processing of them
