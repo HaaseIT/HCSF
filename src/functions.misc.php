@@ -22,6 +22,7 @@
 2015-03-04
 - removed funtions: T() and loadTextcats(), moved to different files
 - removed function: debug(), moved to class Tools
+- removed function showClienttime()
 2014-12-21
 - removed function: makeListtable(), moved to class Tools
 2014-12-19
@@ -101,25 +102,5 @@ function showPagesnav($iPages, $iPage, $aGetvars = array())
         $sH .= href('', $aGetvars);
         $sH .= '&gt;&gt;</a> ';
     }
-    return $sH;
-}
-
-function showClienttime()
-{
-    $sH = '<script type="text/javascript">
-    <!--
-    var Jetzt = new Date();
-    var Tag = Jetzt.getDate();
-    var Monat = Jetzt.getMonth() + 1;
-    var Jahr = Jetzt.getYear();
-    var Stunden = Jetzt.getHours();
-    var Minuten = Jetzt.getMinutes();
-    var Sekunden = Jetzt.getSeconds();
-    var NachVollMinuten  = ((Minuten < 10) ? ":0" : ":");
-    var NachVollSekunden  = ((Sekunden < 10) ? ":0" : ":");
-    if (Jahr<2000) Jahr=Jahr+1900;
-    document.write(Tag + "." + Monat + "." + Jahr + "  " + Stunden + NachVollMinuten + Minuten + NachVollSekunden + Sekunden);
-    //-->
-    </script>';
     return $sH;
 }

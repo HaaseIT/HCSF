@@ -66,12 +66,11 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
             //HaaseIT\Tools::debug($aData);
             $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
         } else {
-            $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>';
+            $aInfo["nodatafound"] = true;
         }
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
         $iId = \HaaseIT\Tools::cED($_GET["id"]);
         $aErr = array();
-        $sInfo = '';
         if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
             if (strlen(trim($_POST["custno"])) < $C["minimum_length_custno"]) {
                 $aErr["custnoinvalid"] = true;
@@ -121,7 +120,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                     );
                     if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
                         $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
-                        $sInfo .= 'Das Passwort wurde geändert.<br>';
+                        $aInfo["passwordchanged"] = true;
                     }
                     //HaaseIT\Tools::debug($aData);
                     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
@@ -130,7 +129,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                     $hResult->execute();
                     //HaaseIT\Tools::debug($hResult->errorInfo());
-                    $sInfo .= 'Die Änderungen wurden gespeichert (' . showClienttime() . ').<br>';
+                    $aInfo["changeswritten"] = true;
                 }
             }
         }
@@ -142,14 +141,13 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
         if ($hResult->rowCount() == 1) {
             $aUser = $hResult->fetch();
             //HaaseIT\Tools::debug($aUser);
-            if (isset($sInfo) && $sInfo != '') $sH .= $sInfo;
-            $sH .= '<br>';
             $aPData["customerform"] = buildCustomerForm($C, $sLang, 'admin', $aErr, $aUser);
         } else {
-            $sH .= 'Keine entsprechender Benutzer gefunden.';
+            $aInfo["nosuchuserfound"] = true;
         }
     }
     $aPData["customeradmin"]["text"] = $sH;
     $aPData["customeradmin"]["type"] = $sType;
+    if (isset($aInfo)) $aPData["customeradmin"]["info"] = $aInfo;
     return $aPData;
 }
