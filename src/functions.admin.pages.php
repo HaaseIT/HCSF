@@ -23,8 +23,8 @@ function admin_getPage($iPage, $DB, $sLang) {
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':pid', $iPage);
     $hResult->execute();
-    //echo debug($sQ, true);
-    //echo debug($DB->error(), true);
+    //HaaseIT\Tools::debug($sQ);
+    //HaaseIT\Tools::debug($DB->error());
     $iNumrows = $hResult->rowCount();
     if ($iNumrows == 1) {
         $aPage["base"] = $hResult->fetch();
@@ -36,7 +36,7 @@ function admin_getPage($iPage, $DB, $sLang) {
         $hResult->bindValue(':parentpkey', $iPage);
         $hResult->bindValue(':lang', $sLang);
         $hResult->execute();
-        //echo debug($sQ, true);
+        //HaaseIT\Tools::debug($sQ);
         if ($hResult->rowCount() != 0) $aPage["text"] = $hResult->fetch();
 
         return $aPage;

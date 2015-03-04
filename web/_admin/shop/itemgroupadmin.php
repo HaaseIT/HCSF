@@ -79,26 +79,26 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $hResult->bindValue(':gid', $_REQUEST["gid"]);
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
-    //debug($sQ);
+    //HaaseIT\Tools::debug($sQ);
     $iNumRowsLang = $hResult->rowCount();
 
-    //debug($iNumRowsBasis.' / '.$iNumRowsLang);
+    //HaaseIT\Tools::debug($iNumRowsBasis.' / '.$iNumRowsLang);
 
     if ($iNumRowsBasis == 1 && $iNumRowsLang == 0) {
         $aData = array(
             DB_ITEMGROUPTABLE_TEXT_PARENTPKEY => $_REQUEST["gid"],
             DB_ITEMGROUPFIELD_LANGUAGE => $sLang,
         );
-        //debug($aData);
+        //HaaseIT\Tools::debug($aData);
         $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_TEXT);
-        //echo debug($sQ);
+        //HaaseIT\Tools::debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
         header('Location: '.$_SERVER["PHP_SELF"]."?gid=".$_REQUEST["gid"].'&action=editgroup');
         die();
     }
-    //echo debug($aItemdata, false);
+    //HaaseIT\Tools::debug($aItemdata);
 }
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
@@ -111,7 +111,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
     }
     $P["base"]["cb_customdata"]["showform"] = 'edit';
     $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('edit', $aGroup[0]);
-    //debug($aGroup);
+    //HaaseIT\Tools::debug($aGroup);
 } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
     $aErr = array();
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
@@ -132,7 +132,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
                 DB_ITEMGROUPFIELD_IMG => $_REQUEST["img"],
             );
             $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
-            //debug($sQ);
+            //HaaseIT\Tools::debug($sQ);
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();

@@ -46,8 +46,8 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
         }
         $sQ .= "ORDER BY o_ordertimestamp DESC";
 
-        //debug($sQ);
-        //debug($_REQUEST);
+        //HaaseIT\Tools::debug($sQ);
+        //HaaseIT\Tools::debug($_REQUEST);
 
         $hResult = $DB->prepare($sQ);
         if ($bFromTo) {
@@ -95,7 +95,7 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
                 } else $k++;
                 $i++;
             }
-            //debug($aData);
+            //HaaseIT\Tools::debug($aData);
             $sH .= \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
 
             if ($i > 1) {
@@ -113,12 +113,12 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
         $hResult->execute();
         if ($hResult->rowCount() == 1) {
             $aSData["orderdata"] = $hResult->fetch();
-            //$sH .= debug($aSData["orderdata"], true);
+            //HaaseIT\Tools::debug($aSData["orderdata"], true);
             $sQ = "SELECT * FROM ".DB_ORDERTABLE_ITEMS." WHERE oi_o_id = :id";
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
-            //debug($DB->numRows($hResult));
+            //HaaseIT\Tools::debug($DB->numRows($hResult));
             $aItems = $hResult->fetchAll();
 
             $aUserdata = [
@@ -140,7 +140,7 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
             $aSData["orderdata"]["options_shippingservices"] = [''];
             foreach ($C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
 
-            //debug($aItems);
+            //HaaseIT\Tools::debug($aItems);
             foreach ($aItems as $aValue) {
                 $aPrice = array(
                     'netto_list' => $aValue["oi_price_netto_list"],
@@ -164,7 +164,7 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
                     'img' => $aValue["oi_img"],
                 ];
             }
-            //debug($aItemsforShoppingcarttable);
+            //HaaseIT\Tools::debug($aItemsforShoppingcarttable);
 
             $aSData = array_merge(
                 buildShoppingCartTable(

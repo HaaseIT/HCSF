@@ -58,7 +58,7 @@ class Item
             $hResult->bindValue(':searchtextwild', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
-        //debug($hResult->errorinfo());
+        //HaaseIT\Tools::debug($hResult->errorinfo());
 
         return $hResult;
     }
@@ -96,7 +96,7 @@ class Item
         }
         $sQ .= " AND ".DB_ITEMFIELD_INDEX;
         $sQ .= " NOT LIKE '%!%' AND ".DB_ITEMFIELD_INDEX." NOT LIKE '%AL%'";
-        //debug($sQ, false, '$sQ');
+        //HaaseIT\Tools::debug($sQ, '$sQ');
 
         return $sQ;
     }
@@ -135,13 +135,13 @@ class Item
         $sQ .= DB_ITEMGROUPTABLE_TEXT.".".DB_ITEMGROUPTABLE_TEXT_PARENTPKEY;
         $sQ .= " AND ".DB_ITEMGROUPFIELD_LANGUAGE." = :lang";
         $sQ .= " WHERE ".DB_ITEMGROUPTABLE_BASE_PKEY." = :group";
-        //debug($sQ);
+        //HaaseIT\Tools::debug($sQ);
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();
-        // echo debug($DB->error(), true);
+        // HaaseIT\Tools::debug($DB->error());
 
         return $hResult->fetch();
     }

@@ -57,13 +57,13 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
             $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'n'";
         }
         $sQ .= " ORDER BY " . DB_CUSTOMERFIELD_NUMBER . " ASC";
-        //debug($sQ);
+        //HaaseIT\Tools::debug($sQ);
         $hResult = $DB->query($sQ);
-        //debug($DB->error());
-        //debug($hResult->rowCount());
+        //HaaseIT\Tools::debug($DB->error());
+        //HaaseIT\Tools::debug($hResult->rowCount());
         if ($hResult->rowCount() != 0) {
             $aData = $hResult->fetchAll();
-            //debug($aData);
+            //HaaseIT\Tools::debug($aData);
             $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
         } else {
             $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>';
@@ -83,7 +83,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                 $hResult->bindValue(':id', $iId);
                 $hResult->bindValue(':custno', trim($_POST["custno"]));
                 $hResult->execute();
-                //debug($sQ);
+                //HaaseIT\Tools::debug($sQ);
                 $iRows = $hResult->rowCount();
                 if ($iRows == 1) {
                     $aErr["custnoalreadytaken"] = true;
@@ -95,7 +95,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                 $hResult->bindValue(':id', $iId);
                 $hResult->bindValue(':email', trim($_POST["email"]));
                 $hResult->execute();
-                //debug($sQ);
+                //HaaseIT\Tools::debug($sQ);
                 $iRows = $hResult->rowCount();
                 if ($iRows == 1) {
                     $aErr["emailalreadytaken"] = true;
@@ -123,13 +123,13 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                         $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
                         $sInfo .= 'Das Passwort wurde geändert.<br>';
                     }
-                    //debug($aData);
+                    //HaaseIT\Tools::debug($aData);
                     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-                    //debug($sQ);
+                    //HaaseIT\Tools::debug($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                     $hResult->execute();
-                    //debug($hResult->errorInfo());
+                    //HaaseIT\Tools::debug($hResult->errorInfo());
                     $sInfo .= 'Die Änderungen wurden gespeichert (' . showClienttime() . ').<br>';
                 }
             }
@@ -141,7 +141,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
         $hResult->execute();
         if ($hResult->rowCount() == 1) {
             $aUser = $hResult->fetch();
-            //$sH .= debug($aUser);
+            //HaaseIT\Tools::debug($aUser);
             if (isset($sInfo) && $sInfo != '') $sH .= $sInfo;
             $sH .= '<br>';
             $aPData["customerform"] = buildCustomerForm($C, $sLang, 'admin', $aErr, $aUser);

@@ -29,9 +29,9 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
                 DB_CUSTOMERFIELD_PWRESETCODE => '',
                 DB_CUSTOMERTABLE_PKEY => $iID,
             );
-            //debug($aData, false, '$aData');
+            //HaaseIT\Tools::debug($aData, '$aData');
             $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-            //debug($sQ);
+            //HaaseIT\Tools::debug($sQ);
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
@@ -55,7 +55,7 @@ function handleForgotPassword($DB, $C, $aErr) {
             $aErr[] = 'emailunknown';
         } else {
             $aResult = $hResult->fetch();
-            //debug($aResult, false, '$aResult');
+            //HaaseIT\Tools::debug($aResult, '$aResult');
             $iTimestamp = time();
             if ($iTimestamp - HOUR < $aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP]) { // 1 hour delay between requests
                 $aErr[] = 'pwresetstilllocked';
@@ -66,9 +66,9 @@ function handleForgotPassword($DB, $C, $aErr) {
                     DB_CUSTOMERFIELD_PWRESETTIMESTAMP => $iTimestamp,
                     DB_CUSTOMERTABLE_PKEY => $aResult[DB_CUSTOMERTABLE_PKEY],
                 );
-                //debug($aData, false, '$aData');
+                //HaaseIT\Tools::debug($aData, '$aData');
                 $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-                //debug($sQ);
+                //HaaseIT\Tools::debug($sQ);
                 $hResult = $DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
@@ -228,7 +228,7 @@ function buildCustomerForm($C, $sLang, $sPurpose = 'none', $sErr = '', $aUserDat
         $aData["fv_active"] = ((getUserData(DB_CUSTOMERFIELD_ACTIVE, $aUserData) == 'y') ? true : false);
         $aData["fv_emailverified"] = ((getUserData(DB_CUSTOMERFIELD_EMAILVERIFIED, $aUserData) == 'y') ? true : false);
     }
-    //debug($aData);
+    //HaaseIT\Tools::debug($aData);
     return $aData;
 }
 
@@ -259,8 +259,8 @@ function getUserData($sField = '', $aUserdata = false)
         elseif ($sField == '') return true;
 
         if ($sField != '' && isset($_SESSION["user"][$sField]) && $_SESSION["user"][$sField] != '') return $_SESSION["user"][$sField];
-        //debug($sField);
-        //debug($_SESSION["user"]);
+        //HaaseIT\Tools::debug($sField);
+        //HaaseIT\Tools::debug($_SESSION["user"]);
     } else {
         if (isset($aUserdata[$sField])) return $aUserdata[$sField];
         elseif ($sField = '') return false;
@@ -297,14 +297,13 @@ function getLogin($C, $DB)
     }
     $hResult->bindValue(':pwd', $sEnc, PDO::PARAM_STR);
     $hResult->execute();
-    //debug($_POST);
-    //debug($sQ);
-    //debug($sEnc);
+    //HaaseIT\Tools::debug($sQ);
+    //HaaseIT\Tools::debug($sEnc);
 
     $iRows = $hResult->rowCount();
     if($iRows == 1) {
         $aRow = $hResult->fetch();
-        //debug($aRow);
+        //HaaseIT\Tools::debug($aRow);
         if ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'y' && $aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'y' && $aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'y') {
             $_SESSION["user"] = $aRow;
             $mGet["status"] = 'success';

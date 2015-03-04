@@ -58,12 +58,12 @@ function getContent($C, $DB, $sPagekey, $sLang) {
     $hResult->bindValue(':ppkey', $aResult["base"][DB_CONTENTTABLE_BASE_PKEY], PDO::PARAM_STR);
     $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);
     $hResult->execute();
-    // debug($sQ);
+    // HaaseIT\Tools::debug($sQ);
     if ($hResult->rowCount() == 1) {
         $aResult["lang"] = $hResult->fetch();
         return $aResult;
     }
-    //debug($aResult["base"][DB_CONTENTFIELD_BASE_KEY]);
+    //HaaseIT\Tools::debug($aResult["base"][DB_CONTENTFIELD_BASE_KEY]);
     // lastly, if the current language data is not available, lets see if we can get the default languages data
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':ppkey', $aResult["base"][DB_CONTENTTABLE_BASE_PKEY], PDO::PARAM_STR);

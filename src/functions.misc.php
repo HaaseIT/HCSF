@@ -21,6 +21,7 @@
 /*
 2015-03-04
 - removed funtions: T() and loadTextcats(), moved to different files
+- removed function: debug(), moved to class Tools
 2014-12-21
 - removed function: makeListtable(), moved to class Tools
 2014-12-19
@@ -68,22 +69,6 @@
 - buildUpdateQuery() $sPValue was not input-filtered, now it is
 - added usefulChars()
 */
-
-function debug($mixed, $bQuiet = false, $sLabel = '')
-{
-    if (!$bQuiet) global $sDebug;
-    if (!isset($sDebug)) $sDebug = '';
-    $sDebug .= '<pre class="debug">';
-    if ($sLabel != '') {
-        $sDebug .= $sLabel."\n\n";
-    }
-    ob_start();
-    var_dump($mixed);
-    $sDebug .= htmlspecialchars(ob_get_contents());
-    ob_end_clean();
-    $sDebug .= '</pre>';
-    return $sDebug;
-}
 
 function showPagesnav($iPages, $iPage, $aGetvars = array())
 {

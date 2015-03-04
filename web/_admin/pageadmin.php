@@ -76,14 +76,14 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             DB_CONTENTTABLE_LANG_PARENTPKEY => $aPage["base"][DB_CONTENTTABLE_BASE_PKEY],
             DB_CONTENTFIELD_LANG => $sLang,
         );
-        //debug($aData);
+        //HaaseIT\Tools::debug($aData);
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
-        //echo debug($sQ, false);
+        //HaaseIT\Tools::debug($sQ);
         $DB->exec($sQ);
         header('Location: '.$_SERVER["PHP_SELF"]."?page_id=".$_REQUEST["page_id"].'&action=edit');
         die();
     }
-    //echo debug($aItemdata, false);
+    //HaaseIT\Tools::debug($aItemdata);
 }
 
 if (!isset($_REQUEST["action"])) {
@@ -113,7 +113,7 @@ if (!isset($_REQUEST["action"])) {
             } else {
                 $aData = array(DB_CONTENTFIELD_BASE_KEY => trim(\HaaseIT\Tools::cED($_POST["pagekey"])),);
                 $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
-                //debug($sQ);
+                //HaaseIT\Tools::debug($sQ);
                 $hResult = $DB->exec($sQ);
                 $iInsertID = $DB->lastInsertId();
                 $sQ = "SELECT ".DB_CONTENTTABLE_BASE_PKEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTTABLE_BASE_PKEY." = '".$iInsertID."'";

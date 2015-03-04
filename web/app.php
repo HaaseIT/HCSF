@@ -20,12 +20,12 @@
 
 include_once(__DIR__.'/../app/init.php');
 
-//debug($P);
-//debug($aURL);
-//debug($_SERVER);
-//debug($_REQUEST);
-//debug($aPath);
-//debug('Path: '.$sPath);
+//HaaseIT\Tools::debug($P);
+//HaaseIT\Tools::debug($aURL);
+//HaaseIT\Tools::debug($_SERVER);
+//HaaseIT\Tools::debug($_REQUEST);
+//HaaseIT\Tools::debug($aPath);
+//HaaseIT\Tools::debug('Path: '.$sPath);
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 

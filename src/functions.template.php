@@ -22,7 +22,7 @@ function T($sTextkey, $bReturnFalseIfNotAvailable = false)
 {
     global $T, $sLang, $C;
     $sDefaultlang = key($C["lang_available"]);
-    //debug($T[$sDefaultlang]);
+    //HaaseIT\Tools::debug($T[$sDefaultlang]);
     if (isset($_GET["showtextkeys"])) {
         $sH = '['.$sTextkey.']';
     } else {
@@ -80,7 +80,6 @@ function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $m
 
 function generatePage($C, $P, $sLang, $DB, $oItem)
 {
-    global $sDebug;
     $aP = array(
         'language' => $sLang,
         'pageconfig' => $P["base"]["cb_pageconfig"],
@@ -210,7 +209,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                     'pageconfig' => json_decode($aRow["cb_pageconfig"], true),
                 );
             }
-            //debug($aItemoverviewpages, false, '$aItemoverviewpages');
+            //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
             $aP["itemindexpathtreeforsuggestions"] = array();
             foreach ($aItemoverviewpages as $aValue) {
                 if (isset($aValue["pageconfig"]["itemindex"])) {
@@ -227,7 +226,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                     }
                 }
             }
-            //debug($aP["pageconfig"]["itemindex"], false, '$aP["pageconfig"]["itemindex"]');
+            //HaaseIT\Tools::debug($aP["pageconfig"]["itemindex"], '$aP["pageconfig"]["itemindex"]');
             if (isset($aP["pageconfig"]["itemindex"])) {
                 if (is_array($aP["pageconfig"]["itemindex"])) {
                     foreach ($aP["pageconfig"]["itemindex"] as $sItemIndexValue) {
@@ -238,7 +237,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                 }
             }
             unset($aItemoverviewpages);
-            debug($aP["itemindexpathtreeforsuggestions"], false, '$aP["itemindexpathtreeforsuggestions"]');
+            //HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
 
             // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
             // if it is not found, we will show the overview
@@ -266,7 +265,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                         if ($C["itemdetail_suggestions"] > 0) {
                             $aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
                             unset($aPossibleSuggestions[$sKey]); // remove the currently shown item from this list, we do not want to show it as a suggestion
-                            //debug($aPossibleSuggestions, false, '$aPossibleSuggestions');
+                            //HaaseIT\Tools::debug($aPossibleSuggestions, '$aPossibleSuggestions');
 
                             $aDefinedSuggestions = array();
                             if (isset($aValue[DB_ITEMFIELD_DATA]["suggestions"]) && trim($aValue[DB_ITEMFIELD_DATA]["suggestions"]) != '') {
@@ -276,22 +275,22 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                     $aDefinedSuggestions[] = $aValue[DB_ITEMFIELD_DATA]["suggestions"];
                                 }
                             }
-                            //debug($aDefinedSuggestions, false, '$aDefinedSuggestions');
+                            //HaaseIT\Tools::debug($aDefinedSuggestions, '$aDefinedSuggestions');
                             foreach ($aDefinedSuggestions as $aDefinedSuggestionsValue) { // iterate all defined suggestions and put those not loaded yet into array
                                 if (!isset($aPossibleSuggestions[$aDefinedSuggestionsValue])) {
                                     $aSuggestionsToLoad[] = $aDefinedSuggestionsValue;
                                 }
                             }
-                            //debug($aSuggestionsToLoad, false, '$aSuggestionsToLoad');
+                            //HaaseIT\Tools::debug($aSuggestionsToLoad, '$aSuggestionsToLoad');
                             if (isset($aSuggestionsToLoad)) { // if there are not yet loaded suggestions, load them
                                 $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad);
-                                //debug($aItemsNotInCategory, false, '$aItemsNotInCategory');
+                                //HaaseIT\Tools::debug($aItemsNotInCategory, '$aItemsNotInCategory');
                                 if (isset($aItemsNotInCategory)) { // merge loaded and newly loaded items
                                     $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
                                 }
                             }
                             unset($aSuggestionsToLoad, $aItemsNotInCategory);
-                            //debug($aPossibleSuggestions, false, '$aPossibleSuggestions');
+                            //HaaseIT\Tools::debug($aPossibleSuggestions, '$aPossibleSuggestions');
                             $aSuggestions = array();
                             $aAdditionalSuggestions = array();
                             foreach ($aPossibleSuggestions as $aPossibleSuggestionsKey => $aPossibleSuggestionsValue) { // iterate through all possible suggestions
@@ -302,8 +301,8 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                 }
                             }
                             unset($aPossibleSuggestions, $aDefinedSuggestions); // not needed anymore
-                            //debug($aSuggestions, false, '$aSuggestions');
-                            //debug($aAdditionalSuggestions, false, '$aAdditionalSuggestions');
+                            //HaaseIT\Tools::debug($aSuggestions, '$aSuggestions');
+                            //HaaseIT\Tools::debug($aAdditionalSuggestions, '$aAdditionalSuggestions');
                             $iNumberOfSuggestions = count($aSuggestions);
                             $iNumberOfAdditionalSuggestions = count($aAdditionalSuggestions);
                             if ($iNumberOfSuggestions > $C["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
@@ -363,7 +362,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                      }
                                 }
                             }
-                            //debug($aSuggestions, false, '$aSuggestions');
+                            //HaaseIT\Tools::debug($aSuggestions, '$aSuggestions');
                             $aP["item"]["suggestions"] = $aSuggestions;
                             unset($aSuggestions, $aAdditionalSuggestions, $iNumberOfSuggestions, $iNumberOfAdditionalSuggestions);
                             shuffle($aP["item"]["suggestions"]);
@@ -387,16 +386,16 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         $aP["content"] .= stripslashes($aP["content"]);
     }
 
-    if (isset($_POST)) {
-        debug($_POST, false, '$_POST');
+    if (isset($_POST) && count($_POST)) {
+        HaaseIT\Tools::debug($_POST, '$_POST');
     }
     if (isset($_SESSION)) {
-        debug($_SESSION, false, '$_SESSION');
+        HaaseIT\Tools::debug($_SESSION, '$_SESSION');
     }
-    debug($aP, false, '$aP');
-    debug($P, false, '$P');
+    HaaseIT\Tools::debug($aP, '$aP');
+    HaaseIT\Tools::debug($P, '$P');
 
-    if (isset($sDebug) && isset($C["debug"]) && $C["debug"]) $aP["debugdata"] = $sDebug;
+    $aP["debugdata"] = HaaseIT\Tools::$sDebug;
 
     return $aP;
 }

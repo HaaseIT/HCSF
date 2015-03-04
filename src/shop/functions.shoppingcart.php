@@ -68,9 +68,9 @@ function showMyOrders($COList, $twig, $DB)
                 'o_shipping_service' => $aRow["o_shipping_service"],
                 'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
            );
-        }	
+        }
         $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $twig);
-        //$sH .= debug($aData, true);
+        //HaaseIT\Tools::debug($aData);
     } else $sH .= T("myorders_no_orders_to_display");
 
     return $sH;
@@ -174,7 +174,7 @@ function getShippingcost($C, $sLang) {
     } else {
         $sCountry = getDefaultCountryByConfig($C, $sLang);
     }
-    //debug($sCountry);
+    //HaaseIT\Tools::debug($sCountry);
 
     foreach ($C["shippingcosts"] as $aValue) {
         if (isset($aValue["countries"][$sCountry])) {
@@ -212,8 +212,8 @@ function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
         'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
         'paypallink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' ?  $_SERVER["HTTP_HOST"].'/_misc/paypal.html?id='.$iId : ''),
         'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["HTTP_HOST"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
-        'SESSION' => (!$bCust ? debug($_SESSION, true) : ''),
-        'POST' => (!$bCust ? debug($_POST, true) : ''),
+        'SESSION' => (!$bCust ? HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
+        'POST' => (!$bCust ? HaaseIT\Tools::debug($_POST, '$_POST', true, true) : ''),
         'orderid' => $iId,
     );
 
@@ -221,7 +221,7 @@ function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
     $aM['currency'] = $C["waehrungssymbol"];
     if (isset($C["custom_order_fields"])) $aM["custom_order_fields"] = $C["custom_order_fields"];
     $aM["customdata"]["mail"] = $aData;
-    //debug($aM, false, '$aM');
+    //HaaseIT\Tools::debug($aM, '$aM');
     
     $sH = $twig->render('shop/mail-order-html.twig', $aM);
 
@@ -230,7 +230,7 @@ function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
 
 function calculateCartItems($C, $aCart)
 {
-    //debug($aCart);
+    //HaaseIT\Tools::debug($aCart);
     $fErm = 0;
     $fVoll = 0;
     $fTaxErm = 0;
@@ -264,7 +264,7 @@ function refreshCartItems($C, $oItem) // bei login/logout ändern sich ggf die p
                 unset($TMP);
             }
             $aData = $oItem->sortItems('', $sItemkey);
-            //debug($aData);
+            //HaaseIT\Tools::debug($aData);
             $_SESSION["cart"][$sKey]["price"] = $aData["item"][$sItemkey]["pricedata"];
         }
     }
@@ -290,7 +290,7 @@ function buildShoppingCartTable($aCart, $sLang, $C, $bReadonly = false, $sCustom
         'reducedorderamountfee2' => $C["reducedorderamountfee2"],
         'minimumamountforfreeshipping' => $C["minimumamountforfreeshipping"],
     );
-    //debug($aData["additionalcoststoitems"]);
+    //HaaseIT\Tools::debug($aData["additionalcoststoitems"]);
 
     if (!$bReadonly) {
         $aCartpricesums = $aData["shoppingcart"]["additionalcoststoitems"];

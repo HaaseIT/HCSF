@@ -38,7 +38,7 @@ function admin_updateGroup($DB, $sLang)
     );
 
     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
-    //debug($sQ);
+    //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) {
         $hResult->bindValue(':' . $sKey, $sValue);
@@ -48,7 +48,7 @@ function admin_updateGroup($DB, $sLang)
     $sQ = "SELECT " . DB_ITEMGROUPTABLE_TEXT_PKEY . " FROM " . DB_ITEMGROUPTABLE_TEXT;
     $sQ .= " WHERE " . DB_ITEMGROUPTABLE_TEXT_PARENTPKEY . " = :gid";
     $sQ .= " AND " . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
-    //debug($sQ);
+    //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':gid', $_REQUEST["gid"]);
     $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);
@@ -58,14 +58,14 @@ function admin_updateGroup($DB, $sLang)
 
     if ($iNumRows == 1) {
         $aRow = $hResult->fetch();
-        //debug($aRow);
+        //HaaseIT\Tools::debug($aRow);
         $aData = array(
             DB_ITEMGROUPFIELD_SHORTTEXT => $_REQUEST["shorttext"],
             DB_ITEMGROUPFIELD_DETAILS => $_REQUEST["details"],
             DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
-        //debug($sQ);
+        //HaaseIT\Tools::debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
@@ -104,21 +104,21 @@ function admin_getItemgroups($iGID = '', $DB, $sLang)
     $sQ .= " AND " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
     if ($iGID != '') $sQ .= " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " = :gid";
     $sQ .= " ORDER BY " . DB_ITEMGROUPFIELD_NUMBER;
-    //debug($sQ);
+    //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':lang', $sLang);
     if ($iGID != '') $hResult->bindValue(':gid', $iGID);
     $hResult->execute();
 
     $aGroups = $hResult->fetchAll();
-    //debug($aGroups);
+    //HaaseIT\Tools::debug($aGroups);
 
     return $aGroups;
 }
 
 function admin_showItemgroups($aGroups, $twig)
 {
-    //debug($aGroups);
+    //HaaseIT\Tools::debug($aGroups);
     $aList = array(
         array('title' => 'Gruppe', 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'),
         array('title' => 'Gruppenname', 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'),

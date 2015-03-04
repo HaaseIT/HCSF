@@ -64,14 +64,14 @@ function admin_getItemlist($DB, $sLang)
 
     if ($_REQUEST["orderby"] == 'name') $sQ .= "ORDER BY " . DB_ITEMFIELD_NAME;
     elseif ($_REQUEST["orderby"] == 'nummer') $sQ .= " ORDER BY " . DB_ITEMFIELD_NUMBER;
-    //debug($sQ);
+    //HaaseIT\Tools::debug($sQ);
 
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':searchstring', $sSearchstring);
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
 
-    //debug($DB->error());
+    //HaaseIT\Tools::debug($DB->error());
 
     $aItemlist["numrows"] = $hResult->rowCount();
 
@@ -113,8 +113,8 @@ function admin_getItem($sItemno = '', $DB, $sLang)
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':itemno', $sItemno);
     $hResult->execute();
-    //echo debug($sQ, true);
-    //echo debug($DB->error(), true);
+    //HaaseIT\Tools::debug($sQ);
+    //HaaseIT\Tools::debug($DB->error());
     $aItemdata["base"] = $hResult->fetch();
 
     $sQ = "SELECT * FROM " . DB_ITEMTABLE_TEXT;
@@ -124,10 +124,10 @@ function admin_getItem($sItemno = '', $DB, $sLang)
     $hResult->bindValue(':parentpkey', $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY]);
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
-    //echo debug($sQ, true);
+    //HaaseIT\Tools::debug($sQ);
     if ($hResult->rowCount() != 0) $aItemdata["text"] = $hResult->fetch();
 
-    //debug($aItemdata);
+    //HaaseIT\Tools::debug($aItemdata);
     return $aItemdata;
 }
 
@@ -203,7 +203,7 @@ function admin_updateItem($C, $DB)
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
         //echo $sQ."\n";
-        //debug($DB->error());
+        //HaaseIT\Tools::debug($DB->error());
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();

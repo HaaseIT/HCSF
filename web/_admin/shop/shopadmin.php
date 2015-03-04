@@ -50,7 +50,7 @@ if (isset($_POST["change"])) {
     );
 
     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
-    //echo debug($sQ, true);
+    //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
     $hResult->execute();

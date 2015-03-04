@@ -40,8 +40,8 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
     $aData = $hResult->fetchAll();
-    //debug($sQ);
-    //debug($aData);
+    //HaaseIT\Tools::debug($sQ);
+    //HaaseIT\Tools::debug($aData);
 
     $aListSetting = array(
         array('title' => 'TC Key', 'key' => 'tc_key', 'width' => 275, 'linked' => false,),
@@ -62,7 +62,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
 } elseif ($_GET["action"] == 'edit') {
     $P["base"]["cb_customdata"]["edit"] = true;
-    //debug($_REQUEST);
+    //HaaseIT\Tools::debug($_REQUEST);
     $sQ = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
     //echo $sQ;
 
@@ -89,7 +89,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'tcl_id' => $_POST["lid"],
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
-        //debug($sQ);
+        //HaaseIT\Tools::debug($sQ);
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
@@ -103,7 +103,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
     $aData = $hResult->fetch();
-    //debug($aData);
+    //HaaseIT\Tools::debug($aData);
     $P["base"]["cb_customdata"]["editform"] = array(
         'id' => $_REQUEST["id"],
         'lid' => $aData["tcl_id"],
@@ -127,7 +127,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         if (count($aErr) == 0) {
             $aData = array('tc_key' => trim(\HaaseIT\Tools::cED($_POST["key"])),);
             $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
-            //debug($sQ);
+            //HaaseIT\Tools::debug($sQ);
             $DB->exec($sQ);
             $iId = $DB->lastInsertId();
             $P["base"]["cb_customdata"]["addform"] = array(

@@ -4,3 +4,5 @@ config.countries.php changed to config.countries.yml
 config.customer.php changed to config.customer.yml
 config.scrts.php changed to config.scrts.yml
 added config parameters enable_module_shop, enable_module_customer and enabled processing of them
+removed function debug() from functions.misc.inc.php and created a similar function in the class Tools
+  changed the code to reflect this

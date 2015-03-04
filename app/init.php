@@ -61,6 +61,7 @@ if ($C["enable_module_shop"]) include_once(__DIR__.'/config/config.shop.php');
 include_once(__DIR__.'/../src/functions.template.php');
 include_once(__DIR__.'/../src/functions.misc.php');
 include_once(__DIR__.'/../src/Tools.php');
+if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 include_once(__DIR__.'/../src/DBTools.php');
 include_once(__DIR__.'/../src/functions.db.php');
 
@@ -144,9 +145,9 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
                 }
             }
         }
-        //debug($sPath);
-        //debug($aTMP);
-        //debug($aRoutingoverride);
+        //HaaseIT\Tools::debug($sPath);
+        //HaaseIT\Tools::debug($aTMP);
+        //HaaseIT\Tools::debug($aRoutingoverride);
         unset($aTMP);
     }
 
@@ -162,7 +163,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 }
 
 $T = loadTextcats($sLang, $C, $DB);
-//debug($T);
+//HaaseIT\Tools::debug($T);
 
 include_once(__DIR__.'/config/config.navi.php');
 

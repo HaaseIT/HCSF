@@ -73,18 +73,18 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             DB_ITEMTABLE_TEXT_PARENTPKEY => $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY],
             DB_ITEMFIELD_LANGUAGE => $sLang,
         );
-        //debug($aData);
+        //HaaseIT\Tools::debug($aData);
 
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
-        //echo debug($sQ, false);
+        //HaaseIT\Tools::debug($sQ);
         $DB->exec($sQ);
 
         header('Location: '.$_SERVER["PHP_SELF"]."?itemno=".$_REQUEST["itemno"].'&action=showitem');
         die();
     }
-    //echo debug($aItemdata, false);
+    //HaaseIT\Tools::debug($aItemdata);
 }
-//debug($_GET);
+//HaaseIT\Tools::debug($_GET);
 $P["base"]["cb_customdata"]["searchform"] = admin_prepareItemlistsearchform();
 
 if (isset($_REQUEST["action"])) {
@@ -121,7 +121,7 @@ if (isset($_REQUEST["action"])) {
                 } else {
                     $aData = array(DB_ITEMFIELD_NUMBER => trim(\HaaseIT\Tools::cED($_POST["itemno"])),);
                     $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
-                    //debug($sQ);
+                    //HaaseIT\Tools::debug($sQ);
                     $hResult = $DB->exec($sQ);
                     $iInsertID = $DB->lastInsertId();
                     $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMTABLE_BASE_PKEY." = '".$iInsertID."'";

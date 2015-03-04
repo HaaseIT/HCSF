@@ -22,6 +22,28 @@ namespace HaaseIT;
 
 class Tools
 {
+    public static $bEnableDebug = false;
+    public static $sDebug = '';
+    public static function debug($mixed, $sLabel = '', $bDontAccumulate = false, $bOverrideDisabledDebug = false) {
+        if (self::$bEnableDebug || $bOverrideDisabledDebug) {
+            $sDebug = '<pre class="debug">';
+            if ($sLabel != '') {
+                $sDebug .= $sLabel . "\n\n";
+            }
+            ob_start();
+            var_dump($mixed);
+            $sDebug .= htmlspecialchars(ob_get_contents());
+            ob_end_clean();
+            $sDebug .= '</pre>';
+
+            if (!$bDontAccumulate) {
+                self::$sDebug .= $sDebug;
+            }
+            return $sDebug;
+        } else {
+            return false;
+        }
+    }
 
     public static function generateRandomString($length = 10)
     {
