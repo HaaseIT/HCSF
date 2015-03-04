@@ -19,6 +19,8 @@
  */
 
 /*
+2015-03-04
+- removed funtions: T() and loadTextcats(), moved to different files
 2014-12-21
 - removed function: makeListtable(), moved to class Tools
 2014-12-19
@@ -66,51 +68,6 @@
 - buildUpdateQuery() $sPValue was not input-filtered, now it is
 - added usefulChars()
 */
-
-function T($sTextkey, $bReturnFalseIfNotAvailable = false)
-{
-    global $T, $sLang, $C;
-    $sDefaultlang = key($C["lang_available"]);
-    //debug($T[$sDefaultlang]);
-    if (isset($_GET["showtextkeys"])) {
-        $sH = '['.$sTextkey.']';
-    } else {
-        if (isset($T[$sLang][$sTextkey]["tcl_text"]) && trim($T[$sLang][$sTextkey]["tcl_text"]) != '') {
-            $sH = trim($T[$sLang][$sTextkey]["tcl_text"]);
-        } elseif (isset($T[$sDefaultlang][$sTextkey]["tcl_text"]) && trim($T[$sDefaultlang][$sTextkey]["tcl_text"]) != '') {
-            $sH = trim($T[$sDefaultlang][$sTextkey]["tcl_text"]);
-        }
-        if (!isset($sH) || $sH == '') {
-            if ($bReturnFalseIfNotAvailable) return false;
-            else $sH = 'Missing Text: '.$sTextkey;
-        }
-    }
-
-    return $sH;
-}
-
-function loadTextcats($sLang, $C, $DB)
-{
-    $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang";
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);
-    $hResult->execute();
-    while ($aRow = $hResult->fetch()) {
-        $aTextcat[$sLang][$aRow["tc_key"]] = $aRow;
-    }
-
-    $sDefaultlang = key($C["lang_available"]);
-    if ($sLang != $sDefaultlang) {
-        $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':lang', $sDefaultlang, PDO::PARAM_STR);
-        $hResult->execute();
-        while ($aRow = $hResult->fetch()) $aTextcat[$sDefaultlang][$aRow["tc_key"]] = $aRow;
-    }
-
-    if (isset($aTextcat)) {
-        return $aTextcat;
-    }
-}
 
 function debug($mixed, $bQuiet = false, $sLabel = '')
 {

@@ -18,6 +18,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function T($sTextkey, $bReturnFalseIfNotAvailable = false)
+{
+    global $T, $sLang, $C;
+    $sDefaultlang = key($C["lang_available"]);
+    //debug($T[$sDefaultlang]);
+    if (isset($_GET["showtextkeys"])) {
+        $sH = '['.$sTextkey.']';
+    } else {
+        if (isset($T[$sLang][$sTextkey]["tcl_text"]) && trim($T[$sLang][$sTextkey]["tcl_text"]) != '') {
+            $sH = trim($T[$sLang][$sTextkey]["tcl_text"]);
+        } elseif (isset($T[$sDefaultlang][$sTextkey]["tcl_text"]) && trim($T[$sDefaultlang][$sTextkey]["tcl_text"]) != '') {
+            $sH = trim($T[$sDefaultlang][$sTextkey]["tcl_text"]);
+        }
+        if (!isset($sH) || $sH == '') {
+            if ($bReturnFalseIfNotAvailable) return false;
+            else $sH = 'Missing Text: '.$sTextkey;
+        }
+    }
+
+    return $sH;
+}
+
 function buildTitle($P, $C)
 {
     if (isset($P["lang"][DB_CONTENTFIELD_TITLE]) && trim($P["lang"][DB_CONTENTFIELD_TITLE]) != '') $sH = $P["lang"][DB_CONTENTFIELD_TITLE];
