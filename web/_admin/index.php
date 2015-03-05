@@ -41,21 +41,24 @@ if (file_exists(PATH_TEMPLATECACHE)) {
     $sH .= 'NO!';
 }
 
-$sH .= '<br><br>';
-$sH .= 'Log Directory for orders '.realpath(PATH_ORDERLOG).' exists: ';
-if (file_exists(PATH_ORDERLOG)) {
-    $sH .= 'YES, and it is '.(is_writable(PATH_ORDERLOG) ? '' : 'NOT ').'writable.';
-} else {
-    $sH .= 'NO!';
+if ($C["enable_module_shop"]) {
+    $sH .= '<br><br>';
+    $sH .= 'Log Directory for orders ' . realpath(PATH_ORDERLOG) . ' exists: ';
+    if (file_exists(PATH_ORDERLOG)) {
+        $sH .= 'YES, and it is ' . (is_writable(PATH_ORDERLOG) ? '' : 'NOT ') . 'writable.';
+    } else {
+        $sH .= 'NO!';
+    }
+
+    $sH .= '<br><br>';
+    $sH .= 'Log Directory for PayPal Transactions ' . realpath(PATH_PAYPALLOG) . ' exists: ';
+    if (file_exists(PATH_PAYPALLOG)) {
+        $sH .= 'YES, and it is ' . (is_writable(PATH_PAYPALLOG) ? '' : 'NOT ') . 'writable.';
+    } else {
+        $sH .= 'NO!';
+    }
 }
 
-$sH .= '<br><br>';
-$sH .= 'Log Directory for PayPal Transactions '.realpath(PATH_PAYPALLOG).' exists: ';
-if (file_exists(PATH_PAYPALLOG)) {
-    $sH .= 'YES, and it is '.(is_writable(PATH_PAYPALLOG) ? '' : 'NOT ').'writable.';
-} else {
-    $sH .= 'NO!';
-}
 $aApacheModules = apache_get_modules();
 $sH .= '<br><br>';
 $sH .= 'The Apache module mod_rewrite is '.(array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ').'enabled.';
