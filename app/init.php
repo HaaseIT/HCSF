@@ -49,7 +49,15 @@ use Symfony\Component\Yaml\Yaml;
 
 // Load core config
 include_once(__DIR__.'/config/constants.fixed.php');
-include_once(__DIR__.'/config/config.core.php');
+$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
+define("PATH_BASEDIR", __DIR__.'/../');
+define("PATH_DOCROOT", PATH_BASEDIR.'/web');
+if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+
+define("DIRNAME_IMAGES", '_img/');
+define("DIRNAME_ITEMS", 'items/');
+define("DIRNAME_ITEMSSMALLEST", '100/');
+define("PATH_EMAILATTACHMENTS", PATH_DOCROOT.'_assets/');
 
 if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 
@@ -57,21 +65,18 @@ $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.count
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
 if ($C["enable_module_shop"]) {
-    define("PATH_ORDERLOG", $_SERVER['DOCUMENT_ROOT'].'/_admin/orderlogs/');
-    define("PATH_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'/_admin/ipnlogs/');
-    define("FILE_PAYPALLOG", $_SERVER['DOCUMENT_ROOT'].'/ipnlog.txt');
-    include_once(__DIR__.'/config/config.shop.php');
+    define("PATH_ORDERLOG", PATH_DOCROOT.'_admin/orderlogs/');
+    define("PATH_PAYPALLOG", PATH_DOCROOT.'_admin/ipnlogs/');
+    define("FILE_PAYPALLOG", 'ipnlog.txt');
+    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
     if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
         $TMP["vat"] = array("full" => 0, "reduced" => 0);
     }
 }
 
-include_once(__DIR__.'/../src/functions.template.php');
-include_once(__DIR__.'/../src/functions.misc.php');
-include_once(__DIR__.'/../src/Tools.php');
-if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
-include_once(__DIR__.'/../src/DBTools.php');
-include_once(__DIR__.'/../src/functions.db.php');
+include_once(PATH_BASEDIR.'src/functions.template.php');
+include_once(PATH_BASEDIR.'src/functions.misc.php');
+include_once(PATH_BASEDIR.'src/functions.db.php');
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -85,8 +90,8 @@ $twig_options = array(
     'debug' => (isset($C["debug"]) && $C["debug"] ? true : false)
 );
 if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] &&
-    is_dir(__DIR__.'/../templatecache/') && is_writable(__DIR__.'/../templatecache/')) {
-    $twig_options["cache"] = __DIR__.'/../templatecache/';
+    is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
+    $twig_options["cache"] = PATH_TEMPLATECACHE;
 }
 $twig = new Twig_Environment($loader, $twig_options);
 if (isset($C["debug"]) && $C["debug"]) {

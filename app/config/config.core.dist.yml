@@ -1,0 +1,50 @@
+# HCSF - A multilingual CMS and Shopsystem
+# Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+debug: false
+enable_module_shop: true
+enable_module_customer: true
+defaulttimezone: Europe/Berlin
+default_pagetitle: Sitetitle
+templatecache_enable: false
+template_base: base.twig
+subnav_default: root
+email_sendername: 'Sitename Webshop'
+email_sender: mail@domain.tld
+lang_available:
+    de: German
+    en: English
+    es: Español
+lang_detection_method: legacy
+lang_by_domain:
+    de: domain.de
+    en: domain.com
+    es: domain.es
+admin_page_groups:
+    - _|_Keine_
+    - admin|Administration
+    - verschiedenes|Verschiedenes
+    - obsolete|Obsolet
+admin_page_types:
+    - content
+    - contentnosubnav
+    - itemoverview
+locale_format_date: d.m.Y
+locale_format_date_time: 'd.m.Y H:i'
+defaultcountrybylang:
+    de: DE
+    en: GB
+    es: ES

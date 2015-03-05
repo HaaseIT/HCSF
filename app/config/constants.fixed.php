@@ -103,3 +103,5 @@ define("DB_ORDERTABLE", 'orders');
 define("DB_ORDERTABLE_PKEY", 'o_id');
 define("DB_ORDERFIELD_PAYMENTMETHOD", 'o_paymentmethod');
 define("DB_ORDERTABLE_ITEMS", 'orders_items');
+
+define("PATH_TEMPLATECACHE", __DIR__.'/../../templatecache/');

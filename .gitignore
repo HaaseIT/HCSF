@@ -2,10 +2,11 @@
 conf
 logs
 users
-app/config/config.core.php
 app/config/config.navi.php
 app/config/config.customer.yml
 app/config/config.shop.php
 vendor
 setup/important.txt
 app/config/config.scrts.yml
+app/config/config.core.yml
+app/config/config.shop.yml

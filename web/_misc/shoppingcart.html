@@ -143,8 +143,8 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                             //echo $aV["img"];
                             // image/png image/jpeg image/gif
                             // data:{mimetype};base64,XXXX
-                            $binImg = file_get_contents($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$aV["img"]);
-                            $aImgInfo = getimagesize($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$aV["img"]);
+                            $binImg = file_get_contents(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$aV["img"]);
+                            $aImgInfo = getimagesize(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$aV["img"]);
                             //echo debug($aImgInfo);
                             $base64Img = 'data:'.$aImgInfo["mime"].';base64,';
                             $base64Img .= base64_encode($binImg);

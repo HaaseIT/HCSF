@@ -62,7 +62,7 @@ function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $m
 
     if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
         foreach ($aImagesToEmbed as $sValue) {
-            if (getimagesize($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue)) $mail->AddEmbeddedImage($_SERVER['DOCUMENT_ROOT'].DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue, $sValue);
+            if (getimagesize(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue)) $mail->AddEmbeddedImage(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue, $sValue);
         }
     }
 
@@ -389,7 +389,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     if (isset($_POST) && count($_POST)) {
         HaaseIT\Tools::debug($_POST, '$_POST');
     }
-    if (isset($_SESSION)) {
+    if (isset($_SESSION) && count($_SESSION)) {
         HaaseIT\Tools::debug($_SESSION, '$_SESSION');
     }
     HaaseIT\Tools::debug($aP, '$aP');
