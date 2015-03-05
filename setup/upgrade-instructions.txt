@@ -1,8 +1,13 @@
 
 V2.03 auf V2.04dev
+config.shop.php changed to config.shop.yml
+config.core.php changed to config.core.yml
 config.countries.php changed to config.countries.yml
 config.customer.php changed to config.customer.yml
 config.scrts.php changed to config.scrts.yml
+These two lines should come handy to convert from .php to .yml:
+  use Symfony\Component\Yaml\Yaml;
+  die(Yaml::dump($C, 2));
 
 V2.02 auf V2.03
 directory structure has been changed to symfony style

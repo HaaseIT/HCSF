@@ -1,5 +1,7 @@
 
 V2.03 auf V2.04dev
+config.shop.php changed to config.shop.yml
+config.core.php changed to config.core.yml
 config.countries.php changed to config.countries.yml
 config.customer.php changed to config.customer.yml
 config.scrts.php changed to config.scrts.yml
