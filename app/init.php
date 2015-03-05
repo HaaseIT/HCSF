@@ -50,8 +50,6 @@ use Symfony\Component\Yaml\Yaml;
 // Load core config
 include_once(__DIR__.'/config/constants.fixed.php');
 $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
-define("PATH_BASEDIR", __DIR__.'/../');
-define("PATH_DOCROOT", PATH_BASEDIR.'/web');
 if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 
 define("DIRNAME_IMAGES", '_img/');
