@@ -54,12 +54,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
             <a href="/"><img src="/_img/haase-it-logo.gif"></a>
         </div>
         <div class="pure-u-1 pure-u-md-1-4">
-            <div class="pure-u-1-3 pure-u-md-1 button-head-container">
-                <button data-target="#myModal" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="button-contact">
-                    <i class="fa fa-info-circle"></i>
-                    <span class="hidden-sm">{{ T("toputilities_beratungundbestellung") }}</span>
-                </button>
-            </div>{% if enable_module_shop %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
+            {% if enable_module_shop %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
                 <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-dropdown="#dropdown-1">
                     <i class="fa fa-shopping-cart"></i>
                     <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("topnav_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></button>
@@ -86,18 +81,46 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endif %}
                         </ul>
                     </div></div>
-            </div>{% endif %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
+            </div>{%
+            endif %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
                 <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" id="button-head-topnav">
                     <i class="fa fa-list"></i>
                     <span class="hidden-sm">Navigation</span></button>
             </div>
+            {% if enable_module_shop %}
+                <div id="searchbox" class="pure-u-1">
+                    <form action="/_misc/suche.html" method="GET" name="search">
+                        <input type="text" id="search" name="searchtext" value="{{gFF('searchtext', '')}}" class="formtextsearch" style="width:151px;" placeholder="{{T("misc_suche")}}">
+                        <input type="image" name="searchsubmit" src="data:image/gif;base64,R0lGODlhEwAUALMAAHNzc1hYWCUlJIKCgmNjYxYWFkRERAEBATIyMXp6en5+fktLSggICHx8fDs7O2trayH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjEgNjQuMTQwOTQ5LCAyMDEwLzEyLzA3LTEwOjU3OjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpBRkE2QkJDMjY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpBRkE2QkJDMzY5MDYxMUU0OUMwQ0JGRTQ5N0M5NjgzRCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkFGQTZCQkMwNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkFGQTZCQkMxNjkwNjExRTQ5QzBDQkZFNDk3Qzk2ODNEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAAAAAAAsAAAAABMAFAAABLKQyTmLpfRoXdACChA4xSZtRxEo7NACiHZqwtMoSWAEhNIksVmh11gIGAdGwZAIHZEHA24BRSEGDUIBOQxVUYeF73gQsBxglCCRMCCvCkF60w28XfJ5qmcvN2N6AgBFXD0PelE+CFBiCWhpCE1aUAIFDgALJTIIAAkNi0gMCwYHDg0PBqkBbAqkJwYAAw5wLLUAbkkMDk0wAjsPAA8EAXlJkU50BZWaJkOyiGBKlhjUFAURADs=" alt="Submit" style="vertical-align: -5px;padding-left:5px;" class="formsearchsubmit">
+                    </form>
+                </div>
+            {% endif %}
+            {% if enable_module_customer %}
+                {% if isloggedin %}
+                    <a href="/_misc/logout.html">{{ T("nav_logout") }}</a>
+                    <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a>
+                {% else %}
+                    <button data-target="#loginModal" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="button-contact">
+                        <i class="fa fa-user"></i>
+                        <span class="hidden-sm">{{ T("topnav_login") }}</span>
+                    </button>
+                    <div id="loginModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <form action="/_misc/login.html" method="POST" name="login">
+                                {{ T("misc_login") }}<br>
+                                <input type="hidden" name="sAction" value="login">
+                                <input type="text" name="user" value="" id="loginform-user" placeholder="{{ T("misc_loginform_username") }}">
+                                <input type="password" name="password" value="" id="loginform-password" placeholder="{{ T("misc_loginform_password") }}">
+                                <input type="image" alt="" id="loginform-submit" src="data:image/gif;base64,R0lGODlhFAAUANUAAP///5SVmf7+/pWWmv7//5SVl5OUmP///ZOUlpSVmqqqrObn6fLy8v7+/5ydn6+wssPExtna3MXGyJWVl5aWmOvs7qOkpra4t5SUlvf5+Pf4+ra3ubCxs9HS1N7e4Pn5+ZWWmJOUmZucnpWWm/39/fn5++zs7vz9/8rLzQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAUABQAAAaIQIKQACgaj8hkUYBkAphO5bM5VSpMRGO0isQUUIToNtmgBAYcxph7LBgCBkckLG0PEoYBYqOpAw4ACCEjeAMFDgtrRYADAXADBgmOECVKTI6YmAUSbEdnmQgWCyd1DY+YFxlLdZoiHk9ba2cgDwxsJFITBR1Jin8fChVEB2tQf4B+ycpFWctHQQA7">
+                            </form>
+                            <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
+                            <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
+                        </div>
+                    </div>
+                    <a href="/_misc/register.html">{{ T("topnav_register") }}</a>
+                {% endif %}
+            {% endif %}
         </div>
-    </div>
-</div>
-<div id="myModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        {{ T("misc_infobox_beratungundbestellung") }}
-        <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
     </div>
 </div>
 <div class="pure-g" id="row-topnav">
