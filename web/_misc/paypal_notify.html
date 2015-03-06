@@ -32,87 +32,91 @@ $P = array(
     ),
 );
 
-include_once('shop/functions.shoppingcart.php');
+if (!$C["enable_module_shop"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
+} else {
+    include_once('shop/functions.shoppingcart.php');
 
-$sLogData = '';
+    $sLogData = '';
 
-$iId = \HaaseIT\Tools::cED($_REQUEST["custom"]);
-$sQ = "SELECT * FROM ".DB_ORDERTABLE;
-$sQ .= " WHERE ".DB_ORDERTABLE_PKEY." = '".$iId."' AND ".DB_ORDERFIELD_PAYMENTMETHOD." = 'paypal' AND o_paymentcompleted = 'n'";
+    $iId = \HaaseIT\Tools::cED($_REQUEST["custom"]);
+    $sQ = "SELECT * FROM " . DB_ORDERTABLE;
+    $sQ .= " WHERE " . DB_ORDERTABLE_PKEY . " = '" . $iId . "' AND " . DB_ORDERFIELD_PAYMENTMETHOD . " = 'paypal' AND o_paymentcompleted = 'n'";
 
-$hResult = $DB->query($sQ);
+    $hResult = $DB->query($sQ);
 
-if ($hResult->rowCount() == 1) {
-    $aOrder = $hResult->fetch();
-    $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
+    if ($hResult->rowCount() == 1) {
+        $aOrder = $hResult->fetch();
+        $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
 
-    $postdata = '';
+        $postdata = '';
 
-    foreach($_POST as $i => $v) {
-        $postdata .= $i.'='.urlencode($v).'&';
-    }
-    $postdata .= 'cmd=_notify-validate';
-    $web = parse_url($C["paypal"]["url"]);
+        foreach ($_POST as $i => $v) {
+            $postdata .= $i . '=' . urlencode($v) . '&';
+        }
+        $postdata .= 'cmd=_notify-validate';
+        $web = parse_url($C["paypal"]["url"]);
 
-    if ($web['scheme'] == 'https') {
-        $web['port'] = 443;
-        $ssl = 'ssl://';
-    } else {
-        $web['port'] = 80;
-        $ssl = '';
-    }
-    $fp = @fsockopen($ssl.$web['host'], $web['port'], $errnum, $errstr, 30);
+        if ($web['scheme'] == 'https') {
+            $web['port'] = 443;
+            $ssl = 'ssl://';
+        } else {
+            $web['port'] = 80;
+            $ssl = '';
+        }
+        $fp = @fsockopen($ssl . $web['host'], $web['port'], $errnum, $errstr, 30);
 
-    if ($fp) {
-        fputs($fp, "POST ".$web['path']." HTTP/1.1\r\n");
-        fputs($fp, "Host: ".$web['host']."\r\n");
-        fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-        fputs($fp, "Content-length: ".strlen($postdata)."\r\n");
-        fputs($fp, "Connection: close\r\n\r\n");
-        fputs($fp, $postdata . "\r\n\r\n");
-        while(!feof($fp)) $info[] = @fgets($fp, 1024);
-        fclose($fp);
-        $info = implode(',', $info);
-        if (!(strpos($info, 'VERIFIED') === false)) {
+        if ($fp) {
+            fputs($fp, "POST " . $web['path'] . " HTTP/1.1\r\n");
+            fputs($fp, "Host: " . $web['host'] . "\r\n");
+            fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+            fputs($fp, "Content-length: " . strlen($postdata) . "\r\n");
+            fputs($fp, "Connection: close\r\n\r\n");
+            fputs($fp, $postdata . "\r\n\r\n");
+            while (!feof($fp)) $info[] = @fgets($fp, 1024);
+            fclose($fp);
+            $info = implode(',', $info);
+            if (!(strpos($info, 'VERIFIED') === false)) {
 
-            $sLogData .= "-- new entry - ".date("d.m.Y H:i:s")." --\n\nW00T!\n\n".debug($_REQUEST, true)."\n\n";
+                $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nW00T!\n\n" . debug($_REQUEST, true) . "\n\n";
 
-            // Check if the transaction id has been used before
-            $sTxn_idQ = "SELECT o_paypal_tx FROM ".DB_ORDERTABLE." WHERE o_paypal_tx = :txn_id";
-            $hTxn_idResult = $DB->prepare($sTxn_idQ);
-            $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
-            $hTxn_idResult->execute();
+                // Check if the transaction id has been used before
+                $sTxn_idQ = "SELECT o_paypal_tx FROM " . DB_ORDERTABLE . " WHERE o_paypal_tx = :txn_id";
+                $hTxn_idResult = $DB->prepare($sTxn_idQ);
+                $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
+                $hTxn_idResult->execute();
 
-            if ($hTxn_idResult->rowCount() == 0) {
-                if ($_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.','') && $_REQUEST["custom"] == $aOrder[DB_ORDERTABLE_PKEY] && $_REQUEST["payment_status"] == "Completed" && $_REQUEST["mc_currency"] == 'EUR' && $_REQUEST["receiver_email"] == $C["paypal"]["business"]) {
-                    $aTxnUpdateData = array (
-                        'o_paypal_tx' => $_REQUEST["txn_id"],
-                        'o_paymentcompleted' => 'y',
-                        DB_ORDERTABLE_PKEY => $iId,
-                    );
-                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
-                    $hResult = $DB->prepare($sQ);
-                    foreach ($aTxnUpdateData as $sKey => $sValue) {
-                        $hResult->bindValue(':'.$sKey, $sValue);
+                if ($hTxn_idResult->rowCount() == 0) {
+                    if ($_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '') && $_REQUEST["custom"] == $aOrder[DB_ORDERTABLE_PKEY] && $_REQUEST["payment_status"] == "Completed" && $_REQUEST["mc_currency"] == 'EUR' && $_REQUEST["receiver_email"] == $C["paypal"]["business"]) {
+                        $aTxnUpdateData = array(
+                            'o_paypal_tx' => $_REQUEST["txn_id"],
+                            'o_paymentcompleted' => 'y',
+                            DB_ORDERTABLE_PKEY => $iId,
+                        );
+                        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
+                        $hResult = $DB->prepare($sQ);
+                        foreach ($aTxnUpdateData as $sKey => $sValue) {
+                            $hResult->bindValue(':' . $sKey, $sValue);
+                        }
+                        $hResult->execute();
+
+                        $sLogData .= "-- Alles ok. Zahlung erfolgreich. TXNID: " . $_REQUEST["txn_id"] . " --\n\n";
                     }
-                    $hResult->execute();
-
-                    $sLogData .= "-- Alles ok. Zahlung erfolgreich. TXNID: ".$_REQUEST["txn_id"]." --\n\n";
+                } else {
+                    // INVALID LOGGING ERROR
+                    $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nPHAIL\n\n";
+                    $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: " . $_REQUEST["txn_id"] . " !!!\n\n";
+                    $sLogData .= "!!! INVALID !!!\n\n";
                 }
             } else {
-                // INVALID LOGGING ERROR
-                $sLogData .= "-- new entry - ".date("d.m.Y H:i:s")." --\n\nPHAIL\n\n";
-                $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: ".$_REQUEST["txn_id"]." !!!\n\n";
-                $sLogData .= "!!! INVALID !!!\n\n";
+                $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
             }
-        } else {
-            $sLogData .= "-- new entry - ".date("d.m.Y H:i:s")." --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: ".$_REQUEST["txn_id"]."\n".$info."\n\n";
+            $bNufile = false;
+            if (!file_exists(PATH_PAYPALLOG . FILE_PAYPALLOG)) $bNufile = true;
+            $fp = fopen(PATH_PAYPALLOG . FILE_PAYPALLOG, 'a');
+            // Write $somecontent to our opened file.
+            fwrite($fp, $sLogData);
+            fclose($fp);
         }
-        $bNufile = false;
-        if (!file_exists(PATH_PAYPALLOG.FILE_PAYPALLOG)) $bNufile = true;
-        $fp = fopen(PATH_PAYPALLOG.FILE_PAYPALLOG, 'a');
-        // Write $somecontent to our opened file.
-        fwrite($fp, $sLogData);
-        fclose($fp);
     }
 }

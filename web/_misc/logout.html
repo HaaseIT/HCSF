@@ -34,12 +34,15 @@ $P = array(
 
 $sH = '';
 
-unset($_SESSION["user"]);
-if (isset($_SESSION["cart"])) {
-    refreshCartItems($C, $oItem);
+if (!$C["enable_module_customer"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
+} else {
+    unset($_SESSION["user"]);
+    if ($C["enable_module_shop"] && isset($_SESSION["cart"])) {
+        refreshCartItems($C, $oItem);
+    }
+    $sH .= \HaaseIT\Textcat::T("logout_message");
 }
-
-$sH .= \HaaseIT\Textcat::T("logout_message");
 
 $P["lang"]["cl_html"] = $sH;
 

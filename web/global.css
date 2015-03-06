@@ -141,9 +141,7 @@ pre.debug{border:2px solid red;padding:1em;}
     text-align: center;
 }
 #topnav li a {
-    background-image: linear-gradient(to bottom, #ccc 0%, #000 100%);
     background-color: #444;
-    background-repeat: repeat-x;
     height: 2.3em;
     color: #fff;
     text-decoration: none;
@@ -151,31 +149,24 @@ pre.debug{border:2px solid red;padding:1em;}
     line-height: 2.3em;
 }
 #topnav-1:hover, #topnav-1.active{
-    background-image: linear-gradient(to bottom, #8C98BE 0%, #38456B 100%);
     background-color: #38456B;
 }
 #topnav-2:hover, #topnav-2.active{
-    background-image: linear-gradient(to bottom, #CB8CCB 0%, #783878 100%);
     background-color: #783878;
 }
 #topnav-3:hover, #topnav-3.active{
-    background-image: linear-gradient(to bottom, #87BABA 0%, #386B6B 100%);
     background-color: #386B6B;
 }
 #topnav-4:hover, #topnav-4.active{
-    background-image: linear-gradient(to bottom, #C28383 0%, #783838 100%);
     background-color: #783838;
 }
 #topnav-5:hover, #topnav-5.active{
-    background-image: linear-gradient(to bottom, #C2C283 0%, #787838 100%);
     background-color: #787838;
 }
 #topnav-6:hover, #topnav-6.active{
-    background-image: linear-gradient(to bottom, #8C98BE 0%, #38456B 100%);
     background-color: #38456B;
 }
 #topnav-7:hover, #topnav-7.active{
-    background-image: linear-gradient(to bottom, #CB8CCB 0%, #783878 100%);
     background-color: #783878;
 }
 #topnav-sub{
@@ -206,11 +197,6 @@ pre.debug{border:2px solid red;padding:1em;}
 #leftnav .pure-menu-selected{background: #eee !important;}
 #leftnav ul li a {color: #000;}
 /* Leftnav end */
-
-#infobox-left{
-    margin-top: 1em;
-    display: none;
-}
 
 #itemoverview{margin-left: -1em;}
 .itemoverview-thumbnail{margin: 1em 0 1em 1em; border: 1px solid #cdcdcd;}
@@ -294,8 +280,7 @@ pre.debug{border:2px solid red;padding:1em;}
     #logo-head{padding: 1em 0 0.6em 0;}
     #row-topnav{display: block !important;}
     #topnav li a{border-right: 1px solid #fff;}
-    #topnav li:first-child a{border-bottom-left-radius: 8px;}
-    #topnav li:last-child a{border-bottom-right-radius: 8px;border-right: 0;}
+    #topnav li:last-child a{border-right: 0;}
     #col-leftnav-content{padding: 2em 2em 2em 0;}
     #col-leftnav{display: inline-block;}
     #col-main{padding: 2em 0 2em 0;}
@@ -313,7 +298,6 @@ pre.debug{border:2px solid red;padding:1em;}
 }
 @media screen and (min-width: 64em) { /* lg */
     .container {width: 62em;}
-    #infobox-left{display: block}
 }
 @media screen and (min-width: 80em) { /* xl */
     .container {width: 78em;}

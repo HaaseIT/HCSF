@@ -32,34 +32,37 @@ $P = array(
     ),
 );
 
-if (isset($_SESSION["user"])) {
+if (!$C["enable_module_customer"]) {
     $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
-    $sH = '';
-    $sErr = '';
+    if (getUserData()) {
+        $sH = \HaaseIT\Textcat::T("denied_default");
+    } else {
+        $sH = '';
+        $sErr = '';
 
-    $sQ = "SELECT ".DB_CUSTOMERFIELD_EMAIL.", ".DB_CUSTOMERTABLE_PKEY." FROM ".DB_CUSTOMERTABLE;
-    $sQ .= " WHERE ".DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE." = :key AND ".DB_CUSTOMERFIELD_EMAILVERIFIED." = 'n'";
-    //debug( $sQ );
-    $hResult = $DB->prepare( $sQ );
-    $hResult->bindValue(':key', $_GET["key"], PDO::PARAM_STR);
-    $hResult->execute();
-    $iRows = $hResult->rowCount();
-    //debug( $iRows );
-
-    if ($iRows == 1) {
-        $aRow = $hResult->fetch();
-        $aData = array(DB_CUSTOMERFIELD_EMAILVERIFIED => 'y', DB_CUSTOMERTABLE_PKEY => $aRow[DB_CUSTOMERTABLE_PKEY]);
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+        $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . ", " . DB_CUSTOMERTABLE_PKEY . " FROM " . DB_CUSTOMERTABLE;
+        $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " = :key AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
         //debug( $sQ );
         $hResult = $DB->prepare($sQ);
-        foreach ($aData as $sKey => $sValue) {
-            $hResult->bindValue(':'.$sKey, $sValue);
-        }
+        $hResult->bindValue(':key', $_GET["key"], PDO::PARAM_STR);
         $hResult->execute();
-        $sH .= \HaaseIT\Textcat::T("register_emailverificationsuccess");
-    } else {
-        $sH .= \HaaseIT\Textcat::T("register_emailverificationfail");
+        $iRows = $hResult->rowCount();
+        //debug( $iRows );
+
+        if ($iRows == 1) {
+            $aRow = $hResult->fetch();
+            $aData = array(DB_CUSTOMERFIELD_EMAILVERIFIED => 'y', DB_CUSTOMERTABLE_PKEY => $aRow[DB_CUSTOMERTABLE_PKEY]);
+            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+            $hResult = $DB->prepare($sQ);
+            foreach ($aData as $sKey => $sValue) {
+                $hResult->bindValue(':' . $sKey, $sValue);
+            }
+            $hResult->execute();
+            $sH .= \HaaseIT\Textcat::T("register_emailverificationsuccess");
+        } else {
+            $sH .= \HaaseIT\Textcat::T("register_emailverificationfail");
+        }
     }
 }
 

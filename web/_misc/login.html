@@ -32,25 +32,31 @@ $P = array(
     ),
 );
 
-if( isset( $_POST["sAction"] ) && $_POST["sAction"]=="login" ) {
-    $mLogin = getLogin($C, $DB);
-    if( isset( $mLogin["status"] ) && $mLogin["status"] == 'success' ) {
-        $sH = \HaaseIT\Textcat::T("login_success").'<br>';
-        header('Location: /_misc/userhome.html?login=true');
-    } elseif ( isset( $mLogin["status"] ) && $mLogin["status"] == 'tosnotaccepted' ) {
-        $sH = \HaaseIT\Textcat::T("login_fail_tosnotaccepted").'<br>';
-    } elseif ( isset( $mLogin["status"] ) && $mLogin["status"] == 'emailnotverified' ) {
-        $sH = \HaaseIT\Textcat::T("login_fail_emailnotverified").'<br><br>';
-        $sH .= '<a href="/_misc/resendverificationmail.html?email='.$mLogin["data"][DB_CUSTOMERFIELD_EMAIL].'">'.\HaaseIT\Textcat::T("login_fail_emailnotverifiedresend").'</a>';
-    } elseif ( isset( $mLogin["status"] ) && $mLogin["status"] == 'accountinactive' ) {
-        $sH = \HaaseIT\Textcat::T("login_fail_accountinactive").'<br>';
-    } else {
-        $sH = \HaaseIT\Textcat::T("login_fail");
-    }
+if (!$C["enable_module_customer"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
-    $sH = \HaaseIT\Textcat::T("login_fail");
+    if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
+        $sH = \HaaseIT\Textcat::T("login_fail");
+    } else {
+        $mLogin = getLogin($C, $DB);
+        if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
+            $sH = \HaaseIT\Textcat::T("login_success") . '<br>';
+            header('Location: /_misc/userhome.html?login=true');
+        } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'tosnotaccepted') {
+            $sH = \HaaseIT\Textcat::T("login_fail_tosnotaccepted") . '<br>';
+        } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
+            $sH = \HaaseIT\Textcat::T("login_fail_emailnotverified") . '<br><br>';
+            $sH .= '<a href="/_misc/resendverificationmail.html?email=' . $mLogin["data"][DB_CUSTOMERFIELD_EMAIL] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
+        } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
+            $sH = \HaaseIT\Textcat::T("login_fail_accountinactive") . '<br>';
+        } else {
+            $sH = \HaaseIT\Textcat::T("login_fail");
+        }
+    }
 }
-refreshCartItems($C, $oItem);
+if ($C["enable_module_shop"]) {
+    refreshCartItems($C, $oItem);
+}
 
 $P["lang"]["cl_html"] = $sH;
 

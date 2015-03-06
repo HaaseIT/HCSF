@@ -32,6 +32,10 @@ $P = array(
     ),
 );
 
+if (!$C["enable_module_shop"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
+}
+
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
 echo $twig->render($C["template_base"], $aP);

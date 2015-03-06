@@ -68,6 +68,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     );
     if ($C["enable_module_customer"]) {
         $aP["isloggedin"] = getUserData();
+        $aP["enable_module_customer"] = true;
     }
     if ($C["enable_module_shop"]) {
         $aP["currency"] = $C["waehrungssymbol"];
@@ -75,6 +76,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         if (isset($C["vat"]["full"])) $aP["vatfull"] = $C["vat"]["full"];
         if (isset($C["vat"]["reduced"])) $aP["vatreduced"] = $C["vat"]["reduced"];
         if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
+        $aP["enable_module_shop"] = true;
     }
     if (isset($P["base"]["cb_key"])) $aP["path"] = pathinfo($P["base"]["cb_key"]);
     else $aP["path"] = pathinfo($aP["requesturi"]);

@@ -25,7 +25,6 @@ $P = array(
         'cb_pagetype' => 'content',
         'cb_pageconfig' => '',
         'cb_subnav' => '',
-        'cb_customcontenttemplate' => 'shop/checkedout',
     ),
     'lang' => array(
         'cl_lang' => $sLang,
@@ -33,22 +32,29 @@ $P = array(
     ),
 );
 
-if (!$C["show_pricesonlytologgedin"] || getUserData()) {
-    $sH = '';
-    $iId = \HaaseIT\Tools::cED($_GET["id"]);
-    $sQ = "SELECT * FROM ".DB_ORDERTABLE." ";
-    $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
+if (!$C["enable_module_shop"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
+} else {
+    if ($C["show_pricesonlytologgedin"] && !getUserData()) {
+        $sH = \HaaseIT\Textcat::T("denied_notloggedin");
+    } else {
+        $P["base"]["cb_customcontenttemplate"] = 'shop/checkedout';
+        $sH = '';
+        $iId = \HaaseIT\Tools::cED($_GET["id"]);
+        $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
+        $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
 
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':id', $iId, PDO::PARAM_INT);
+        $hResult = $DB->prepare($sQ);
+        $hResult->bindValue(':id', $iId, PDO::PARAM_INT);
 
-    $hResult->execute();
+        $hResult->execute();
 
-    if ($hResult->rowCount() == 1) {
-        $P["base"]["cb_customdata"]["order"] = $hResult->fetch();
-        $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($P["base"]["cb_customdata"]["order"]);
+        if ($hResult->rowCount() == 1) {
+            $P["base"]["cb_customdata"]["order"] = $hResult->fetch();
+            $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($P["base"]["cb_customdata"]["order"]);
+        }
     }
-} else $sH = \HaaseIT\Textcat::T("denied_notloggedin");
+}
 
 $P["lang"]["cl_html"] = $sH;
 

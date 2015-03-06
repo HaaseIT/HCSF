@@ -32,93 +32,94 @@ $P = array(
     ),
 );
 
-include_once('shop/functions.shoppingcart.php');
-
 $sH = '';
 
-if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
-    $P["base"]["cb_customcontenttemplate"] = 'shop/myorders';
+if (!$C["enable_module_shop"]) {
+    $sH = \HaaseIT\Textcat::T("denied_default");
+} else {
+    if (!getUserData()) {
+        $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
+    } else {
+        include_once('shop/functions.shoppingcart.php');
+        $P["base"]["cb_customcontenttemplate"] = 'shop/myorders';
 
-    if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
-        $iId = \HaaseIT\Tools::cED($_GET["id"]);
+        if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
+            $iId = \HaaseIT\Tools::cED($_GET["id"]);
 
-        $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id AND o_custno = '".$_SESSION["user"]["cust_no"]."' AND o_ordercompleted != 'd'";
-        $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':id', $iId);
-        $hResult->execute();
-
-        if ($hResult->rowCount() == 1) {
-            $aOrder = $hResult->fetch();
-            $sH .= '<h1>'.\HaaseIT\Textcat::T("myorders_headline").' '.date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]).':</h1><br>';
-            if (trim($aOrder["o_remarks"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_remarks").'</strong><br>'.$aOrder["o_remarks"].'<br><br>';
-            $sH .= '<strong>Zahlungsmethode:</strong> '.\HaaseIT\Textcat::T("order_paymentmethod_".$aOrder["o_paymentmethod"]).'<br>';
-            $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_paymentstatus").'</strong> '.(($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")).'<br>';
-            $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_orderstatus").'</strong> '.showOrderStatusText($aOrder["o_ordercompleted"]).'<br>';
-            if (trim($aOrder["o_shipping_service"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_shipping_service").'</strong> '.$aOrder["o_shipping_service"].'<br>';
-            if (trim($aOrder["o_shipping_trackingno"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_shipping_trackingno").'</strong> '.$aOrder["o_shipping_trackingno"].'<br>';
-            $sH .= '<br>';
-
-            $sQ = "SELECT * FROM ".DB_ORDERTABLE_ITEMS." WHERE oi_o_id = :id";
+            $sQ = "SELECT * FROM " . DB_ORDERTABLE . " WHERE o_id = :id AND o_custno = '" . $_SESSION["user"]["cust_no"] . "' AND o_ordercompleted != 'd'";
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
-            //debug($DB->numRows($hResult));
 
-            $aItems = $hResult->fetchAll();
+            if ($hResult->rowCount() == 1) {
+                $aOrder = $hResult->fetch();
+                $sH .= '<h1>' . \HaaseIT\Textcat::T("myorders_headline") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
+                if (trim($aOrder["o_remarks"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_remarks") . '</strong><br>' . $aOrder["o_remarks"] . '<br><br>';
+                $sH .= '<strong>Zahlungsmethode:</strong> ' . \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]) . '<br>';
+                $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_paymentstatus") . '</strong> ' . (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")) . '<br>';
+                $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_orderstatus") . '</strong> ' . showOrderStatusText($aOrder["o_ordercompleted"]) . '<br>';
+                if (trim($aOrder["o_shipping_service"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_service") . '</strong> ' . $aOrder["o_shipping_service"] . '<br>';
+                if (trim($aOrder["o_shipping_trackingno"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_trackingno") . '</strong> ' . $aOrder["o_shipping_trackingno"] . '<br>';
+                $sH .= '<br>';
 
-            foreach ($aItems as $aValue) {
-                $aPrice = array(
-                    'netto_use' => $aValue["oi_price_netto_use"],
-                    'brutto_use' => $aValue["oi_price_brutto_use"],
+                $sQ = "SELECT * FROM " . DB_ORDERTABLE_ITEMS . " WHERE oi_o_id = :id";
+                $hResult = $DB->prepare($sQ);
+                $hResult->bindValue(':id', $iId);
+                $hResult->execute();
+                //debug($DB->numRows($hResult));
+
+                $aItems = $hResult->fetchAll();
+
+                foreach ($aItems as $aValue) {
+                    $aPrice = array(
+                        'netto_use' => $aValue["oi_price_netto_use"],
+                        'brutto_use' => $aValue["oi_price_brutto_use"],
+                    );
+                    $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = array(
+                        'amount' => $aValue["oi_amount"],
+                        'price' => $aPrice,
+                        'vat' => $aValue["oi_vat"],
+                        //'rg' => $aValue["oi_rg"],
+                        'name' => $aValue["oi_itemname"],
+                        'img' => $aValue["oi_img"],
+                    );
+                }
+
+                $aShoppingcart = buildShoppingCartTable(
+                    $aItemsforShoppingcarttable,
+                    $sLang,
+                    $C,
+                    true,
+                    '',
+                    '',
+                    $aOrder["o_vatfull"],
+                    $aOrder["o_vatreduced"]
                 );
-                $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = array(
-                    'amount' => $aValue["oi_amount"],
-                    'price' => $aPrice,
-                    'vat' => $aValue["oi_vat"],
-                    //'rg' => $aValue["oi_rg"],
-                    'name' => $aValue["oi_itemname"],
-                    'img' => $aValue["oi_img"],
-                );
+            } else {
+                $sH .= \HaaseIT\Textcat::T("myorders_order_not_found");
             }
-
-            $aShoppingcart = buildShoppingCartTable(
-                $aItemsforShoppingcarttable,
-                $sLang,
-                $C,
-                true,
-                '',
-                '',
-                $aOrder["o_vatfull"],
-                $aOrder["o_vatreduced"]
+        } else {
+            $COList = array(
+                array('title' => \HaaseIT\Textcat::T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,),
+                array('title' => \HaaseIT\Textcat::T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,),
+                array('title' => \HaaseIT\Textcat::T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,),
+                array('title' => \HaaseIT\Textcat::T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
+                array('title' => \HaaseIT\Textcat::T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,),
+                array('title' => \HaaseIT\Textcat::T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,),
+                array(
+                    'title' => \HaaseIT\Textcat::T("order_show"),
+                    'key' => 'o_id',
+                    'width' => 120,
+                    'linked' => true,
+                    'ltarget' => $_SERVER["PHP_SELF"],
+                    'lkeyname' => 'id',
+                    'lgetvars' => array('action' => 'show',),
+                ),
             );
-        }
-        else {
-            $sH .= \HaaseIT\Textcat::T("myorders_order_not_found");
-        }
-    } else {
-        $COList = array(
-            array('title' => \HaaseIT\Textcat::T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,),
-            array('title' => \HaaseIT\Textcat::T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,),
-            array('title' => \HaaseIT\Textcat::T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,),
-            array('title' => \HaaseIT\Textcat::T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
-            array('title' => \HaaseIT\Textcat::T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,),
-            array('title' => \HaaseIT\Textcat::T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,),
-            array(
-                'title' => \HaaseIT\Textcat::T("order_show"),
-                'key' => 'o_id',
-                'width' => 120,
-                'linked' => true,
-                'ltarget' => $_SERVER["PHP_SELF"],
-                'lkeyname' => 'id',
-                'lgetvars' => array('action' => 'show',),
-            ),
-        );
 
-        $sH .= showMyOrders($COList, $twig, $DB);
+            $sH .= showMyOrders($COList, $twig, $DB);
+        }
     }
-
-} else {
-    $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
 }
 
 //if (clientIsLocal()) debug($_SERVER);
