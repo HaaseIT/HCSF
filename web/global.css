@@ -5,6 +5,7 @@ hr{border:#eee 1px solid;margin:1.5em 0;}
 h1, h2, h3, h4{font-weight: normal;margin-top:0;}
 a{text-decoration: none;color: inherit;}
 a:hover{text-decoration: underline;}
+body{background: #000;}
 
 .fs{font-size: 0.85em;} /* Set font size */
 .list-unstyled{
@@ -43,7 +44,7 @@ a:hover{text-decoration: underline;}
 .listtable thead tr{background: #bfbfbf !important;}
 .errortext{}
 .formerror, #customerform-errortext{background-color: #ffd3d3;}
-pre.debug{border:2px solid red;padding:1em;}
+pre.debug{background: #fff; border:2px solid red;padding:1em;}
 
 .modal{width: 24em !important; margin-left:-12em !important;}
 
@@ -107,8 +108,8 @@ pre.debug{border:2px solid red;padding:1em;}
 .container {margin: 0 auto;}
 
 #row-topbar{background: #000; color: #fff;}
-#row-topnav{display: none;}
-#row-footernav{background: #000; color: #fff;}
+#row-topnav{background: #333; display: none;}
+#row-main{background: #fff;}
 #row-footer{background: #333; color: #fff;}
 
 #col-leftnav{display: none;}
@@ -141,7 +142,7 @@ pre.debug{border:2px solid red;padding:1em;}
     text-align: center;
 }
 #topnav li a {
-    background-color: #444;
+    background-color: #333;
     height: 2.3em;
     color: #fff;
     text-decoration: none;
@@ -253,8 +254,6 @@ pre.debug{border:2px solid red;padding:1em;}
     margin-bottom: 2em;
 }
 #customerform-submit{margin: 1em 0 2em 0;}
-
-#row-footernav h4{font-size: 1.25em;}
 
 #footer-text{text-align: center;padding:0.75em 0}
 
