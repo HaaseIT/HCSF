@@ -117,24 +117,26 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
 
     // Language selector
     // TODO: move content of langselector out of php script
-    $aP["langselector"] = '';
-    if ($C["lang_detection_method"] == 'domain') {
-        $aSessionGetVarsForLangSelector = array();
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            $aSessionGetVarsForLangSelector[session_name()] = session_id();
+    if (count($C["lang_available"]) > 1) {
+        $aP["langselector"] = '';
+        if ($C["lang_detection_method"] == 'domain') {
+            $aSessionGetVarsForLangSelector = array();
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                $aSessionGetVarsForLangSelector[session_name()] = session_id();
+            }
+            $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
         }
-        $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
-    }
-    foreach ($C["lang_available"] as $sKey => $sValue) {
-        if ($sLang != $sKey) {
-            if ($C["lang_detection_method"] == 'domain') {
-                $aP["langselector"] .= '<a href="//www.'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.\HaaseIT\Textcat::T("misc_language_".$sKey).'</a> ';
-            } else {
-                $aP["langselector"] .= '<a href="'.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.\HaaseIT\Textcat::T("misc_language_".$sKey).'</a> ';
+        foreach ($C["lang_available"] as $sKey => $sValue) {
+            if ($sLang != $sKey) {
+                if ($C["lang_detection_method"] == 'domain') {
+                    $aP["langselector"] .= '<a href="//www.' . $C["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                } else {
+                    $aP["langselector"] .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                }
             }
         }
+        $aP["langselector"] = \HaaseIT\Tools::cutStringend($aP["langselector"], 1);
     }
-    $aP["langselector"] = \HaaseIT\Tools::cutStringend($aP["langselector"], 1);
 
     // Shopping cart infos
     if ($C["enable_module_shop"]) {
