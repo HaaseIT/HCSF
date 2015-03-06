@@ -247,7 +247,7 @@ pre.debug{border:2px solid red;padding:1em;}
 .cart-product-remove{color: inherit;}
 #cart-summary{border-top:1px solid #000;padding:0.6em;}
 
-#customerform-errortext, #customerform-address-wrapper, #customerform-paymeht-wrapper, #customerform-tos-wrapper{
+#customerform-errortext, #customerform-address-wrapper, #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-admstate-wrapper{
     border: 1px solid #000;
     padding: 1em;
     margin-bottom: 2em;
@@ -288,7 +288,7 @@ pre.debug{border:2px solid red;padding:1em;}
     #cart-header{display: block;}
     .md-invisible{display: none;}
     #customerform-address-wrapper{margin:0 1em 2em 0;}
-    #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-info-wrapper{margin:0 0 2em 1em;}
+    #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-info-wrapper, #customerform-admstate-wrapper{margin:0 0 2em 1em;}
     #customerform-submit{margin: 0;}
     .hidden-sm{display: inherit;}
 
