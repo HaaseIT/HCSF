@@ -21,26 +21,6 @@
         });
     });
     {% endif %}
-    function openFirstPanel(){
-        $('.accordion > dt:first-child').next().addClass('active').slideDown();
-    }
-    $( function() {
-        var allPanels = $('.accordion > dd').hide();
-        openFirstPanel();
-
-        $('.accordion > dt > a').click(function() {
-            $this = $(this);
-            $target =  $this.parent().next();
-
-            if($target.hasClass('active')){
-                $target.removeClass('active').slideUp();
-            }else{
-                allPanels.removeClass('active').slideUp();
-                $target.addClass('active').slideDown();
-            }
-            return false;
-        });
-    });
 </script>
 
 <div class="pure-u-4-5">
@@ -89,13 +69,6 @@
             {% endif %}
 
             <div class="pure-u-1-2">
-                <!--
-                <ul class="socialnav">
-                    <li><a href="https://www.facebook.com/pages/Makaya/481944855182018" id="facebook" target="_blank"> facebook</a></li>
-                    <li><a href="http://m-a-k-a-y-a.tumblr.com/" id="tumblr" target="_blank"> tumblr </a></li>
-                    <li><a href="http://instagram.com/m.a.k.a.y.a/" id="instagram" target="_blank"> instagram </a></li>
-                </ul>
-                //-->
             </div><div class="pure-u-1-2"><div
                         id="item-detail-price-cont">
                     <h4 id="item-detail-price">
@@ -115,8 +88,6 @@
                         {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? '</span>' : '' }}
                     </h4>
 
-                    <div id="item-detail-versandmwst">{{ T("itemdetail_info_versandmwst") }}</div>
-
                     {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
                         <button data-target="#modal-cart" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="addtoshoppingcartsubmit">
                             {{ T("itemdetail_button_submit") }}
@@ -126,18 +97,6 @@
                     {% endif %}
                 </div></div>
 
-            <dl class="accordion">
-                {% if item.data.itm_data.groessentabelle is defined %}
-                    <dt><a href="">{{ T("itemdetail_headline_groessentabelle") }}</a></dt>
-                    <dd>{{ item.data.itm_data.groessentabelle }}</dd>
-                {% endif %}
-                <dt><a href="">{{ T("itemdetail_headline_shippingcost") }}</a></dt>
-                <dd>{{ T("itemdetail_shippingcost_text") }}</dd>
-                {% if item.data.itm_data.pflegehinweise is defined %}
-                    <dt><a href="">{{ T("itemdetail_headline_pflegehinweise") }}</a></dt>
-                    <dd>{{ item.data.itm_data.pflegehinweise }}</dd>
-                {% endif %}
-            </dl>
         </div>
     </form>
 </div>

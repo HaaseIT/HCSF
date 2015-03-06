@@ -270,8 +270,7 @@ function getUserData($sField = '', $aUserdata = false)
 function handleLogout()
 {
     session_destroy();
-    $sH= '';
-    $sH .= \HaaseIT\Textcat::T("login_logout_success");
+    $sH = \HaaseIT\Textcat::T("login_logout_success");
     return $sH;
 }
 

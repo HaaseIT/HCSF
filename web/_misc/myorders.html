@@ -53,7 +53,7 @@ if (!$C["enable_module_shop"]) {
 
             if ($hResult->rowCount() == 1) {
                 $aOrder = $hResult->fetch();
-                $sH .= '<h1>' . \HaaseIT\Textcat::T("myorders_headline") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
+                $sH .= '<h1>' . \HaaseIT\Textcat::T("myorders_headline_order") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
                 if (trim($aOrder["o_remarks"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_remarks") . '</strong><br>' . $aOrder["o_remarks"] . '<br><br>';
                 $sH .= '<strong>Zahlungsmethode:</strong> ' . \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]) . '<br>';
                 $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_paymentstatus") . '</strong> ' . (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")) . '<br>';

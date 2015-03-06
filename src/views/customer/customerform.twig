@@ -35,7 +35,7 @@
         <div id="customerform-address-wrapper">
             {% if customdata.customerform.purpose == 'shoppingcart' %}
                 <input type="hidden" name="doCheckout" value="yes">
-                <div id="customerform-address-header">{{ T("shoppingcart_adrform_headline") }}</div>
+                <div id="customerform-address-header">{{ T("adrform_headline_shoppingcart") }}</div>
             {% elseif customdata.customerform.purpose == 'register' %}
                 <input type="hidden" name="doRegister" value="yes">
             {% elseif customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'editprofile' %}
@@ -223,11 +223,6 @@
             </div>
         </div>
         {% endif %}
-            <div id="customerform-info-wrapper">
-                <strong>{{ T("adrform_shippingcost_headline") }}</strong>
-                <br><br>
-                {{ T("adrform_shippingcost_text") }}
-            </div>
         {% endif %}
 
         {% if customdata.customerform.purpose == 'admin' %}

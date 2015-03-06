@@ -8,6 +8,17 @@ config.scrts.php changed to config.scrts.yml
 These two lines should come handy to convert from .php to .yml:
   use Symfony\Component\Yaml\Yaml;
   die(Yaml::dump($C, 2));
+Textcat key changes:
+  topnav_login - nav_login
+  topnav_shoppingcart_numberofitems - utilities_shoppingcart_numberofitems
+  toputilities_shoppingcart_total - utilities_shoppingcart_total
+  toputilities_gotoshoppingcart - utilities_gotoshoppingcart
+  topnav_shoppingcart_empty - utilities_shoppingcart_empty
+  topnav_register - nav_register
+  shoppingcart_adrform_headline - adrform_headline_shoppingcart
+  myorders_headline - myorders_headline_order
+  headline_userhome - userhome_headline
+  headline_userhome_sub - userhome_subheadline
 
 V2.02 auf V2.03
 directory structure has been changed to symfony style

@@ -21,12 +21,28 @@
 $TMP = array(
     'navstruct' => array(
         'root' => array(
-            \HaaseIT\Textcat::T("sidenav_root_01") => '/page1/',
-            \HaaseIT\Textcat::T("sidenav_root_02") => '/page2/',
+            \HaaseIT\Textcat::T("sidenav_root_01") => '/page1.html',
+            \HaaseIT\Textcat::T("sidenav_root_02") => '/page2.html',
         ),
-        'navarea1' => array(
-            \HaaseIT\Textcat::T("sidenav_navarea1_01") => '/navarea1/page1/',
-            \HaaseIT\Textcat::T("sidenav_navarea1_02") => '/navarea1/page2/',
+        'category1' => array(
+            \HaaseIT\Textcat::T("sidenav_category1_01") => '/category1/page1/',
+            \HaaseIT\Textcat::T("sidenav_category1_02") => '/category1/page2/',
+        ),
+        'category2' => array(
+            \HaaseIT\Textcat::T("sidenav_category2_01") => '/category2/page1/',
+            \HaaseIT\Textcat::T("sidenav_category2_02") => '/category2/page2/',
+        ),
+        'category3' => array(
+            \HaaseIT\Textcat::T("sidenav_category3_01") => '/category3/page1/',
+            \HaaseIT\Textcat::T("sidenav_category3_02") => '/category3/page2/',
+        ),
+        'category4' => array(
+            \HaaseIT\Textcat::T("sidenav_category4_01") => '/category4/page1/',
+            \HaaseIT\Textcat::T("sidenav_category4_02") => '/category4/page2/',
+        ),
+        'category5' => array(
+            \HaaseIT\Textcat::T("sidenav_category5_01") => '/category5/page1/',
+            \HaaseIT\Textcat::T("sidenav_category5_02") => '/category5/page2/',
         ),
         'admin' => array(
             'Shopverwaltung' => '/_admin/shop/shopadmin.php',

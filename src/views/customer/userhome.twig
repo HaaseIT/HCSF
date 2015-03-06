@@ -1,9 +1,9 @@
-<h1>{{T("headline_userhome")}}</h1>
+<h1>{{T("userhome_headline")}}</h1>
 <hr>
 {% if customdata.userhome.display_logingreeting %}
 <strong>{{T("login_welcome")}}</strong><br><br>
 {% endif %}
-<h3>{{T("headline_userhome_sub")}}</h3>
+<h3>{{T("userhome_subheadline")}}</h3>
 <hr>
 {{customdata.userhome.text_aboveform}}
 {% include 'customer/customerform.twig' %}

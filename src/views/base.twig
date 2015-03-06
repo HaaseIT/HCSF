@@ -58,7 +58,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
             {% if enable_module_shop %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
                 <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-dropdown="#dropdown-1">
                     <i class="fa fa-shopping-cart"></i>
-                    <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("topnav_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></button>
+                    <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("utilities_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></button>
                 <div id="dropdown-1" class="dropdown dropdown-tip">
                     <div class="dropdown-panel fs">
                         <ul id="shoppingcartinfo">
@@ -72,12 +72,12 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                                     </li>
                                 {% endfor %}
                                 <li class="divider"></li>
-                                <li><a href="/_misc/shoppingcart.html">{{ T("toputilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }}</span> {{ currency }}</a></li>
+                                <li><a href="/_misc/shoppingcart.html">{{ T("utilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }}</span> {{ currency }}</a></li>
                                 <li class="divider"></li>
-                                <li><a href="/_misc/shoppingcart.html" class="pure-button button-green">{{ T("toputilities_gotoshoppingcart") }}</a></li>
+                                <li><a href="/_misc/shoppingcart.html" class="pure-button button-green">{{ T("utilities_gotoshoppingcart") }}</a></li>
                             {% else %}
                                 <li>
-                                    <a href="#">{{ T("topnav_shoppingcart_empty") }}</a>
+                                    <a href="#">{{ T("utilities_shoppingcart_empty") }}</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -103,7 +103,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                 {% else %}
                     <button data-target="#loginModal" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="button-contact">
                         <i class="fa fa-user"></i>
-                        <span class="hidden-sm">{{ T("topnav_login") }}</span>
+                        <span class="hidden-sm">{{ T("nav_login") }}</span>
                     </button>
                     <div id="loginModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-header">
@@ -118,7 +118,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
                         </div>
                     </div>
-                    <a href="/_misc/register.html">{{ T("topnav_register") }}</a>
+                    <a href="/_misc/register.html">{{ T("nav_register") }}</a>
                 {% endif %}
             {% endif %}
         </div>
@@ -128,8 +128,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
     <div class="container">
         <div class="pure-u-1 fs">
             <ul id="topnav">
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/herren-shirts/" id="topnav-1"{{ subnavkey == 'herrenshirts' ? ' class="active"' : '' }}>{{ T("topnav_herenshirts") }}</a>
-                    {% if subnavkey == 'herrenshirts' %}
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/category1/" id="topnav-1"{{ subnavkey == 'category1' ? ' class="active"' : '' }}>{{ T("topnav_category1") }}</a>
+                    {% if subnavkey == 'category1' %}
                         <ul id="topnav-sub">
                         {% if subnav is defined %}
                             {% for title, link in subnav %}
@@ -137,8 +137,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/damen-shirts/" id="topnav-2"{{ subnavkey == 'damenshirts' ? ' class="active"' : '' }}>{{ T("topnav_damenshirts") }}</a>
-                    {% if subnavkey == 'damenshirts' %}
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/category2/" id="topnav-2"{{ subnavkey == 'category2' ? ' class="active"' : '' }}>{{ T("topnav_category2") }}</a>
+                    {% if subnavkey == 'category2' %}
                         <ul id="topnav-sub">
                         {% if subnav is defined %}
                             {% for title, link in subnav %}
@@ -146,8 +146,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kapuzenpullover/" id="topnav-3"{{ subnavkey == 'kapuzenpullover' ? ' class="active"' : '' }}>{{ T("topnav_kapuzenpullover") }}</a>
-                    {% if subnavkey == 'kapuzenpullover' %}
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/category3/" id="topnav-3"{{ subnavkey == 'category3' ? ' class="active"' : '' }}>{{ T("topnav_category3") }}</a>
+                    {% if subnavkey == 'category3' %}
                         <ul id="topnav-sub">
                         {% if subnav is defined %}
                             {% for title, link in subnav %}
@@ -155,8 +155,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-3-24"><a href="/accessoires/" id="topnav-4"{{ subnavkey == 'accessoires' ? ' class="active"' : '' }}>{{ T("topnav_accessoires") }}</a>
-                    {% if subnavkey == 'accessoires' %}
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/category4/" id="topnav-4"{{ subnavkey == 'category4' ? ' class="active"' : '' }}>{{ T("topnav_category4") }}</a>
+                    {% if subnavkey == 'category4' %}
                         <ul id="topnav-sub">
                         {% if subnav is defined %}
                             {% for title, link in subnav %}
@@ -164,8 +164,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-3-24"><a href="/top-angebot/" id="topnav-5"{{ subnavkey == 'topangebot' ? ' class="active"' : '' }}>{{ T("topnav_topangebot") }}</a>
-                    {% if subnavkey == 'topangebot' %}
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/category5/" id="topnav-5"{{ subnavkey == 'category5' ? ' class="active"' : '' }}>{{ T("topnav_category5") }}</a>
+                    {% if subnavkey == 'category5' %}
                         <ul id="topnav-sub">
                         {% if subnav is defined %}
                             {% for title, link in subnav %}
@@ -173,8 +173,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
-                <li class="pure-u-1 pure-u-md-3-24"><a href="/ueber-uns.html" id="topnav-7"{{ requesturi == '/ueber-uns.html' ? ' class="active"' : '' }}>{{ T("topnav_ueberuns") }}</a></li>
+                <li class="pure-u-1 pure-u-md-4-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
             </ul>
         </div>
     </div>
