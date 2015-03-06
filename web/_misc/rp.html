@@ -33,10 +33,10 @@ $P = array(
 );
 
 if (isset($_SESSION["user"])) {
-    $sH = T("denied_default");
+    $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
     if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\HaaseIT\Tools::validateEmail($_GET["email"])) {
-        $sH = T("denied_default");
+        $sH = \HaaseIT\Textcat::T("denied_default");
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
         $hResult = $DB->prepare($sQ);
@@ -44,14 +44,14 @@ if (isset($_SESSION["user"])) {
         $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
         $hResult->execute();
         if ($hResult->rowCount() != 1) {
-            $sH = T("denied_default");
+            $sH = \HaaseIT\Textcat::T("denied_default");
         } else {
             $sH = '';
             $aErr = array();
             $aResult = $hResult->fetch();
             $iTimestamp = time();
             if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
-                $sH = T("pwreset_error_expired");
+                $sH = \HaaseIT\Textcat::T("pwreset_error_expired");
             } else {
                 $P["base"]["cb_customcontenttemplate"] = 'customer/resetpassword';
                 $P["base"]["cb_customdata"]["pwreset"]["minpwlength"] = $C["minimum_length_password"];

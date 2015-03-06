@@ -18,28 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function T($sTextkey, $bReturnFalseIfNotAvailable = false)
-{
-    global $T, $sLang, $C;
-    $sDefaultlang = key($C["lang_available"]);
-    //HaaseIT\Tools::debug($T[$sDefaultlang]);
-    if (isset($_GET["showtextkeys"])) {
-        $sH = '['.$sTextkey.']';
-    } else {
-        if (isset($T[$sLang][$sTextkey]["tcl_text"]) && trim($T[$sLang][$sTextkey]["tcl_text"]) != '') {
-            $sH = trim($T[$sLang][$sTextkey]["tcl_text"]);
-        } elseif (isset($T[$sDefaultlang][$sTextkey]["tcl_text"]) && trim($T[$sDefaultlang][$sTextkey]["tcl_text"]) != '') {
-            $sH = trim($T[$sDefaultlang][$sTextkey]["tcl_text"]);
-        }
-        if (!isset($sH) || $sH == '') {
-            if ($bReturnFalseIfNotAvailable) return false;
-            else $sH = 'Missing Text: '.$sTextkey;
-        }
-    }
-
-    return $sH;
-}
-
 function buildTitle($P, $C)
 {
     if (isset($P["lang"][DB_CONTENTFIELD_TITLE]) && trim($P["lang"][DB_CONTENTFIELD_TITLE]) != '') $sH = $P["lang"][DB_CONTENTFIELD_TITLE];
@@ -107,17 +85,17 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     reset($C["lang_available"]);
     if (!$P) {
         $P["base"]['cb_pagetype'] = 'error';
-        $P["lang"]["cl_html"] = T("misc_page_not_found");
+        $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_page_not_found");
         header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
     } elseif (isset($P["base"]) && !isset($P["lang"])) {
         if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail') {
             $P["lang"]["cl_html"] = '';
         } else {
-            $P["lang"]["cl_html"] = T("misc_content_not_found");
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_content_not_found");
             header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
         }
     } elseif($P["lang"][DB_CONTENTFIELD_LANG] != $sLang) {
-        $P["lang"]["cl_html"] = T("misc_page_not_available_lang").'<br><br>'.$P["lang"]["cl_html"];
+        $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_page_not_available_lang").'<br><br>'.$P["lang"]["cl_html"];
     }
     if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $C["subnav_default"] != '') { // if there is no subnav defined but there is a default subnav defined, use it.
         $aP["subnavkey"] = $C["subnav_default"];
@@ -148,9 +126,9 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     foreach ($C["lang_available"] as $sKey => $sValue) {
         if ($sLang != $sKey) {
             if ($C["lang_detection_method"] == 'domain') {
-                $aP["langselector"] .= '<a href="//www.'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.T("misc_language_".$sKey).'</a> ';
+                $aP["langselector"] .= '<a href="//www.'.$C["lang_by_domain"][$sKey].$aRequestURL["path"].\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector).'">'.\HaaseIT\Textcat::T("misc_language_".$sKey).'</a> ';
             } else {
-                $aP["langselector"] .= '<a href="'.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.T("misc_language_".$sKey).'</a> ';
+                $aP["langselector"] .= '<a href="'.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)).'">'.\HaaseIT\Textcat::T("misc_language_".$sKey).'</a> ';
             }
         }
     }

@@ -62,15 +62,15 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
             $k = 0;
             $fGesamtnetto = 0.0;
             while ($aRow = $hResult->fetch()) {
-                if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.T("order_status_completed").'</span>';
-                elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.T("order_status_open").'</span>';
-                elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.T("order_status_inwork").'</span>';
-                elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.T("order_status_canceled").'</span>';
-                elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = T("order_status_deleted");
+                if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_completed").'</span>';
+                elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_open").'</span>';
+                elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.\HaaseIT\Textcat::T("order_status_inwork").'</span>';
+                elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_canceled").'</span>';
+                elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = \HaaseIT\Textcat::T("order_status_deleted");
 
                 if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
                 else $sZahlungsmethode = '<span style="color: red;">';
-                $mZahlungsmethode = T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
+                $mZahlungsmethode = \HaaseIT\Textcat::T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
                 if ($mZahlungsmethode ) $sZahlungsmethode .= $mZahlungsmethode;
                 else $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
                 $sZahlungsmethode .= '</span>';

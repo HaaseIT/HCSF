@@ -50,15 +50,15 @@ if ($hResult->rowCount() == 1) {
     $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
 
     $sPaypalURL = $C["paypal"]["url"].'?cmd=_xclick&rm=2&custom='.$iId.'&business='.$C["paypal"]["business"];
-    $sPaypalURL .= '&notify_url=http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_notify.html&item_name='.T("misc_paypaypal_paypaltitle").' '.$iId;
+    $sPaypalURL .= '&notify_url=http://'.$_SERVER["HTTP_HOST"].'/_misc/paypal_notify.html&item_name='.\HaaseIT\Textcat::T("misc_paypaypal_paypaltitle").' '.$iId;
     $sPaypalURL .= '&currency_code='.$C["paypal"]["currency_id"].'&amount='.str_replace(',', '.', number_format($fGesamtbrutto, 2, '.',''));
     if (isset($C["interactive_paymentmethods_redirect_immediately"]) && $C["interactive_paymentmethods_redirect_immediately"]) {
         header('Location: '.$sPaypalURL);
     }
 
-    $sH .= T("misc_paypaypal_greeting").'<br><br>';
-    $sH .= '<a href="'.$sPaypalURL.'">'.T("misc_paypaypal").'</a>';
-} else $sH .= T("misc_paypaypal_paymentnotavailable");
+    $sH .= \HaaseIT\Textcat::T("misc_paypaypal_greeting").'<br><br>';
+    $sH .= '<a href="'.$sPaypalURL.'">'.\HaaseIT\Textcat::T("misc_paypaypal").'</a>';
+} else $sH .= \HaaseIT\Textcat::T("misc_paypaypal_paymentnotavailable");
 
 $P["lang"]["cl_html"] = $sH;
 

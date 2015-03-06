@@ -39,7 +39,7 @@ if (isset($_SESSION["cart"])) {
     refreshCartItems($C, $oItem);
 }
 
-$sH .= T("logout_message");
+$sH .= \HaaseIT\Textcat::T("logout_message");
 
 $P["lang"]["cl_html"] = $sH;
 

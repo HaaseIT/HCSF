@@ -95,7 +95,7 @@ $twig = new Twig_Environment($loader, $twig_options);
 if (isset($C["debug"]) && $C["debug"]) {
     $twig->addExtension(new Twig_Extension_Debug());
 }
-$twig->addFunction('T', new Twig_Function_Function('T'));
+$twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
 $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
 
 // ----------------------------------------------------------------------------
@@ -174,8 +174,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     }
 }
 
-$T = loadTextcats($sLang, $C, $DB);
-//HaaseIT\Tools::debug($T);
+\HaaseIT\Textcat::loadTextcats($sLang, key($C["lang_available"]), $DB);
 
 include_once(__DIR__.'/config/config.navi.php');
 

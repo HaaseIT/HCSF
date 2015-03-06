@@ -74,13 +74,13 @@ function handleForgotPassword($DB, $C, $aErr) {
                 $hResult->execute();
 
                 $sTargetAddress = $aResult[DB_CUSTOMERFIELD_EMAIL];
-                $sSubject = T("forgotpw_mail_subject");
-                $sMessage = T("forgotpw_mail_text1");
+                $sSubject = \HaaseIT\Textcat::T("forgotpw_mail_subject");
+                $sMessage = \HaaseIT\Textcat::T("forgotpw_mail_text1");
                 $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                 $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
                 $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                 $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
-                $sMessage .= '<br><br>'.T("forgotpw_mail_text2");
+                $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("forgotpw_mail_text2");
 
                 mailWrapper($sTargetAddress, $C["email_sendername"], $C["email_sender"], $sSubject, $sMessage);
             }
@@ -235,13 +235,13 @@ function buildCustomerForm($C, $sLang, $sPurpose = 'none', $sErr = '', $aUserDat
 function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $bCust = false)
 {
     if ($bCust) {
-        $sSubject = T("register_mail_emailverification_subject");
-        $sMessage = T("register_mail_emailverification_text1");
+        $sSubject = \HaaseIT\Textcat::T("register_mail_emailverification_subject");
+        $sMessage = \HaaseIT\Textcat::T("register_mail_emailverification_text1");
         $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
         $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode.'">';
         $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
         $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode.'</a>';
-        $sMessage .= '<br><br>'.T("register_mail_emailverification_text2");
+        $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("register_mail_emailverification_text2");
     }
     else {
         $sSubject = 'Neue Kundenregistrierung';
@@ -271,7 +271,7 @@ function handleLogout()
 {
     session_destroy();
     $sH= '';
-    $sH .= T("login_logout_success");
+    $sH .= \HaaseIT\Textcat::T("login_logout_success");
     return $sH;
 }
 

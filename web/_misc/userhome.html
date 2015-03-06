@@ -56,7 +56,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             $hResult->execute();
             //debug($sQ);
             $iRows = $hResult->rowCount();
-            if ($iRows == 1) $sErr .= T("userprofile_emailalreadyinuse").'<br>';
+            if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse").'<br>';
             $sErr = validateCustomerForm($C, $sLang, $sErr, true);
 
             if ($sErr == '') {
@@ -89,13 +89,13 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
                         $hResult->bindValue(':'.$sKey, $sValue);
                     }
                     $hResult->execute();
-                    $sInfo .= T("userprofile_changessaved").' ('.showClienttime().').<br>';
-                } else $sInfo .= T("userprofile_nothingchanged").'<br>';
+                    $sInfo .= \HaaseIT\Textcat::T("userprofile_changessaved").' ('.showClienttime().').<br>';
+                } else $sInfo .= \HaaseIT\Textcat::T("userprofile_nothingchanged").'<br>';
             }
         }
         if (isset($sInfo) && $sInfo != '') $aPData["text_aboveform"] = $sInfo;
         $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
-        //if ($C["allow_edituserprofile"]) $sH .= '<br>'.T("userprofile_infoeditemail"); // Future implementation
+        //if ($C["allow_edituserprofile"]) $sH .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
     } else {
         $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
         $aPData["showlinktoreferer"] = true;
@@ -108,7 +108,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
         $P["base"]["cb_customdata"]["userhome"] = $aPData;
     }
 } else {
-    $sH .= T("denied_notloggedin");
+    $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
 }
 
 $P["lang"]["cl_html"] = $sH;

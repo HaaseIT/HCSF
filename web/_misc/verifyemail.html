@@ -33,7 +33,7 @@ $P = array(
 );
 
 if (isset($_SESSION["user"])) {
-    $sH = T("denied_default");
+    $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
     $sH = '';
     $sErr = '';
@@ -57,9 +57,9 @@ if (isset($_SESSION["user"])) {
             $hResult->bindValue(':'.$sKey, $sValue);
         }
         $hResult->execute();
-        $sH .= T("register_emailverificationsuccess");
+        $sH .= \HaaseIT\Textcat::T("register_emailverificationsuccess");
     } else {
-        $sH .= T("register_emailverificationfail");
+        $sH .= \HaaseIT\Textcat::T("register_emailverificationfail");
     }
 }
 

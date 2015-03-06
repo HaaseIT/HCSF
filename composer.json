@@ -3,6 +3,6 @@
     "twig/twig": "1.*",
     "phpmailer/phpmailer": "5.2.*",
     "symfony/yaml": "@stable",
-    "haaseit/toolbox": "1.0.6"
+    "haaseit/toolbox": "1.1.0"
   }
 }

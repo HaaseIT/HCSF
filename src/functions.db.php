@@ -18,29 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function loadTextcats($sLang, $C, $DB)
-{
-    $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang";
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);
-    $hResult->execute();
-    while ($aRow = $hResult->fetch()) {
-        $aTextcat[$sLang][$aRow["tc_key"]] = $aRow;
-    }
-
-    $sDefaultlang = key($C["lang_available"]);
-    if ($sLang != $sDefaultlang) {
-        $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':lang', $sDefaultlang, PDO::PARAM_STR);
-        $hResult->execute();
-        while ($aRow = $hResult->fetch()) $aTextcat[$sDefaultlang][$aRow["tc_key"]] = $aRow;
-    }
-
-    if (isset($aTextcat)) {
-        return $aTextcat;
-    }
-}
-
 function getContent($C, $DB, $sPagekey, $sLang) {
     // first get base data
     $sQ = "SELECT ".DB_CONTENTFIELDS_BASE." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = :key ";

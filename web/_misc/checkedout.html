@@ -48,7 +48,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
         $P["base"]["cb_customdata"]["order"] = $hResult->fetch();
         $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($P["base"]["cb_customdata"]["order"]);
     }
-} else $sH = T("denied_notloggedin");
+} else $sH = \HaaseIT\Textcat::T("denied_notloggedin");
 
 $P["lang"]["cl_html"] = $sH;
 

@@ -21,15 +21,15 @@
 function showOrderStatusText($sStatusShort)
 {
     if ($sStatusShort == 'y') {
-        $sStatus = T("order_status_completed");
+        $sStatus = \HaaseIT\Textcat::T("order_status_completed");
     } elseif ($sStatusShort == 'n') {
-        $sStatus = T("order_status_open");
+        $sStatus = \HaaseIT\Textcat::T("order_status_open");
     } elseif ($sStatusShort == 'i') {
-        $sStatus = T("order_status_inwork");
+        $sStatus = \HaaseIT\Textcat::T("order_status_inwork");
     } elseif ($sStatusShort == 's') {
-        $sStatus = T("order_status_canceled");
+        $sStatus = \HaaseIT\Textcat::T("order_status_canceled");
     } elseif ($sStatusShort == 'd') {
-        $sStatus = T("order_status_deleted");
+        $sStatus = \HaaseIT\Textcat::T("order_status_deleted");
     }
 
     return $sStatus;
@@ -50,14 +50,14 @@ function showMyOrders($COList, $twig, $DB)
         while ($aRow = $hResult->fetch()) {
             $sStatus = showOrderStatusText($aRow["o_ordercompleted"]);
 
-            if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = T("order_paymentmethod_prepay");
-            elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = T("order_paymentmethod_paypal");
-            elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = T("order_paymentmethod_debit");
-            elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = T("order_paymentmethod_invoice");
+            if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_prepay");
+            elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_paypal");
+            elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_debit");
+            elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_invoice");
             else $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);
 
-            if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords(T("misc_yes"));
-            else $sPaymentstatus = ucwords(T("misc_no"));
+            if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_yes"));
+            else $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_no"));
 
             $aData[] = array(
                 'o_id' => $aRow["o_id"],
@@ -71,7 +71,7 @@ function showMyOrders($COList, $twig, $DB)
         }
         $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $twig);
         //HaaseIT\Tools::debug($aData);
-    } else $sH .= T("myorders_no_orders_to_display");
+    } else $sH .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
 
     return $sH;
 }

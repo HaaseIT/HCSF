@@ -34,7 +34,7 @@ $P = array(
 
 $sH = '';
 
-if ( isset( $_SESSION["user"] ) ) $sH = T("denied_default");
+if ( isset( $_SESSION["user"] ) ) $sH = \HaaseIT\Textcat::T("denied_default");
 else {
     $sQ = "SELECT ".DB_ADDRESSFIELDS.", ".DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE." FROM ".DB_CUSTOMERTABLE;
     $sQ .= " WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
@@ -51,7 +51,7 @@ else {
         $sEmailVerificationcode = $aRow[DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE];
         sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C);
 
-        $sH .= T("register_verificationmailresent");
+        $sH .= \HaaseIT\Textcat::T("register_verificationmailresent");
     }
 }
 

@@ -49,13 +49,13 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $sH .= '<h1>'.T("myorders_headline").' '.date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]).':</h1><br>';
-            if (trim($aOrder["o_remarks"]) !='') $sH .= '<strong>'.T("myorders_remarks").'</strong><br>'.$aOrder["o_remarks"].'<br><br>';
-            $sH .= '<strong>Zahlungsmethode:</strong> '.T("order_paymentmethod_".$aOrder["o_paymentmethod"]).'<br>';
-            $sH .= '<strong>'.T("myorders_paymentstatus").'</strong> '.(($aOrder["o_paymentcompleted"] == 'y') ? T("myorders_paymentstatus_completed") : T("myorders_paymentstatus_open")).'<br>';
-            $sH .= '<strong>'.T("myorders_orderstatus").'</strong> '.showOrderStatusText($aOrder["o_ordercompleted"]).'<br>';
-            if (trim($aOrder["o_shipping_service"]) !='') $sH .= '<strong>'.T("myorders_shipping_service").'</strong> '.$aOrder["o_shipping_service"].'<br>';
-            if (trim($aOrder["o_shipping_trackingno"]) !='') $sH .= '<strong>'.T("myorders_shipping_trackingno").'</strong> '.$aOrder["o_shipping_trackingno"].'<br>';
+            $sH .= '<h1>'.\HaaseIT\Textcat::T("myorders_headline").' '.date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]).':</h1><br>';
+            if (trim($aOrder["o_remarks"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_remarks").'</strong><br>'.$aOrder["o_remarks"].'<br><br>';
+            $sH .= '<strong>Zahlungsmethode:</strong> '.\HaaseIT\Textcat::T("order_paymentmethod_".$aOrder["o_paymentmethod"]).'<br>';
+            $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_paymentstatus").'</strong> '.(($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")).'<br>';
+            $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_orderstatus").'</strong> '.showOrderStatusText($aOrder["o_ordercompleted"]).'<br>';
+            if (trim($aOrder["o_shipping_service"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_shipping_service").'</strong> '.$aOrder["o_shipping_service"].'<br>';
+            if (trim($aOrder["o_shipping_trackingno"]) !='') $sH .= '<strong>'.\HaaseIT\Textcat::T("myorders_shipping_trackingno").'</strong> '.$aOrder["o_shipping_trackingno"].'<br>';
             $sH .= '<br>';
 
             $sQ = "SELECT * FROM ".DB_ORDERTABLE_ITEMS." WHERE oi_o_id = :id";
@@ -93,18 +93,18 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
             );
         }
         else {
-            $sH .= T("myorders_order_not_found");
+            $sH .= \HaaseIT\Textcat::T("myorders_order_not_found");
         }
     } else {
         $COList = array(
-            array('title' => T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,),
-            array('title' => T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,),
-            array('title' => T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,),
-            array('title' => T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
-            array('title' => T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,),
-            array('title' => T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,),
+            array('title' => \HaaseIT\Textcat::T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,),
             array(
-                'title' => T("order_show"),
+                'title' => \HaaseIT\Textcat::T("order_show"),
                 'key' => 'o_id',
                 'width' => 120,
                 'linked' => true,
@@ -118,7 +118,7 @@ if (isset($_SESSION["user"]) && is_array($_SESSION["user"])) {
     }
 
 } else {
-    $sH .= T("denied_notloggedin");
+    $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
 }
 
 //if (clientIsLocal()) debug($_SERVER);

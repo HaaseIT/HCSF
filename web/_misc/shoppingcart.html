@@ -40,7 +40,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
 
     if (isset($_GET["msg"]) && trim($_GET["msg"]) != '') {
         if (($_GET["msg"] == 'updated' && isset($_GET["cartkey"]) && isset($_GET["amount"])) || ($_GET["msg"] == 'removed') && isset($_GET["cartkey"])) {
-            $sH .= T("shoppingcart_msg_".$_GET["msg"]."_1").' ';
+            $sH .= \HaaseIT\Textcat::T("shoppingcart_msg_".$_GET["msg"]."_1").' ';
             if (isset($C["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                 $mCartkeys = explode('|', $_GET["cartkey"]);
                 //debug($mCartkeys);
@@ -49,7 +49,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                         $sH .= $sValue.', ';
                     } else {
                         $TMP = explode(':', $sValue);
-                        $sH .= T("shoppingcart_item_".$TMP[0]).' '.$TMP[1].', ';
+                        $sH .= \HaaseIT\Textcat::T("shoppingcart_item_".$TMP[0]).' '.$TMP[1].', ';
                         unset($TMP);
                     }
                 }
@@ -57,7 +57,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             } else {
                 $sH .= $_GET["cartkey"];
             }
-            $sH .= ' '.T("shoppingcart_msg_".$_GET["msg"]."_2");
+            $sH .= ' '.\HaaseIT\Textcat::T("shoppingcart_msg_".$_GET["msg"]."_2");
             if ($_GET["msg"] == 'updated') {
                 $sH .= ' '.$_GET["amount"];
             }
@@ -83,7 +83,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
     }
 
     if (!isset($aShoppingcart)) {
-        $sH .= T("shoppingcart_empty");
+        $sH .= \HaaseIT\Textcat::T("shoppingcart_empty");
     } else {
         if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
             if (count($aErr) == 0) {
@@ -208,7 +208,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
                 } else $aFilesToSend = array();
 
                 // Send Mails
-                mailWrapper($_POST["email"], $C["email_sendername"], $C["email_sender"], T("shoppingcart_mail_subject").' '.$iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+                mailWrapper($_POST["email"], $C["email_sendername"], $C["email_sender"], \HaaseIT\Textcat::T("shoppingcart_mail_subject").' '.$iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
                 mailWrapper($C["email_sender"], $C["email_sendername"], $C["email_sender"], 'Bestellung im Webshop Nr: '.$iInsertID, $sMailbody_us, $aImagesToSend);
 
                 if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
@@ -226,7 +226,7 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             }
         } // endif $_POST["doCheckout"] == 'yes'
     }
-} else $sH = T("denied_notloggedin");
+} else $sH = \HaaseIT\Textcat::T("denied_notloggedin");
 
 if (isset($aShoppingcart)) {
     $P["base"]["cb_customdata"] = $aShoppingcart;

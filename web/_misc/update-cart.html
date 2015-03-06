@@ -185,4 +185,4 @@ if (!$C["show_pricesonlytologgedin"] || getUserData()) {
             header('Location: '.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'amount'), true, false));
         }
     }
-} else $sH = T("denied_notloggedin");
+} else $sH = \HaaseIT\Textcat::T("denied_notloggedin");
