@@ -1,5 +1,5 @@
 HCSF - A multilingual CMS and Shopsystem
-Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
+Copyright (C) 2014-2015  Marcus Haase - mail@marcus.haase.name
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ Dependencies:
 TWIG 1.16.2 and up, see: http://twig.sensiolabs.org/ (install via composer)
 PHPMailer 5.2.9 and up, see: https://github.com/PHPMailer/PHPMailer (install via composer)
 Symfony YAML Component (installed via composer)
+Haase IT Toolbox (installed via composer)
 
 In the setup directory you will find scripts for setting up the database.
 

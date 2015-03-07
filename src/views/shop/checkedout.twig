@@ -11,12 +11,11 @@
             {{ T("checkoutdone_prepay_3") }}
         </p>
     {% elseif customdata.order.o_paymentmethod == 'nachnahme' %}
-            <p>
-                {{ T("checkoutdone_nachnahme_1") }}
-                {{ customdata.gesamtbrutto|number_format(2, ",", ".") }} {{ currency }}
-                {{ T("checkoutdone_nachnahme_2") }}
-            </p>
+        <p>
+            {{ T("checkoutdone_nachnahme_1") }}
+            {{ customdata.gesamtbrutto|number_format(2, ",", ".") }} {{ currency }}
+            {{ T("checkoutdone_nachnahme_2") }}
+        </p>
     {% endif %}
-    {{ T("checkoutdone_cancellationform") }}
-
+    <p>{{ T("checkoutdone_outro") }}</p>
 {% endif %}
