@@ -11,11 +11,23 @@ INSERT INTO content_base (cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, c
   (3, '/agb.html', 'verschiedenes', 'content', '', 'root'),
   (4, '/widerruf.html', 'verschiedenes', 'content', '', 'root'),
   (5, '/faq.html', 'verschiedenes', 'content', '', 'root'),
-  (6, '/kategorie1/index.html', '_', 'itemoverview', '{"itemindex":"A010"}', 'category1'),
+  (6, '/kategorie1/index.html', '_', 'itemoverview', '{"itemindex":"A01"}', 'category1'),
   (7, '/kategorie1/seite1/index.html', '_', 'itemoverview', '{"itemindex":"A011"}', 'category1'),
   (8, '/seite1.html', 'verschiedenes', 'content', '', 'root'),
   (9, '/seite2.html', 'verschiedenes', 'content', '', 'root'),
-  (10, '/kategorie1/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A012"}', 'category1');
+  (10, '/kategorie1/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A012"}', 'category1'),
+  (11, '/kategorie2/index.html', '_', 'itemoverview', '{"itemindex":"A02"}', 'category2'),
+  (12, '/kategorie2/seite1/index.html', '_', 'itemoverview', '{"itemindex":"A021"}', 'category2'),
+  (13, '/kategorie2/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A022"}', 'category2'),
+  (14, '/kategorie3/index.html', '_', 'itemoverview', '{"itemindex":"A03"}', 'category3'),
+  (15, '/kategorie3/seite1/index.html', '_', 'itemoverview', '{"itemindex":"A031"}', 'category3'),
+  (16, '/kategorie3/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A032"}', 'category3'),
+  (17, '/kategorie4/index.html', '_', 'itemoverview', '{"itemindex":"A04"}', 'category4'),
+  (18, '/kategorie4/seite1/index.html', '_', 'itemoverview', '{"itemindex":"A041"}', 'category4'),
+  (19, '/kategorie4/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A042"}', 'category4'),
+  (20, '/kategorie5/index.html', '_', 'itemoverview', '{"itemindex":"A05"}', 'category5'),
+  (21, '/kategorie5/seite1/index.html', '_', 'itemoverview', '{"itemindex":"A051"}', 'category5'),
+  (22, '/kategorie5/seite2/index.html', '_', 'itemoverview', '{"itemindex":"A052"}', 'category5');
 
 --
 -- Daten für Tabelle content_lang
@@ -25,7 +37,8 @@ INSERT INTO content_lang (cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_descri
   (1, 1, 'de', 'Willkommen bei HCSF by Haase IT', '', '', '', '', ''),
   (2, 1, 'en', 'Welcome to HCSF by Haase IT', '', '', '', '', ''),
   (3, 1, 'es', 'Bienvenido a HCSF by Haase IT', '', '', '', '', ''),
-  (4, 2, 'es', '', '', '', '', '', '');
+  (4, 2, 'es', '', '', '', '', '', ''),
+  (5, 3, 'de', 'Allgemeine Geschäftsbedingungen', 'AGB', 'Allgemeine Geschäftsbedingungen', 'HCSF - AGB', '', '');
 
 --
 -- Daten für Tabelle textcat_base
