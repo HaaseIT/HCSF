@@ -1,6 +1,22 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+-- phpMyAdmin SQL Dump
+-- version 4.3.8
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Erstellungszeit: 08. Mrz 2015 um 11:29
+-- Server-Version: 5.5.41-0+wheezy1
+-- PHP-Version: 5.5.21-1~dotdeb.1
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Datenbank: dev09
+--
+
 --
 -- Daten für Tabelle content_base
 --
@@ -34,11 +50,21 @@ INSERT INTO content_base (cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, c
 --
 
 INSERT INTO content_lang (cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title, cl_background, cl_pdf) VALUES
-  (1, 1, 'de', 'Willkommen bei HCSF by Haase IT', '', '', '', '', ''),
-  (2, 1, 'en', 'Welcome to HCSF by Haase IT', '', '', '', '', ''),
-  (3, 1, 'es', 'Bienvenido a HCSF by Haase IT', '', '', '', '', ''),
-  (4, 2, 'es', '', '', '', '', '', ''),
-  (5, 3, 'de', 'Allgemeine Geschäftsbedingungen', 'AGB', 'Allgemeine Geschäftsbedingungen', 'HCSF - AGB', '', '');
+  (1, 1, 'de', 'Willkommen bei HCSF by Haase IT', 'HCSF', 'Willkommen bei HCSF by Haase IT', 'HCSF by Haase IT', '', ''),
+  (2, 1, 'en', 'Welcome to HCSF by Haase IT', 'HCSF', 'Welcome to HCSF by Haase IT', 'HCSF by Haase IT', '', ''),
+  (3, 1, 'es', 'Bienvenido a HCSF by Haase IT', 'HCSF', 'Bienvenido a HCSF by Haase IT', 'HCSF by Haase IT', '', ''),
+  (4, 2, 'es', 'Habilitar Cookies', 'Cookie, Cookies', 'Habilitar Cookies', 'HCSF - Habilitar Cookies', '', ''),
+  (5, 3, 'de', 'Allgemeine Geschäftsbedingungen', 'AGB', 'Allgemeine Geschäftsbedingungen', 'HCSF - AGB', '', ''),
+  (6, 3, 'en', 'Terms Of Service', 'TOS', 'Terms Of Service', 'NCSF - TOS', '', ''),
+  (7, 3, 'es', 'Condiciones de Contratación', 'CDC', 'Condiciones de Contratación', 'HCSF - CDC', '', ''),
+  (8, 2, 'de', 'Cookie Informationen', 'Cookie, Cookies', 'Cookie Informationen', 'HCSF - Cookie Informationen', '', ''),
+  (9, 2, 'en', 'Cookie information', 'cookie, cookies', 'Cookie information', 'HCSF - Cookie information', '', ''),
+  (10, 5, 'de', 'FAQ - Häufig gestellte Fragen', 'FAQ', 'FAQ - Häufig gestellte Fragen', 'HCSF - FAQ', '', ''),
+  (11, 5, 'en', 'Frequently asked questions', 'FAQ', 'Frequently asked questions', 'HCSF - FAQ', '', ''),
+  (12, 5, 'es', 'FAQ - Ayuda', 'FAQ, Ayuda', 'FAQ - Ayuda', 'HCSF - FAQ', '', ''),
+  (13, 4, 'de', 'Wiederrufsbelehrung', 'Wiederrufsbelehrung', 'Wiederrufsbelehrung', 'HCSF - Wiederrufsbelehrung', '', ''),
+  (14, 4, 'en', 'Cancellation disclaimer', 'cancellation, disclaimer', 'Cancellation disclaimer', 'HCSF - Cancellation disclaimer', '', ''),
+  (15, 4, 'es', 'Información sobre el derecho de desistimiento', 'desistimiento', 'Información sobre el derecho de desistimiento', 'HCSF - Información sobre el derecho de desistimiento', '', '');
 
 --
 -- Daten für Tabelle textcat_base
