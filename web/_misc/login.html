@@ -32,11 +32,14 @@ $P = array(
     ),
 );
 
+$sH = '';
+
 if (!$C["enable_module_customer"]) {
     $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
     if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
-        $sH = \HaaseIT\Textcat::T("login_fail");
+        //$sH = \HaaseIT\Textcat::T("login_fail");
+        $P["base"]["cb_customcontenttemplate"] = 'customer/login';
     } else {
         $mLogin = getLogin($C, $DB);
         if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
