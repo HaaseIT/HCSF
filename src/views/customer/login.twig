@@ -1,0 +1,26 @@
+{% if isloggedin %}
+    <a href="/_misc/logout.html">{{ T("nav_logout") }}</a>
+    <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a>
+{% else %}
+    <button data-target="#loginModal" type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-toggle="modal" id="button-login">
+        <i class="fa fa-sign-in"></i>
+        <span class="hidden-sm">{{ T("nav_login") }}</span>
+    </button>
+    <a href="/_misc/register.html" class="pure-button button-orange pure-u-23-24 pure-u-md-12-24 button-head" id="button-register"><i class="fa fa-user"></i> {{ T("nav_register") }}</a>
+    <div id="loginModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <form action="/_misc/login.html" method="POST" name="login">
+                {{ T("misc_login") }}<br>
+                <input type="hidden" name="sAction" value="login">
+                <input type="text" name="user" value="" id="loginform-user" placeholder="{{ T("misc_loginform_username") }}">
+                <input type="password" name="password" value="" id="loginform-password" placeholder="{{ T("misc_loginform_password") }}">
+                <input type="image" alt="" id="loginform-submit" src="data:image/gif;base64,R0lGODlhFAAUANUAAP///5SVmf7+/pWWmv7//5SVl5OUmP///ZOUlpSVmqqqrObn6fLy8v7+/5ydn6+wssPExtna3MXGyJWVl5aWmOvs7qOkpra4t5SUlvf5+Pf4+ra3ubCxs9HS1N7e4Pn5+ZWWmJOUmZucnpWWm/39/fn5++zs7vz9/8rLzQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAUABQAAAaIQIKQACgaj8hkUYBkAphO5bM5VSpMRGO0isQUUIToNtmgBAYcxph7LBgCBkckLG0PEoYBYqOpAw4ACCEjeAMFDgtrRYADAXADBgmOECVKTI6YmAUSbEdnmQgWCyd1DY+YFxlLdZoiHk9ba2cgDwxsJFITBR1Jin8fChVEB2tQf4B+ycpFWctHQQA7">
+            </form>
+            <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
+            <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
+        </div>
+    </div>
+{% endif %}
+
+{{content}}
+
