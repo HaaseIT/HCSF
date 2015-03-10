@@ -49,7 +49,7 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 .modal{width: 24em !important; margin-left:-12em !important;}
 
 .hidden-sm{display: none;}
-
+.only-sm{display: inline;}
 .pure-button{
     border-radius: 0;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -119,7 +119,7 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 #cookienotice{text-align: center;}
 
 .button-head{margin-bottom: 0.25em;}
-#button-contact{margin-top: 0.1em;}
+#button-login, #button-register{margin-top: 0.1em;}
 .button-head-container{text-align: center;}
 
 #shoppingcartinfo{
@@ -197,6 +197,7 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 /* Leftnav begin */
 #leftnav ul li{border-bottom: 1px solid #dfdfdf;}
 #leftnav ul li:last-child{border-bottom: 0;}
+.pure-menu{border:1px solid #dfdfdf;}
 #leftnav .pure-menu-selected{background: #eee !important;}
 #leftnav ul li a {color: #000;}
 /* Leftnav end */
@@ -293,6 +294,7 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
     #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-info-wrapper, #customerform-admstate-wrapper{margin:0 0 2em 1em;}
     #customerform-submit{margin: 0;}
     .hidden-sm{display: inherit;}
+    .only-sm{display:none;}
 
     .pure-form-aligned .pure-control-group label {
         text-align: right;

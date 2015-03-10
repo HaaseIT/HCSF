@@ -86,32 +86,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                 <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head">
                     <i class="fa fa-list"></i>
                     <span class="hidden-sm">Navigation</span></button>
-            </div>{%
-            if enable_module_customer %}
-                {% if isloggedin %}
-                    <a href="/_misc/logout.html">{{ T("nav_logout") }}</a>
-                    <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a>
-                {% else %}
-                    <button data-target="#loginModal" type="button" class="pure-button pure-u-23-24 pure-u-md-11-24 button-orange button-head" data-toggle="modal" id="button-contact">
-                        <i class="fa fa-sign-in"></i>
-                        <span class="hidden-sm">{{ T("nav_login") }}</span>
-                    </button>
-                    <div id="loginModal" class="modal hide fade fs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-header">
-                            <form action="/_misc/login.html" method="POST" name="login">
-                                {{ T("misc_login") }}<br>
-                                <input type="hidden" name="sAction" value="login">
-                                <input type="text" name="user" value="" id="loginform-user" placeholder="{{ T("misc_loginform_username") }}">
-                                <input type="password" name="password" value="" id="loginform-password" placeholder="{{ T("misc_loginform_password") }}">
-                                <input type="image" alt="" id="loginform-submit" src="data:image/gif;base64,R0lGODlhFAAUANUAAP///5SVmf7+/pWWmv7//5SVl5OUmP///ZOUlpSVmqqqrObn6fLy8v7+/5ydn6+wssPExtna3MXGyJWVl5aWmOvs7qOkpra4t5SUlvf5+Pf4+ra3ubCxs9HS1N7e4Pn5+ZWWmJOUmZucnpWWm/39/fn5++zs7vz9/8rLzQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAUABQAAAaIQIKQACgaj8hkUYBkAphO5bM5VSpMRGO0isQUUIToNtmgBAYcxph7LBgCBkckLG0PEoYBYqOpAw4ACCEjeAMFDgtrRYADAXADBgmOECVKTI6YmAUSbEdnmQgWCyd1DY+YFxlLdZoiHk9ba2cgDwxsJFITBR1Jin8fChVEB2tQf4B+ycpFWctHQQA7">
-                            </form>
-                            <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
-                            <!-- <button class="pure-button" data-dismiss="modal" aria-hidden="true">Close</button> //-->
-                        </div>
-                    </div>
-                    <div class="pure-u-23-24 pure-u-md-11-24 button-head"><a href="/_misc/register.html" class="pure-button button-orange"><i class="fa fa-user"></i> {{ T("nav_register") }}</a></div>
-                {% endif %}
-            {% endif %}
+            </div>
             {% if enable_module_shop %}
                 <div id="searchbox" class="pure-u-1">
                     <form action="/_misc/suche.html" method="GET" name="search">
@@ -125,7 +100,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
 </div>
 <div class="pure-g" id="row-topnav">
     <div class="container">
-        <div class="pure-u-1 fs">
+        <div class="fs pure-menu-horizontal">
             <ul id="topnav">
                 <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie1/" id="topnav-1"{{ subnavkey == 'category1' ? ' class="active"' : '' }}>{{ T("topnav_category1") }}</a>
                     {% if subnavkey == 'category1' %}
@@ -172,7 +147,8 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endfor %}
                         {% endif %}
                         </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
+                <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
+                <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
             </ul>
         </div>
     </div>
@@ -182,11 +158,11 @@ import "macros.twig" as macro %}<!DOCTYPE html>
         {% if widecontent == false %}
         <div class="pure-u-1 pure-u-md-1-4" id="col-leftnav">
             <div id="col-leftnav-content">
-                <div class="pure-menu pure-menu-open fs" id="leftnav">
+                <div class="pure-menu fs" id="leftnav">
                     {% if subnav is defined %}
-                        <ul>
+                        <ul class="pure-menu-list">
                             {% for title, link in subnav %}
-                                <li{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="pure-menu-selected"{% endif %}><a href="{{link}}">{{title}}</a></li>
+                                <li class="pure-menu-item{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} pure-menu-selected{% endif %}"><a href="{{link}}" class="pure-menu-link">{{title}}</a></li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -237,6 +213,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
         <script src="/_libs/bootstrap.min.js"></script>
         <script type="text/javascript">
             $(function() {
+
                 $("#button-head-topnav").click(function(){
                     $("#row-topnav").toggle();
                 });
