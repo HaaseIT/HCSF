@@ -174,7 +174,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     }
 }
 
-\HaaseIT\Textcat::loadTextcats($sLang, key($C["lang_available"]), $DB);
+\HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
 
 include_once(__DIR__.'/config/config.navi.php');
 
