@@ -35,12 +35,16 @@ $P = array(
 $sH = '';
 
 if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
+    /* obsolete, now uses \HaaseIT\Textcat::getCompleteTextcatForCurrentLang()
     $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang ORDER BY tc_key";
+    //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':lang', $sLang);
     $hResult->execute();
     $aData = $hResult->fetchAll();
-    //HaaseIT\Tools::debug($sQ);
+    */
+
+    $aData = \HaaseIT\Textcat::getCompleteTextcatForCurrentLang();
     //HaaseIT\Tools::debug($aData);
 
     $aListSetting = array(
@@ -62,53 +66,23 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
 } elseif ($_GET["action"] == 'edit') {
     $P["base"]["cb_customdata"]["edit"] = true;
-    //HaaseIT\Tools::debug($_REQUEST);
-    $sQ = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
-    //echo $sQ;
+    //\HaaseIT\Tools::debug($_REQUEST);
 
-    // Check if this textkey already has a child in the language table, if not, insert one
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':id', $_GET["id"]);
-    $hResult->bindValue(':lang', $sLang);
-    $hResult->execute();
-    if ($hResult->rowCount() == 0) {
-        $aData = array(
-            'tcl_tcid' => $_GET["id"],
-            'tcl_lang' => $sLang
-        );
-        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
-        //echo $sQ;
-        $hResult = $DB->prepare($sQ);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
-        $hResult->execute();
-    }
+    \HaaseIT\Textcat::initTextIfVoid($_GET["id"]);
+
     // if post:edit is set, update
     if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-        $aData = array(
-            'tcl_text' => $_POST["text"],
-            'tcl_id' => $_POST["lid"],
-        );
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
-        //HaaseIT\Tools::debug($sQ);
-        $hResult = $DB->prepare($sQ);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
-        $hResult->execute();
+        \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
         $P["base"]["cb_customdata"]["updated"] = true;
     }
 
-    $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && ";
-    $sQ .= "tcl_lang = :lang WHERE tc_id = :id";
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':id', $_GET["id"]);
-    $hResult->bindValue(':lang', $sLang);
-    $hResult->execute();
-    $aData = $hResult->fetch();
+    $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
     //HaaseIT\Tools::debug($aData);
     $P["base"]["cb_customdata"]["editform"] = array(
-        'id' => $_REQUEST["id"],
+        'id' => $aData["tc_id"],
         'lid' => $aData["tcl_id"],
         'key' => $aData["tc_key"],
-        'lang' => $sLang,
+        'lang' => $aData["tcl_lang"],
         'text' => $aData["tcl_text"],
     );
 } elseif ($_GET["action"] == 'add') {
