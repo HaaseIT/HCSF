@@ -14,7 +14,9 @@
     </form>
 {% elseif customdata.add %}
     {{ customdata.err.keytooshort ? 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>' : '' }}
+    {{ customdata.err.keytoolong ? 'Der Textschlüssel darf aus höchstens 64 Zeichen bestehen.<br>' : '' }}
     {{ customdata.err.keyalreadyexists ? 'Dieser Textschlüssel ist bereits angelegt.<br>' : '' }}
+    {{ customdata.err.invalidcharacter ? 'Dieser Schlüssel enthält ungültige Zeichen, bitte benutzen Sie nur Buchstaben, Zahlen und den Unterstrich ( _ ).<br>' : '' }}
     {% if customdata.addform.key is defined %}
         Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br>
         <a href="/_admin/textcatadmin.php?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>

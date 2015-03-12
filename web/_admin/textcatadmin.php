@@ -35,15 +35,6 @@ $P = array(
 $sH = '';
 
 if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
-    /* obsolete, now uses \HaaseIT\Textcat::getCompleteTextcatForCurrentLang()
-    $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang ORDER BY tc_key";
-    //HaaseIT\Tools::debug($sQ);
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':lang', $sLang);
-    $hResult->execute();
-    $aData = $hResult->fetchAll();
-    */
-
     $aData = \HaaseIT\Textcat::getCompleteTextcatForCurrentLang();
     //HaaseIT\Tools::debug($aData);
 
@@ -62,7 +53,6 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             ),
         ),
     );
-
     $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
 } elseif ($_GET["action"] == 'edit') {
     $P["base"]["cb_customdata"]["edit"] = true;
@@ -87,29 +77,15 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
     );
 } elseif ($_GET["action"] == 'add') {
     $P["base"]["cb_customdata"]["add"] = true;
-    $aErr = array();
     if (isset($_POST["add"]) && $_POST["add"] == 'do') {
-        if (strlen($_POST["key"]) < 3) $aErr["keytooshort"] = true;
-        if (count($aErr) == 0) {
-            $sQ = "SELECT tc_key FROM textcat_base WHERE tc_key = :key";
-            $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':key', $_POST["key"]);
-            $hResult->execute();
-            $iRows = $hResult->rowCount();
-            if ($iRows > 0) $aErr["keyalreadyexists"] = true;
-        }
-        if (count($aErr) == 0) {
-            $aData = array('tc_key' => trim(\HaaseIT\Tools::cED($_POST["key"])),);
-            $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
-            //HaaseIT\Tools::debug($sQ);
-            $DB->exec($sQ);
-            $iId = $DB->lastInsertId();
+        $P["base"]["cb_customdata"]["err"] = \HaaseIT\Textcat::verifyAddTextKey($_POST["key"]);
+
+        if (count($P["base"]["cb_customdata"]["err"]) == 0) {
             $P["base"]["cb_customdata"]["addform"] = array(
                 'key' => $_POST["key"],
-                'id' => $iId,
+                'id' => \HaaseIT\Textcat::addTextKey($_POST["key"]),
             );
         }
-        $P["base"]["cb_customdata"]["err"] = $aErr;
     }
 }
 
