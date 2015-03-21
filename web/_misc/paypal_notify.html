@@ -35,7 +35,7 @@ $P = array(
 if (!$C["enable_module_shop"]) {
     $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
-    include_once('shop/functions.shoppingcart.php');
+    include_once(__DIR__.'/../../src/shop/functions.shoppingcart.php');
 
     $sLogData = '';
 

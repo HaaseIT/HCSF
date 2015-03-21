@@ -40,7 +40,7 @@ if (!$C["enable_module_shop"]) {
     if (!getUserData()) {
         $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
     } else {
-        include_once('shop/functions.shoppingcart.php');
+        include_once(__DIR__.'/../../src/shop/functions.shoppingcart.php');
         $P["base"]["cb_customcontenttemplate"] = 'shop/myorders';
 
         if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
