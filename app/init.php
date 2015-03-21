@@ -67,8 +67,8 @@ if ($C["enable_module_shop"]) {
     define("PATH_PAYPALLOG", PATH_DOCROOT.'_admin/ipnlogs/');
     define("FILE_PAYPALLOG", 'ipnlog.txt');
     $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
-    if (isset($TMP["vat_disable"]) && $TMP["vat_disable"]) {
-        $TMP["vat"] = array("full" => 0, "reduced" => 0);
+    if (isset($C["vat_disable"]) && $C["vat_disable"]) {
+        $C["vat"] = array("full" => 0, "reduced" => 0);
     }
 }
 
