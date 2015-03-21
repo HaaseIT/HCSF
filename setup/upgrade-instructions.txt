@@ -1,3 +1,6 @@
+V2.05
+config.core.yml has a new value in admin_page_types
+constants.fixed.php has changes
 
 V2.03 auf V2.04dev
 config.shop.php changed to config.shop.yml
