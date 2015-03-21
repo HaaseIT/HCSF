@@ -1,36 +1,83 @@
-<div id="itemoverview">{%
-    for thisitem in items.item %}<div class="pure-u-1-3 pure-u-md-1-4">
-    <div class="itemoverview-thumbnail">
-        <a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html"><img class="lazy pure-u-1" data-original="/_img/items/336/{{thisitem.itm_img}}" alt=""></a>
-        <div class="itemoverview-caption">
-            <p style="float: left;"><a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html">
-                    {% if thisitem.itml_name_override|trim == '' %}
-                        {{thisitem.itm_name}}
-                    {% else %}
-                        {{thisitem.itml_name_override}}
-                    {% endif %}
-                </a></p>
-            <p class="pull-right">
-                {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '<span class="sale-listprice">' : '' }}
-                {#Netto: {{thisitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
-                {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
-                {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '</span><br>' : '' }}
-                {% if thisitem.pricedata.netto_sale is defined and (thisitem.pricedata.netto_rebated is not defined or thisitem.pricedata.netto_sale < thisitem.pricedata.netto_rebated) %}
-                    {#Angebotspreis#}
-                    {#Netto: {{thisitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
-                    {#Brutto: #}<span class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
-                {% endif %}
-                {% if thisitem.pricedata.netto_rebated is defined and (thisitem.pricedata.netto_sale is not defined or thisitem.pricedata.netto_rebated < thisitem.pricedata.netto_sale) %}
-                    {#Ihr Preis:<br>#}
-                    {#Netto: {{thisitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
-                    {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
-                {% endif %}
-            </p>
-            <br class="clear">
-        </div>
-    </div>
-    </div>{% endfor %}</div>
-    {{T("misc_disclaimer_prices")}}
+<div id="itemoverview">
+    {% for thisitem in items.item %}
+        {% if thisitem.group is defined %}
+            <div class="pure-u-1">
+                <div class="pure-u-11-12">
+                    {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_name }}<br>
+                    {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_shorttext }}<br>
+                    {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_details }}<br>
+                </div><div class="pure-u-1-12">
+                    <img class="lazy pure-u-1" data-original="/_img/groups/336/{{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_img }}" alt="">
+                </div>
+            </div>
+            {% for thisgroupitem in items.groups[thisitem.group] %}
+                {% if thisgroupitem.type == "itemgroupdata" %}{% else %}
+                <div class="pure-u-1">
+                    <p style="float: left;"><a href="{{path.dirname}}/item/{{thisgroupitem.itm_no}}.html">
+                            {% if thisgroupitem.itml_name_override|trim == '' %}
+                                {{thisgroupitem.itm_name}}
+                            {% else %}
+                                {{thisgroupitem.itml_name_override}}
+                            {% endif %}
+                        </a></p>
+                    <p class="pull-right">
+                        {{ thisgroupitem.pricedata.netto_sale is defined or thisgroupitem.pricedata.netto_rebated is defined ? '<span class="sale-listprice">' : '' }}
+                        {#Netto: {{thisgroupitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
+                        {#Brutto: #}{{thisgroupitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                        {{ thisgroupitem.pricedata.netto_sale is defined or thisgroupitem.pricedata.netto_rebated is defined ? '</span><br>' : '' }}
+                        {% if thisgroupitem.pricedata.netto_sale is defined and (thisgroupitem.pricedata.netto_rebated is not defined or thisgroupitem.pricedata.netto_sale < thisgroupitem.pricedata.netto_rebated) %}
+                            {#Angebotspreis#}
+                            {#Netto: {{thisgroupitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
+                            {#Brutto: #}<span class="salesprice">{{thisgroupitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                        {% endif %}
+                        {% if thisgroupitem.pricedata.netto_rebated is defined and (thisgroupitem.pricedata.netto_sale is not defined or thisgroupitem.pricedata.netto_rebated < thisgroupitem.pricedata.netto_sale) %}
+                            {#Ihr Preis:<br>#}
+                            {#Netto: {{thisgroupitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
+                            {#Brutto: #}{{thisgroupitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                        {% endif %}
+                    </p>
+                    <br class="clear">
+                </div>
+                    {% endif %}{% endfor %}
+            <div class="pure-u-1">----</div>
+        {% else %}
+            <div class="pure-u-1">
+                <div class="pure-u-11-12">
+                    <div class="itemoverview-caption">
+                        <p style="float: left;"><a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html">
+                                {% if thisitem.itml_name_override|trim == '' %}
+                                    {{thisitem.itm_name}}
+                                {% else %}
+                                    {{thisitem.itml_name_override}}
+                                {% endif %}
+                            </a></p>
+                        <p class="pull-right">
+                            {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '<span class="sale-listprice">' : '' }}
+                            {#Netto: {{thisitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
+                            {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                            {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '</span><br>' : '' }}
+                            {% if thisitem.pricedata.netto_sale is defined and (thisitem.pricedata.netto_rebated is not defined or thisitem.pricedata.netto_sale < thisitem.pricedata.netto_rebated) %}
+                                {#Angebotspreis#}
+                                {#Netto: {{thisitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
+                                {#Brutto: #}<span class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                            {% endif %}
+                            {% if thisitem.pricedata.netto_rebated is defined and (thisitem.pricedata.netto_sale is not defined or thisitem.pricedata.netto_rebated < thisitem.pricedata.netto_sale) %}
+                                {#Ihr Preis:<br>#}
+                                {#Netto: {{thisitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
+                                {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                            {% endif %}
+                        </p>
+                        <br class="clear">
+                    </div>
+                </div><div class="pure-u-1-12">
+                    <img class="lazy pure-u-1" data-original="/_img/items/336/{{thisitem.itm_img}}" alt="">
+                </div>
+
+                <div class="pure-u-1">----</div>
+            </div>{% endif %}{%
+    endfor %}
+</div>
+{{T("misc_disclaimer_prices")}}
 {#
 No: {{thisitem.itm_no}}<br>
 Vatid: {{thisitem.itm_vatid}}<br>

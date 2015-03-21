@@ -111,10 +111,16 @@ class Item
             }
             $aRow["pricedata"] = $this->calcPrice($aRow);
 
-            if (\trim($aRow[DB_ITEMFIELD_GROUP]) == 0 || $bEnableItemGroups) {
+            if (\trim($aRow[DB_ITEMFIELD_GROUP]) == 0 || !$bEnableItemGroups) {
                 $aAssembly["item"][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
             } else {
-                $aAssembly["groups"][$aRow[DB_ITEMFIELD_GROUP]][] = $aRow[DB_ITEMFIELD_NUMBER];
+                if (isset($aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]])) {
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+                } else {
+                    $aAssembly["item"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]]["group"] = "ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP];
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]]["ITEMGROUP-DATA"] = $this->getGroupdata($aRow[DB_ITEMFIELD_GROUP]);
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+                }
             }
         }
 
@@ -145,7 +151,9 @@ class Item
         $hResult->execute();
         // HaaseIT\Tools::debug($DB->error());
 
-        return $hResult->fetch();
+        $aRow = $hResult->fetch();
+        $aRow["type"] = 'itemgroupdata';
+        return $aRow;
     }
 
     function calcPrice($aData)
