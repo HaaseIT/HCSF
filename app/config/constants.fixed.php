@@ -97,7 +97,7 @@ define("DB_ITEMGROUPTABLE_TEXT_PARENTPKEY", 'itmgt_pid');
 define("DB_ITEMGROUPFIELD_SHORTTEXT", 'itmgt_shorttext');
 define("DB_ITEMGROUPFIELD_DETAILS", 'itmgt_details');
 define("DB_ITEMGROUPFIELD_LANGUAGE", 'itmgt_lang');
-define("DB_ITEMGROUPFIELDS", 'itmg_no, itmg_name, itmg_imgsm, itmg_imglg, itmgt_shorttext, itmgt_details');
+define("DB_ITEMGROUPFIELDS", 'itmg_no, itmg_name, itmg_img, itmgt_shorttext, itmgt_details');
 
 define("DB_ORDERTABLE", 'orders');
 define("DB_ORDERTABLE_PKEY", 'o_id');
