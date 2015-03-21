@@ -98,58 +98,60 @@ import "macros.twig" as macro %}<!DOCTYPE html>
         </div>
     </div>
 </div>
-<div class="pure-g" id="row-topnav">
-    <div class="container">
-        <div class="fs pure-menu-horizontal">
-            <ul id="topnav">
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie1/" id="topnav-1"{{ subnavkey == 'category1' ? ' class="active"' : '' }}>{{ T("topnav_category1") }}</a>
-                    {% if subnavkey == 'category1' %}
-                        <ul id="topnav-sub">
-                        {% if subnav is defined %}
-                            {% for title, link in subnav %}
-                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
-                            {% endfor %}
-                        {% endif %}
-                        </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie2/" id="topnav-2"{{ subnavkey == 'category2' ? ' class="active"' : '' }}>{{ T("topnav_category2") }}</a>
-                    {% if subnavkey == 'category2' %}
-                        <ul id="topnav-sub">
-                        {% if subnav is defined %}
-                            {% for title, link in subnav %}
-                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
-                            {% endfor %}
-                        {% endif %}
-                        </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie3/" id="topnav-3"{{ subnavkey == 'category3' ? ' class="active"' : '' }}>{{ T("topnav_category3") }}</a>
-                    {% if subnavkey == 'category3' %}
-                        <ul id="topnav-sub">
-                        {% if subnav is defined %}
-                            {% for title, link in subnav %}
-                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
-                            {% endfor %}
-                        {% endif %}
-                        </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie4/" id="topnav-4"{{ subnavkey == 'category4' ? ' class="active"' : '' }}>{{ T("topnav_category4") }}</a>
-                    {% if subnavkey == 'category4' %}
-                        <ul id="topnav-sub">
-                        {% if subnav is defined %}
-                            {% for title, link in subnav %}
-                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
-                            {% endfor %}
-                        {% endif %}
-                        </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie5/" id="topnav-5"{{ subnavkey == 'category5' ? ' class="active"' : '' }}>{{ T("topnav_category5") }}</a>
-                    {% if subnavkey == 'category5' %}
-                        <ul id="topnav-sub">
-                        {% if subnav is defined %}
-                            {% for title, link in subnav %}
-                                <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
-                            {% endfor %}
-                        {% endif %}
-                        </ul>{% endif %}</li>
-                <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
-                <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
-            </ul>
+<div class="pure-g">
+    <div id="row-topnav" class="pure-u-1">
+        <div class="container">
+            <div class="fs pure-menu-horizontal">
+                <ul id="topnav">
+                    <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie1/" id="topnav-1"{{ subnavkey == 'category1' ? ' class="active"' : '' }}>{{ T("topnav_category1") }}</a>
+                        {% if subnavkey == 'category1' %}
+                            <ul id="topnav-sub">
+                            {% if subnav is defined %}
+                                {% for title, link in subnav %}
+                                    <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            </ul>{% endif %}</li>
+                    <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie2/" id="topnav-2"{{ subnavkey == 'category2' ? ' class="active"' : '' }}>{{ T("topnav_category2") }}</a>
+                        {% if subnavkey == 'category2' %}
+                            <ul id="topnav-sub">
+                            {% if subnav is defined %}
+                                {% for title, link in subnav %}
+                                    <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            </ul>{% endif %}</li>
+                    <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie3/" id="topnav-3"{{ subnavkey == 'category3' ? ' class="active"' : '' }}>{{ T("topnav_category3") }}</a>
+                        {% if subnavkey == 'category3' %}
+                            <ul id="topnav-sub">
+                            {% if subnav is defined %}
+                                {% for title, link in subnav %}
+                                    <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            </ul>{% endif %}</li>
+                    <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie4/" id="topnav-4"{{ subnavkey == 'category4' ? ' class="active"' : '' }}>{{ T("topnav_category4") }}</a>
+                        {% if subnavkey == 'category4' %}
+                            <ul id="topnav-sub">
+                            {% if subnav is defined %}
+                                {% for title, link in subnav %}
+                                    <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            </ul>{% endif %}</li>
+                    <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie5/" id="topnav-5"{{ subnavkey == 'category5' ? ' class="active"' : '' }}>{{ T("topnav_category5") }}</a>
+                        {% if subnavkey == 'category5' %}
+                            <ul id="topnav-sub">
+                            {% if subnav is defined %}
+                                {% for title, link in subnav %}
+                                    <li class="pure-u-1"><a href="{{link}}"{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} class="active"{% endif %}>{{title}}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            </ul>{% endif %}</li>
+                    <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
+                    <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -187,6 +189,11 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                                     <div class="fs">
                                         {{content}}
                                         {% include 'shop/items-overview.twig' %}
+                                    </div>
+                                {% elseif pagetype == 'itemoverviewgrpd' %}
+                                    <div class="fs">
+                                        {{content}}
+                                        {% include 'shop/items-overview-grouped.twig' %}
                                     </div>
                                 {% elseif pagetype == 'itemdetail' %}
                                     <div class="fs">

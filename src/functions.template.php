@@ -90,7 +90,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_page_not_found");
         header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
     } elseif (isset($P["base"]) && !isset($P["lang"])) {
-        if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail') {
+        if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail') {
             $P["lang"]["cl_html"] = '';
         } else {
             $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_content_not_found");
@@ -173,17 +173,17 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         $aP["countrylist"][] = $sKey.'|'.$sValue;
     }
 
-    if ($C["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemdetail')) {
+    if ($C["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
         if (isset($P["base"]["cb_pageconfig"]["itemindex"])) {
             $mItemIndex = $P["base"]["cb_pageconfig"]["itemindex"];
         } else {
             $mItemIndex = '';
         }
-        $aP["items"] = $oItem->sortItems($mItemIndex);
+        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
         if ($aP["pagetype"] == 'itemdetail') {
 
             // Todo: move building of paths for itemindexes to better location
-            $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." WHERE cb_pagetype = 'itemoverview'";
+            $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
             $oQuery = $DB->query($sQ);
             while ($aRow = $oQuery->fetch()) {
                 $aItemoverviewpages[] = array(
@@ -265,7 +265,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                             }
                             //HaaseIT\Tools::debug($aSuggestionsToLoad, '$aSuggestionsToLoad');
                             if (isset($aSuggestionsToLoad)) { // if there are not yet loaded suggestions, load them
-                                $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad);
+                                $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad, false);
                                 //HaaseIT\Tools::debug($aItemsNotInCategory, '$aItemsNotInCategory');
                                 if (isset($aItemsNotInCategory)) { // merge loaded and newly loaded items
                                     $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);

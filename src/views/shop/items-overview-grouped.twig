@@ -1,0 +1,59 @@
+<div id="itemoverview">{%
+    for thisitem in items.item %}<div class="pure-u-1-3 pure-u-md-1-4">
+    <div class="itemoverview-thumbnail">
+        <a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html"><img class="lazy pure-u-1" data-original="/_img/items/336/{{thisitem.itm_img}}" alt=""></a>
+        <div class="itemoverview-caption">
+            <p style="float: left;"><a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html">
+                    {% if thisitem.itml_name_override|trim == '' %}
+                        {{thisitem.itm_name}}
+                    {% else %}
+                        {{thisitem.itml_name_override}}
+                    {% endif %}
+                </a></p>
+            <p class="pull-right">
+                {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '<span class="sale-listprice">' : '' }}
+                {#Netto: {{thisitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
+                {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '</span><br>' : '' }}
+                {% if thisitem.pricedata.netto_sale is defined and (thisitem.pricedata.netto_rebated is not defined or thisitem.pricedata.netto_sale < thisitem.pricedata.netto_rebated) %}
+                    {#Angebotspreis#}
+                    {#Netto: {{thisitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
+                    {#Brutto: #}<span class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                {% endif %}
+                {% if thisitem.pricedata.netto_rebated is defined and (thisitem.pricedata.netto_sale is not defined or thisitem.pricedata.netto_rebated < thisitem.pricedata.netto_sale) %}
+                    {#Ihr Preis:<br>#}
+                    {#Netto: {{thisitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
+                    {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                {% endif %}
+            </p>
+            <br class="clear">
+        </div>
+    </div>
+    </div>{% endfor %}</div>
+    {{T("misc_disclaimer_prices")}}
+{#
+No: {{thisitem.itm_no}}<br>
+Vatid: {{thisitem.itm_vatid}}<br>
+Rebategroup: {{thisitem.itm_rg}}<br>
+Imglarge: {{thisitem.itm_imglg}}<br>
+Group: {{thisitem.itm_group}}<br>
+Short text: {{thisitem.itml_shorttext}}<br>
+Details: {{thisitem.itml_details}}<br>
+#}
+{#
+
+foreach ( $aData["artikel"] as $aRow ) {
+if ( isset( $aRow["group"] ) && trim( $aRow["group"] ) != "" ) { // if gruppe
+$sH .= $this->showGroup( $aRow, $aData["groups"], $j, $bShowprices );
+$j++;
+} else { // endif gruppe - else
+$sH .= $this->showItem( $aRow, $i, $bShowprices );
+$i++;
+}
+}
+
+if ( $this->C["show_pricesonlytologgedin"] ) {
+if ( getUserData() ) $bShowprices = true;
+else $bShowprices = false;
+} else $bShowprices = true;
+#}

@@ -101,7 +101,7 @@ class Item
         return $sQ;
     }
 
-    function sortItems($mItemIndex = '', $mItemno = '')
+    function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
     {
         $hResult = $this->queryItem($mItemIndex, $mItemno);
 
@@ -110,8 +110,10 @@ class Item
                 $aRow[DB_ITEMFIELD_DATA] = \json_decode($aRow[DB_ITEMFIELD_DATA], true);
             }
             $aRow["pricedata"] = $this->calcPrice($aRow);
-            $aAssembly["item"][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
-            if (\trim($aRow[DB_ITEMFIELD_GROUP]) != 0) {
+
+            if (\trim($aRow[DB_ITEMFIELD_GROUP]) == 0 || $bEnableItemGroups) {
+                $aAssembly["item"][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+            } else {
                 $aAssembly["groups"][$aRow[DB_ITEMFIELD_GROUP]][] = $aRow[DB_ITEMFIELD_NUMBER];
             }
         }

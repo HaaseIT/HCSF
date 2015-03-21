@@ -42,6 +42,7 @@ admin_page_types:
     - content
     - contentnosubnav
     - itemoverview
+    - itemoverviewgrpd
 locale_format_date: d.m.Y
 locale_format_date_time: 'd.m.Y H:i'
 defaultcountrybylang:
