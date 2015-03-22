@@ -29,7 +29,16 @@ if (ini_get('session.auto_start') == 1) {
     die('Please disable session.autostart for this to work.');
 }
 
-if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+include_once(__DIR__.'/../vendor/autoload.php');
+
+use Symfony\Component\Yaml\Yaml;
+
+// Load core config
+include_once(__DIR__.'/config/constants.fixed.php');
+$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
+if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+
+if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
     ini_set('session.use_only_cookies', 0); // TODO find another way to pass session when language detection == domain
@@ -42,15 +51,6 @@ if (isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
         session_start();
     }
 }
-
-include_once(__DIR__.'/../vendor/autoload.php');
-
-use Symfony\Component\Yaml\Yaml;
-
-// Load core config
-include_once(__DIR__.'/config/constants.fixed.php');
-$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
-if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 
 define("DIRNAME_IMAGES", '_img/');
 define("DIRNAME_ITEMS", 'items/');
