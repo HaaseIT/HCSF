@@ -1,9 +1,12 @@
-V2.05
+2.06
+text from textcats can now be deleted, haaseit/toolbox 1.2.2 is now required.
+
+2.05
 itemgroups are now back, template is still very basic
 fixed wrong include paths in some files in web/_misc directory
 fixed vat_disable not working
 
-V2.03 auf V2.04dev
+2.03 auf 2.04dev
 config.shop.php changed to config.shop.yml
 config.core.php changed to config.core.yml
 config.countries.php changed to config.countries.yml
