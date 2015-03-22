@@ -149,7 +149,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             {% endif %}
                             </ul>{% endif %}</li>
                     <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
-                    <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
+                    <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"{{ requesturi == '/_misc/login.html' ? ' class="active"' : '' }}><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
                 </ul>
             </div>
         </div>
