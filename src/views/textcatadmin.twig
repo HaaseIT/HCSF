@@ -2,6 +2,7 @@
     Der Wert wurde aktualisiert ({{ macro.showClienttime() }}).
 {% endif %}
 {% if customdata.edit %}
+    <p>
     <form action="/_admin/textcatadmin.php?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat">
         <input type="hidden" name="edit" value="do">
         <input type="hidden" name="lid" value="{{ customdata.editform.lid }}">
@@ -12,6 +13,16 @@
         <br>
         <input type="submit" value="Submit" style="width:578px;" accesskey="s">
     </form>
+    </p>
+    <p>
+    <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat">
+        <input type="checkbox" name="delete" value="do"> Ich möchte diesen Text in allen Sprachen löschen
+        <br>
+        <input type="submit" value="Löschen" style="width:578px;" accesskey="s">
+    </form>
+    </p>
+{% elseif customdata.deleted %}
+    Der Text wurde gelöscht.
 {% elseif customdata.add %}
     {{ customdata.err.keytooshort ? 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>' : '' }}
     {{ customdata.err.keytoolong ? 'Der Textschlüssel darf aus höchstens 64 Zeichen bestehen.<br>' : '' }}

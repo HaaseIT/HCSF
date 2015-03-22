@@ -54,27 +54,32 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
         ),
     );
     $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
-} elseif ($_GET["action"] == 'edit') {
-    $P["base"]["cb_customdata"]["edit"] = true;
-    //\HaaseIT\Tools::debug($_REQUEST);
+} elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
+    if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
+        \HaaseIT\Textcat::deleteText($_GET["id"]);
+        $P["base"]["cb_customdata"]["deleted"] = true;
+    } else {
+        $P["base"]["cb_customdata"]["edit"] = true;
+        //\HaaseIT\Tools::debug($_REQUEST);
 
-    \HaaseIT\Textcat::initTextIfVoid($_GET["id"]);
+        \HaaseIT\Textcat::initTextIfVoid($_GET["id"]);
 
-    // if post:edit is set, update
-    if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-        \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
-        $P["base"]["cb_customdata"]["updated"] = true;
+        // if post:edit is set, update
+        if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
+            \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
+            $P["base"]["cb_customdata"]["updated"] = true;
+        }
+
+        $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
+        //HaaseIT\Tools::debug($aData);
+        $P["base"]["cb_customdata"]["editform"] = array(
+            'id' => $aData["tc_id"],
+            'lid' => $aData["tcl_id"],
+            'key' => $aData["tc_key"],
+            'lang' => $aData["tcl_lang"],
+            'text' => $aData["tcl_text"],
+        );
     }
-
-    $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
-    //HaaseIT\Tools::debug($aData);
-    $P["base"]["cb_customdata"]["editform"] = array(
-        'id' => $aData["tc_id"],
-        'lid' => $aData["tcl_id"],
-        'key' => $aData["tc_key"],
-        'lang' => $aData["tcl_lang"],
-        'text' => $aData["tcl_text"],
-    );
 } elseif ($_GET["action"] == 'add') {
     $P["base"]["cb_customdata"]["add"] = true;
     if (isset($_POST["add"]) && $_POST["add"] == 'do') {
