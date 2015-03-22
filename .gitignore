@@ -4,7 +4,6 @@ logs
 users
 app/config/config.navi.php
 app/config/config.customer.yml
-app/config/config.shop.php
 vendor
 setup/important.txt
 app/config/config.scrts.yml
