@@ -204,6 +204,10 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                                         {{content}}
                                     </div>
                                 {% endif %}
+                            {% else %}
+                                <div class="fs">
+                                    {{content}}
+                                </div>
                             {% endif %}
                         {% endif %}
                     </div>
