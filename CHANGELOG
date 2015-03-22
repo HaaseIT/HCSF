@@ -1,5 +1,6 @@
 
 fix: base.twig: no content was shown if enable_shop == false
+change: init.php: session is now only started when enable_module_customer == true, not needed if this is false
 
 2.0.6
 text from textcats can now be deleted, haaseit/toolbox 1.2.2 is now required.
