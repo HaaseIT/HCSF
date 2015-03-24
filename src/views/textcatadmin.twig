@@ -16,7 +16,7 @@
     </p>
     <p>
     <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat">
-        <input type="checkbox" name="delete" value="do"> Ich möchte diesen Text in allen Sprachen löschen
+        <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> <label for="textcat-delete-confirm">Ich möchte diesen Text in allen Sprachen löschen</label>
         <br>
         <input type="submit" value="Löschen" style="width:578px;" accesskey="s">
     </form>
@@ -35,8 +35,8 @@
     <br>
     <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext">
     <input type="hidden" name="add" value="do">
-    Neuen Textschlüssel hinzufügen<br>
-    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" style="width:350px;">
+    <label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen</label><br>
+    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" style="width:350px;" id="textcat-add-textkey">
     <input type="submit" name="submit" value="Submit" class="formsubmit">
     </form>
 {% else %}
