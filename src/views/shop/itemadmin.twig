@@ -1,24 +1,26 @@
-<form action="/_admin/shop/itemadmin.php" method="GET">
+<style type="text/css">
+    .formfieldwithpadding{width: calc(100% - 0.5em)}
+    .formfieldwithoutpadding{width: 100%}
+    #itemadmin-data{height: 230px;}
+    #itemadmin-text1{height: 230px;}
+    #itemadmin-text2{height: 230px;}
+</style>
+<form action="/_admin/shop/itemadmin.php" method="GET" class="pure-form">
     <input type="hidden" name="action" value="search">
     <fieldset name="itemsearch">
         <legend>Artikelsuche</legend>
-        <table>
-            <tr>
-                <td><label for="itemadmin-searchstring">Search for:</label><br><input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" style="width:200px;"></td>
-                <td>
-                    <label for="itemadmin-searchcats">Search in:</label><br>
-                    {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats') }}
-                </td>
-                <td>
-                    <label for="itemadmin-orderby">Order by:</label><br>
-                    {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby') }}
-                </td>
-                <td><br><input type="submit" value="Submit" style="width:100px;"></td>
-            </tr>
-        </table>
+
+        <div class="pure-u-5-24"><label for="itemadmin-searchstring">Search for:</label><br>
+            <input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" class="formfieldwithpadding"></div><div
+            class="pure-u-4-24"><label for="itemadmin-searchcats">Search in:</label><br>
+            {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats', 'formfieldwithpadding') }}</div><div
+            class="pure-u-4-24"><label for="itemadmin-orderby">Order by:</label><br>
+            {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby', 'formfieldwithpadding') }}</div><div
+            class="pure-u-4-24"><br><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button></div>
+
     </fieldset>
 </form>
-<br>
+<hr>
 {% if customdata.itemupdated %}
     <b>Der Artikel wurde aktualisiert ({{ macro.showClientTime() }}).</b><br><br>
 {% endif %}
@@ -29,93 +31,48 @@
     Displaying {{ customdata.itemlist.numrows }} results:<br><br>
     {{ customdata.itemlist.listtable }}
 {% elseif customdata.item is defined %}
-    <style type="text/css">
-        #itemadmin-itemno{width: 120px;}
-        #itemadmin-name{width: 520px;}
-        #itemadmin-img{width: 400px;}
-        #itemadmin-price{width: 100px;}
-        #itemadmin-vatid{width: 70px;}
-        #itemadmin-rg{width: 70px;}
-        #itemadmin-index{width: 330px;}
-        #itemadmin-prio{width: 60px;}
-        #itemadmin-group{width: 250px;}
-        #itemadmin-data{width: 640px;height: 230px;}
-        #itemadmin-nameoverrride{width: 640px;}
-        #itemadmin-text1{width: 640px;height: 230px;}
-        #itemadmin-text2{width: 640px;height: 230px;}
-        #itemadmin-submit{width: 640px;}
-    </style>
-    <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin">
+    <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin" class="pure-form pure-form-stacked">
         <input type="hidden" name="id" value="{{ customdata.item.id }}">
         <input type="hidden" name="doaction" value="edititem">
         <fieldset name="itemadmin-base">
             <legend>Sprachunabhängig</legend>
-            <table>
-                <tr>
-                    <td>
-                        Artikelnr:<br>
-                        <input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly>
-                    </td>
-                    <td>
-                        Artikelname:<br>
-                        <input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name">
-                    </td>
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    <td>
-                        Artikelbild:<br>
-                        <input type="text" name="bild" value="{{ customdata.item.img }}" id="itemadmin-img">
-                    </td>
-                    <td>
-                        Artikelpreis:<br>
-                        <input type="text" name="price" value="{{ customdata.item.price }}" id="itemadmin-price">
-                    </td>
-                    {% if customdata.item.vatoptions is defined %}
-                        <td>
-                            MwSt:<br>
-                            {{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vatid') }}
-                        </td>
-                    {% endif %}
-                    <td>
-                        RG:<br>
-                        {{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg') }}
-                    </td>
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    <td>
-                        Artikelindex:<br>
-                        <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index">
-                    </td>
-                    <td>
-                        Prio:<br>
-                        <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio">
-                    </td>
-                    <td>
-                        Artikelgruppe:<br>
-                        {{ macro.select('group', customdata.item.groupoptions, customdata.item.group, 'itemadmin-group') }}
-                    </td>
-                </tr>
-            </table>
-            Zusatzdaten (JSON):<br>
-            <textarea name="data", rows="10" cols="100" id="itemadmin-data">{{ customdata.item.data }}</textarea>
+
+            <div class="pure-u-3-24"><label for="itemadmin-itemno">Artikelnr:</label><input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly class="formfieldwithpadding"></div><div
+                    class="pure-u-21-24"><label for="itemadmin-name">Artikelname:</label><input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name" class="formfieldwithoutpadding"></div>
+
+            <div class="pure-u-1-2"><label for="itemadmin-img">Artikelbild:</label><input type="text" name="bild" value="{{ customdata.item.img }}" class="formfieldwithpadding" id="itemadmin-img"></div><div
+                    class="pure-u-3-24"><label for="itemadmin-price">Preis:</label><input type="text" name="price" value="{{ customdata.item.price }}" class="formfieldwithpadding" id="itemadmin-price"></div>{%
+            if customdata.item.vatoptions is defined %}<div
+                    class="pure-u-3-24"><label for="itemadmin-vat">MwSt:</label>{{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vat', 'formfieldwithpadding') }}</div>{%
+            endif %}<div class="pure-u-3-24"><label for="itemadmin-rg">RG:</label>{{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg', 'formfieldwithpadding') }}</div><div
+                    class="pure-u-3-24"><label for="itemadmin-weight">Gewicht (g):</label><input type="text" name="weight" value="{{ customdata.item.weight }}" class="formfieldwithoutpadding" id="itemadmin-weight"></div>
+
+            <div class="pure-u-1-2"><label for="itemadmin-index">Artikelindex:</label>
+                <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index" class="formfieldwithpadding"></div><div
+                class="pure-u-3-24"><label for="itemadmin-prio">Prio:</label>
+                <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio" class="formfieldwithpadding"></div><div
+                class="pure-u-9-24"><label for="itemadmin-group">Artikelgruppe:</label>
+                {{ macro.select('group', customdata.item.groupoptions, customdata.item.group, 'itemadmin-group', 'formfieldwithoutpadding') }}</div>
+
+            <div class="pure-u-1"><label for="itemadmin-data">Zusatzdaten (JSON):</label>
+            <textarea name="data" id="itemadmin-data" class="formfieldwithoutpadding">{{ customdata.item.data }}</textarea></div>
+
         </fieldset>
+
         {% if customdata.item.lang is defined %}
-            <br>
             <fieldset name="itemadmin-lang">
                 <legend>Sprachspezifisch</legend>
                 <input type="hidden" name="textid" value="{{ customdata.item.lang.textid }}">
-                Name override:<br>
-                <input type="text" name="name_override" value="{{ customdata.item.lang.nameoverride }}" id="itemadmin-nameoverrride">
-                <br>
-                Text 1:<br>
-                <textarea name="text1" rows="10" cols="100" id="itemadmin-text1">{{ customdata.item.lang.text1 }}</textarea>
-                <br>
-                Text 2:<br>
-                <textarea name="text2" rows="10" cols="100" id="itemadmin-text2">{{ customdata.item.lang.text2 }}</textarea>
+
+                <div class="pure-u-1"><label for="itemadmin-nameoverrride">Name override:</label>
+                    <input type="text" name="name_override" value="{{ customdata.item.lang.nameoverride }}" id="itemadmin-nameoverrride" class="formfieldwithoutpadding"></div>
+
+                <div class="pure-u-1"><label for="itemadmin-text1">Text 1:</label>
+                <textarea name="text1" id="itemadmin-text1" class="formfieldwithoutpadding">{{ customdata.item.lang.text1 }}</textarea></div>
+
+                <div class="pure-u-1"><label for="itemadmin-text2">Text 2:</label>
+                <textarea name="text2" id="itemadmin-text2" class="formfieldwithoutpadding">{{ customdata.item.lang.text2 }}</textarea></div>
+
             </fieldset>
         {% else %}
             <br>
@@ -124,7 +81,7 @@
             <br>
             <br>
         {% endif %}
-        <input type="submit" value="Submit" id="itemadmin-submit">
+        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding" id="itemadmin-submit">Submit</button>
     </form>
     <pre>
 Zusatzdaten:
@@ -149,11 +106,10 @@ Keine Zeilenumbrüche in Zeichenketten, sonst funktioniert das ganze nicht!
 {% elseif customdata.showaddform %}
     {{ customdata.err.itemnotooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br><br>' : '' }}
     {{ customdata.err.itemnoalreadytaken ? 'Diese Artikelnummer ist bereits vergeben.<br><br>' : '' }}
-    Artikelnummer:<br>
-    <form action="/_admin/shop/itemadmin.php?action=additem" method="POST" name="additem">
+    <form action="/_admin/shop/itemadmin.php?action=additem" method="POST" name="additem" class="pure-form">
         <input type="hidden" name="additem" value="do">
-        <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext">
-        <input type="submit" name="" value="Submit" class="formsubmit">
+        <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext" id="itemadmin-add-itemno" placeholder="Artikelnummer">
+        <button type="submit" class="pure-button pure-button-primary">Artikel anlegen</button>
     </form>
 {% else %}
     <a href="/_admin/shop/itemadmin.php?action=additem">[Artikel hinzufügen]</a><br>
