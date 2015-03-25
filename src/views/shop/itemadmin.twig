@@ -1,6 +1,4 @@
 <style type="text/css">
-    .formfieldwithpadding{width: calc(100% - 0.5em)}
-    .formfieldwithoutpadding{width: 100%}
     #itemadmin-data{height: 230px;}
     #itemadmin-text1{height: 230px;}
     #itemadmin-text2{height: 230px;}
@@ -11,11 +9,11 @@
         <legend>Artikelsuche</legend>
 
         <div class="pure-u-5-24"><label for="itemadmin-searchstring">Search for:</label><br>
-            <input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" class="formfieldwithpadding"></div><div
+            <input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" class="formfieldwithpaddingright"></div><div
             class="pure-u-4-24"><label for="itemadmin-searchcats">Search in:</label><br>
-            {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats', 'formfieldwithpadding') }}</div><div
+            {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats', 'formfieldwithpaddingright') }}</div><div
             class="pure-u-4-24"><label for="itemadmin-orderby">Order by:</label><br>
-            {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby', 'formfieldwithpadding') }}</div><div
+            {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby', 'formfieldwithpaddingright') }}</div><div
             class="pure-u-4-24"><br><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button></div>
 
     </fieldset>
@@ -37,20 +35,20 @@
         <fieldset name="itemadmin-base">
             <legend>Sprachunabhängig</legend>
 
-            <div class="pure-u-3-24"><label for="itemadmin-itemno">Artikelnr:</label><input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly class="formfieldwithpadding"></div><div
+            <div class="pure-u-3-24"><label for="itemadmin-itemno">Artikelnr:</label><input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly class="formfieldwithpaddingright"></div><div
                     class="pure-u-21-24"><label for="itemadmin-name">Artikelname:</label><input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name" class="formfieldwithoutpadding"></div>
 
-            <div class="pure-u-1-2"><label for="itemadmin-img">Artikelbild:</label><input type="text" name="bild" value="{{ customdata.item.img }}" class="formfieldwithpadding" id="itemadmin-img"></div><div
-                    class="pure-u-3-24"><label for="itemadmin-price">Preis:</label><input type="text" name="price" value="{{ customdata.item.price }}" class="formfieldwithpadding" id="itemadmin-price"></div>{%
+            <div class="pure-u-1-2"><label for="itemadmin-img">Artikelbild:</label><input type="text" name="bild" value="{{ customdata.item.img }}" class="formfieldwithpaddingright" id="itemadmin-img"></div><div
+                    class="pure-u-3-24"><label for="itemadmin-price">Preis:</label><input type="text" name="price" value="{{ customdata.item.price }}" class="formfieldwithpaddingright" id="itemadmin-price"></div>{%
             if customdata.item.vatoptions is defined %}<div
-                    class="pure-u-3-24"><label for="itemadmin-vat">MwSt:</label>{{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vat', 'formfieldwithpadding') }}</div>{%
-            endif %}<div class="pure-u-3-24"><label for="itemadmin-rg">RG:</label>{{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg', 'formfieldwithpadding') }}</div><div
+                    class="pure-u-3-24"><label for="itemadmin-vat">MwSt:</label>{{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vat', 'formfieldwithpaddingright') }}</div>{%
+            endif %}<div class="pure-u-3-24"><label for="itemadmin-rg">RG:</label>{{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg', 'formfieldwithpaddingright') }}</div><div
                     class="pure-u-3-24"><label for="itemadmin-weight">Gewicht (g):</label><input type="text" name="weight" value="{{ customdata.item.weight }}" class="formfieldwithoutpadding" id="itemadmin-weight"></div>
 
             <div class="pure-u-1-2"><label for="itemadmin-index">Artikelindex:</label>
-                <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index" class="formfieldwithpadding"></div><div
+                <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index" class="formfieldwithpaddingright"></div><div
                 class="pure-u-3-24"><label for="itemadmin-prio">Prio:</label>
-                <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio" class="formfieldwithpadding"></div><div
+                <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio" class="formfieldwithpaddingright"></div><div
                 class="pure-u-9-24"><label for="itemadmin-group">Artikelgruppe:</label>
                 {{ macro.select('group', customdata.item.groupoptions, customdata.item.group, 'itemadmin-group', 'formfieldwithoutpadding') }}</div>
 
