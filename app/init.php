@@ -181,7 +181,7 @@ include_once(__DIR__.'/config/config.navi.php');
 if ($C["enable_module_customer"]) include_once(__DIR__.'/../src/customer/functions.customer.php');
 
 if ($C["enable_module_shop"]) {
-    include_once(__DIR__ . '/../src/shop/Item.php');
+    include_once(__DIR__ . '/../src/shop/Items.php');
     include_once(__DIR__ . '/../src/shop/functions.shoppingcart.php');
 
     $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
