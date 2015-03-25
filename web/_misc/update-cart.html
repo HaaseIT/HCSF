@@ -87,7 +87,7 @@ if (!$C["enable_module_shop"]) {
                         }
                     }
                 }
-                // if this Item is not in cart and amount is 0, no need to do anything, return to referer
+                // if this Items is not in cart and amount is 0, no need to do anything, return to referer
                 if (!isset($_SESSION["cart"][$sCartKey]) && $iAmount == 0) {
                     if (isset($_REQUEST["ajax"])) {
                         $aAR = array(

@@ -184,7 +184,7 @@ if ($C["enable_module_shop"]) {
     include_once(__DIR__ . '/../src/shop/Item.php');
     include_once(__DIR__ . '/../src/shop/functions.shoppingcart.php');
 
-    $oItem = new \HaaseIT\Shop\Item($C, $DB, $sLang);
+    $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
 } else {
     $oItem = '';
 }

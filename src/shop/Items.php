@@ -20,7 +20,7 @@
 
 namespace HaaseIT\Shop;
 
-class Item
+class Items
 {
     private $C;
     //private $P;
