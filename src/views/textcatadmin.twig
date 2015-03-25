@@ -33,10 +33,10 @@
         <a href="/_admin/textcatadmin.php?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
     {% endif %}
     <br>
-    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext">
+    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext" class="pure-form pure-form-stacked">
     <input type="hidden" name="add" value="do">
-    <label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen</label><br>
-    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" style="width:350px;" id="textcat-add-textkey">
+        <div class="pure-u-1-2"><label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen:</label>
+    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" id="textcat-add-textkey" placeholder="Textschlüssel"></div>
     <input type="submit" name="submit" value="Submit" class="formsubmit">
     </form>
 {% else %}

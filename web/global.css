@@ -46,6 +46,9 @@ body{background: #000;}
 .formerror, #customerform-errortext{background-color: #ffd3d3;}
 pre.debug{background: #fff; border:2px solid red;padding:1em;}
 
+.formfieldwithpaddingright{width: calc(100% - 0.5em)}
+.formfieldwithoutpadding{width: 100%}
+
 .modal{width: 24em !important; margin-left:-12em !important;}
 
 .hidden-sm{display: none;}
