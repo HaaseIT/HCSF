@@ -146,6 +146,7 @@ function admin_prepareItem($aItemdata, $C, $DB, $sLang)
         'prio' => $aItemdata["base"][DB_ITEMFIELD_ORDER],
         'group' => $aItemdata["base"][DB_ITEMFIELD_GROUP],
         'data' => $aItemdata["base"][DB_ITEMFIELD_DATA],
+        'weight' => $aItemdata["base"][DB_ITEMFIELD_WEIGHT],
     );
 
     if (!$C["vat_disable"]) {
@@ -185,6 +186,7 @@ function admin_updateItem($C, $DB)
         DB_ITEMFIELD_PRICE => $_REQUEST["price"],
         DB_ITEMFIELD_RG => $_REQUEST["rg"],
         DB_ITEMFIELD_DATA => $_REQUEST["data"],
+        DB_ITEMFIELD_WEIGHT => $_REQUEST["weight"],
         DB_ITEMTABLE_BASE_PKEY => $_REQUEST["id"],
     );
     if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = $_REQUEST["vatid"];
