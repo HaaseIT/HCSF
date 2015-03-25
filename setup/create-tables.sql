@@ -101,7 +101,8 @@ itm_id int(11) NOT NULL,
   itm_vatid varchar(16) NOT NULL DEFAULT 'full',
   itm_rg varchar(2) NOT NULL,
   itm_order int(11) NOT NULL,
-  itm_data text NOT NULL
+  itm_data text NOT NULL,
+  itm_weight int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS item_lang;

@@ -83,7 +83,7 @@ define("DB_ITEMFIELD_LANGUAGE", 'itml_lang');
 define("DB_ITEMFIELD_NAME_OVERRIDE", 'itml_name_override');
 define("DB_ITEMFIELD_TEXT1", 'itml_text1');
 define("DB_ITEMFIELD_TEXT2", 'itml_text2');
-define("DB_ITEMFIELDS", 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itml_name_override, itml_text1, itml_text2, itm_index');
+define("DB_ITEMFIELDS", 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itm_weight, itml_name_override, itml_text1, itml_text2, itm_index');
 
 define("DB_ITEMGROUPTABLE_BASE", 'itemgroups_base');
 define("DB_ITEMGROUPTABLE_BASE_PKEY", 'itmg_id');

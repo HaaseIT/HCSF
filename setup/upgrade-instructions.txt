@@ -1,6 +1,8 @@
 V2.05
 config.core.yml has a new value in admin_page_types
 constants.fixed.php has changes
+DB Change:
+ALTER TABLE item_base ADD itm_weight INT NOT NULL;
 
 V2.0.3 auf V2.0.4dev
 config.shop.php changed to config.shop.yml
