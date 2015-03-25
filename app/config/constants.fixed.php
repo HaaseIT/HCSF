@@ -75,6 +75,7 @@ define("DB_ITEMFIELD_RG", 'itm_rg');
 define("DB_ITEMFIELD_ORDER", 'itm_order');
 define("DB_ITEMFIELD_IMG", 'itm_img');
 define("DB_ITEMFIELD_DATA", 'itm_data');
+define("DB_ITEMFIELD_WEIGHT", 'itm_weight');
 
 define("DB_ITEMTABLE_TEXT", 'item_lang');
 define("DB_ITEMTABLE_TEXT_PKEY", 'itml_id');
