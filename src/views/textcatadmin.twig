@@ -2,23 +2,33 @@
     Der Wert wurde aktualisiert ({{ macro.showClienttime() }}).
 {% endif %}
 {% if customdata.edit %}
-    <p>
-    <form action="/_admin/textcatadmin.php?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat">
+    <form action="/_admin/textcatadmin.php?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat" class="pure-form pure-form-stacked">
         <input type="hidden" name="edit" value="do">
         <input type="hidden" name="lid" value="{{ customdata.editform.lid }}">
-        <input type="text" name="key" value="{{ customdata.editform.key }}" style="width:350px;" readonly>
-        <input type="text" name="lang" value="{{ customdata.editform.lang }}" style="width:30px;" readonly>
-        <br>
-        <textarea cols="8" rows="5" name="text" style="width:578px; height:150px;">{{ customdata.editform.text }}</textarea>
-        <br>
-        <input type="submit" value="Submit" style="width:578px;" accesskey="s">
+        <fieldset>
+        <legend>Text bearbeiten</legend>
+        <div class="pure-u-6-24"><label for="textcatadmin-textkey">Textschlüssel</label>
+        <input type="text" name="key" value="{{ customdata.editform.key }}" readonly class="formfieldwithpaddingright" id="textcatadmin-textkey"></div><div
+        class="pure-u-2-24"><label for="textcatadmin-lang">Sprache</label>
+        <input type="text" name="lang" value="{{ customdata.editform.lang }}" readonly class="formfieldwithoutpadding" id="textcatadmin-lang"></div>
+
+        <div class="pure-u-1"><label for="textcatadmin-text">Text</label>
+        <textarea rows="10" name="text" class="formfieldwithoutpadding" id="textcatadmin-text">{{ customdata.editform.text }}</textarea></div>
+
+        <div class="pure-u-1"><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button></div>
+        </fieldset>
     </form>
-    </p>
     <p>
-    <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat">
-        <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> <label for="textcat-delete-confirm">Ich möchte diesen Text in allen Sprachen löschen</label>
-        <br>
-        <input type="submit" value="Löschen" style="width:578px;" accesskey="s">
+    <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat" class="pure-form pure-form-stacked">
+    <fieldset>
+    <legend>Text löschen</legend>
+
+            <label for="textcat-delete-confirm" class="pure-checkbox">
+            <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> Ich möchte diesen Text in allen Sprachen löschen</label>
+
+    <div class="pure-u-1-2"><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Löschen</button></div>
+
+        </fieldset>
     </form>
     </p>
 {% elseif customdata.deleted %}
@@ -29,17 +39,18 @@
     {{ customdata.err.keyalreadyexists ? 'Dieser Textschlüssel ist bereits angelegt.<br>' : '' }}
     {{ customdata.err.invalidcharacter ? 'Dieser Schlüssel enthält ungültige Zeichen, bitte benutzen Sie nur Buchstaben, Zahlen und den Unterstrich ( _ ).<br>' : '' }}
     {% if customdata.addform.key is defined %}
-        Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br>
+        Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br><br>
         <a href="/_admin/textcatadmin.php?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
     {% endif %}
     <br>
-    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext" class="pure-form pure-form-stacked">
-    <input type="hidden" name="add" value="do">
-        <div class="pure-u-1-2"><label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen:</label>
-    <input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formtext" id="textcat-add-textkey" placeholder="Textschlüssel"></div>
-    <input type="submit" name="submit" value="Submit" class="formsubmit">
+    <label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen:</label>
+    <br>
+    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext" class="pure-form">
+        <input type="hidden" name="add" value="do">
+        <div class="pure-u-1-2"><input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formfieldwithpaddingright" id="textcat-add-textkey" placeholder="Textschlüssel"></div><div
+                class="pure-u-3-24"><button type="submit" class="pure-button pure-button-primary">Anlegen</button></div>
     </form>
 {% else %}
-<div style="text-align:right;width:100%;"><a href="?action=add">{{ T("misc_add_new_value") }}</a></div>
+    <div style="text-align:right;width:100%;"><a href="?action=add">{{ T("misc_add_new_value") }}</a></div>
 {% endif %}
 {{ content }}
