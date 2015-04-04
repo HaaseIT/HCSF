@@ -47,7 +47,7 @@ if (!$C["enable_module_shop"]) {
 
     if ($hResult->rowCount() == 1) {
         $aOrder = $hResult->fetch();
-        $fGesamtbrutto = calculateTotalFromDB($C, $aOrder);
+        $fGesamtbrutto = calculateTotalFromDB($aOrder);
 
         $postdata = '';
 
