@@ -1,6 +1,3 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
 -- phpMyAdmin SQL Dump
 -- version 4.3.8
 -- http://www.phpmyadmin.net
