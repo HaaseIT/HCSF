@@ -44,7 +44,8 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
 }
 
 function handleForgotPassword($DB, $C, $aErr) {
-    if (!\HaaseIT\Tools::validateEmail($_GET["email"])) {
+    if (!\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
+    //if (!\HaaseIT\Tools::validateEmail($_GET["email"])) {
         $aErr[] = 'emailinvalid';
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
@@ -92,7 +93,7 @@ function handleForgotPassword($DB, $C, $aErr) {
 
 function validateCustomerForm($C, $sLang, $aErr = array(), $bEdit = false)
 {
-    if (!isset($_POST["email"]) || !\HaaseIT\Tools::validateEmail($_POST["email"])) $aErr["email"] = true;
+    if (!isset($_POST["email"]) || !\filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) $aErr["email"] = true;
     if ($C["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;
     if ($C["validate_name"] && (!isset($_POST["name"]) || strlen(trim($_POST["name"])) < 3)) $aErr["name"] = true;
     if ($C["validate_street"] && (!isset($_POST["street"]) || strlen(trim($_POST["street"])) < 3)) $aErr["street"] = true;

@@ -38,7 +38,7 @@ if (!$C["enable_module_customer"]) {
     if (getUserData()) {
         $sH = \HaaseIT\Textcat::T("denied_default");
     } else {
-        if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\HaaseIT\Tools::validateEmail($_GET["email"])) {
+        if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
             $sH = \HaaseIT\Textcat::T("denied_default");
         } else {
             $sQ = "SELECT * FROM " . DB_CUSTOMERTABLE . " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email AND " . DB_CUSTOMERFIELD_PWRESETCODE . " = :pwresetcode AND " . DB_CUSTOMERFIELD_PWRESETCODE . " != ''";

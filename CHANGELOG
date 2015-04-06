@@ -1,4 +1,8 @@
 
+replaced calls to function validateEmail($sEmail) with  filter_var($sEmail, FILTER_VALIDATE_EMAIL)
+changed required version of haaseit/toolbox to 1.2.3, wich has validateEmail() removed
+added checks for php extension filter in web/_admin/index.php
+updated readme.md to mention needed php extension filter
 fix: base.twig: no content was shown if enable_shop == false
 change: init.php: session is now only started when enable_module_customer == true, not needed if this is false
 renamed class item to items

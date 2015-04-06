@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Requirements:
 Apache 2.x with mod_rewrite enabled
-PHP 5.4.x
+PHP 5.4.x with filter extension enabled
 
 Dependencies:
 TWIG 1.16.2 and up, see: http://twig.sensiolabs.org/ (install via composer)

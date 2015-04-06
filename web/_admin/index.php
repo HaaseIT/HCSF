@@ -33,35 +33,39 @@ $P = array(
 
 $sH = '<h1>Welcome to the administration area</h1>';
 
+$sH .= '<h3>Quick check of required PHP Extensions:</h3>';
+$sH .= '<p>Filter is: '.(extension_loaded('filter') ? 'enabled' : 'disabled').'</p>';
+
+
 $sH .= '<h3>Quick check of required file/directory permissions:</h3>';
-$sH .= 'Template cache '.realpath(PATH_TEMPLATECACHE).' exists: ';
+$sH .= '<p>Template cache '.realpath(PATH_TEMPLATECACHE).' exists: ';
 if (file_exists(PATH_TEMPLATECACHE)) {
     $sH .= 'YES, and it is '.(is_writable(PATH_TEMPLATECACHE) ? '' : 'NOT ').'writable.';
 } else {
     $sH .= 'NO!';
 }
+$sH .= '</p>';
 
 if ($C["enable_module_shop"]) {
-    $sH .= '<br><br>';
-    $sH .= 'Log Directory for orders ' . realpath(PATH_ORDERLOG) . ' exists: ';
+    $sH .= '<p>Log Directory for orders ' . realpath(PATH_ORDERLOG) . ' exists: ';
     if (file_exists(PATH_ORDERLOG)) {
         $sH .= 'YES, and it is ' . (is_writable(PATH_ORDERLOG) ? '' : 'NOT ') . 'writable.';
     } else {
         $sH .= 'NO!';
     }
+    $sH .= '</p>';
 
-    $sH .= '<br><br>';
-    $sH .= 'Log Directory for PayPal Transactions ' . realpath(PATH_PAYPALLOG) . ' exists: ';
+    $sH .= '<p>Log Directory for PayPal Transactions ' . realpath(PATH_PAYPALLOG) . ' exists: ';
     if (file_exists(PATH_PAYPALLOG)) {
         $sH .= 'YES, and it is ' . (is_writable(PATH_PAYPALLOG) ? '' : 'NOT ') . 'writable.';
     } else {
         $sH .= 'NO!';
     }
+    $sH .= '</p>';
 }
 
 $aApacheModules = apache_get_modules();
-$sH .= '<br><br>';
-$sH .= 'The Apache module mod_rewrite is '.(array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ').'enabled.';
+$sH .= '<p>The Apache module mod_rewrite is '.(array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ').'enabled.</p>';
 
 $P["lang"]["cl_html"] = $sH;
 
