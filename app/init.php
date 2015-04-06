@@ -73,7 +73,6 @@ if ($C["enable_module_shop"]) {
 }
 
 include_once(PATH_BASEDIR.'src/functions.template.php');
-include_once(PATH_BASEDIR.'src/functions.misc.php');
 include_once(PATH_BASEDIR.'src/functions.db.php');
 
 date_default_timezone_set($C["defaulttimezone"]);
