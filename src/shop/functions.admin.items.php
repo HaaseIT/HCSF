@@ -45,7 +45,7 @@ function admin_prepareItemlistsearchform()
 
 function admin_getItemlist($DB, $sLang)
 {
-    $sSearchstring = \HaaseIT\Tools::cED($_REQUEST["searchstring"]);
+    $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
     $sSearchstring = str_replace('*', '%', $sSearchstring);
 
     $sQ = "SELECT " . DB_ITEMFIELD_NUMBER . ", " . DB_ITEMFIELD_NAME;
@@ -107,9 +107,9 @@ function admin_getItem($sItemno = '', $DB, $sLang)
     if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = $_REQUEST["itemno"];
     elseif ($sItemno == '') return false;
 
-    $sItemno = \HaaseIT\Tools::cED($sItemno);
+    $sItemno = \filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
-    $sQ = "SELECT * FROM " . DB_ITEMTABLE_BASE . " WHERE " . DB_ITEMFIELD_NUMBER . " = :itemno";
+    $sQ = "SELECT * FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = :itemno";
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':itemno', $sItemno);
     $hResult->execute();

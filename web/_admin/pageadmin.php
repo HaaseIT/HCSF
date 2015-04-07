@@ -105,13 +105,13 @@ if (!isset($_REQUEST["action"])) {
         if (strlen($_POST["pagekey"]) < 4) $aErr["keytooshort"] = true;
         else {
             $sQ = "SELECT ".DB_CONTENTFIELD_BASE_KEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = '";
-            $sQ .= \HaaseIT\Tools::cED(trim($_POST["pagekey"]))."'";
+            $sQ .= \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS))."'";
             $hResult = $DB->query($sQ);
             $iRows = $hResult->rowCount();
             if ($iRows > 0) {
                 $aErr["keyalreadyinuse"] = true;
             } else {
-                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim(\HaaseIT\Tools::cED($_POST["pagekey"])),);
+                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS)),);
                 $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
                 //HaaseIT\Tools::debug($sQ);
                 $hResult = $DB->exec($sQ);

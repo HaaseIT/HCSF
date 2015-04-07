@@ -113,13 +113,13 @@ if (isset($_REQUEST["action"])) {
             if (strlen($_POST["itemno"]) < 4) $aErr["itemnotooshort"] = true;
             else {
                 $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = '";
-                $sQ .= \HaaseIT\Tools::cED(trim($_POST["itemno"]))."'";
+                $sQ .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
                 $hResult = $DB->query($sQ);
                 $iRows = $hResult->rowCount();
                 if ($iRows > 0) {
                     $aErr["itemnoalreadytaken"] = true;
                 } else {
-                    $aData = array(DB_ITEMFIELD_NUMBER => trim(\HaaseIT\Tools::cED($_POST["itemno"])),);
+                    $aData = array(DB_ITEMFIELD_NUMBER => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),);
                     $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
                     //HaaseIT\Tools::debug($sQ);
                     $hResult = $DB->exec($sQ);

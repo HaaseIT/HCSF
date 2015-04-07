@@ -68,7 +68,7 @@ class Items
         $sQ = " WHERE ";
         if ($mItemno != '') {
             if (is_array($mItemno)) {
-                $sItemno = "'".implode("','", \HaaseIT\Tools::cED($mItemno))."'";
+                $sItemno = "'".implode("','", \filter_var($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." IN (".$sItemno.")";
             } else {
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." = :itemno";
@@ -87,11 +87,11 @@ class Items
         } else {
             if (\is_array($mItemIndex)) {
                 $sQ .= "(";
-                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\HaaseIT\Tools::cED($sAIndex)."%' OR ";
+                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
                 $sQ = \HaaseIT\Tools::cutStringend($sQ, 4);
                 $sQ .= ")";
             } else {
-                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\HaaseIT\Tools::cED($mItemIndex)."%'";
+                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filte_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
         }
         $sQ .= " AND ".DB_ITEMFIELD_INDEX;

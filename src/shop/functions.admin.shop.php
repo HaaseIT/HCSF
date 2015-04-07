@@ -105,7 +105,7 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
             }
         } else $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Bestell-Datensätze gefunden.<br>';
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-        $iId = \HaaseIT\Tools::cED($_GET["id"]);
+        $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id";
 
         $hResult = $DB->prepare($sQ);

@@ -69,7 +69,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
             $aInfo["nodatafound"] = true;
         }
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-        $iId = \HaaseIT\Tools::cED($_GET["id"]);
+        $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $aErr = array();
         if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
             if (strlen(trim($_POST["custno"])) < $C["minimum_length_custno"]) {
@@ -92,7 +92,7 @@ function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
                 $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
                 $hResult = $DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
-                $hResult->bindValue(':email', trim($_POST["email"]));
+                $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                 $hResult->execute();
                 //HaaseIT\Tools::debug($sQ);
                 $iRows = $hResult->rowCount();

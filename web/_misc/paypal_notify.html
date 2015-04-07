@@ -39,7 +39,7 @@ if (!$C["enable_module_shop"]) {
 
     $sLogData = '';
 
-    $iId = \HaaseIT\Tools::cED($_REQUEST["custom"]);
+    $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
     $sQ = "SELECT * FROM " . DB_ORDERTABLE;
     $sQ .= " WHERE " . DB_ORDERTABLE_PKEY . " = '" . $iId . "' AND " . DB_ORDERFIELD_PAYMENTMETHOD . " = 'paypal' AND o_paymentcompleted = 'n'";
 
