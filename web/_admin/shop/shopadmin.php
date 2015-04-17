@@ -18,9 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../../../app/init.php');
-include_once(__DIR__.'/../../../src/shop/functions.admin.shop.php');
-include_once(__DIR__.'/../../../src/shop/functions.shoppingcart.php');
+require_once __DIR__.'/../../../app/init.php';
+require_once __DIR__.'/../../../src/shop/functions.admin.shop.php';
+require_once __DIR__.'/../../../src/shop/functions.shoppingcart.php';
 
 $P = array(
     'base' => array(

@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../../app/init.php');
+require_once __DIR__.'/../../app/init.php';
 
 $P = array(
     'base' => array(
@@ -37,7 +37,7 @@ $sH = '';
 if (!$C["enable_module_shop"]) {
     $sH = \HaaseIT\Textcat::T("denied_default");
 } else {
-    include_once(__DIR__.'/../../src/shop/functions.shoppingcart.php');
+    require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
 
     $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";

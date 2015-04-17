@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../../app/init.php');
+require_once __DIR__.'/../../app/init.php';
 
 if (!$C["enable_module_shop"]) {
     echo \HaaseIT\Textcat::T("denied_default");
 } else {
-    include_once(__DIR__ . '/../../src/shop/functions.shoppingcart.php');
+    require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
 
     mb_internal_encoding('UTF-8');
     header("Content-Type: text/html; charset=UTF-8");

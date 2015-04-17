@@ -48,8 +48,8 @@ description: "2-Spaltige Tabelle 50/50"
 );
 */
 
-include_once(__DIR__.'/../../../app/init.php');
-include_once(__DIR__.'/../../../src/shop/functions.admin.itemgroups.php');
+require_once __DIR__.'/../../../app/init.php';
+require_once __DIR__.'/../../../src/shop/functions.admin.itemgroups.php';
 
 $P = array(
     'base' => array(

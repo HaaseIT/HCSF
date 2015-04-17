@@ -52,8 +52,8 @@ description: "2-Spaltige Tabelle 50/50"
 );
 */
 
-include_once(__DIR__.'/../../app/init.php');
-include_once(__DIR__.'/../../src/functions.admin.pages.php');
+require_once __DIR__.'/../../app/init.php';
+require_once __DIR__.'/../../src/functions.admin.pages.php';
 
 $P = array(
     'base' => array(

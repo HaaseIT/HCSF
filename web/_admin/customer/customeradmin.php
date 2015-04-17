@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../../../app/init.php');
-include_once(__DIR__.'/../../../src/customer/functions.admin.customer.php');
+require_once __DIR__.'/../../../app/init.php';
+require_once __DIR__.'/../../../src/customer/functions.admin.customer.php';
 $sH = '';
 
 $aPData = handleUserAdmin($CUA, $twig, $DB, $C, $sLang);

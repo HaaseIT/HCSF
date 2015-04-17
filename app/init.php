@@ -29,12 +29,12 @@ if (ini_get('session.auto_start') == 1) {
     die('Please disable session.autostart for this to work.');
 }
 
-include_once(__DIR__.'/../vendor/autoload.php');
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
 
 // Load core config
-include_once(__DIR__.'/config/constants.fixed.php');
+require_once __DIR__.'/config/constants.fixed.php';
 $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
 if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 
@@ -72,8 +72,8 @@ if ($C["enable_module_shop"]) {
     }
 }
 
-include_once(PATH_BASEDIR.'src/functions.template.php');
-include_once(PATH_BASEDIR.'src/functions.db.php');
+require_once PATH_BASEDIR.'src/functions.template.php';
+require_once PATH_BASEDIR.'src/functions.db.php';
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -175,13 +175,13 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 
 \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
 
-include_once(__DIR__.'/config/config.navi.php');
+require_once __DIR__.'/config/config.navi.php';
 
-if ($C["enable_module_customer"]) include_once(__DIR__.'/../src/customer/functions.customer.php');
+if ($C["enable_module_customer"]) require_once __DIR__.'/../src/customer/functions.customer.php';
 
 if ($C["enable_module_shop"]) {
-    include_once(__DIR__ . '/../src/shop/Items.php');
-    include_once(__DIR__ . '/../src/shop/functions.shoppingcart.php');
+    require_once __DIR__ . '/../src/shop/Items.php';
+    require_once __DIR__ . '/../src/shop/functions.shoppingcart.php';
 
     $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
 } else {

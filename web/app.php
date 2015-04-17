@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../app/init.php');
+require_once __DIR__.'/../app/init.php';
 
 //HaaseIT\Tools::debug($P);
 //HaaseIT\Tools::debug($aURL);

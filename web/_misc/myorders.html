@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-include_once(__DIR__.'/../../app/init.php');
+require_once __DIR__.'/../../app/init.php';
 
 $P = array(
     'base' => array(
@@ -40,7 +40,7 @@ if (!$C["enable_module_shop"]) {
     if (!getUserData()) {
         $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
     } else {
-        include_once(__DIR__.'/../../src/shop/functions.shoppingcart.php');
+        require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
         $P["base"]["cb_customcontenttemplate"] = 'shop/myorders';
 
         if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
