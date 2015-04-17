@@ -91,7 +91,7 @@ class Items
                 $sQ = \HaaseIT\Tools::cutStringend($sQ, 4);
                 $sQ .= ")";
             } else {
-                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filte_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
+                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
         }
         $sQ .= " AND ".DB_ITEMFIELD_INDEX;
