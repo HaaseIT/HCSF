@@ -18,28 +18,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-if (!$C["enable_module_shop"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if ($C["show_pricesonlytologgedin"] && !getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_notloggedin"),
+        ),
+    );
 } else {
-    if ($C["show_pricesonlytologgedin"] && !getUserData()) {
-        $sH = \HaaseIT\Textcat::T("denied_notloggedin");
-    } else {
-        $P["base"]["cb_customcontenttemplate"] = 'shop/checkedout';
-        $sH = '';
+    function handleCheckedoutPage($sLang, $DB) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+                'cb_customcontenttemplate' => 'shop/checkedout',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
+
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
         $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
@@ -53,11 +58,9 @@ if (!$C["enable_module_shop"]) {
             $P["base"]["cb_customdata"]["order"] = $hResult->fetch();
             $P["base"]["cb_customdata"]["gesamtbrutto"] = calculateTotalFromDB($P["base"]["cb_customdata"]["order"]);
         }
+
+        return $P;
     }
+
+    $P = handleCheckedoutPage($sLang, $DB);
 }
-
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

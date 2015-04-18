@@ -181,6 +181,12 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
             'base' => ['cb_pagetype' => 'itemoverview', 'cb_pageconfig' => '', 'cb_subnav' => ''],
             'lang' => ['cl_lang' => $sLang, 'cl_html' => '']
         ];
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/checkedout.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.checkedout.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/updateshippingcost.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.updateshippingcost.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/update-cart.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.update-cart.php';
     } else { // else: do the default routing
         $aPath = explode('/', $sPath);
         if (strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
