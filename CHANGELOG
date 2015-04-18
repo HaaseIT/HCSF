@@ -1,4 +1,5 @@
 
+simplified the update-cart script
 if no items are available on itemoverview-page, display message
 fixed: item search
 added new page type "shorturl"
