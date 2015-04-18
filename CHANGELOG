@@ -1,4 +1,5 @@
 
+moved all files from web/_misc/ to internal routing
 simplified the update-cart script
 if no items are available on itemoverview-page, display message
 fixed: item search
