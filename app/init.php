@@ -185,8 +185,16 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         require_once PATH_BASEDIR . 'src/shop/worker.checkedout.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/updateshippingcost.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.updateshippingcost.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/shoppingcart.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.shoppingcart.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/update-cart.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.update-cart.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/sofortueberweisung.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.sofortueberweisung.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.paypal.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal_notify.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.paypalnotify.php';
     } else { // else: do the default routing
         $aPath = explode('/', $sPath);
         if (strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';

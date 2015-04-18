@@ -18,26 +18,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
+require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-$sH = '';
-
-if (!$C["enable_module_shop"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
-} else {
-    require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
+function handleSofortueberweisungPage($C, $sLang, $DB) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => '',
+        ),
+    );
 
     $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
@@ -60,16 +54,14 @@ if (!$C["enable_module_shop"]) {
             header('Location: ' . $sPURL);
         }
 
-        $sH .= \HaaseIT\Textcat::T("misc_paysofortueberweisung_greeting") . '<br><br>';
-        $sH .= '<a href="' . $sPURL . '">' . \HaaseIT\Textcat::T("misc_paysofortueberweisung") . '</a>';
+        $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("misc_paysofortueberweisung_greeting") . '<br><br>';
+        $P["lang"]["cl_html"] .= '<a href="' . $sPURL . '">' . \HaaseIT\Textcat::T("misc_paysofortueberweisung") . '</a>';
 
     } else {
-        $sH .= \HaaseIT\Textcat::T("misc_paysofortueberweisung_paymentnotavailable");
+        $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("misc_paysofortueberweisung_paymentnotavailable");
     }
+
+    return $P;
 }
 
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);
+$P = handleSofortueberweisungPage($C, $sLang, $DB);

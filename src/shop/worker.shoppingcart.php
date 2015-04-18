@@ -18,58 +18,68 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'contentnosubnav',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-if (!$C["enable_module_shop"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if ($C["show_pricesonlytologgedin"] && !getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'contentnosubnav',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_notloggedin"),
+        ),
+    );
 } else {
-    if ($C["show_pricesonlytologgedin"] && !getUserData()) {
-        $sH = \HaaseIT\Textcat::T("denied_notloggedin");
-    } else {
-        require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
-        $P["base"]["cb_customcontenttemplate"] = 'shop/shoppingcart';
+    require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
 
-        $sH = '';
+    function handleShoppingcartPage($C, $sLang, $DB, $twig) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'contentnosubnav',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+                'cb_customcontenttemplate' => 'shop/shoppingcart',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
 
+        // ----------------------------------------------------------------------------
+        // Check if there is a message to display above the shoppingcart
+        // ----------------------------------------------------------------------------
         if (isset($_GET["msg"]) && trim($_GET["msg"]) != '') {
             if (($_GET["msg"] == 'updated' && isset($_GET["cartkey"]) && isset($_GET["amount"])) || ($_GET["msg"] == 'removed') && isset($_GET["cartkey"])) {
-                $sH .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
+                $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
                 if (isset($C["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                     $mCartkeys = explode('|', $_GET["cartkey"]);
                     //debug($mCartkeys);
                     foreach ($mCartkeys as $sKey => $sValue) {
                         if ($sKey == 0) {
-                            $sH .= $sValue . ', ';
+                            $P["lang"]["cl_html"] .= $sValue . ', ';
                         } else {
                             $TMP = explode(':', $sValue);
-                            $sH .= \HaaseIT\Textcat::T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
+                            $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
                             unset($TMP);
                         }
                     }
-                    $sH = \HaaseIT\Tools::cutStringend($sH, 2);
+                    $P["lang"]["cl_html"] = \HaaseIT\Tools::cutStringend($P["lang"]["cl_html"], 2);
                 } else {
-                    $sH .= $_GET["cartkey"];
+                    $P["lang"]["cl_html"] .= $_GET["cartkey"];
                 }
-                $sH .= ' ' . \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_2");
+                $P["lang"]["cl_html"] .= ' ' . \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_2");
                 if ($_GET["msg"] == 'updated') {
-                    $sH .= ' ' . $_GET["amount"];
+                    $P["lang"]["cl_html"] .= ' ' . $_GET["amount"];
                 }
-                $sH .= '<br><br>';
+                $P["lang"]["cl_html"] .= '<br><br>';
             }
         }
 
+        // ----------------------------------------------------------------------------
+        // Display the shoppingcart
+        // ----------------------------------------------------------------------------
         if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
             $aErr = array();
             if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
@@ -87,8 +97,11 @@ if (!$C["enable_module_shop"]) {
             $aShoppingcart = buildShoppingCartTable($_SESSION["cart"], $sLang, $C, false, '', $aErr);
         }
 
+        // ----------------------------------------------------------------------------
+        // Checkout
+        // ----------------------------------------------------------------------------
         if (!isset($aShoppingcart)) {
-            $sH .= \HaaseIT\Textcat::T("shoppingcart_empty");
+            $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("shoppingcart_empty");
         } else {
             if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
                 if (count($aErr) == 0) {
@@ -229,15 +242,14 @@ if (!$C["enable_module_shop"]) {
                 }
             } // endif $_POST["doCheckout"] == 'yes'
         }
+
+        if (isset($aShoppingcart)) {
+            $P["base"]["cb_customdata"] = $aShoppingcart;
+        }
+
+        return $P;
     }
 
-    if (isset($aShoppingcart)) {
-        $P["base"]["cb_customdata"] = $aShoppingcart;
-    }
+    $P = handleShoppingcartPage($C, $sLang, $DB, $twig);
 }
 
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);
