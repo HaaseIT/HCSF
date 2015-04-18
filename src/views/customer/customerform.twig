@@ -13,7 +13,7 @@
     <script language="JavaScript">
         $(document).ready(function() {
             $(".customerformfield").change(function() {
-                $.post("/_misc/formsaver.html", $("#customerform").serialize());
+                $.post("/fs.php", $("#customerform").serialize());
             });
             {% if customdata.customerform.purpose == 'shoppingcart' %}
             $("#addrform-country").change(function() {
