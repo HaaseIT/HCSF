@@ -164,6 +164,10 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         require_once PATH_BASEDIR . 'src/customer/worker.logout.php';
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/userhome.html') {
         require_once PATH_BASEDIR . 'src/customer/worker.userhome.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/register.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.register.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/forgotpassword.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.forgotpassword.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/myorders.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.myorders.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/itemsearch.html') {

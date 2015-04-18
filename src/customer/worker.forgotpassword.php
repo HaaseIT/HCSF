@@ -18,30 +18,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-if (!$C["enable_module_customer"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if (getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_default"),
+        ),
+    );
 } else {
-    if (getUserData()) {
-        $sH = \HaaseIT\Textcat::T("denied_default");
-    } else {
-        $P["base"]["cb_customcontenttemplate"] = 'customer/forgotpassword';
-        $sH = '';
+    function handleForgotpasswordPage($C, $sLang, $DB) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+                'cb_customcontenttemplate' => 'customer/forgotpassword',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
+
         $aErr = array();
-        if (isset($_GET["doSend"]) && $_GET["doSend"] == 'yes') {
+        if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
             $aErr = handleForgotPassword($DB, $C, $aErr);
             if (count($aErr) == 0) {
                 $P["base"]["cb_customdata"]["forgotpw"]["showsuccessmessage"] = true;
@@ -49,11 +54,9 @@ if (!$C["enable_module_customer"]) {
                 $P["base"]["cb_customdata"]["forgotpw"]["errors"] = $aErr;
             }
         }
+
+        return $P;
     }
+
+    $P = handleForgotpasswordPage($C, $sLang, $DB);
 }
-
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);
