@@ -44,13 +44,12 @@ function handlePasswordReset($DB, $C, $aErr, $iID) {
 }
 
 function handleForgotPassword($DB, $C, $aErr) {
-    if (!\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
-    //if (!\HaaseIT\Tools::validateEmail($_GET["email"])) {
+    if (!\filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
         $aErr[] = 'emailinvalid';
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
         $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
+        $hResult->bindValue(':email', $_POST["email"], PDO::PARAM_STR);
         $hResult->execute();
         if ($hResult->rowCount() != 1) {
             $aErr[] = 'emailunknown';
