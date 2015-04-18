@@ -293,9 +293,9 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
     #topnav li a{border-right: 1px solid #fff;}
     #topnav li:first-child a{border-left: 1px solid #fff;}
     #row-main{min-height: 20em;}
-    #col-leftnav-content{padding: 2em 2em 2em 0;}
+    #col-leftnav-content{padding: 2em 0em 2em 0;}
     #col-leftnav{display: inline-block;}
-    #col-main{padding: 2em 0 2em 0;}
+    #col-main{padding: 2em 0 2em 1.5em;}
     #topnav-sub{display: none;}
     #cart-header{display: block;}
     .md-invisible{display: none;}
