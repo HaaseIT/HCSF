@@ -45,7 +45,7 @@ class Items
         $sQ .= " AND ".DB_ITEMFIELD_LANGUAGE." = :lang";
         $sQ .= $this->queryItemWhereClause($mItemIndex, $mItemno);
         $sQ .= " ORDER BY ".(($sOrderby == '') ? DB_ITEMFIELD_ORDER.", ".DB_ITEMFIELD_NUMBER : $sOrderby)." ".$this->C["items_orderdirection_default"];
-        
+
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         if ($mItemno != '') {
@@ -54,8 +54,14 @@ class Items
             }
         }
         elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
-            $hResult->bindValue(':searchtext', $_REQUEST["searchtext"], \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            if (isset($_REQUEST["artnoexact"])) {
+                $hResult->bindValue(':searchtext', $_REQUEST["searchtext"], \PDO::PARAM_STR);
+            }
+            $hResult->bindValue(':searchtextwild1', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild2', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild3', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild4', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild5', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
         //HaaseIT\Tools::debug($hResult->errorinfo());
@@ -77,11 +83,11 @@ class Items
             if (isset($_REQUEST["artnoexact"])) $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." = :searchtext";
             else {
                 $sQ .= "(";
-                $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." LIKE :searchtextwild";
-                $sQ .= " OR ".DB_ITEMFIELD_NAME." LIKE :searchtextwild";
-                $sQ .= " OR ".DB_ITEMFIELD_NAME_OVERRIDE." LIKE :searchtextwild";
-                $sQ .= " OR ".DB_ITEMFIELD_TEXT1." LIKE :searchtextwild";
-                $sQ .= " OR ".DB_ITEMFIELD_TEXT2." LIKE :searchtextwild";
+                $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." LIKE :searchtextwild1";
+                $sQ .= " OR ".DB_ITEMFIELD_NAME." LIKE :searchtextwild2";
+                $sQ .= " OR ".DB_ITEMFIELD_NAME_OVERRIDE." LIKE :searchtextwild3";
+                $sQ .= " OR ".DB_ITEMFIELD_TEXT1." LIKE :searchtextwild4";
+                $sQ .= " OR ".DB_ITEMFIELD_TEXT2." LIKE :searchtextwild5";
                 $sQ .= ")";
             }
         } else {
