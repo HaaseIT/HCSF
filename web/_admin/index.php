@@ -64,8 +64,10 @@ if ($C["enable_module_shop"]) {
     $sH .= '</p>';
 }
 
-$aApacheModules = apache_get_modules();
-$sH .= '<p>The Apache module mod_rewrite is '.(array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ').'enabled.</p>';
+if (function_exists('apache_get_modules')) {
+    $aApacheModules = apache_get_modules();
+    $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ') . 'enabled.</p>';
+}
 
 $P["lang"]["cl_html"] = $sH;
 
