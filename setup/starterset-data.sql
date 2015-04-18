@@ -294,7 +294,10 @@ INSERT INTO textcat_base (tc_id, tc_key, tcl_group) VALUES
   (227, 'sidenav_category4_01', ''),
   (228, 'sidenav_category4_02', ''),
   (229, 'sidenav_category5_01', ''),
-  (230, 'sidenav_category5_02', '');
+  (230, 'sidenav_category5_02', ''),
+  (231, 'userhome_info_passwordchanged', ''),
+  (232, 'itemoverview_no_items_found', ''),
+  (233, 'shoppingcart_mail_subject', '');
 
 --
 -- Daten für Tabelle textcat_lang
@@ -424,7 +427,7 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
   (121, 41, 'de', 'Passwort vergessen'),
   (122, 41, 'en', 'Forgot password'),
   (123, 41, 'es', 'Olvide mi contraseña'),
-  (124, 42, 'de', 'Konto erstellen'),
+  (124, 42, 'de', 'Registrieren'),
   (125, 42, 'en', 'Create account'),
   (126, 42, 'es', 'Abrir cuenta'),
   (127, 43, 'de', 'Kategorie 1'),
@@ -981,4 +984,13 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
   (681, 227, 'es', 'Categoría 4 pagina 01'),
   (682, 228, 'es', 'Categoría 4 pagina 02'),
   (683, 229, 'es', 'Categoría 5 pagina 01'),
-  (684, 230, 'es', 'Categoría 5 pagina 02');
+  (684, 230, 'es', 'Categoría 5 pagina 02'),
+  (685, 231, 'de', 'Das Passwort wurde geändert.'),
+  (686, 231, 'en', 'The password has been changed.'),
+  (687, 231, 'es', 'La contraseña ha sido cambiada.'),
+  (688, 232, 'de', 'Zur Zeit sind keine Artikel die Ihrer Auswahl entsprechen vorhanden.'),
+  (689, 232, 'en', 'There are no items matching your request.'),
+  (690, 232, 'es', 'Por el momento no disponemos esos artículos.'),
+  (691, 233, 'es', 'La confirmacion de su pedido de HCSF shop'),
+  (692, 233, 'de', 'Ihre Bestellbestätigung vom HCSF Shop'),
+  (693, 233, 'en', 'Your order-confirmation from HCSF Shop');
