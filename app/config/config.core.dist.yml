@@ -43,6 +43,7 @@ admin_page_types:
     - contentnosubnav
     - itemoverview
     - itemoverviewgrpd
+    - shorturl
 locale_format_date: d.m.Y
 locale_format_date_time: 'd.m.Y H:i'
 defaultcountrybylang:
