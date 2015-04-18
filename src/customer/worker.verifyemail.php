@@ -18,28 +18,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-if (!$C["enable_module_customer"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if (getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_default"),
+        ),
+    );
 } else {
-    if (getUserData()) {
-        $sH = \HaaseIT\Textcat::T("denied_default");
-    } else {
-        $sH = '';
-        $sErr = '';
+    function handleVerifyemailPage($sLang, $DB) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
 
         $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . ", " . DB_CUSTOMERTABLE_PKEY . " FROM " . DB_CUSTOMERTABLE;
         $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " = :key AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
@@ -59,15 +62,14 @@ if (!$C["enable_module_customer"]) {
                 $hResult->bindValue(':' . $sKey, $sValue);
             }
             $hResult->execute();
-            $sH .= \HaaseIT\Textcat::T("register_emailverificationsuccess");
+            $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("register_emailverificationsuccess");
         } else {
-            $sH .= \HaaseIT\Textcat::T("register_emailverificationfail");
+            $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("register_emailverificationfail");
         }
+
+        return $P;
     }
+
+    $P = handleVerifyemailPage($sLang, $DB);
 }
 
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

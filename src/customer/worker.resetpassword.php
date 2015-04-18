@@ -18,43 +18,48 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-if (!$C["enable_module_customer"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if (getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_default"),
+        ),
+    );
 } else {
-    if (getUserData()) {
-        $sH = \HaaseIT\Textcat::T("denied_default");
-    } else {
+    function handleResetpasswordPage($C, $sLang, $DB) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
+
         if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
-            $sH = \HaaseIT\Textcat::T("denied_default");
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = "SELECT * FROM " . DB_CUSTOMERTABLE . " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email AND " . DB_CUSTOMERFIELD_PWRESETCODE . " = :pwresetcode AND " . DB_CUSTOMERFIELD_PWRESETCODE . " != ''";
+            $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
             $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
             $hResult->execute();
             if ($hResult->rowCount() != 1) {
-                $sH = \HaaseIT\Textcat::T("denied_default");
+                $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("denied_default");
             } else {
-                $sH = '';
                 $aErr = array();
                 $aResult = $hResult->fetch();
                 $iTimestamp = time();
                 if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
-                    $sH = \HaaseIT\Textcat::T("pwreset_error_expired");
+                    $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("pwreset_error_expired");
                 } else {
                     $P["base"]["cb_customcontenttemplate"] = 'customer/resetpassword';
                     $P["base"]["cb_customdata"]["pwreset"]["minpwlength"] = $C["minimum_length_password"];
@@ -69,11 +74,9 @@ if (!$C["enable_module_customer"]) {
                 }
             }
         }
+
+        return $P;
     }
+
+    $P = handleResetpasswordPage($C, $sLang, $DB);
 }
-
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

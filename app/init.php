@@ -168,6 +168,12 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         require_once PATH_BASEDIR . 'src/customer/worker.register.php';
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/forgotpassword.html') {
         require_once PATH_BASEDIR . 'src/customer/worker.forgotpassword.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/rp.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.resetpassword.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/verifyemail.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.verifyemail.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/resendverificationmail.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.resendverificationmail.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/myorders.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.myorders.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/itemsearch.html') {
