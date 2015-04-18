@@ -1,4 +1,6 @@
 
+if no items are available on itemoverview-page, display message
+fixed: item search
 added new page type "shorturl"
 replaced include with require
 replaced calls to \HaaseIT\Tools\cED() with filter_ver() or filter_input()
