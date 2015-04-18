@@ -18,51 +18,45 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
+function handleLoginPage($C, $sLang, $DB)
+{
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => '',
+        ),
+    );
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-$sH = '';
-
-if (!$C["enable_module_customer"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
-} else {
     if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
-        //$sH = \HaaseIT\Textcat::T("login_fail");
+        //$P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_fail");
         $P["base"]["cb_customcontenttemplate"] = 'customer/login';
     } else {
         $mLogin = getLogin($C, $DB);
         if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
-            $sH = \HaaseIT\Textcat::T("login_success") . '<br>';
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_success") . '<br>';
             header('Location: /_misc/userhome.html?login=true');
         } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'tosnotaccepted') {
-            $sH = \HaaseIT\Textcat::T("login_fail_tosnotaccepted") . '<br>';
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_fail_tosnotaccepted") . '<br>';
         } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
-            $sH = \HaaseIT\Textcat::T("login_fail_emailnotverified") . '<br><br>';
-            $sH .= '<a href="/_misc/resendverificationmail.html?email=' . $mLogin["data"][DB_CUSTOMERFIELD_EMAIL] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_fail_emailnotverified") . '<br><br>';
+            $P["lang"]["cl_html"] .= '<a href="/_misc/resendverificationmail.html?email=' . $mLogin["data"][DB_CUSTOMERFIELD_EMAIL] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
         } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
-            $sH = \HaaseIT\Textcat::T("login_fail_accountinactive") . '<br>';
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_fail_accountinactive") . '<br>';
         } else {
-            $sH = \HaaseIT\Textcat::T("login_fail");
+            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("login_fail");
         }
     }
+
+    return $P;
 }
+
+$P = handleLoginPage($C, $sLang, $DB);
+
 if ($C["enable_module_shop"]) {
     refreshCartItems($C, $oItem);
 }
-
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

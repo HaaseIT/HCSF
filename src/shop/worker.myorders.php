@@ -18,29 +18,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
-
-$sH = '';
-
-if (!$C["enable_module_shop"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if (!getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_notloggedin"),
+        ),
+    );
 } else {
-    if (!getUserData()) {
-        $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
-    } else {
-        require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
+    require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
+
+    function handleMyordersPage($C, $sLang, $DB, $twig)
+    {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
+
         $P["base"]["cb_customcontenttemplate"] = 'shop/myorders';
 
         if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
@@ -53,14 +59,20 @@ if (!$C["enable_module_shop"]) {
 
             if ($hResult->rowCount() == 1) {
                 $aOrder = $hResult->fetch();
-                $sH .= '<h1>' . \HaaseIT\Textcat::T("myorders_headline_order") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
-                if (trim($aOrder["o_remarks"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_remarks") . '</strong><br>' . $aOrder["o_remarks"] . '<br><br>';
-                $sH .= '<strong>Zahlungsmethode:</strong> ' . \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]) . '<br>';
-                $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_paymentstatus") . '</strong> ' . (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")) . '<br>';
-                $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_orderstatus") . '</strong> ' . showOrderStatusText($aOrder["o_ordercompleted"]) . '<br>';
-                if (trim($aOrder["o_shipping_service"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_service") . '</strong> ' . $aOrder["o_shipping_service"] . '<br>';
-                if (trim($aOrder["o_shipping_trackingno"]) != '') $sH .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_trackingno") . '</strong> ' . $aOrder["o_shipping_trackingno"] . '<br>';
-                $sH .= '<br>';
+                $P["lang"]["cl_html"] .= '<h1>' . \HaaseIT\Textcat::T("myorders_headline_order") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
+                if (trim($aOrder["o_remarks"]) != '') {
+                    $P["lang"]["cl_html"] .= '<strong>' . \HaaseIT\Textcat::T("myorders_remarks") . '</strong><br>' . $aOrder["o_remarks"] . '<br><br>';
+                }
+                $P["lang"]["cl_html"] .= '<strong>Zahlungsmethode:</strong> ' . \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]) . '<br>';
+                $P["lang"]["cl_html"] .= '<strong>' . \HaaseIT\Textcat::T("myorders_paymentstatus") . '</strong> ' . (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")) . '<br>';
+                $P["lang"]["cl_html"] .= '<strong>' . \HaaseIT\Textcat::T("myorders_orderstatus") . '</strong> ' . showOrderStatusText($aOrder["o_ordercompleted"]) . '<br>';
+                if (trim($aOrder["o_shipping_service"]) != '') {
+                    $P["lang"]["cl_html"] .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_service") . '</strong> ' . $aOrder["o_shipping_service"] . '<br>';
+                }
+                if (trim($aOrder["o_shipping_trackingno"]) != '') {
+                    $P["lang"]["cl_html"] .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_trackingno") . '</strong> ' . $aOrder["o_shipping_trackingno"] . '<br>';
+                }
+                $P["lang"]["cl_html"] .= '<br>';
 
                 $sQ = "SELECT * FROM " . DB_ORDERTABLE_ITEMS . " WHERE oi_o_id = :id";
                 $hResult = $DB->prepare($sQ);
@@ -96,7 +108,7 @@ if (!$C["enable_module_shop"]) {
                     $aOrder["o_vatreduced"]
                 );
             } else {
-                $sH .= \HaaseIT\Textcat::T("myorders_order_not_found");
+                $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("myorders_order_not_found");
             }
         } else {
             $COList = array(
@@ -111,24 +123,21 @@ if (!$C["enable_module_shop"]) {
                     'key' => 'o_id',
                     'width' => 120,
                     'linked' => true,
-                    'ltarget' => $_SERVER["PHP_SELF"],
+                    'ltarget' => '/_misc/myorders.html',
                     'lkeyname' => 'id',
                     'lgetvars' => array('action' => 'show',),
                 ),
             );
 
-            $sH .= showMyOrders($COList, $twig, $DB);
+            $P["lang"]["cl_html"] .= showMyOrders($COList, $twig, $DB);
         }
+
+        if (isset($aShoppingcart)) {
+            $P["base"]["cb_customdata"] = $aShoppingcart;
+        }
+
+        return $P;
     }
+
+    $P = handleMyordersPage($C, $sLang, $DB, $twig);
 }
-
-//if (clientIsLocal()) debug($_SERVER);
-
-$P["lang"]["cl_html"] = $sH;
-if (isset($aShoppingcart)) {
-    $P["base"]["cb_customdata"] = $aShoppingcart;
-}
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

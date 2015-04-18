@@ -18,29 +18,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-   ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-   ),
-);
-
-$sH = '';
-
-if (!$C["enable_module_customer"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+if (!getUserData()) {
+    $P = array(
+        'base' => array(
+            'cb_pagetype' => 'content',
+            'cb_pageconfig' => '',
+            'cb_subnav' => '',
+        ),
+        'lang' => array(
+            'cl_lang' => $sLang,
+            'cl_html' => \HaaseIT\Textcat::T("denied_notloggedin"),
+        ),
+    );
 } else {
-    if (!getUserData()) {
-        $sH .= \HaaseIT\Textcat::T("denied_notloggedin");
-    } else {
-        $P["base"]["cb_customcontenttemplate"] = 'customer/userhome';
+    function handleUserhomePage($C, $sLang, $DB) {
+        $P = array(
+            'base' => array(
+                'cb_pagetype' => 'content',
+                'cb_pageconfig' => '',
+                'cb_subnav' => '',
+                'cb_customcontenttemplate' => 'customer/userhome',
+            ),
+            'lang' => array(
+                'cl_lang' => $sLang,
+                'cl_html' => '',
+            ),
+        );
+
         //debug($_SESSION["user"]);
         $aPData["display_logingreeting"] = false;
         if (isset($_GET["login"]) && $_GET["login"]) {
@@ -48,7 +52,6 @@ if (!$C["enable_module_customer"]) {
         }
         if (isset($_GET["editprofile"])) {
             $sErr = '';
-            $sInfo = '';
 
             if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
                 $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
@@ -81,7 +84,7 @@ if (!$C["enable_module_customer"]) {
                     }
                     if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
                         $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
-                        $sInfo .= 'Das Passwort wurde geändert.<br>';
+                        $aPData["infopasswordchanged"] = true;
                     }
                     //debug($aData);
                     $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
@@ -94,16 +97,16 @@ if (!$C["enable_module_customer"]) {
                             $hResult->bindValue(':' . $sKey, $sValue);
                         }
                         $hResult->execute();
-                        $sInfo .= \HaaseIT\Textcat::T("userprofile_changessaved") . ' (' . showClienttime() . ').<br>';
-                    } else $sInfo .= \HaaseIT\Textcat::T("userprofile_nothingchanged") . '<br>';
+                        $aPData["infochangessaved"] = true;
+                    } else {
+                        $aPData["infonothingchanged"] = true;
+                    }
                 }
             }
-            if (isset($sInfo) && $sInfo != '') $aPData["text_aboveform"] = $sInfo;
             $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
-            //if ($C["allow_edituserprofile"]) $sH .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
+            //if ($C["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
         } else {
             $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
-            $aPData["showlinktoreferer"] = true;
         }
         $aPData["showprofilelinks"] = false;
         if (!isset($_GET["editprofile"])) {
@@ -112,11 +115,9 @@ if (!$C["enable_module_customer"]) {
         if (isset($aPData) && count($aPData)) {
             $P["base"]["cb_customdata"]["userhome"] = $aPData;
         }
+
+        return $P;
     }
+
+    $P = handleUserhomePage($C, $sLang, $DB);
 }
-
-$P["lang"]["cl_html"] = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

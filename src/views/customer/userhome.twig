@@ -5,13 +5,12 @@
 {% endif %}
 <h3>{{T("userhome_subheadline")}}</h3>
 <hr>
-{{customdata.userhome.text_aboveform}}
+{{ customdata.userhome.infopasswordchanged ? T("userhome_info_passwordchanged") ~ '<br>' : '' }}
+{{ customdata.userhome.infochangessaved ? T("userprofile_changessaved") ~ '(' ~ macro.showClientTime() ~ ')<br>' : '' }}
+{{ customdata.userhome.infonothingchanged ? T("userprofile_nothingchanged") ~ '<br>' : '' }}
+
 {% include 'customer/customerform.twig' %}
-{# {{customdata.userhome.text_belowform}} #}
-{% if customdata.userhome.showlinktoreferer is defined and customdata.userhome.showlinktoreferer and referer is defined %}
-<br>
-<a href="{{referer}}" style="text-decoration: underline;">{{T("misc_continue")}}</a>
-{% endif %}
+
 {% if customdata.userhome.showprofilelinks %}
 <hr>
 <a href="{{requesturiarray.path}}?editprofile">{{T("userprofile_editlink")}}</a>

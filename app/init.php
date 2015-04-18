@@ -132,47 +132,8 @@ $DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
 
 // ----------------------------------------------------------------------------
-// Begin routing
+// more init stuff
 // ----------------------------------------------------------------------------
-// Only do routing if original app.php is called. if not, no routing, no fetching db content
-if ($_SERVER["PHP_SELF"] == '/app.php') {
-    $aURL = parse_url($_SERVER["REQUEST_URI"]);
-    $sPath = $aURL["path"];
-    $aPath = explode('/', $sPath);
-    if (strpos($aPath[count($aPath)-1], '.') === false && $aPath[count($aPath)-1] != '') $sPath .= '/';
-
-    // /women/item/0010.html
-    if ($C["enable_module_shop"] && mb_strpos($sPath, '/item/') !== false) {
-        $aTMP["exploded_request_path"] = explode('/', $sPath);
-        $aTMP["position_of_itemsstring_in_path"] = count($aTMP["exploded_request_path"])-2;
-        if ($aTMP["exploded_request_path"][$aTMP["position_of_itemsstring_in_path"]] == 'item') {
-            $aTMP["exploded_request_file"] = explode('.', $aTMP["exploded_request_path"][count($aTMP["exploded_request_path"])-1]);
-            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"])-1] == 'html') {
-                $aRoutingoverride["itemno"] = $aTMP["exploded_request_file"][0];
-                $aRoutingoverride["cb_pagetype"] = 'itemdetail';
-                $sPath = '';
-                for ($i = 0; $i < $aTMP["position_of_itemsstring_in_path"]; $i++) {
-                    $sPath .= $aTMP["exploded_request_path"][$i].'/';
-                }
-            }
-        }
-        //HaaseIT\Tools::debug($sPath);
-        //HaaseIT\Tools::debug($aTMP);
-        //HaaseIT\Tools::debug($aRoutingoverride);
-        unset($aTMP);
-    }
-
-    if ($sPath[strlen($sPath)-1] == '/') $sPath .= 'index.html';
-    //$sPath = ltrim(trim($aURL["path"]), '/');
-    //$sPath = rtrim(trim($sPath), '/');
-
-    $P = getContent($C, $DB, $sPath, $sLang);
-    if ($P) $P["base"]["cb_pageconfig"] = json_decode($P["base"]["cb_pageconfig"], true);
-    if (isset($P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
-        $P["base"] = array_merge($P["base"], $aRoutingoverride);
-    }
-}
-
 \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
 
 require_once __DIR__.'/config/config.navi.php';
@@ -186,4 +147,73 @@ if ($C["enable_module_shop"]) {
     $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
 } else {
     $oItem = '';
+}
+
+// ----------------------------------------------------------------------------
+// Begin routing
+// ----------------------------------------------------------------------------
+// Only do routing if original app.php is called. if not, no routing, no fetching db content
+if ($_SERVER["PHP_SELF"] == '/app.php') {
+    $aURL = parse_url($_SERVER["REQUEST_URI"]);
+    $sPath = $aURL["path"];
+
+    // if the path is one of the predefined urls, skip further routing
+    if ($C["enable_module_customer"] && $sPath == '/_misc/login.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.login.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/logout.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.logout.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/userhome.html') {
+        require_once PATH_BASEDIR . 'src/customer/worker.userhome.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/myorders.html') {
+        require_once PATH_BASEDIR . 'src/shop/worker.myorders.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_misc/itemsearch.html') {
+        $P = [
+            'base' => ['cb_pagetype' => 'itemoverview', 'cb_pageconfig' => '', 'cb_subnav' => ''],
+            'lang' => ['cl_lang' => $sLang, 'cl_html' => '']
+        ];
+    } else { // else: do the default routing
+        $aPath = explode('/', $sPath);
+        if (strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+
+        // /women/item/0010.html
+        if ($C["enable_module_shop"] && mb_strpos($sPath, '/item/') !== false) {
+            $aTMP["exploded_request_path"] = explode('/', $sPath);
+            $aTMP["position_of_itemsstring_in_path"] = count($aTMP["exploded_request_path"]) - 2;
+            if ($aTMP["exploded_request_path"][$aTMP["position_of_itemsstring_in_path"]] == 'item') {
+                $aTMP["exploded_request_file"] = explode('.', $aTMP["exploded_request_path"][count($aTMP["exploded_request_path"]) - 1]);
+                if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
+                    $aRoutingoverride["itemno"] = $aTMP["exploded_request_file"][0];
+                    $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+                    $sPath = '';
+                    for ($i = 0; $i < $aTMP["position_of_itemsstring_in_path"]; $i++) {
+                        $sPath .= $aTMP["exploded_request_path"][$i] . '/';
+                    }
+                }
+            }
+            //HaaseIT\Tools::debug($sPath);
+            //HaaseIT\Tools::debug($aTMP);
+            //HaaseIT\Tools::debug($aRoutingoverride);
+            unset($aTMP);
+        }
+
+        if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
+        //$sPath = ltrim(trim($aURL["path"]), '/');
+        //$sPath = rtrim(trim($sPath), '/');
+
+        $P = getContent($C, $DB, $sPath, $sLang);
+
+        // Support for shorturls
+        /*
+        if ($P["base"]["cb_pagetype"] == 'shorturl') {
+            // todo: change router so you dont have to append /index.html to use shorturl
+            header('Location: '.$P["base"]["cb_pageconfig"], true, 302);
+            exit();
+        }
+        */
+
+        if ($P) $P["base"]["cb_pageconfig"] = json_decode($P["base"]["cb_pageconfig"], true);
+        if (isset($P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
+            $P["base"] = array_merge($P["base"], $aRoutingoverride);
+        }
+    }
 }

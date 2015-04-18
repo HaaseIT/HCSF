@@ -18,11 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../../app/init.php';
-
 $P = array(
     'base' => array(
-        'cb_pagetype' => 'itemoverview',
+        'cb_pagetype' => 'content',
         'cb_pageconfig' => '',
         'cb_subnav' => '',
     ),
@@ -32,10 +30,8 @@ $P = array(
     ),
 );
 
-if (!$C["enable_module_shop"]) {
-    $sH = \HaaseIT\Textcat::T("denied_default");
+unset($_SESSION["user"]);
+if ($C["enable_module_shop"] && isset($_SESSION["cart"])) {
+    refreshCartItems($C, $oItem);
 }
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);
+$P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("logout_message");
