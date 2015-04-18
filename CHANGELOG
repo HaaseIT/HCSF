@@ -1,4 +1,5 @@
 
+added new page type "shorturl"
 replaced include with require
 replaced calls to \HaaseIT\Tools\cED() with filter_ver() or filter_input()
 replaced calls to \HaaseIT\Tools\validateEmail($sEmail) with  filter_var($sEmail, FILTER_VALIDATE_EMAIL)
