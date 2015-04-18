@@ -516,7 +516,7 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
   (202, 68, 'de', 'Ihre Daten:'),
   (203, 68, 'en', 'Your info:'),
   (204, 68, 'es', 'Tus datos:'),
-  (205, 69, 'de', 'Kundennummer:'),
+  (205, 69, 'de', 'Kundennr.:'),
   (206, 70, 'de', '(falls vorhanden)'),
   (207, 71, 'de', 'E-Mail:'),
   (208, 72, 'de', 'Firmenname:'),
