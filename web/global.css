@@ -53,6 +53,9 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 
 .hidden-sm{display: none;}
 .only-sm{display: inline;}
+
+#search{color: black;}
+
 .pure-button{
     border-radius: 0;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
