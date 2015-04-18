@@ -18,6 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This file saves form data to the session, so the user won't have to type it again
+
 mb_internal_encoding('UTF-8');
 header("Content-Type: text/html; charset=UTF-8");
 
