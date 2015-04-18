@@ -43,30 +43,39 @@ if (($C["show_pricesonlytologgedin"] && !getUserData()) || !isset($_SERVER["HTTP
         ),
     );
 } else {
-    if (isset($_REQUEST["amount"])) {
-        $iAmount = $_REQUEST["amount"];
-    } else {
-        $iAmount = '';
+    function replyToCartUpdate($C, $twig, $sReply, $aMore = []) {
+        if (isset($_REQUEST["ajax"])) {
+            $aAR = [
+                'cart' => $_SESSION["cart"],
+                'reply' => $sReply,
+                'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
+                'currency' => $C["waehrungssymbol"],
+            ];
+            if (count($aMore)) $aAR = array_merge($aAR, $aMore);
+            echo $twig->render('shop/update-cart.twig', $aAR);
+        } else {
+            $aMSG["msg"] =  $sReply;
+            if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);
+            header('Location: '.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], $aMSG, true, false));
+        }
+        die();
     }
 
-    if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '' && is_numeric($iAmount)) {
+    $iAmount = '';
+    if (isset($_REQUEST["amount"])) {
+        $iAmount = $_REQUEST["amount"];
+    }
+
+    if (!isset($_REQUEST["itemno"]) || $_REQUEST["itemno"] == '' || !is_numeric($iAmount)) {
+        replyToCartUpdate($C, $twig, 'noitemnooramount');
+    } else {
         $iAmount = floor($iAmount);
         //die($_REQUEST["itemno"]);
 
         // Check if this item exists
         $aData = $oItem->sortItems('', $_REQUEST["itemno"]);
         if (!isset($aData)) {
-            if (isset($_REQUEST["ajax"])) {
-                $aAR = [
-                    'cart' => $_SESSION["cart"],
-                    'reply' => 'itemnotfound',
-                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                    'currency' => $C["waehrungssymbol"],
-                ];
-                echo $twig->render('shop/update-cart.twig', $aAR);
-            } else {
-                header('Location: '.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'item'), true, false));
-            }
+            replyToCartUpdate($C, $twig, 'itemnotfound');
         } else {
             // build the key for this item for the shoppingcart
             $sItemno = $aData["item"][$_REQUEST["itemno"]][DB_ITEMFIELD_NUMBER];
@@ -87,36 +96,14 @@ if (($C["show_pricesonlytologgedin"] && !getUserData()) || !isset($_SERVER["HTTP
                         if (isset($_REQUEST[$sValue]) && in_array($_REQUEST[$sValue], $aOptions)) {
                             $sCartKey .= '|' . $sValue . ':' . $_REQUEST[$sValue];
                         } else {
-                            if (isset($_REQUEST["ajax"])) {
-                                $aAR = array(
-                                    'cart' => $_SESSION["cart"],
-                                    'reply' => 'requiredfieldmissing',
-                                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                                    'currency' => $C["waehrungssymbol"],
-                                );
-                                echo $twig->render('shop/update-cart.twig', $aAR);
-                            } else {
-                                header('Location: ' . $_SERVER["HTTP_REFERER"]);
-                            }
-                            die();
+                            replyToCartUpdate($C, $twig, 'requiredfieldmissing');
                         }
                     }
                 }
             }
             // if this Items is not in cart and amount is 0, no need to do anything, return to referer
             if (!isset($_SESSION["cart"][$sCartKey]) && $iAmount == 0) {
-                if (isset($_REQUEST["ajax"])) {
-                    $aAR = array(
-                        'cart' => $_SESSION["cart"],
-                        'reply' => 'noactiontaken',
-                        'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                        'currency' => $C["waehrungssymbol"],
-                    );
-                    echo $twig->render('shop/update-cart.twig', $aAR);
-                } else {
-                    header('Location: ' . $_SERVER["HTTP_REFERER"]);
-                }
-                die();
+                replyToCartUpdate($C, $twig, 'noactiontaken');
             }
             $aItem = array(
                 'amount' => $iAmount,
@@ -127,73 +114,23 @@ if (($C["show_pricesonlytologgedin"] && !getUserData()) || !isset($_SERVER["HTTP
                 'img' => $aData["item"][$sItemno][DB_ITEMFIELD_IMG],
             );
             //debug($aItem);
-            if (isset($_SESSION["cart"][$sCartKey])) {
-                if ($iAmount == 0) {
+            if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
+                if ($iAmount == 0) { // new amount == 0 -> remove from cart
                     unset($_SESSION["cart"][$sCartKey]);
-                    if (count($_SESSION["cart"]) == 0) {
+                    if (count($_SESSION["cart"]) == 0) { // once the last cart item is unset, we no longer need cartpricesums
                         unset($_SESSION["cartpricesums"]);
                     }
-                    if (isset($_REQUEST["ajax"])) {
-                        $aAR = array(
-                            'cart' => $_SESSION["cart"],
-                            'reply' => 'removed',
-                            'subject' => $sCartKey,
-                            'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                            'currency' => $C["waehrungssymbol"],
-                        );
-                        echo $twig->render('shop/update-cart.twig', $aAR);
-                    } else {
-                        header('Location: ' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'removed', 'cartkey' => $sCartKey), true, false));
-                    }
-                    die();
-                } else {
+                    replyToCartUpdate($C, $twig, 'removed', ['cartkey' => $sCartKey]);
+                } else { // update amount
                     $_SESSION["cart"][$sCartKey]["amount"] = $iAmount;
-                    if (isset($_REQUEST["ajax"])) {
-                        $aAR = array(
-                            'cart' => $_SESSION["cart"],
-                            'reply' => 'updated',
-                            'item' => $sCartKey,
-                            'amount' => $iAmount,
-                            'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                            'currency' => $C["waehrungssymbol"],
-                        );
-                        echo $twig->render('shop/update-cart.twig', $aAR);
-                    } else {
-                        header('Location: ' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'updated', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
-                    }
-                    die();
+                    replyToCartUpdate($C, $twig, 'updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
-            } else {
+            } else { // if this item is not in the cart yet, add it
                 $_SESSION["cart"][$sCartKey] = $aItem;
             }
             //debug($_SESSION);
-            if (isset($_REQUEST["ajax"])) {
-                $aAR = array(
-                    'cart' => $_SESSION["cart"],
-                    'reply' => 'added',
-                    'item' => $sCartKey,
-                    'amount' => $iAmount,
-                    'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                    'currency' => $C["waehrungssymbol"],
-                );
-                echo $twig->render('shop/update-cart.twig', $aAR);
-            } else {
-                header('Location: ' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'added', 'cartkey' => $sCartKey, 'amount' => $iAmount), true, false));
-            }
-        }
-    } else {
-        if (isset($_REQUEST["ajax"])) {
-            $aAR = array(
-                'cart' => $_SESSION["cart"],
-                'reply' => 'noitemnooramount',
-                'cartsums' => calculateCartItems($C, $_SESSION["cart"]),
-                'currency' => $C["waehrungssymbol"],
-            );
-            echo $twig->render('shop/update-cart.twig', $aAR);
-        } else {
-            header('Location: ' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], array('msg' => 'amount'), true, false));
+            replyToCartUpdate($C, $twig, 'added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
         }
     }
-
     die();
 }

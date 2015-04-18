@@ -25,9 +25,9 @@
     <div id="infobox_new">
         {{ reply == 'requiredfieldmissing' ? 'REQUIRED FIELD MISSING' : '' }}
         {{ reply == 'noactiontaken' ? 'NO ACTION TAKEN' : '' }}
-        {{ reply == 'removed' ? 'REMOVED: ' ~ subject : '' }}
-        {{ reply == 'updated' ? 'UPDATED, ' ~ subject ~ ', new amount: ' ~ amount : '' }}
-        {{ reply == 'added' ? 'ADDED, ' ~ subject ~ ', amount: ' ~ amount : '' }}
+        {{ reply == 'removed' ? 'REMOVED: ' ~ cartkey : '' }}
+        {{ reply == 'updated' ? 'UPDATED, ' ~ cartkey ~ ', new amount: ' ~ amount : '' }}
+        {{ reply == 'added' ? 'ADDED, ' ~ cartkey ~ ', amount: ' ~ amount : '' }}
         {{ reply == 'itemnotfound' ? 'ITEMNOTFOUND' : '' }}
         {{ reply == 'noitemnooramount' ? 'NO ITEMNO OR AMOUNT' : '' }}
     </div>
