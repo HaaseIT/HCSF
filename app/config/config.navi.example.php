@@ -21,8 +21,10 @@
 $TMP = array(
     'navstruct' => array(
         'root' => array(
-            \HaaseIT\Textcat::T("sidenav_root_01") => '/seite1.html',
-            \HaaseIT\Textcat::T("sidenav_root_02") => '/seite2.html',
+            \HaaseIT\Textcat::T("sidenav_root_agb") => '/agb.html',
+            \HaaseIT\Textcat::T("sidenav_root_widerruf") => '/widerruf.html',
+            \HaaseIT\Textcat::T("sidenav_root_impressum") => '/impressum.html',
+            \HaaseIT\Textcat::T("sidenav_root_datenschutz") => '/datenschutz.html',
         ),
         'category1' => array(
             \HaaseIT\Textcat::T("sidenav_category1_01") => '/kategorie1/seite1/',
