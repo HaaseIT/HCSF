@@ -3,7 +3,7 @@ moved all files from web/_misc/ to internal routing
 simplified the update-cart script
 if no items are available on itemoverview-page, display message
 fixed: item search
-added new page type "shorturl"
+added new page type "shorturl", implementation
 replaced include with require
 replaced calls to \HaaseIT\Tools\cED() with filter_ver() or filter_input()
 replaced calls to \HaaseIT\Tools\validateEmail($sEmail) with  filter_var($sEmail, FILTER_VALIDATE_EMAIL)
