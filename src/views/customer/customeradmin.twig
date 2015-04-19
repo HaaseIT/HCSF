@@ -1,26 +1,24 @@
-<form action="{{requesturiarray.path}}" method="GET">
-<table>
-    <tr>
-        <td>
-            Anzeigen:<br>
-            <select name="type">
-                <option value="all"{{ customdata.customeradmin.type == 'all' ? ' selected' : '' }}>Alle</option>
-                <option value="active"{{ customdata.customeradmin.type == 'active' ? ' selected' : '' }}>Aktive</option>
-                <option value="inactive"{{ customdata.customeradmin.type == 'inactive' ? ' selected' : '' }}>Inaktive</option>
-            </select>
-        </td>
-        <td>&nbsp;<br /><input type="submit" value="Los"></td>
-    </tr>
-</table>
+<form action="{{requesturiarray.path}}" method="GET" class="pure-form pure-form-stacked">
+    <div class="pure-u-1">
+        <label for="type">Anzeigen:</label>
+        <select name="type" id="type" class="pure-u-1">
+            <option value="all"{{ customdata.customeradmin.type == 'all' ? ' selected' : '' }}>Alle</option>
+            <option value="active"{{ customdata.customeradmin.type == 'active' ? ' selected' : '' }}>Aktive</option>
+            <option value="inactive"{{ customdata.customeradmin.type == 'inactive' ? ' selected' : '' }}>Inaktive</option>
+        </select>
+    </div><div class="pure-u-1">
+        <button type="submit" class="pure-button pure-button-primary pure-u-1">Los</button>
+    </div>
 </form>
-<br>
 
+<p>
 {{ customdata.customeradmin.info.nodatafound ? 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>' : '' }}
 {{ customdata.customeradmin.info.nosuchuserfound ? 'Keine entsprechender Benutzer gefunden.' : '' }}
 {{ customdata.customeradmin.info.passwordchanged ? 'Das Passwort wurde geändert.<br>' : '' }}
 {{ customdata.customeradmin.info.changeswritten ? 'Die Änderungen wurden gespeichert (' ~ macro.showClientTime() ~ ').<br>' : '' }}
 
 {{content}}
+</p>
 
 {% if customdata.customerform is defined %}
 {% include 'customer/customerform.twig' %}

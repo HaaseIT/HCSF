@@ -19,16 +19,16 @@
  */
 
 $CUA = array(
-    array('title' => 'Nr.', 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => 100, 'linked' => false,),
-    array('title' => 'Firma', 'key' => DB_CUSTOMERFIELD_CORP, 'width' => 100, 'linked' => false,),
-    array('title' => 'Name', 'key' => DB_CUSTOMERFIELD_NAME, 'width' => 100, 'linked' => false,),
-    array('title' => 'Ort', 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => 100, 'linked' => false,),
-    array('title' => 'Aktiv', 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => 100, 'linked' => false,),
+    array('title' => 'Nr.', 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',),
+    array('title' => 'Firma', 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',),
+    array('title' => 'Name', 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',),
+    array('title' => 'Ort', 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',),
+    array('title' => 'Aktiv', 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',),
     //	array('title' => '', 'key' => $C[""], 'width' => 100, 'linked' => false,),
     array(
         'title' => 'bearb.',
         'key' => DB_CUSTOMERTABLE_PKEY,
-        'width' => 45,
+        'width' => '16%',
         'linked' => true,
         'ltarget' => $_SERVER["PHP_SELF"],
         'lkeyname' => 'id',
