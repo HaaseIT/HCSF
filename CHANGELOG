@@ -1,4 +1,5 @@
 
+useradmin.twig was renamed to customeradmin.twig, userhome.twig was renamed to customerhome.twig
 pageadmin/add page: added check for reserved path "/_"
 moved all files from web/_misc/ to internal routing
 simplified the update-cart script
