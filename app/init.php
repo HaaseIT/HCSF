@@ -197,28 +197,49 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         require_once PATH_BASEDIR . 'src/shop/worker.paypal_notify.php';
     } else { // else: do the default routing
         $aPath = explode('/', $sPath);
-        if (strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+        //HaaseIT\Tools::debug($aPath);
 
-        // /women/item/0010.html
-        if ($C["enable_module_shop"] && mb_strpos($sPath, '/item/') !== false) {
-            $aTMP["exploded_request_path"] = explode('/', $sPath);
-            $aTMP["position_of_itemsstring_in_path"] = count($aTMP["exploded_request_path"]) - 2;
-            if ($aTMP["exploded_request_path"][$aTMP["position_of_itemsstring_in_path"]] == 'item') {
-                $aTMP["exploded_request_file"] = explode('.', $aTMP["exploded_request_path"][count($aTMP["exploded_request_path"]) - 1]);
+        // /xxxx/item/0010.html
+        if ($C["enable_module_shop"]) {
+            $aTMP["parts_in_path"] = count($aPath);
+            // if the last dir in path is 'item' and the last part of the path is not empty
+            if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
+
+                $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
+                //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
+
+                // if the filename ends in '.html', get the requested itemno
                 if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
-                    $aRoutingoverride["itemno"] = $aTMP["exploded_request_file"][0];
+                    // to allow dots in the filename, we have to iterate through all parts of the filename
+                    $aRoutingoverride["itemno"] = '';
+                    for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
+                        $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i].'.';
+                    }
+                    // remove the trailing dot
+                    $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
+
+                    //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
                     $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+
+                    // rebuild the path string without the trailing '/item/itemno.html'
                     $sPath = '';
-                    for ($i = 0; $i < $aTMP["position_of_itemsstring_in_path"]; $i++) {
-                        $sPath .= $aTMP["exploded_request_path"][$i] . '/';
+                    for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
+                        $sPath .= $aPath[$i] . '/';
                     }
                 }
             }
-            //HaaseIT\Tools::debug($sPath);
+            HaaseIT\Tools::debug($sPath);
             //HaaseIT\Tools::debug($aTMP);
             //HaaseIT\Tools::debug($aRoutingoverride);
             unset($aTMP);
         }
+
+        /*
+        If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
+        If there is already a slash at the end, the last part of the path array will be empty.
+         */
+        if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+        unset($aPath); // no longer needed
 
         if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
         //$sPath = ltrim(trim($aURL["path"]), '/');
