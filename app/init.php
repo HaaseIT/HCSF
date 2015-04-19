@@ -169,7 +169,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/forgotpassword.html') {
         require_once PATH_BASEDIR . 'src/customer/worker.forgotpassword.php';
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/rp.html') {
-        require_once PATH_BASEDIR . 'src/customer/worker.resetpassword.php';
+        require_once PATH_BASEDIR . 'src/customer/worker.rp.php';
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/verifyemail.html') {
         require_once PATH_BASEDIR . 'src/customer/worker.verifyemail.php';
     } elseif ($C["enable_module_customer"] && $sPath == '/_misc/resendverificationmail.html') {
@@ -194,7 +194,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.paypal.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal_notify.html') {
-        require_once PATH_BASEDIR . 'src/shop/worker.paypalnotify.php';
+        require_once PATH_BASEDIR . 'src/shop/worker.paypal_notify.php';
     } else { // else: do the default routing
         $aPath = explode('/', $sPath);
         if (strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';

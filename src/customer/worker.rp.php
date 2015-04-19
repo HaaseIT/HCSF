@@ -18,6 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Password reset after clicking the link from the forgot password email
+
 if (getUserData()) {
     $P = array(
         'base' => array(
