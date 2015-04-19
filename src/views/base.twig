@@ -38,7 +38,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
     <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    {% if head_scripts is defined %}{{head_scripts}}{% endif %}
+    {{head_scripts}}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 </head>
@@ -288,5 +288,6 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                 $("[rel='tooltip']").tooltip();
             });
         </script>
+        {{end_body_code}}
 </body>
 </html>
