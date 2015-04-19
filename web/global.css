@@ -34,6 +34,7 @@ body{background: #000;}
 .pointer{cursor: pointer;}
 .block{display: block}
 .clear{clear: both;}
+.listtable {width:100%}
 .listtable-head{font-weight:700;padding:1px}
 .listtable-data{text-align:left;padding:1px}
 .listtable tr:nth-child(even){background-color:#eaeaea;}
