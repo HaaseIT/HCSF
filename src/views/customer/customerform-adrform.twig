@@ -1,0 +1,145 @@
+<div class="pure-u-1 pure-u-md-3-5">
+    <div id="customerform-address-wrapper">
+        <fieldset>
+
+            {% if customdata.customerform.purpose != 'register' %}
+                <div class="pure-control-group">
+                    <label for="addrform-custno">{{T("adrform_accountnumber")}}
+                    </label><input type="text" name="custno"
+                                   value="{{customdata.customerform.fv_custno}}"
+                                   class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.custnoinvalid is defined or customdata.customerform.errormessage.custnoalreadytaken ? ' formerror' : '' }}"
+                                   id="addrform-custno" maxlength="5"{{ customdata.customerform.readonlycustno ? ' readonly' : ''}}>
+                    {{ customdata.customerform.purpose != 'admin' and isloggedin == false ? T("adrform_ifavailable") : ' *' }}
+                </div>
+            {% endif %}
+
+            <div class="pure-control-group">
+                <label id="label-mail" for="addrform-email">{{T("adrform_email")}}
+                </label><input type="email" name="email"
+                               value="{{customdata.customerform.fv_email}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.email is defined or customdata.customerform.errormessage.emailalreadytaken is defined ? ' formerror' : '' }}"
+                               id="addrform-email"{{ customdata.customerform.purpose == 'editprofile' or customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ not (customdata.customerform.readonly or customdata.customerform.purpose == 'editprofile') ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label for="addrform-corpname">{{T("adrform_corpname")}}
+                </label><input type="text" name="corpname"
+                               value="{{customdata.customerform.fv_corpname}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.corpname is defined ? ' formerror' : '' }}"
+                               id="addrform-corpname"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_corpname and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-Name" for="addrform-name">{{T("adrform_yourname")}}
+                </label><input type="text" name="name"
+                               value="{{customdata.customerform.fv_name}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.name is defined ? ' formerror' : '' }}"
+                               id="addrform-name"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_name and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-Strasse" for="addrform-street">{{T("adrform_street")}}
+                </label><input type="text" name="street"
+                               value="{{customdata.customerform.fv_street}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.street is defined ? ' formerror' : '' }}"
+                               id="addrform-street"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_street and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-PLZ" for="addrform-zip">{{T("adrform_zip")}}
+                </label><input type="text" name="zip"
+                               value="{{customdata.customerform.fv_zip}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.zip is defined ? ' formerror' : '' }}"
+                               id="addrform-zip"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_zip and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-Ort" for="addrform-town">{{T("adrform_town")}}
+                </label><input type="text" name="town"
+                               value="{{customdata.customerform.fv_town}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.town is defined ? ' formerror' : '' }}"
+                               id="addrform-town"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_town and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-telefon" for="addrform-phone">{{T("adrform_fon")}}
+                </label><input type="text" name="phone"
+                               value="{{customdata.customerform.fv_phone}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.phone is defined ? ' formerror' : '' }}"
+                               id="addrform-phone"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_phone and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label for="addrform-cellphone">{{T("adrform_cellular")}}
+                </label><input type="text" name="cellphone"
+                               value="{{customdata.customerform.fv_cellphone}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.cellphone is defined ? ' formerror' : '' }}"
+                               id="addrform-cellphone"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_cellphone and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label for="addrform-fax">{{T("adrform_fax")}}
+                </label><input type="text" name="fax"
+                               value="{{customdata.customerform.fv_fax}}"
+                               class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.fax is defined ? ' formerror' : '' }}"
+                               id="addrform-fax"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                {{ customdata.customerform.fr_fax and not customdata.customerform.readonly ? ' *' : '' }}
+            </div>
+
+            <div class="pure-control-group">
+                <label id="label-country" for="addrform-country">{{T("adrform_country")}}
+                </label>{% if customdata.customerform.readonly
+                %}{{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", 'pure-u-1 pure-u-md-3-4', true) }}{%
+                else %}{{ macro.select("country", countrylist, customdata.customerform.fv_country, "addrform-country", (customdata.customerform.errormessage.country is defined ? 'pure-u-1 pure-u-md-3-4 formerror' : 'pure-u-1 pure-u-md-3-4')) }}{{
+                customdata.customerform.fr_country ? ' *' : '' }}{%
+                endif %}
+            </div>
+
+            {% if customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'shopadmin' %}
+                <div class="pure-control-group">
+                    <label for="addrform-custgroup">{{T("adrform_custgroup")}}
+                    </label>{%
+                    if customdata.customerform.purpose == 'admin' %}{{
+                    macro.select('custgroup', customdata.customerform.fv_custgroups, customdata.customerform.fv_custgroup_selected, 'addrform-custgroup', 'pure-u-1 pure-u-md-3-4') }}{%
+                elseif customdata.customerform.purpose == 'shopadmin' %}<input
+                    type="text" name="custgroup" id="addrform-custgroup" class="pure-u-1 pure-u-md-3-4"
+                    value="{{customdata.customerform.fv_custgroup}}"{{ customdata.customerform.readonly ? ' readonly' : '' }}>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'register' or customdata.customerform.purpose == 'editprofile' %}
+                <div class="pure-control-group">
+                    <label for="addrform-pwd">{{T("adrform_password")}}
+                    </label><input type="password" name="pwd"
+                                   value="{{customdata.customerform.fv_pwd}}" class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.passwordlength is defined ? ' formerror' : '' }}"
+                                   id="addrform-pwd">
+                    {{ not (customdata.customerform.purpose == 'admin' or customdata.customerform.purpose == 'editprofile') ? ' *' : '' }}
+                </div>
+
+                <div class="pure-control-group">
+                    <label for="addrform-pwdc">{{T("adrform_passwordconfirm")}}
+                    </label><input type="password" name="pwdc"
+                                   value="{{customdata.customerform.fv_pwdc}}" class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.passwordmatch is defined ? ' formerror' : '' }}"
+                                   id="addrform-pwdc">
+                </div>
+            {% endif %}
+
+            {% if customdata.customerform.purpose == 'shoppingcart' %}
+                <div class="pure-control-group">
+                    <label id="label-nachricht" for="addrform-remarks">{{T("adrform_remarks")}}
+                    </label><textarea cols="20" rows="10" id="addrform-remarks" name="remarks" class="pure-u-1 pure-u-md-3-4">{{customdata.customerform.fv_remarks}}</textarea>
+                </div>
+            {% endif %}
+
+        </fieldset>
+    </div>
+</div>
