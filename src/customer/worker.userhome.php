@@ -37,7 +37,7 @@ if (!getUserData()) {
                 'cb_pagetype' => 'content',
                 'cb_pageconfig' => '',
                 'cb_subnav' => '',
-                'cb_customcontenttemplate' => 'customer/userhome',
+                'cb_customcontenttemplate' => 'customer/customerhome',
             ),
             'lang' => array(
                 'cl_lang' => $sLang,
