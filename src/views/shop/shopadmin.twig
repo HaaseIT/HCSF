@@ -28,7 +28,6 @@
 {% if customdata.customerform is defined and customdata.shoppingcart is defined %}
     <hr>
     <form action="{{ requesturiarray.path }}" method="post" class="pure-form pure-form-aligned">
-        <input type="hidden" name="id" value="{{ customdata.orderdata.o_id }}">
         {% if customdata.orderdata.o_authed == 'y' %}
     Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
 {% else %}
@@ -40,6 +39,7 @@
         {% include 'customer/customerform-adrform.twig'
 %}<div class="pure-u-1 pure-u-md-2-5">
     </form><form action="{{ requesturiarray.path }}" method="post" class="pure-form pure-form-stacked">
+        <input type="hidden" name="id" value="{{ customdata.orderdata.o_id }}">
     <div id="customerform-shad-wrapper">
         <fieldset>
             <div class="pure-u-1"><label for="shadm_remarks_internal">Bemerkungen intern</label>
