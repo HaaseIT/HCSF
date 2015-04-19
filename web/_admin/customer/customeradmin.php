@@ -22,14 +22,14 @@ require_once __DIR__.'/../../../app/init.php';
 require_once __DIR__.'/../../../src/customer/functions.admin.customer.php';
 $sH = '';
 
-$aPData = handleUserAdmin($CUA, $twig, $DB, $C, $sLang);
+$aPData = handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang);
 
 $P = array(
     'base' => array(
         'cb_pagetype' => 'content',
         'cb_pageconfig' => '',
         'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'customer/useradmin',
+        'cb_customcontenttemplate' => 'customer/customeradmin',
     ),
     'lang' => array(
         'cl_lang' => $sLang,

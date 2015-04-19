@@ -48,7 +48,7 @@ $TMP = array(
         ),
         'admin' => array(
             'Shopverwaltung' => '/_admin/shop/shopadmin.php',
-            'Benutzerverwaltung' => '/_admin/customer/customeradmin.php',
+            'Kundenverwaltung' => '/_admin/customer/customeradmin.php',
             'Artikelverwaltung' => '/_admin/shop/itemadmin.php',
 //			'Artikelgruppen' => '/_admin/shop/itemgroupadmin.php',
             'Seite bearbeiten' => '/_admin/pageadmin.php',

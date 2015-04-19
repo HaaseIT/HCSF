@@ -38,7 +38,7 @@ $CUA = array(
     ),
 );
 
-function handleUserAdmin($CUA, $twig, $DB, $C, $sLang)
+function handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang)
 {
     $sType = 'all';
     if (isset($_REQUEST["type"])) {
