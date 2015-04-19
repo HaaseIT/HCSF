@@ -15,7 +15,7 @@
         <thead>
         <tr>
             {% for value in C %}
-                <th class="listtable-head" style="width:{{ value.width }}px;"{{ value.style-head != '' ? ' style="'~value.style-head~'"' : '' }}>
+                <th class="listtable-head" style="width:{{ value.width }};{{ value.stylehead != '' ? ' '~value.stylehead : '' }}">
                     {{ value.linked != true ? value.title : '' }}
                 </th>
             {% endfor %}
@@ -27,7 +27,7 @@
             <tr id="listtable_{{ counter_listtable }}_tr_{{ j }}"
                 onClick="toggleHighlight('listtable_{{ counter_listtable }}_tr_{{ j }}')">
                 {% for value in C %}
-                    <td class="listtable-data" valign="top"{{ value.style-data != '' ? ' style="'~value.style-data~'"' : '' }}>
+                    <td class="listtable-data" valign="top"{{ value.styledata != '' ? ' style="'~value.styledata~'"' : '' }}>
                         {% if value.linked %}
                             <a href="{{ value.ltarget }}?{{ value.lkeyname }}={{ row[value.key]
                             }}{% if value.lgetvars|length > 0 %}{% for lkey, lvalue in value.lgetvars %}&amp;{{ lkey
