@@ -86,20 +86,33 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     //HaaseIT\Tools::debug($aItemdata);
 }
 
-if (!isset($_REQUEST["action"])) {
+if (!isset($_GET["action"])) {
     $P["base"]["cb_customdata"]["pageselect"] = showPageselect($DB, $C);
-} elseif ($_REQUEST["action"] == 'edit' && isset($_REQUEST["page_id"]) && $_REQUEST["page_id"] != '') {
-    if (admin_getPage($_REQUEST["page_id"], $DB, $sLang)) {
-        if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P["base"]["cb_customdata"]["updated"] = updatePage($DB, $sLang);
-        $P["base"]["cb_customdata"]["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
-        $P["base"]["cb_customdata"]["page"]["admin_page_types"] = $C["admin_page_types"];
-        $P["base"]["cb_customdata"]["page"]["admin_page_groups"] = $C["admin_page_groups"];
-        $aOptions = array('');
-        foreach ($C["navstruct"] as $sKey => $aValue) $aOptions[] = $sKey;
-        $P["base"]["cb_customdata"]["page"]["subnavarea_options"] = $aOptions;
-        unset($aOptions);
+} elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_id"]) && $_REQUEST["page_id"] != '') {
+    if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
+        // delete and put message in customdata
+        // delete children
+        $sQ = "DELETE FROM content_lang WHERE cl_cb = '".\filter_var($_GET["page_id"], FILTER_SANITIZE_NUMBER_INT)."'";
+        $DB->exec($sQ);
+
+        // then delete base row
+        $sQ = "DELETE FROM content_base WHERE cb_id = '".\filter_var($_GET["page_id"], FILTER_SANITIZE_NUMBER_INT)."'";
+        $DB->exec($sQ);
+
+        $P["base"]["cb_customdata"]["deleted"] = true;
+    } else {
+        if (admin_getPage($_REQUEST["page_id"], $DB, $sLang)) {
+            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P["base"]["cb_customdata"]["updated"] = updatePage($DB, $sLang);
+            $P["base"]["cb_customdata"]["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
+            $P["base"]["cb_customdata"]["page"]["admin_page_types"] = $C["admin_page_types"];
+            $P["base"]["cb_customdata"]["page"]["admin_page_groups"] = $C["admin_page_groups"];
+            $aOptions = array('');
+            foreach ($C["navstruct"] as $sKey => $aValue) $aOptions[] = $sKey;
+            $P["base"]["cb_customdata"]["page"]["subnavarea_options"] = $aOptions;
+            unset($aOptions);
+        }
     }
-} elseif ($_REQUEST["action"] == 'addpage') {
+} elseif ($_GET["action"] == 'addpage') {
     $aErr = array();
     if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
         if (mb_substr($_POST["pagekey"], 0, 2) == '/_') {

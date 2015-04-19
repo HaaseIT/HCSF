@@ -25,91 +25,91 @@
         {% endfor %}
         {% endfor %}
     </script>
-    <style type="text/css">
-        #select_groups{width: 150px;}
-        #select_page_id{width: 270px;}
+    <style>
+        #select_groups, #select_page_id {height: 15.5em;}
     </style>
-    <form action="{{ requesturi }}" method="get" name="form_page">
+    <form action="{{ requesturi }}" method="get" name="form_page" class="pure-form pure-form-stacked">
         <input type="hidden" name="action" value="edit">
-        <table>
-            <tr>
-                <td class="small" valign="top">
-                    Page group:<br>
-                    {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', '', false, 15) }}
-                </td>
-                <td class="small" style="padding-left: 5px;">
-                    Please choose page to edit:<br>
-                    {{ macro.select('page_id', ['|Please choose group'], '', 'select_page_id', '', false, 15) }}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" align="right">
-                    <input type="submit" value="continue">
-                </td>
-            </tr>
-        </table>
+        <fieldset>
+            <div class="pure-u-1-5">
+                <label for="select_groups">Page group:</label>
+                {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
+            </div><div class="pure-u-4-5">
+                <label for="select_page_id">Please choose page to edit:</label>
+                {{ macro.select('page_id', ['|Please choose group'], '', 'select_page_id', 'pure-u-1', false, 15) }}
+            </div>
+        </fieldset>
+        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Weiter</button>
     </form>
-    <a href="{{ requesturiarray.path }}?action=addpage">[Seite hinzufügen]</a><br>
+    <p><a href="{{ requesturiarray.path }}?action=addpage">[Seite hinzufügen]</a></p>
 {% endif %}
 {% if customdata.page is defined %}
-    {% if customdata.updated is defined %}
-        Changes committed: {{ macro.showClienttime() }}<br>
-    {% endif %}
     <style type="text/css">
-        .pageformwidth{width: 740px;}
-        #pageform_html{height: 300px;}
-        fieldset{border: 1px solid;}
-        input[type=submit]{margin: 10px 11px 0 11px;}
+        #page_html{height: 20em;}
     </style>
-    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&action=edit" method="post">
+    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&action=edit" method="post" class="pure-form pure-form-stacked">
         <input type="hidden" name="action_a" value="true">
         <div class="small">
-            current page: {{ customdata.page.base.cb_key }}
+            <h3>current page: {{ customdata.page.base.cb_key }}</h3>
         </div>
-        {% if customdata.page.text is defined %}
-            <fieldset>
-                <legend>Sprachspezifisch</legend>
-                <input type="hidden" name="textid" value="{{ customdata.page.text[constant('DB_CONTENTTABLE_LANG_PKEY')] }}">
-                <textarea name="page_html" class="pageformwidth" id="pageform_html">{{ customdata.page.text.cl_html }}</textarea>
-                <br>
-                Page title:<br>
-                <input type="text" name="page_title" value="{{ customdata.page.text.cl_title }}" class="pageformwidth">
-                <br>
-                Meta-Description:<br>
-                <input type="text" name="page_description" value="{{ customdata.page.text.cl_description }}" class="pageformwidth">
-                <br>
-                Meta-Keywords (comma seperated):<br>
-                <input type="text" name="page_keywords" value="{{ customdata.page.text.cl_keywords }}" class="pageformwidth">
-            </fieldset>
-        {% else %}
-            <br><a href="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun.</a><br><br>
-        {% endif %}
+    {% if customdata.updated is defined %}
+    <p>Changes committed: {{ macro.showClienttime() }}</p>
+    {% endif %}
+    {% if customdata.page.text is defined %}
+    <fieldset>
+        <legend>Sprachspezifisch</legend>
+        <input type="hidden" name="textid" value="{{ customdata.page.text[constant('DB_CONTENTTABLE_LANG_PKEY')] }}">
+        <label for="page_html">Seiteninhalt</label>
+        <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.text.cl_html }}</textarea>
+        <label for="page_title">Seitentitel:</label>
+        <input type="text" name="page_title" id="page_title" value="{{ customdata.page.text.cl_title }}" class="pure-u-1">
+        <label for="page_description">Meta-Description:</label>
+        <input type="text" name="page_description" id="page_description" value="{{ customdata.page.text.cl_description }}" class="pure-u-1">
+        <label for="page_keywords">Meta-Keywords (mit Kommas getrennt):</label>
+        <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.text.cl_keywords }}" class="pure-u-1">
+    </fieldset>
+    {% else %}
+    <p>
+        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun</a>
+    </p>
+    {% endif %}
         <fieldset>
             <legend>Sprachunabhängig</legend>
-            Page type:<br>
-            {{ macro.select('page_type', customdata.page.admin_page_types, customdata.page.base.cb_pagetype, '', 'pageformwidth') }}
-            <br>
-            Page group:<br>
-            {{ macro.select('page_group', customdata.page.admin_page_groups, customdata.page.base.cb_group, '', 'pageformwidth') }}
-            <br>
-            Page config (json) oder shorturl Linkziel:<br>
-            <textarea name="page_config" class="pageformwidth">{{ customdata.page.base.cb_pageconfig }}</textarea>
-            <br>
-            Page Subnavarea:<br>
-            {{ macro.select('page_subnav', customdata.page.subnavarea_options, customdata.page.base.cb_subnav, '', 'pageformwidth') }}
+            <label for="page_type">Page type:</label>
+            {{ macro.select('page_type', customdata.page.admin_page_types, customdata.page.base.cb_pagetype, 'page_type', 'pure-u-1') }}
+            <label for="page_group">Page group:</label>
+            {{ macro.select('page_group', customdata.page.admin_page_groups, customdata.page.base.cb_group, 'page_group', 'pure-u-1') }}
+            <label for="page_config">Page config (json) oder shorturl Linkziel:</label>
+            <textarea name="page_config" class="pure-u-1" id="page_config">{{ customdata.page.base.cb_pageconfig }}</textarea>
+            <label for="page_subnav">Page Subnavarea:</label>
+            {{ macro.select('page_subnav', customdata.page.subnavarea_options, customdata.page.base.cb_subnav, 'page_subnav', 'pure-u-1') }}
         </fieldset>
-        <input type="submit" value="edit" class="pageformwidth">
+        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button>
     </form>
+    <p>
+    <form action="/_admin/pageadmin.php?action=delete&amp;page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
+    <fieldset>
+    <legend>Seite löschen</legend>
+            <label for="page-delete-confirm" class="pure-checkbox">
+            <input type="checkbox" name="delete" value="do" id="page-delete-confirm"> Ich möchte diese Seite in allen Sprachen löschen</label>
+    <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Löschen</button>
+
+        </fieldset>
+    </form>
+    </p>
 {% endif %}
 {% if customdata.showaddform %}
     {{ customdata.err.reservedpath ? 'Der von Ihnen gewählte Schlüssel ist für das System reserviert, er darf nicht mit "/_" beginnen.<br><br>' : '' }}
     {{ customdata.err.keytooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für den Seitenschlüssel.<br><br>' : '' }}
     {{ customdata.err.keyalreadyinuse ? 'Dieser Seitenschlüssel ist bereits vergeben.<br><br>' : '' }}
-    Seitenschlüssel:<br>
-    <form action="/_admin/pageadmin.php?action=addpage" method="POST" name="addpage">
+    <form action="/_admin/pageadmin.php?action=addpage" method="POST" name="addpage" class="pure-form pure-form-stacked">
         <input type="hidden" name="addpage" value="do">
-        <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="formtext" style="width:400px;">
-        <input type="submit" name="" value="Submit" class="formsubmit">
+        <label for="pagekey">Seitenschlüssel:</label>
+        <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="pure-u-1" id="pagekey">
+        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Anlegen</button>
     </form>
+{% endif %}
+{% if customdata.deleted is defined %}
+Die Seite wurde gelöscht.
 {% endif %}
 {{content}}
