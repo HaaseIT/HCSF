@@ -258,7 +258,7 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 .cart-product-remove{color: inherit;}
 #cart-summary{border-top:1px solid #000;padding:0.6em;}
 
-#customerform-errortext, #customerform-address-wrapper, #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-admstate-wrapper{
+#customerform-errortext, #customerform-address-wrapper, #customerform-paymeht-wrapper, #customerform-tos-wrapper, #customerform-admstate-wrapper, #customerform-shad-wrapper{
     border: 1px solid #000;
     padding: 1em;
     margin-bottom: 2em;
