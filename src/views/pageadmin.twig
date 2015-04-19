@@ -102,6 +102,7 @@
     </form>
 {% endif %}
 {% if customdata.showaddform %}
+    {{ customdata.err.reservedpath ? 'Der von Ihnen gewählte Schlüssel ist für das System reserviert, er darf nicht mit "/_" beginnen.<br><br>' : '' }}
     {{ customdata.err.keytooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für den Seitenschlüssel.<br><br>' : '' }}
     {{ customdata.err.keyalreadyinuse ? 'Dieser Seitenschlüssel ist bereits vergeben.<br><br>' : '' }}
     Seitenschlüssel:<br>

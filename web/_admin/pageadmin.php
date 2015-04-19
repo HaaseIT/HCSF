@@ -102,8 +102,11 @@ if (!isset($_REQUEST["action"])) {
 } elseif ($_REQUEST["action"] == 'addpage') {
     $aErr = array();
     if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
-        if (strlen($_POST["pagekey"]) < 4) $aErr["keytooshort"] = true;
-        else {
+        if (mb_substr($_POST["pagekey"], 0, 2) == '/_') {
+            $aErr["reservedpath"] = true;
+        } elseif (strlen($_POST["pagekey"]) < 4) {
+            $aErr["keytooshort"] = true;
+        } else {
             $sQ = "SELECT ".DB_CONTENTFIELD_BASE_KEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = '";
             $sQ .= \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS))."'";
             $hResult = $DB->query($sQ);
