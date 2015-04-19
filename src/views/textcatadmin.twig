@@ -22,13 +22,10 @@
     <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat" class="pure-form pure-form-stacked">
     <fieldset>
     <legend>Text löschen</legend>
-
-            <label for="textcat-delete-confirm" class="pure-checkbox">
-            <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> Ich möchte diesen Text in allen Sprachen löschen</label>
-
-    <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Löschen</button>
-
-        </fieldset>
+        <label for="textcat-delete-confirm" class="pure-checkbox">
+        <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> Ich möchte diesen Text in allen Sprachen löschen</label>
+        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Löschen</button>
+    </fieldset>
     </form>
     </p>
 {% elseif customdata.deleted %}
