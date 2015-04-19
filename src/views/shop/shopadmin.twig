@@ -49,7 +49,7 @@
 </style>
 {% if customdata.customerform is defined and customdata.shoppingcart is defined %}
     <hr><br>
-    <form action="{{ requesturiarray.path }}" method="post">
+    <form action="{{ requesturiarray.path }}" method="post" class="pure-form pure-form-aligned">
         <input type="hidden" name="id" value="{{ customdata.orderdata.o_id }}">
         {% if customdata.orderdata.o_authed == 'y' %}
             Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
@@ -107,7 +107,7 @@
                         </tr>
                         <tr>
                             <td class="shcaddressformtableform" colspan="2" style="text-align: right;">
-                                <input type="submit" name="change" value="Bearbeiten" id="shadm_submit">
+                                <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shadm_submit" name="change">Bearbeiten</button>
                             </td>
                         </tr>
                     </table>
