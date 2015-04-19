@@ -228,33 +228,33 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
                     }
                 }
             }
-            HaaseIT\Tools::debug($sPath);
+            //HaaseIT\Tools::debug($sPath);
             //HaaseIT\Tools::debug($aTMP);
             //HaaseIT\Tools::debug($aRoutingoverride);
             unset($aTMP);
         }
 
-        /*
-        If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
-        If there is already a slash at the end, the last part of the path array will be empty.
-         */
-        if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+        // if the page is not found as it is, try some more options
+        if (!$P = getContent($C, $DB, $sPath, $sLang)) {
+            /*
+            If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
+            If there is already a slash at the end, the last part of the path array will be empty.
+             */
+            if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+
+            if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
+            //$sPath = ltrim(trim($aURL["path"]), '/');
+            //$sPath = rtrim(trim($sPath), '/');
+
+            $P = getContent($C, $DB, $sPath, $sLang);
+        }
         unset($aPath); // no longer needed
 
-        if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
-        //$sPath = ltrim(trim($aURL["path"]), '/');
-        //$sPath = rtrim(trim($sPath), '/');
-
-        $P = getContent($C, $DB, $sPath, $sLang);
-
         // Support for shorturls
-        /*
         if ($P["base"]["cb_pagetype"] == 'shorturl') {
-            // todo: change router so you dont have to append /index.html to use shorturl
             header('Location: '.$P["base"]["cb_pageconfig"], true, 302);
             exit();
         }
-        */
 
         if ($P) $P["base"]["cb_pageconfig"] = json_decode($P["base"]["cb_pageconfig"], true);
         if (isset($P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
