@@ -31,7 +31,7 @@
             {% endif %}
         });
     </script>
-    <div class="pure-u-1 pure-u-md-1-2">
+    <div class="pure-u-1 pure-u-md-3-5">
         <div id="customerform-address-wrapper">
             {% if customdata.customerform.purpose == 'shoppingcart' %}
                 <input type="hidden" name="doCheckout" value="yes">
@@ -186,7 +186,7 @@
         </div>
     </div>{%
     if customdata.customerform.purpose == 'shoppingcart' %}<div
-            class="pure-u-1 pure-u-md-1-2">
+            class="pure-u-1 pure-u-md-2-5">
         {% set paymentmethodcount = customdata.customerform.fv_paymentmethods|length %}
         {% set paymentmethodloopfirst = true %}
         <div id="customerform-paymeht-wrapper">
@@ -248,7 +248,7 @@
             {% elseif customdata.customerform.purpose == 'editprofile' or customdata.customerform.purpose == 'admin' %}
                 {% set customerform_submitstring = T("adrform_submit_editprofile") %}
             {% endif %}
-            <input id="customerform-submit" type="submit" value="{{customerform_submitstring}}" class="pure-u-1 pure-u-md-1-2 pure-button button-orange pull-right">
+            <div id="customerform-submit-wrapper"><button type="submit" class="pure-button pure-button-primary pure-u-1" id="customerform-submit" >{{customerform_submitstring}}</button></div>
         {% endif %}
     </div>
     {% if not customdata.customerform.readonly or customdata.customerform.purpose == 'admin' %}
