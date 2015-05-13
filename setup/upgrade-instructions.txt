@@ -1,4 +1,5 @@
-V2.xx
+
+V2.1.0
 delete directory: web/_misc/
 delete src/views/customer/ useradmin.twig, userhome.twig
 moved admin navi from config to init, please remove from config file
