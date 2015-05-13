@@ -38,25 +38,5 @@
 No: {{thisitem.itm_no}}<br>
 Vatid: {{thisitem.itm_vatid}}<br>
 Rebategroup: {{thisitem.itm_rg}}<br>
-Imglarge: {{thisitem.itm_imglg}}<br>
 Group: {{thisitem.itm_group}}<br>
-Short text: {{thisitem.itml_shorttext}}<br>
-Details: {{thisitem.itml_details}}<br>
-#}
-{#
-
-foreach ( $aData["artikel"] as $aRow ) {
-if ( isset( $aRow["group"] ) && trim( $aRow["group"] ) != "" ) { // if gruppe
-$sH .= $this->showGroup( $aRow, $aData["groups"], $j, $bShowprices );
-$j++;
-} else { // endif gruppe - else
-$sH .= $this->showItem( $aRow, $i, $bShowprices );
-$i++;
-}
-}
-
-if ( $this->C["show_pricesonlytologgedin"] ) {
-if ( getUserData() ) $bShowprices = true;
-else $bShowprices = false;
-} else $bShowprices = true;
 #}
