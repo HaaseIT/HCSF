@@ -137,6 +137,9 @@ $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILEN
 \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
 
 require_once __DIR__.'/config/config.navi.php';
+if (isset($C["navstruct"]["admin"])) {
+    unset($C["navstruct"]["admin"]);
+}
 
 if ($C["enable_module_customer"]) {
     require_once __DIR__.'/../src/customer/functions.customer.php';
