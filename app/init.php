@@ -138,16 +138,31 @@ $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILEN
 
 require_once __DIR__.'/config/config.navi.php';
 
-if ($C["enable_module_customer"]) require_once __DIR__.'/../src/customer/functions.customer.php';
+if ($C["enable_module_customer"]) {
+    require_once __DIR__.'/../src/customer/functions.customer.php';
+}
 
 if ($C["enable_module_shop"]) {
     require_once __DIR__ . '/../src/shop/Items.php';
     require_once __DIR__ . '/../src/shop/functions.shoppingcart.php';
 
     $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
+
+    $C["navstruct"]["admin"]["Bestellungen"] = '/_admin/shop/shopadmin.php';
+    $C["navstruct"]["admin"]["Artikel"] = '/_admin/shop/itemadmin.php';
+    $C["navstruct"]["admin"]["Artikelgruppen"] = '/_admin/shop/itemgroupadmin.php';
 } else {
     $oItem = '';
 }
+
+if ($C["enable_module_customer"]) {
+    require_once __DIR__.'/../src/customer/functions.customer.php';
+    $C["navstruct"]["admin"]["Kunden"] = '/_admin/customer/customeradmin.php';
+}
+
+$C["navstruct"]["admin"]["Seiten"] = '/_admin/pageadmin.php';
+$C["navstruct"]["admin"]["Textkataloge"] = '/_admin/textcatadmin.php';
+$C["navstruct"]["admin"]["Templatecache leeren"] = '/_admin/cleartemplatecache.php';
 
 // ----------------------------------------------------------------------------
 // Begin routing

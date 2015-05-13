@@ -46,15 +46,6 @@ $TMP = array(
             \HaaseIT\Textcat::T("sidenav_category5_01") => '/kategorie5/seite1/',
             \HaaseIT\Textcat::T("sidenav_category5_02") => '/kategorie5/seite2/',
         ),
-        'admin' => array(
-            'Shopverwaltung' => '/_admin/shop/shopadmin.php',
-            'Kundenverwaltung' => '/_admin/customer/customeradmin.php',
-            'Artikelverwaltung' => '/_admin/shop/itemadmin.php',
-//			'Artikelgruppen' => '/_admin/shop/itemgroupadmin.php',
-            'Seite bearbeiten' => '/_admin/pageadmin.php',
-            'Textkataloge bearbeiten' => '/_admin/textcatadmin.php',
-            'Templatecache leeren' => '/_admin/cleartemplatecache.php',
-        ),
     ),
 );
 
