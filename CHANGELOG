@@ -1,4 +1,5 @@
 
+2.1.0
 now works with hosting at 1&1 and other mass hosters
 pageadmin: removed admin from list of options for page subnav
 moved admin navi from config to init
