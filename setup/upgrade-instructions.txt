@@ -1,6 +1,7 @@
 V2.xx
 delete directory: web/_misc/
 delete src/views/customer/ useradmin.twig, userhome.twig
+moved admin navi from config to init, please remove from config file
 
 V2.05
 config.core.yml has a new value in admin_page_types
