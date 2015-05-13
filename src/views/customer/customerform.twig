@@ -55,7 +55,10 @@
             {% for paymentmethod in customdata.customerform.fv_paymentmethods %}
             <div class="pure-controls customerform-payment">
                 <label for="addrform-paymentmethod-{{paymentmethod}}" class="{{ customdata.customerform.errormessage.paymentmethod is defined ? ' formerror' : '' }}">
-                    <input class="col-md-1 col-xs-1" type="radio" name="paymentmethod" id="addrform-paymentmethod-{{paymentmethod}}" value="{{paymentmethod}}"{{ paymentmethodcount == 1 or paymentmethod == customdata.customerform.fv_paymentmethod ? ' checked' : '' }}> {{T("order_paymentmethod_" ~ paymentmethod)}}
+                    <input class="col-md-1 col-xs-1" type="radio" name="paymentmethod"
+                           id="addrform-paymentmethod-{{paymentmethod}}"
+                           value="{{paymentmethod}}"{{ paymentmethodcount == 1 or paymentmethod == customdata.customerform.fv_paymentmethod ? ' checked' : '' }}>
+                    {{T("order_paymentmethod_" ~ paymentmethod)}}
                 </label>
                 {% set paymentmethodloopfirst = false %}
             </div>

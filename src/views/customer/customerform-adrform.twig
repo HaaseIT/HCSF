@@ -9,7 +9,7 @@
                                    value="{{customdata.customerform.fv_custno}}"
                                    class="pure-u-1 pure-u-md-3-4{{ customdata.customerform.errormessage.custnoinvalid is defined or customdata.customerform.errormessage.custnoalreadytaken ? ' formerror' : '' }}"
                                    id="addrform-custno" maxlength="5"{{ customdata.customerform.readonlycustno ? ' readonly' : ''}}>
-                    {{ customdata.customerform.purpose != 'admin' and isloggedin == false ? T("adrform_ifavailable") : ' *' }}
+                    {{ customdata.customerform.purpose == 'admin' ? ' *' : '' }}{# T("adrform_ifavailable") #}
                 </div>
             {% endif %}
 
