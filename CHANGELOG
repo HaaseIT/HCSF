@@ -1,4 +1,5 @@
 
+pageadmin: removed admin from list of options for page subnav
 moved admin navi from config to init
 useradmin.twig was renamed to customeradmin.twig, userhome.twig was renamed to customerhome.twig
 pageadmin/add page: added check for reserved path "/_"
