@@ -107,7 +107,12 @@ if (!isset($_GET["action"])) {
             $P["base"]["cb_customdata"]["page"]["admin_page_types"] = $C["admin_page_types"];
             $P["base"]["cb_customdata"]["page"]["admin_page_groups"] = $C["admin_page_groups"];
             $aOptions = array('');
-            foreach ($C["navstruct"] as $sKey => $aValue) $aOptions[] = $sKey;
+            foreach ($C["navstruct"] as $sKey => $aValue) {
+                if ($sKey == 'admin') {
+                    continue;
+                }
+                $aOptions[] = $sKey;
+            }
             $P["base"]["cb_customdata"]["page"]["subnavarea_options"] = $aOptions;
             unset($aOptions);
         }
