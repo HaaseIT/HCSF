@@ -207,6 +207,10 @@ pre.debug{background: #fff; border:2px solid red;padding:1em;}
 .pure-menu{border:1px solid #dfdfdf;}
 #leftnav .pure-menu-selected{background: #eee !important;}
 #leftnav ul li a {color: #000;}
+.pure-menu-item a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 /* Leftnav end */
 
 #itemoverview{margin-left: -1em;}
