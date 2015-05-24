@@ -22,13 +22,12 @@
         <li class="divider"></li>
         <li><a href="/_misc/shoppingcart.html"><button type="button" class="pure-button pure-u-23-24 pure-u-md-1 button-green">{{ T("utilities_gotoshoppingcart") }}</button></a></li>
     </div>
-    <div id="infobox_new">
-        {{ reply == 'requiredfieldmissing' ? 'REQUIRED FIELD MISSING' : '' }}
-        {{ reply == 'noactiontaken' ? 'NO ACTION TAKEN' : '' }}
-        {{ reply == 'removed' ? 'REMOVED: ' ~ cartkey : '' }}
-        {{ reply == 'updated' ? 'UPDATED, ' ~ cartkey ~ ', new amount: ' ~ amount : '' }}
-        {{ reply == 'added' ? 'ADDED, ' ~ cartkey ~ ', amount: ' ~ amount : '' }}
-        {{ reply == 'itemnotfound' ? 'ITEMNOTFOUND' : '' }}
-        {{ reply == 'noitemnooramount' ? 'NO ITEMNO OR AMOUNT' : '' }}
-    </div>
+    <div id="infobox_new">{{
+        reply == 'requiredfieldmissing' ? 'REQUIRED FIELD MISSING' : '' }}{{
+        reply == 'noactiontaken' ? 'NO ACTION TAKEN' : '' }}{{
+        reply == 'removed' ? 'REMOVED: ' ~ cartkey : '' }}{{
+        reply == 'updated' ? 'UPDATED, ' ~ cartkey ~ ', new amount: ' ~ amount : '' }}{{
+        reply == 'added' ? 'ADDED, ' ~ cartkey ~ ', amount: ' ~ amount : '' }}{{
+        reply == 'itemnotfound' ? 'ITEMNOTFOUND' : '' }}{{
+        reply == 'noitemnooramount' ? 'NO ITEMNO OR AMOUNT' : '' }}</div>
 </div>
