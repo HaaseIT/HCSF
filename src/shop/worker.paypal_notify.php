@@ -63,7 +63,7 @@ if ($hResult->rowCount() == 1) {
 
             $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\n";
             $sLogData .= "W00T!\n\n";
-            $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true) . "\n\n";
+            $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true)."\n\n";
 
             // Check if the transaction id has been used before
             $sTxn_idQ = "SELECT o_paypal_tx FROM " . DB_ORDERTABLE . " WHERE o_paypal_tx = :txn_id";
@@ -77,7 +77,7 @@ if ($hResult->rowCount() == 1) {
                     && $_REQUEST["custom"] == $aOrder[DB_ORDERTABLE_PKEY]
                     && $_REQUEST["payment_status"] == "Completed"
                     && $_REQUEST["mc_currency"] == $C["paypal"]["currency_id"]
-                    && $_REQUEST["receiver_email"] == $C["paypal"]["business"]
+                    && $_REQUEST["business"] == $C["paypal"]["business"]
                 ) {
                     $aTxnUpdateData = array(
                         'o_paypal_tx' => $_REQUEST["txn_id"],
@@ -93,12 +93,12 @@ if ($hResult->rowCount() == 1) {
 
                     $sLogData .= "-- Alles ok. Zahlung erfolgreich. TXNID: " . $_REQUEST["txn_id"] . " --\n\n";
                 } else {
-                    $sLogData .= "-- In my country we have problem; Problem is evaluation. Throw the data down the well!\n";
+                    $sLogData .= "-- In my country we have problem; Problem is evaluation. Throw the data down the log!\n";
                     $sLogData .= "mc_gross: ".$_REQUEST["mc_gross"].' - number_format($fGesamtbrutto, 2, \'.\', \'\'): '.number_format($fGesamtbrutto, 2, '.', '')."\n";
                     $sLogData .= "custom: ".$_REQUEST["custom"].' - $aOrder[DB_ORDERTABLE_PKEY]: '.$aOrder[DB_ORDERTABLE_PKEY]."\n";
                     $sLogData .= "payment_status: ".$_REQUEST["payment_status"]."\n";
                     $sLogData .= "mc_currency: ".$_REQUEST["mc_currency"].' - $C["paypal"]["currency_id"]: '.$C["paypal"]["currency_id"]."\n";
-                    $sLogData .= "receiver_email: ".$_REQUEST["receiver_email"].' - $C["paypal"]["business"]: '.$C["paypal"]["business"]."\n\n";
+                    $sLogData .= "business: ".$_REQUEST["receiver_email"].' - $C["paypal"]["business"]: '.$C["paypal"]["business"]."\n\n";
                 }
             } else {
                 // INVALID LOGGING ERROR
