@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace HaaseIT\Shop;
+namespace HaaseIT\HCSF\Shop;
 
 class Items
 {

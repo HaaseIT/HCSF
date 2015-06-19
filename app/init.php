@@ -149,7 +149,7 @@ if ($C["enable_module_shop"]) {
     require_once __DIR__ . '/../src/shop/Items.php';
     require_once __DIR__ . '/../src/shop/functions.shoppingcart.php';
 
-    $oItem = new \HaaseIT\Shop\Items($C, $DB, $sLang);
+    $oItem = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
 
     $C["navstruct"]["admin"]["Bestellungen"] = '/_admin/shop/shopadmin.php';
     $C["navstruct"]["admin"]["Artikel"] = '/_admin/shop/itemadmin.php';
