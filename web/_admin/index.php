@@ -20,16 +20,9 @@
 
 require_once __DIR__.'/../../app/init.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
 
 $sH = '<h1>Welcome to the administration area</h1>';
 
@@ -69,7 +62,7 @@ if (function_exists('apache_get_modules')) {
     $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ') . 'enabled.</p>';
 }
 
-$P["lang"]["cl_html"] = $sH;
+$P->oPayload->cl_html = $sH;
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 

@@ -51,18 +51,10 @@ description: "2-Spaltige Tabelle 50/50"
 require_once __DIR__.'/../../../app/init.php';
 require_once __DIR__.'/../../../src/shop/functions.admin.itemgroups.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'shop/itemgroupadmin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
+$P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
 $sH = '';
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
@@ -103,14 +95,14 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-        $P["base"]["cb_customdata"]["updatestatus"] = admin_updateGroup($DB, $sLang);
+        $P->cb_customdata["updatestatus"] = admin_updateGroup($DB, $sLang);
     }
     $aGroup = admin_getItemgroups($_REQUEST["gid"], $DB, $sLang);
     if (isset($_REQUEST["added"])) {
-        $P["base"]["cb_customdata"]["groupjustadded"] = true;
+        $P->cb_customdata["groupjustadded"] = true;
     }
-    $P["base"]["cb_customdata"]["showform"] = 'edit';
-    $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('edit', $aGroup[0]);
+    $P->cb_customdata["showform"] = 'edit';
+    $P->cb_customdata["group"] = admin_prepareGroup('edit', $aGroup[0]);
     //HaaseIT\Tools::debug($aGroup);
 } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
     $aErr = array();
@@ -139,22 +131,22 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             $iLastInsertID = $DB->lastInsertId();
             header('Location: '.$_SERVER["PHP_SELF"].'?action=editgroup&added&gid='.$iLastInsertID);
         } else {
-            $P["base"]["cb_customdata"]["err"] = $aErr;
-            $P["base"]["cb_customdata"]["showform"] = 'add';
-            $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('add');
+            $P->cb_customdata["err"] = $aErr;
+            $P->cb_customdata["showform"] = 'add';
+            $P->cb_customdata["group"] = admin_prepareGroup('add');
         }
     } else {
-        $P["base"]["cb_customdata"]["showform"] = 'add';
-        $P["base"]["cb_customdata"]["group"] = admin_prepareGroup('add');
+        $P->cb_customdata["showform"] = 'add';
+        $P->cb_customdata["group"] = admin_prepareGroup('add');
     }
 } else {
     if (!$sH .= admin_showItemgroups(admin_getItemgroups('', $DB, $sLang), $twig)) {
-        $P["base"]["cb_customdata"]["err"]["nogroupsavaliable"] = true;
+        $P->cb_customdata["err"]["nogroupsavaliable"] = true;
     }
 
 }
 
-$P["lang"]["cl_html"] = $sH;
+$P->oPayload->cl_html = $sH;
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 

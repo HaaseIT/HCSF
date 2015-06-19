@@ -1,4 +1,26 @@
 
+V2.2.x
+ALTER TABLE `content_lang`
+  DROP `cl_background`,
+  DROP `cl_pdf`;
+
+ALTER TABLE `content_lang_archive`
+  DROP `cl_background`,
+  DROP `cl_pdf`;
+
+DROP TRIGGER IF EXISTS `content_lang_update`;CREATE DEFINER=`root`@`localhost` TRIGGER `content_lang_update` AFTER UPDATE ON `content_lang` FOR EACH ROW INSERT INTO content_lang_archive (cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title, cla_timestamp) VALUES(OLD.cl_id, OLD.cl_cb, OLD.cl_lang, OLD.cl_html, OLD.cl_keywords, OLD.cl_description, OLD.cl_title, NOW())
+
+Run composer update to install new dependencies
+
+Delete files:
+src/customer/worker.forgotpassword.php
+src/customer/worker.login.php
+src/customer/worker.logout.php
+src/customer/worker.resendverificationmail.php
+src/customer/worker.verifyemail.php
+src/customer/worker.checkedout.php
+src/functions.db.php
+
 V2.1.0
 delete directory: web/_misc/
 delete src/views/customer/ useradmin.twig, userhome.twig

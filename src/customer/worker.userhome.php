@@ -18,106 +18,82 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+
 if (!getUserData()) {
-    $P = array(
-        'base' => array(
-            'cb_pagetype' => 'content',
-            'cb_pageconfig' => '',
-            'cb_subnav' => '',
-        ),
-        'lang' => array(
-            'cl_lang' => $sLang,
-            'cl_html' => \HaaseIT\Textcat::T("denied_notloggedin"),
-        ),
-    );
+    $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
 } else {
-    function handleUserhomePage($C, $sLang, $DB) {
-        $P = array(
-            'base' => array(
-                'cb_pagetype' => 'content',
-                'cb_pageconfig' => '',
-                'cb_subnav' => '',
-                'cb_customcontenttemplate' => 'customer/customerhome',
-            ),
-            'lang' => array(
-                'cl_lang' => $sLang,
-                'cl_html' => '',
-            ),
-        );
+    $P->cb_customcontenttemplate = 'customer/customerhome';
 
-        //debug($_SESSION["user"]);
-        $aPData["display_logingreeting"] = false;
-        if (isset($_GET["login"]) && $_GET["login"]) {
-            $aPData["display_logingreeting"] = true;
-        }
-        if (isset($_GET["editprofile"])) {
-            $sErr = '';
+    //debug($_SESSION["user"]);
+    $aPData["display_logingreeting"] = false;
+    if (isset($_GET["login"]) && $_GET["login"]) {
+        $aPData["display_logingreeting"] = true;
+    }
+    if (isset($_GET["editprofile"])) {
+        $sErr = '';
 
-            if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
-                $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
-                $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
-                $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
+        if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
+            $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
+            $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
+            $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
 
-                $hResult = $DB->prepare($sQ);
-                $hResult->bindValue(':id', $_SESSION["user"][DB_CUSTOMERTABLE_PKEY], PDO::PARAM_INT);
-                $hResult->bindValue(':email', trim($_POST["email"]), PDO::PARAM_STR);
-                $hResult->execute();
-                //debug($sQ);
-                $iRows = $hResult->rowCount();
-                if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse") . '<br>';
-                $sErr = validateCustomerForm($C, $sLang, $sErr, true);
+            $hResult = $DB->prepare($sQ);
+            $hResult->bindValue(':id', $_SESSION["user"][DB_CUSTOMERTABLE_PKEY], PDO::PARAM_INT);
+            $hResult->bindValue(':email', trim($_POST["email"]), PDO::PARAM_STR);
+            $hResult->execute();
+            //debug($sQ);
+            $iRows = $hResult->rowCount();
+            if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse") . '<br>';
+            $sErr = validateCustomerForm($C, $sLang, $sErr, true);
 
-                if ($sErr == '') {
-                    if ($C["allow_edituserprofile"]) {
-                        $aData = array(
-                            //DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]), // disabled until renwewd email verification implemented
-                            DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
-                            DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
-                            DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
-                            DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
-                            DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
-                            DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
-                            DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
-                            DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
-                            DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
-                        );
+            if ($sErr == '') {
+                if ($C["allow_edituserprofile"]) {
+                    $aData = array(
+                        //DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]), // disabled until renwewd email verification implemented
+                        DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
+                        DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
+                        DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
+                        DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
+                        DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
+                        DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
+                        DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
+                        DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
+                        DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
+                    );
+                }
+                if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
+                    $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
+                    $aPData["infopasswordchanged"] = true;
+                }
+                //debug($aData);
+                $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
+
+                if (count($aData) > 1) {
+                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    //debug($sQ);
+                    $hResult = $DB->prepare($sQ);
+                    foreach ($aData as $sKey => $sValue) {
+                        $hResult->bindValue(':' . $sKey, $sValue);
                     }
-                    if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                        $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
-                        $aPData["infopasswordchanged"] = true;
-                    }
-                    //debug($aData);
-                    $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
-
-                    if (count($aData) > 1) {
-                        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-                        //debug($sQ);
-                        $hResult = $DB->prepare($sQ);
-                        foreach ($aData as $sKey => $sValue) {
-                            $hResult->bindValue(':' . $sKey, $sValue);
-                        }
-                        $hResult->execute();
-                        $aPData["infochangessaved"] = true;
-                    } else {
-                        $aPData["infonothingchanged"] = true;
-                    }
+                    $hResult->execute();
+                    $aPData["infochangessaved"] = true;
+                } else {
+                    $aPData["infonothingchanged"] = true;
                 }
             }
-            $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
-            //if ($C["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
-        } else {
-            $P["base"]["cb_customdata"]["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
         }
-        $aPData["showprofilelinks"] = false;
-        if (!isset($_GET["editprofile"])) {
-            $aPData["showprofilelinks"] = true;
-        }
-        if (isset($aPData) && count($aPData)) {
-            $P["base"]["cb_customdata"]["userhome"] = $aPData;
-        }
-
-        return $P;
+        $P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
+        //if ($C["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
+    } else {
+        $P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
     }
-
-    $P = handleUserhomePage($C, $sLang, $DB);
+    $aPData["showprofilelinks"] = false;
+    if (!isset($_GET["editprofile"])) {
+        $aPData["showprofilelinks"] = true;
+    }
+    if (isset($aPData) && count($aPData)) {
+        $P->cb_customdata["userhome"] = $aPData;
+    }
 }

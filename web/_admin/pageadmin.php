@@ -55,29 +55,21 @@ description: "2-Spaltige Tabelle 50/50"
 require_once __DIR__.'/../../app/init.php';
 require_once __DIR__.'/../../src/functions.admin.pages.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'pageadmin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
+$P->cb_customcontenttemplate = 'pageadmin';
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $aPage = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
 
     if (isset($aPage["base"]) && !isset($aPage["text"])) {
         $aData = array(
-            DB_CONTENTTABLE_LANG_PARENTPKEY => $aPage["base"][DB_CONTENTTABLE_BASE_PKEY],
-            DB_CONTENTFIELD_LANG => $sLang,
+            'cl_cb' => $aPage["base"]["cb_id"],
+            'cl_lang' => $sLang,
         );
         //HaaseIT\Tools::debug($aData);
-        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_LANG);
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
         //HaaseIT\Tools::debug($sQ);
         $DB->exec($sQ);
         header('Location: '.$_SERVER["PHP_SELF"]."?page_id=".$_REQUEST["page_id"].'&action=edit');
@@ -87,7 +79,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 }
 
 if (!isset($_GET["action"])) {
-    $P["base"]["cb_customdata"]["pageselect"] = showPageselect($DB, $C);
+    $P->cb_customdata["pageselect"] = showPageselect($DB, $C);
 } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_id"]) && $_REQUEST["page_id"] != '') {
     if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
         // delete and put message in customdata
@@ -99,13 +91,13 @@ if (!isset($_GET["action"])) {
         $sQ = "DELETE FROM content_base WHERE cb_id = '".\filter_var($_GET["page_id"], FILTER_SANITIZE_NUMBER_INT)."'";
         $DB->exec($sQ);
 
-        $P["base"]["cb_customdata"]["deleted"] = true;
+        $P->cb_customdata["deleted"] = true;
     } else {
         if (admin_getPage($_REQUEST["page_id"], $DB, $sLang)) {
-            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P["base"]["cb_customdata"]["updated"] = updatePage($DB, $sLang);
-            $P["base"]["cb_customdata"]["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
-            $P["base"]["cb_customdata"]["page"]["admin_page_types"] = $C["admin_page_types"];
-            $P["base"]["cb_customdata"]["page"]["admin_page_groups"] = $C["admin_page_groups"];
+            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P->cb_customdata["updated"] = updatePage($DB, $sLang);
+            $P->cb_customdata["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
+            $P->cb_customdata["page"]["admin_page_types"] = $C["admin_page_types"];
+            $P->cb_customdata["page"]["admin_page_groups"] = $C["admin_page_groups"];
             $aOptions = array('');
             foreach ($C["navstruct"] as $sKey => $aValue) {
                 if ($sKey == 'admin') {
@@ -113,7 +105,7 @@ if (!isset($_GET["action"])) {
                 }
                 $aOptions[] = $sKey;
             }
-            $P["base"]["cb_customdata"]["page"]["subnavarea_options"] = $aOptions;
+            $P->cb_customdata["page"]["subnavarea_options"] = $aOptions;
             unset($aOptions);
         }
     }
@@ -125,28 +117,28 @@ if (!isset($_GET["action"])) {
         } elseif (strlen($_POST["pagekey"]) < 4) {
             $aErr["keytooshort"] = true;
         } else {
-            $sQ = "SELECT ".DB_CONTENTFIELD_BASE_KEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTFIELD_BASE_KEY." = '";
+            $sQ = "SELECT cb_key FROM content_base WHERE cb_key = '";
             $sQ .= \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS))."'";
             $hResult = $DB->query($sQ);
             $iRows = $hResult->rowCount();
             if ($iRows > 0) {
                 $aErr["keyalreadyinuse"] = true;
             } else {
-                $aData = array(DB_CONTENTFIELD_BASE_KEY => trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS)),);
-                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_CONTENTTABLE_BASE);
+                $aData = array('cb_key' => trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS)),);
+                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
                 //HaaseIT\Tools::debug($sQ);
                 $hResult = $DB->exec($sQ);
                 $iInsertID = $DB->lastInsertId();
-                $sQ = "SELECT ".DB_CONTENTTABLE_BASE_PKEY." FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTTABLE_BASE_PKEY." = '".$iInsertID."'";
+                $sQ = "SELECT cb_id FROM content_base WHERE cb_id = '".$iInsertID."'";
                 $hResult = $DB->query($sQ);
                 $aRow = $hResult->fetch();
-                header('Location: '.$_SERVER["PHP_SELF"].'?page_id='.$aRow[DB_CONTENTTABLE_BASE_PKEY].'&action=edit');
+                header('Location: '.$_SERVER["PHP_SELF"].'?page_id='.$aRow["cb_id"].'&action=edit');
             }
         }
-        $P["base"]["cb_customdata"]["err"] = $aErr;
+        $P->cb_customdata["err"] = $aErr;
         unset($aErr);
     }
-    $P["base"]["cb_customdata"]["showaddform"] = true;
+    $P->cb_customdata["showaddform"] = true;
 }
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);

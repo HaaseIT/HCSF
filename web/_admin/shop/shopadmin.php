@@ -22,17 +22,10 @@ require_once __DIR__.'/../../../app/init.php';
 require_once __DIR__.'/../../../src/shop/functions.admin.shop.php';
 require_once __DIR__.'/../../../src/shop/functions.shoppingcart.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'shop/shopadmin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
+$P->cb_customcontenttemplate = 'shop/shopadmin';
 
 $sH = '';
 
@@ -98,7 +91,7 @@ $CSA = array(
 
 $aShopadmin = handleShopAdmin($CSA, $twig, $DB, $C, $sLang);
 
-$P["base"]["cb_customdata"] = array_merge($aPData, $aShopadmin);
+$P->cb_customdata = array_merge($aPData, $aShopadmin);
 
 /* Druckansicht für Acrylx
 $sH .= '<div>
@@ -114,7 +107,7 @@ $sH .= '<div>
 
 $sH .= $aShopadmin["html"];
 
-$P["lang"]["cl_html"] = $sH;
+$P->oPayload->cl_html = $sH;
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 

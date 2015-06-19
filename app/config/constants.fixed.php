@@ -23,19 +23,19 @@ define("HOUR", MINUTE * 60);
 define("DAY", HOUR * 24);
 define("WEEK", DAY * 7);
 
-define("DB_CONTENTTABLE_BASE", 'content_base');
-define("DB_CONTENTTABLE_BASE_PKEY", 'cb_id');
-define("DB_CONTENTFIELDS_BASE", '*');
-define("DB_CONTENTFIELD_BASE_KEY", 'cb_key');
+//define("DB_CONTENTTABLE_BASE", 'content_base');
+//define("DB_CONTENTTABLE_BASE_PKEY", 'cb_id');
+//define("DB_CONTENTFIELDS_BASE", '*');
+//define("DB_CONTENTFIELD_BASE_KEY", 'cb_key');
 
-define("DB_CONTENTTABLE_LANG", 'content_lang');
-define("DB_CONTENTTABLE_LANG_PKEY", 'cl_id');
-define("DB_CONTENTTABLE_LANG_PARENTPKEY", 'cl_cb');
-define("DB_CONTENTFIELDS_LANG", '*');
-define("DB_CONTENTFIELD_LANG", 'cl_lang');
-define("DB_CONTENTFIELD_TITLE", 'cl_title');
-define("DB_CONTENTFIELD_KEYWORDS", 'cl_keywords');
-define("DB_CONTENTFIELD_DESCRIPTION", 'cl_description');
+//define("DB_CONTENTTABLE_LANG", 'content_lang');
+//define("DB_CONTENTTABLE_LANG_PKEY", 'cl_id');
+//define("DB_CONTENTTABLE_LANG_PARENTPKEY", 'cl_cb');
+//define("DB_CONTENTFIELDS_LANG", '*');
+//define("DB_CONTENTFIELD_LANG", 'cl_lang');
+//define("DB_CONTENTFIELD_TITLE", 'cl_title');
+//define("DB_CONTENTFIELD_KEYWORDS", 'cl_keywords');
+//define("DB_CONTENTFIELD_DESCRIPTION", 'cl_description');
 
 define("DB_CUSTOMERTABLE", 'customer');
 define("DB_CUSTOMERTABLE_PKEY", 'cust_id');

@@ -24,20 +24,13 @@ $sH = '';
 
 $aPData = handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang);
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'customer/customeradmin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => $aPData["customeradmin"]["text"],
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
+$P->cb_customcontenttemplate = 'customer/customeradmin';
+$P->oPayload->cl_html = $aPData["customeradmin"]["text"];
 
-$P["base"]["cb_customdata"] = $aPData;
+$P->cb_customdata = $aPData;
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 

@@ -20,47 +20,32 @@
 
 require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
 
-function handlePaypalPage($C, $sLang, $DB) {
-    $P = array(
-        'base' => array(
-            'cb_pagetype' => 'content',
-            'cb_pageconfig' => '',
-            'cb_subnav' => '',
-        ),
-        'lang' => array(
-            'cl_lang' => $sLang,
-            'cl_html' => '',
-        ),
-    );
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
 
-    $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
-    $sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
+$iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
+$sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
-    $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':id', $iId, PDO::PARAM_INT);
+$hResult = $DB->prepare($sQ);
+$hResult->bindValue(':id', $iId, PDO::PARAM_INT);
 
-    $hResult->execute();
+$hResult->execute();
 
-    if ($hResult->rowCount() == 1) {
-        $aOrder = $hResult->fetch();
-        //\HaaseIT\Tools::debug($aOrder);
-        $fGesamtbrutto = calculateTotalFromDB($aOrder);
+if ($hResult->rowCount() == 1) {
+    $aOrder = $hResult->fetch();
+    //\HaaseIT\Tools::debug($aOrder);
+    $fGesamtbrutto = calculateTotalFromDB($aOrder);
 
-        $sPaypalURL = $C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $C["paypal"]["business"];
-        $sPaypalURL .= '&notify_url=http://' . $_SERVER["HTTP_HOST"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
-        $sPaypalURL .= '&currency_code=' . $C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
-        if (isset($C["interactive_paymentmethods_redirect_immediately"]) && $C["interactive_paymentmethods_redirect_immediately"]) {
-            header('Location: ' . $sPaypalURL);
-        }
-
-        $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("misc_paypaypal_greeting") . '<br><br>';
-        $P["lang"]["cl_html"] .= '<a href="' . $sPaypalURL . '">' . \HaaseIT\Textcat::T("misc_paypaypal") . '</a>';
-    } else {
-        $P["lang"]["cl_html"] .= \HaaseIT\Textcat::T("misc_paypaypal_paymentnotavailable");
+    $sPaypalURL = $C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $C["paypal"]["business"];
+    $sPaypalURL .= '&notify_url=http://' . $_SERVER["HTTP_HOST"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
+    $sPaypalURL .= '&currency_code=' . $C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
+    if (isset($C["interactive_paymentmethods_redirect_immediately"]) && $C["interactive_paymentmethods_redirect_immediately"]) {
+        header('Location: '.$sPaypalURL);
     }
 
-    return $P;
+    $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paypaypal_greeting") . '<br><br>';
+    $P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . \HaaseIT\Textcat::T("misc_paypaypal") . '</a>';
+} else {
+    $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paypaypal_paymentnotavailable");
 }
-
-$P = handlePaypalPage($C, $sLang, $DB);

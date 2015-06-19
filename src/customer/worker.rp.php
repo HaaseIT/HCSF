@@ -20,65 +20,40 @@
 
 // Password reset after clicking the link from the forgot password email
 
-if (getUserData()) {
-    $P = array(
-        'base' => array(
-            'cb_pagetype' => 'content',
-            'cb_pageconfig' => '',
-            'cb_subnav' => '',
-        ),
-        'lang' => array(
-            'cl_lang' => $sLang,
-            'cl_html' => \HaaseIT\Textcat::T("denied_default"),
-        ),
-    );
-} else {
-    function handleResetpasswordPage($C, $sLang, $DB) {
-        $P = array(
-            'base' => array(
-                'cb_pagetype' => 'content',
-                'cb_pageconfig' => '',
-                'cb_subnav' => '',
-            ),
-            'lang' => array(
-                'cl_lang' => $sLang,
-                'cl_html' => '',
-            ),
-        );
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
 
-        if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
-            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("denied_default");
+if (getUserData()) {
+    $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+} else {
+    if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
+        $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+    } else {
+        $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
+        $hResult = $DB->prepare($sQ);
+        $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
+        $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
+        $hResult->execute();
+        if ($hResult->rowCount() != 1) {
+            $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
-            $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
-            $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
-            $hResult->execute();
-            if ($hResult->rowCount() != 1) {
-                $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("denied_default");
+            $aErr = array();
+            $aResult = $hResult->fetch();
+            $iTimestamp = time();
+            if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
+                $P->oPayload->cl_html = \HaaseIT\Textcat::T("pwreset_error_expired");
             } else {
-                $aErr = array();
-                $aResult = $hResult->fetch();
-                $iTimestamp = time();
-                if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
-                    $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("pwreset_error_expired");
-                } else {
-                    $P["base"]["cb_customcontenttemplate"] = 'customer/resetpassword';
-                    $P["base"]["cb_customdata"]["pwreset"]["minpwlength"] = $C["minimum_length_password"];
-                    if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                        $aErr = handlePasswordReset($DB, $C, $aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
-                        if (count($aErr) == 0) {
-                            $P["base"]["cb_customdata"]["pwreset"]["showsuccessmessage"] = true;
-                        } else {
-                            $P["base"]["cb_customdata"]["pwreset"]["errors"] = $aErr;
-                        }
+                $P->cb_customcontenttemplate = 'customer/resetpassword';
+                $P->cb_customdata["pwreset"]["minpwlength"] = $C["minimum_length_password"];
+                if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
+                    $aErr = handlePasswordReset($DB, $C, $aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
+                    if (count($aErr) == 0) {
+                        $P->cb_customdata["pwreset"]["showsuccessmessage"] = true;
+                    } else {
+                        $P->cb_customdata["pwreset"]["errors"] = $aErr;
                     }
                 }
             }
         }
-
-        return $P;
     }
-
-    $P = handleResetpasswordPage($C, $sLang, $DB);
 }

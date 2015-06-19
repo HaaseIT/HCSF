@@ -47,7 +47,7 @@
     <style type="text/css">
         #page_html{height: 20em;}
     </style>
-    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&action=edit" method="post" class="pure-form pure-form-stacked">
+    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base['cb_id'] }}&action=edit" method="post" class="pure-form pure-form-stacked">
         <input type="hidden" name="action_a" value="true">
         <div class="small">
             <h3>current page: {{ customdata.page.base.cb_key }}</h3>
@@ -58,7 +58,7 @@
     {% if customdata.page.text is defined %}
     <fieldset>
         <legend>Sprachspezifisch</legend>
-        <input type="hidden" name="textid" value="{{ customdata.page.text[constant('DB_CONTENTTABLE_LANG_PKEY')] }}">
+        <input type="hidden" name="textid" value="{{ customdata.page.text['cl_id'] }}">
         <label for="page_html">Seiteninhalt</label>
         <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.text.cl_html }}</textarea>
         <label for="page_title">Seitentitel:</label>
@@ -70,7 +70,7 @@
     </fieldset>
     {% else %}
     <p>
-        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun</a>
+        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_id={{ customdata.page.base['cb_id'] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun</a>
     </p>
     {% endif %}
         <fieldset>
@@ -87,7 +87,7 @@
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button>
     </form>
     <p>
-    <form action="/_admin/pageadmin.php?action=delete&amp;page_id={{ customdata.page.base[constant('DB_CONTENTTABLE_BASE_PKEY')] }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
+    <form action="/_admin/pageadmin.php?action=delete&amp;page_id={{ customdata.page.base['cb_id'] }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
     <fieldset>
     <legend>Seite löschen</legend>
             <label for="page-delete-confirm" class="pure-checkbox">

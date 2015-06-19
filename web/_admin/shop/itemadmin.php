@@ -52,18 +52,10 @@ require_once __DIR__.'/../../../app/init.php';
 require_once __DIR__.'/../../../src/shop/functions.admin.items.php';
 require_once __DIR__.'/../../../src/shop/functions.admin.itemgroups.php';
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => 'admin',
-        'cb_customcontenttemplate' => 'shop/itemadmin',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
+$P->cb_subnav = 'admin';
+$P->cb_customcontenttemplate = 'shop/itemadmin';
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $aItemdata = admin_getItem('', $DB, $sLang);
@@ -85,28 +77,28 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     //HaaseIT\Tools::debug($aItemdata);
 }
 //HaaseIT\Tools::debug($_GET);
-$P["base"]["cb_customdata"]["searchform"] = admin_prepareItemlistsearchform();
+$P->cb_customdata["searchform"] = admin_prepareItemlistsearchform();
 
 if (isset($_REQUEST["action"])) {
     if ($_REQUEST["action"] == 'search') {
-        $P["base"]["cb_customdata"]["searchresult"] = true;
+        $P->cb_customdata["searchresult"] = true;
         if ($aItemlist = admin_getItemlist($DB, $sLang)) {
             if (count($aItemlist["data"]) == 1) {
                 $aItemdata = admin_getItem($aItemlist["data"][0][DB_ITEMFIELD_NUMBER], $DB, $sLang);
-                $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
+                $P->cb_customdata["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
             } else {
-                $P["base"]["cb_customdata"]["itemlist"] = admin_prepareItemlist($aItemlist, $twig);
+                $P->cb_customdata["itemlist"] = admin_prepareItemlist($aItemlist, $twig);
             }
         }
     } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
         admin_updateItem($C, $DB);
-        $P["base"]["cb_customdata"]["itemupdated"] = true;
+        $P->cb_customdata["itemupdated"] = true;
 
         $aItemdata = admin_getItem('', $DB, $sLang);
-        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
+        $P->cb_customdata["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
     } elseif ($_REQUEST["action"] == 'showitem') {
         $aItemdata = admin_getItem('', $DB, $sLang);
-        $P["base"]["cb_customdata"]["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
+        $P->cb_customdata["item"] = admin_prepareItem($aItemdata, $C, $DB, $sLang);
     } elseif ($_GET["action"] == 'additem') {
         $aErr = array();
         if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {
@@ -132,8 +124,8 @@ if (isset($_REQUEST["action"])) {
                 }
             }
         }
-        $P["base"]["cb_customdata"]["showaddform"] = true;
-        $P["base"]["cb_customdata"]["err"] = $aErr;
+        $P->cb_customdata["showaddform"] = true;
+        $P->cb_customdata["err"] = $aErr;
     }
 }
 

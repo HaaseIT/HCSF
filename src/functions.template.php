@@ -18,14 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function buildTitle($P, $C)
-{
-    if (isset($P["lang"][DB_CONTENTFIELD_TITLE]) && trim($P["lang"][DB_CONTENTFIELD_TITLE]) != '') $sH = $P["lang"][DB_CONTENTFIELD_TITLE];
-    else $sH = $C["default_pagetitle"];
-
-    return $sH;
-}
-
 function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
     //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
     $mail = new PHPMailer;
@@ -60,9 +52,9 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
 {
     $aP = array(
         'language' => $sLang,
-        'pageconfig' => $P["base"]["cb_pageconfig"],
-        'pagetype' => $P["base"]["cb_pagetype"],
-        'subnavkey' => $P["base"]["cb_subnav"],
+        'pageconfig' => $P->cb_pageconfig,
+        'pagetype' => $P->cb_pagetype,
+        'subnavkey' => $P->cb_subnav,
         'requesturi' => $_SERVER["REQUEST_URI"],
         'requesturiarray' => parse_url($_SERVER["REQUEST_URI"]),
     );
@@ -78,42 +70,30 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
         $aP["enable_module_shop"] = true;
     }
-    if (isset($P["base"]["cb_key"])) $aP["path"] = pathinfo($P["base"]["cb_key"]);
+    if (isset($P->cb_key)) $aP["path"] = pathinfo($P->cb_key);
     else $aP["path"] = pathinfo($aP["requesturi"]);
-    if (isset($P["base"]["cb_customcontenttemplate"]) && trim($P["base"]["cb_customcontenttemplate"]) != '') $aP["customcontenttemplate"] = $P["base"]["cb_customcontenttemplate"];
-    if (isset($P["base"]["cb_customdata"])) $aP["customdata"] = $P["base"]["cb_customdata"];
+    if ($P->cb_customcontenttemplate != NULL) $aP["customcontenttemplate"] = $P->cb_customcontenttemplate;
+    if ($P->cb_customdata != NULL) $aP["customdata"] = $P->cb_customdata;
     if (isset($_SERVER["HTTP_REFERER"])) $aP["referer"] = $_SERVER["HTTP_REFERER"];
 
     reset($C["lang_available"]);
-    if (!$P) {
-        $P["base"]['cb_pagetype'] = 'error';
-        $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_page_not_found");
-        header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-    } elseif (isset($P["base"]) && !isset($P["lang"])) {
-        if ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail') {
-            $P["lang"]["cl_html"] = '';
-        } else {
-            $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_content_not_found");
-            header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-        }
-    } elseif($P["lang"][DB_CONTENTFIELD_LANG] != $sLang) {
-        $P["lang"]["cl_html"] = \HaaseIT\Textcat::T("misc_page_not_available_lang").'<br><br>'.$P["lang"]["cl_html"];
-    }
-    if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $C["subnav_default"] != '') { // if there is no subnav defined but there is a default subnav defined, use it.
+
+    // if there is no subnav defined but there is a default subnav defined, use it
+    // subnavkey can be used in the templates to find out, where we are
+    if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $C["subnav_default"] != '') {
         $aP["subnavkey"] = $C["subnav_default"];
-        $P["base"]["cb_subnav"] = $C["subnav_default"];
+        $P->cb_subnav = $C["subnav_default"];
     }
-    if (isset($P["base"]["cb_subnav"]) && isset($C["navstruct"][$P["base"]["cb_subnav"]])) $aP["subnav"] = $C["navstruct"][$P["base"]["cb_subnav"]];
+    if ($P->cb_subnav != NULL && isset($C["navstruct"][$P->cb_subnav])) $aP["subnav"] = $C["navstruct"][$P->cb_subnav];
 
     // Get page title, meta-keywords, meta-description
-    $aP["pagetitle"] = buildTitle($P, $C);
-    if (isset($P["lang"][DB_CONTENTFIELD_KEYWORDS]) && trim($P["lang"][DB_CONTENTFIELD_KEYWORDS]) != '')
-        $aP["keywords"] = trim($P["lang"][DB_CONTENTFIELD_KEYWORDS]);
-    if (isset($P["lang"][DB_CONTENTFIELD_DESCRIPTION]) && trim($P["lang"][DB_CONTENTFIELD_DESCRIPTION]) != '')
-        $aP["description"] = trim($P["lang"][DB_CONTENTFIELD_DESCRIPTION]);
+    $aP["pagetitle"] = $P->oPayload->getTitle();
+
+    $aP["keywords"] = $P->oPayload->cl_keywords;
+    $aP["description"] = $P->oPayload->cl_description;
 
     // TODO: Add head scripts to DB
-    if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
+    //if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
 
     // Language selector
     // TODO: move content of langselector out of php script
@@ -174,8 +154,8 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
     }
 
     if ($C["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
-        if (isset($P["base"]["cb_pageconfig"]["itemindex"])) {
-            $mItemIndex = $P["base"]["cb_pageconfig"]["itemindex"];
+        if (isset($P->cb_pageconfig->itemindex)) {
+            $mItemIndex = $P->cb_pageconfig->itemindex;
         } else {
             $mItemIndex = '';
         }
@@ -357,16 +337,19 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         }
     }
 
-    $aP["content"] = $P["lang"]["cl_html"];
+    $aP["content"] = $P->oPayload->cl_html;
 
     $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
     $aP["content"] = str_replace("[quote]", "'", $aP["content"]);
 
+    // TODO!!!
+    /*
     if (!isset($P["keep_placeholders"]) || !$P["keep_placeholders"]) {
         $aP["content"] = stripslashes(str_replace('[sp]', '&nbsp;', $aP["content"]));
     } else {
         $aP["content"] .= stripslashes($aP["content"]);
     }
+    */
 
     if (isset($_POST) && count($_POST)) {
         HaaseIT\Tools::debug($_POST, '$_POST');

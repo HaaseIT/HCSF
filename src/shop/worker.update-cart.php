@@ -18,30 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$P = array(
-    'base' => array(
-        'cb_pagetype' => 'content',
-        'cb_pageconfig' => '',
-        'cb_subnav' => '',
-    ),
-    'lang' => array(
-        'cl_lang' => $sLang,
-        'cl_html' => '',
-    ),
-);
+$P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+$P->cb_pagetype = 'content';
 
 if (($C["show_pricesonlytologgedin"] && !getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
-    $P = array(
-        'base' => array(
-            'cb_pagetype' => 'content',
-            'cb_pageconfig' => '',
-            'cb_subnav' => '',
-        ),
-        'lang' => array(
-            'cl_lang' => $sLang,
-            'cl_html' => \HaaseIT\Textcat::T("denied_default"),
-        ),
-    );
+    $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
 } else {
     function replyToCartUpdate($C, $twig, $sReply, $aMore = []) {
         if (isset($_REQUEST["ajax"])) {

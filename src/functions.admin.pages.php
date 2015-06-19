@@ -19,7 +19,7 @@
  */
 
 function admin_getPage($iPage, $DB, $sLang) {
-    $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." WHERE ".DB_CONTENTTABLE_BASE_PKEY." = :pid";
+    $sQ = "SELECT * FROM content_base WHERE cb_id = :pid";
     $hResult = $DB->prepare($sQ);
     $hResult->bindValue(':pid', $iPage);
     $hResult->execute();
@@ -29,9 +29,9 @@ function admin_getPage($iPage, $DB, $sLang) {
     if ($iNumrows == 1) {
         $aPage["base"] = $hResult->fetch();
 
-        $sQ = "SELECT * FROM " . DB_CONTENTTABLE_LANG;
-        $sQ .= " WHERE " . DB_CONTENTTABLE_LANG_PARENTPKEY . " = :parentpkey";
-        $sQ .= " AND " . DB_CONTENTFIELD_LANG . " = :lang";
+        $sQ = "SELECT * FROM content_lang";
+        $sQ .= " WHERE cl_cb = :parentpkey";
+        $sQ .= " AND cl_lang = :lang";
         $hResult = $DB->prepare($sQ);
         $hResult->bindValue(':parentpkey', $iPage);
         $hResult->bindValue(':lang', $sLang);
@@ -54,7 +54,7 @@ function updatePage($DB, $sLang) {
         'cb_id' => $_REQUEST["page_id"],
     );
 
-    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_BASE, 'cb_id');
+    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_id');
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
     $hResult->execute();
@@ -67,13 +67,13 @@ function updatePage($DB, $sLang) {
             "cl_keywords" => $_REQUEST["page_keywords"],
         );
 
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CONTENTTABLE_LANG);
-        $sQ .= "WHERE ".DB_CONTENTTABLE_LANG_PARENTPKEY." = :".DB_CONTENTTABLE_LANG_PARENTPKEY;
-        $sQ .= " AND cl_lang = :cl_lang AND ".DB_CONTENTTABLE_LANG_PKEY." = :".DB_CONTENTTABLE_LANG_PKEY;
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_lang');
+        $sQ .= "WHERE cl_cb = :cl_cb";
+        $sQ .= " AND cl_lang = :cl_lang AND cl_id = :cl_id";
         $hResult = $DB->prepare($sQ);
         $aData["cl_lang"] = $sLang;
-        $aData[DB_CONTENTTABLE_LANG_PARENTPKEY] = $_REQUEST["page_id"];
-        $aData[DB_CONTENTTABLE_LANG_PKEY] = $_REQUEST["textid"];
+        $aData['cl_cb'] = $_REQUEST["page_id"];
+        $aData['cl_id'] = $_REQUEST["textid"];
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
     }
@@ -82,7 +82,7 @@ function updatePage($DB, $sLang) {
 }
 
 function showPageselect($DB, $C) {
-    $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." ORDER BY cb_key";
+    $sQ = "SELECT * FROM content_base ORDER BY cb_key";
     $hResult = $DB->query($sQ);
     foreach ($C["admin_page_groups"] as $sValue) {
         $TMP = explode('|', $sValue);
