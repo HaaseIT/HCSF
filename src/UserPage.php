@@ -12,7 +12,7 @@ namespace HaaseIT\HCSF;
 class UserPage extends Page
 {
     protected $DB;
-    public $cb_id, $cb_key, $cb_group;
+    public $cb_id, $cb_key, $cb_group, $bTryDefaultLang = true;
 
     public function __construct($C, $sLang, $DB, $sPagekey) {
         $this->C = $C;
@@ -50,7 +50,7 @@ class UserPage extends Page
 
         if ($hResult->rowCount() == 1) {
             return $hResult->fetchObject('\HaaseIT\HCSF\PagePayload', [$this->C]);
-        } else {
+        } elseif ($this->bTryDefaultLang) {
             // if the current language data is not available, lets see if we can get the default languages data
             $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':ppkey', $this->cb_id, \PDO::PARAM_STR);
@@ -61,6 +61,7 @@ class UserPage extends Page
             }
         }
 
+        // If no page is found in DB, still init the payload
+        return new PagePayload($this->C);
     }
-
 }
