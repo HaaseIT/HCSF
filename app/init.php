@@ -426,7 +426,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
             $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
             header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
         }
-    } elseif($P->oPayload->cl_lang != $sLang) {
+    } elseif($P->oPayload->cl_lang != NULL && $P->oPayload->cl_lang != $sLang) {
         $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang").'<br><br>'.$P->oPayload->cl_html;
     }
     //die(var_dump($P));
