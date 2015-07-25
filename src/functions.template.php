@@ -353,6 +353,8 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
 
     if (isset($_POST) && count($_POST)) {
         HaaseIT\Tools::debug($_POST, '$_POST');
+    } elseif (isset($_REQUEST) && count($_REQUEST)) {
+        HaaseIT\Tools::debug($_REQUEST, '$_REQUEST');
     }
     if (isset($_SESSION) && count($_SESSION)) {
         HaaseIT\Tools::debug($_SESSION, '$_SESSION');
