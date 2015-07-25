@@ -296,10 +296,8 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/myorders.html') {
         require_once PATH_BASEDIR . 'src/shop/worker.myorders.php';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/itemsearch.html') {
-        $P = [
-            'base' => ['cb_pagetype' => 'itemoverview', 'cb_pageconfig' => '', 'cb_subnav' => ''],
-            'lang' => ['cl_lang' => $sLang, 'cl_html' => '']
-        ];
+        $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+        $P->cb_pagetype = 'itemoverview';
     } elseif ($C["enable_module_shop"] && $sPath == '/_misc/checkedout.html') {
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'content';
