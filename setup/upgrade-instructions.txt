@@ -20,6 +20,7 @@ src/customer/worker.resendverificationmail.php
 src/customer/worker.verifyemail.php
 src/customer/worker.checkedout.php
 src/functions.db.php
+src/function.admin.pages.php
 
 V2.1.0
 delete directory: web/_misc/

@@ -24,34 +24,6 @@
 - filtered input for all select queries
 */
 
-//error_reporting(E_ALL);
-/*
-$P = array(
-'head_scripts' => '<script type="text/javascript" src="/jquery.js"></script>
-<script type="text/javascript" src="/_admin/_tinymce/tinymce.min.js"></script>
-<script type="text/javascript">
-tinymce.init({
-selector: "textarea",
-language : "de",
-content_css: "/screen-global.css",
-theme : "modern",
-plugins: [
-"advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-"searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-"save table contextmenu directionality emoticons template paste textcolor"
-],
-templates : [
-{
-title: "2-Spaltige Tabelle 50/50",
-url: "/_admin/_tinymce/templates/table5050.html",
-description: "2-Spaltige Tabelle 50/50"
-}
-]
-});
-</script>',
-);
-*/
-
 require_once __DIR__.'/../../app/init.php';
 require_once __DIR__.'/../../src/functions.admin.pages.php';
 
@@ -59,6 +31,42 @@ $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
 $P->cb_subnav = 'admin';
 $P->cb_customcontenttemplate = 'pageadmin';
+
+function showPageselect($DB, $C) {
+    $sQ = "SELECT * FROM content_base ORDER BY cb_key";
+    $hResult = $DB->query($sQ);
+    foreach ($C["admin_page_groups"] as $sValue) {
+        $TMP = explode('|', $sValue);
+        $aGroupkeys[] = $TMP[0];
+    }
+    unset($TMP);
+
+    while ($aResult = $hResult->fetch()) {
+        $bGrouped = false;
+        foreach ($aGroupkeys as $sValue) {
+            if ($aResult["cb_group"] == $sValue) {
+                $aTree[$sValue][] = $aResult;
+                $bGrouped = true;
+            }
+        }
+        if (!$bGrouped) $aTree["_"][] = $aResult;
+    }
+
+    foreach ($C["admin_page_groups"] as $sValue) {
+        $TMP = explode('|', $sValue);
+        if (isset ($aTree[$TMP[0]]) && count($aTree[$TMP[0]]) >= 1) {
+            $aOptions_g[] = $TMP[0].'|'.$TMP[1];
+        }
+    }
+    unset($TMP);
+
+    $aSData = array(
+        'options_groups' => isset($aOptions_g) ? $aOptions_g : array(),
+        'tree' => isset($aTree) ? $aTree : array(),
+    );
+
+    return $aSData;
+}
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $aPage = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
@@ -80,7 +88,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 
 if (!isset($_GET["action"])) {
     $P->cb_customdata["pageselect"] = showPageselect($DB, $C);
-} elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_id"]) && $_REQUEST["page_id"] != '') {
+} elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
     if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
         // delete and put message in customdata
         // delete children
@@ -92,12 +100,29 @@ if (!isset($_GET["action"])) {
         $DB->exec($sQ);
 
         $P->cb_customdata["deleted"] = true;
-    } else {
-        if (admin_getPage($_REQUEST["page_id"], $DB, $sLang)) {
-            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') $P->cb_customdata["updated"] = updatePage($DB, $sLang);
-            $P->cb_customdata["page"] = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
-            $P->cb_customdata["page"]["admin_page_types"] = $C["admin_page_types"];
-            $P->cb_customdata["page"]["admin_page_groups"] = $C["admin_page_groups"];
+    } else { // edit or update page
+        if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true)) {
+            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
+
+                $Ptoedit->cb_pagetype = $_POST['page_type'];
+                $Ptoedit->cb_group = $_POST['page_group'];
+                $Ptoedit->cb_pageconfig = $_POST['page_config'];
+                $Ptoedit->cb_subnav = $_POST['page_subnav'];
+                $bBaseupdated = $Ptoedit->write();
+
+                if ($Ptoedit->oPayload->cl_id != NULL) {
+                    $Ptoedit->oPayload->cl_html = $_POST['page_html'];
+                    $Ptoedit->oPayload->cl_title = $_POST['page_title'];
+                    $Ptoedit->oPayload->cl_description = $_POST['page_description'];
+                    $Ptoedit->oPayload->cl_keywords = $_POST['page_keywords'];
+                    $bPayloadupdated = $Ptoedit->oPayload->write();
+                }
+
+                $P->cb_customdata["updated"] = true;
+            }
+            $P->cb_customdata["page"] = $Ptoedit;
+            $P->cb_customdata["admin_page_types"] = $C["admin_page_types"];
+            $P->cb_customdata["admin_page_groups"] = $C["admin_page_groups"];
             $aOptions = array('');
             foreach ($C["navstruct"] as $sKey => $aValue) {
                 if ($sKey == 'admin') {
@@ -105,9 +130,13 @@ if (!isset($_GET["action"])) {
                 }
                 $aOptions[] = $sKey;
             }
-            $P->cb_customdata["page"]["subnavarea_options"] = $aOptions;
+            $P->cb_customdata["subnavarea_options"] = $aOptions;
             unset($aOptions);
+        } else {
+            die('Page selected not found error.');
         }
+
+
     }
 } elseif ($_GET["action"] == 'addpage') {
     $aErr = array();
@@ -132,7 +161,7 @@ if (!isset($_GET["action"])) {
                 $sQ = "SELECT cb_id FROM content_base WHERE cb_id = '".$iInsertID."'";
                 $hResult = $DB->query($sQ);
                 $aRow = $hResult->fetch();
-                header('Location: '.$_SERVER["PHP_SELF"].'?page_id='.$aRow["cb_id"].'&action=edit');
+                header('Location: '.$_SERVER["PHP_SELF"].'?page_key='.$aRow["cb_key"].'&action=edit');
             }
         }
         $P->cb_customdata["err"] = $aErr;

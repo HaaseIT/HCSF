@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mhaase
- * Date: 19.06.2015
- * Time: 10:22
- */
 
 namespace HaaseIT\HCSF;
 

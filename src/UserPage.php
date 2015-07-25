@@ -11,13 +11,14 @@ namespace HaaseIT\HCSF;
 
 class UserPage extends Page
 {
-    protected $DB;
-    public $cb_id, $cb_key, $cb_group, $bTryDefaultLang = true;
+    protected $DB, $bReturnRaw;
+    public $cb_id, $cb_key, $cb_group;
 
-    public function __construct($C, $sLang, $DB, $sPagekey) {
-        $this->C = $C;
+    public function __construct($C, $sLang, $DB, $sPagekey, $bReturnRaw = false) {
+        if (!$bReturnRaw) $this->C = $C;
         $this->sLang = $sLang;
         $this->DB = $DB;
+        $this->bReturnRaw = $bReturnRaw;
 
         // first get base data
         $sQ = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
@@ -32,36 +33,29 @@ class UserPage extends Page
             $hResult->fetch();
 
             if ($this->cb_pagetype != 'shorturl') {
-                $this->cb_pageconfig = json_decode($this->cb_pageconfig);
+                if (!$bReturnRaw) $this->cb_pageconfig = json_decode($this->cb_pageconfig);
                 $this->oPayload = $this->getPayload();
             }
         }
     }
 
-    protected function getPayload() {
-        $sQ = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
-        $sQ .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
+    public function write() {
+        $aData = array(
+            'cb_pagetype' => $this->cb_pagetype,
+            'cb_group' => $this->cb_group,
+            'cb_pageconfig' => $this->cb_pageconfig,
+            'cb_subnav' => $this->cb_subnav,
+            'cb_key' => $this->cb_key,
+        );
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
+
         $hResult = $this->DB->prepare($sQ);
-
-        // Try to get the payload in the current language
-        $hResult->bindValue(':ppkey', $this->cb_id, \PDO::PARAM_STR);
-        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
-        $hResult->execute();
-
-        if ($hResult->rowCount() == 1) {
-            return $hResult->fetchObject('\HaaseIT\HCSF\PagePayload', [$this->C]);
-        } elseif ($this->bTryDefaultLang) {
-            // if the current language data is not available, lets see if we can get the default languages data
-            $hResult = $this->DB->prepare($sQ);
-            $hResult->bindValue(':ppkey', $this->cb_id, \PDO::PARAM_STR);
-            $hResult->bindValue(':lang', key($this->C["lang_available"]), \PDO::PARAM_STR);
-            $hResult->execute();
-            if ($hResult->rowCount() == 1) {
-                return $hResult->fetchObject('\HaaseIT\HCSF\PagePayload');
-            }
-        }
-
-        // If no page is found in DB, still init the payload
-        return new PagePayload($this->C);
+        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+        return $hResult->execute();
     }
+
+    protected function getPayload() {
+        return new UserPagePayload($this->C, $this->sLang, $this->DB, $this->cb_id, $this->bReturnRaw);
+    }
+
 }

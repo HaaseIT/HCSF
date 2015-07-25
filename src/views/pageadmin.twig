@@ -7,7 +7,7 @@
         $(document).ready(function() {
             $("#select_groups").change(function() {
                 trigger = document.form_page.groups;
-                target = document.form_page.page_id;
+                target = document.form_page.page_key;
                 target.options.length = 0;
                 triggerSelected = trigger.options[trigger.selectedIndex].value;
                 eval("childrenLength = children_" + triggerSelected + ".length;");
@@ -20,13 +20,13 @@
         var children_{{ key }} = new Array();
         {% set i = 0 %}
         {% for subvalue in value %}
-        children_{{ key }}[{{ i }}]  = new list("{{ subvalue.cb_id }}", "{{ subvalue.cb_key }}");
+        children_{{ key }}[{{ i }}]  = new list("{{ subvalue.cb_key }}", "{{ subvalue.cb_key }}");
         {% set i = i + 1 %}
         {% endfor %}
         {% endfor %}
     </script>
     <style>
-        #select_groups, #select_page_id {height: 15.5em;}
+        #select_groups, #select_page_key {height: 15.5em;}
     </style>
     <form action="{{ requesturi }}" method="get" name="form_page" class="pure-form pure-form-stacked">
         <input type="hidden" name="action" value="edit">
@@ -35,8 +35,8 @@
                 <label for="select_groups">Page group:</label>
                 {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
             </div><div class="pure-u-4-5">
-                <label for="select_page_id">Please choose page to edit:</label>
-                {{ macro.select('page_id', ['|Please choose group'], '', 'select_page_id', 'pure-u-1', false, 15) }}
+                <label for="select_page_key">Please choose page to edit:</label>
+                {{ macro.select('page_key', ['|Please choose group'], '', 'select_page_key', 'pure-u-1', false, 15) }}
             </div>
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Weiter</button>
@@ -47,47 +47,46 @@
     <style type="text/css">
         #page_html{height: 20em;}
     </style>
-    <form action="{{ requesturiarray.path }}?page_id={{ customdata.page.base['cb_id'] }}&action=edit" method="post" class="pure-form pure-form-stacked">
+    <form action="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&action=edit" method="post" class="pure-form pure-form-stacked">
         <input type="hidden" name="action_a" value="true">
         <div class="small">
-            <h3>current page: {{ customdata.page.base.cb_key }}</h3>
+            <h3>current page: {{ customdata.page.cb_key }}</h3>
         </div>
     {% if customdata.updated is defined %}
     <p>Changes committed: {{ macro.showClienttime() }}</p>
     {% endif %}
-    {% if customdata.page.text is defined %}
+    {% if customdata.page.oPayload is defined and customdata.page.oPayload.cl_id != NULL %}
     <fieldset>
         <legend>Sprachspezifisch</legend>
-        <input type="hidden" name="textid" value="{{ customdata.page.text['cl_id'] }}">
         <label for="page_html">Seiteninhalt</label>
-        <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.text.cl_html }}</textarea>
+        <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.oPayload.cl_html }}</textarea>
         <label for="page_title">Seitentitel:</label>
-        <input type="text" name="page_title" id="page_title" value="{{ customdata.page.text.cl_title }}" class="pure-u-1">
+        <input type="text" name="page_title" id="page_title" value="{{ customdata.page.oPayload.cl_title }}" class="pure-u-1">
         <label for="page_description">Meta-Description:</label>
-        <input type="text" name="page_description" id="page_description" value="{{ customdata.page.text.cl_description }}" class="pure-u-1">
+        <input type="text" name="page_description" id="page_description" value="{{ customdata.page.oPayload.cl_description }}" class="pure-u-1">
         <label for="page_keywords">Meta-Keywords (mit Kommas getrennt):</label>
-        <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.text.cl_keywords }}" class="pure-u-1">
+        <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.oPayload.cl_keywords }}" class="pure-u-1">
     </fieldset>
     {% else %}
     <p>
-        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_id={{ customdata.page.base['cb_id'] }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun</a>
+        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&amp;action=insert_lang">In dieser Sprache sind noch keine Texte angelegt. Klicken Sie hier um dies zu tun</a>
     </p>
     {% endif %}
         <fieldset>
             <legend>Sprachunabhängig</legend>
             <label for="page_type">Page type:</label>
-            {{ macro.select('page_type', customdata.page.admin_page_types, customdata.page.base.cb_pagetype, 'page_type', 'pure-u-1') }}
+            {{ macro.select('page_type', customdata.admin_page_types, customdata.page.cb_pagetype, 'page_type', 'pure-u-1') }}
             <label for="page_group">Page group:</label>
-            {{ macro.select('page_group', customdata.page.admin_page_groups, customdata.page.base.cb_group, 'page_group', 'pure-u-1') }}
+            {{ macro.select('page_group', customdata.admin_page_groups, customdata.page.cb_group, 'page_group', 'pure-u-1') }}
             <label for="page_config">Page config (json) oder shorturl Linkziel:</label>
-            <textarea name="page_config" class="pure-u-1" id="page_config">{{ customdata.page.base.cb_pageconfig }}</textarea>
+            <textarea name="page_config" class="pure-u-1" id="page_config">{{ customdata.page.cb_pageconfig }}</textarea>
             <label for="page_subnav">Page Subnavarea:</label>
-            {{ macro.select('page_subnav', customdata.page.subnavarea_options, customdata.page.base.cb_subnav, 'page_subnav', 'pure-u-1') }}
+            {{ macro.select('page_subnav', customdata.subnavarea_options, customdata.page.cb_subnav, 'page_subnav', 'pure-u-1') }}
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button>
     </form>
     <p>
-    <form action="/_admin/pageadmin.php?action=delete&amp;page_id={{ customdata.page.base['cb_id'] }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
+    <form action="/_admin/pageadmin.php?action=delete&amp;page_key={{ customdata.page.cb_key }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
     <fieldset>
     <legend>Seite löschen</legend>
             <label for="page-delete-confirm" class="pure-checkbox">
