@@ -44,3 +44,5 @@ templatecache
 
 at http://www.yourhost.tld/_admin/ you will find an info if these directories exist
 and are writable
+
+Add your custom views (templates) to /customviews (get default views at /src/views)
