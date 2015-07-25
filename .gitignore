@@ -9,3 +9,5 @@ setup/important.txt
 app/config/config.scrts.yml
 app/config/config.core.yml
 app/config/config.shop.yml
+web/robots.txt
+web/favicon.ico
