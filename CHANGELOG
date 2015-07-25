@@ -2,6 +2,7 @@
 Removed cl_background and cl_pdf from content_lang - legacy, unneeded
 Added the Aura Autoloader
 Rewrite of page handling
+Added new directory /customviews for easier upgrading
 
 2.1.0
 now works with hosting at 1&1 and other mass hosters
