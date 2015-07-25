@@ -184,7 +184,6 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'content';
 
-
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $P->cb_customcontenttemplate = 'customer/login';
         } else {
@@ -378,8 +377,10 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
             unset($aTMP);
         }
 
-        // if the page is not found as it is, try some more options
+        // go and look if the page can be loaded yet
         $P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
+
+        // if the page is not found as it is, try some more options
         if ($P->cb_id == NULL) {
             /*
             If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
@@ -388,17 +389,15 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
             if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
 
             if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
-            //$sPath = ltrim(trim($aURL["path"]), '/');
-            //$sPath = rtrim(trim($sPath), '/');
 
             $P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
         }
         unset($aPath); // no longer needed
         //die(var_dump($P));
 
-        if ($P->cb_id == NULL) {
+        if ($P->cb_id == NULL) { // if the page is still not found, unset the page object
             unset($P);
-        } else {
+        } else { // if it is found, go on
             // Support for shorturls
             if ($P->cb_pagetype == 'shorturl') {
                 header('Location: '.$P->cb_pageconfig, true, 302);
@@ -407,26 +406,23 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 
             if (isset($P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
                 $P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
-                //$P["base"] = array_merge($P["base"], $aRoutingoverride);
             }
         }
     }
 
     //die(var_dump($P));
-    if (!isset($P)) {
-        // TODO: testen
-
+    if (!isset($P)) { // if the page has not been found, send a 404
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'error';
 
         $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
         header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-    } elseif (isset($P) && $P->oPayload == NULL) {
-        if (!($P->cb_pagetype == 'itemoverview' || $P->cb_pagetype == 'itemoverviewgrpd' || $P->cb_pagetype == 'itemdetail')) {
+    } elseif (isset($P) && $P->oPayload == NULL) {// elseif the page has been found but contains no payload...
+        if (!($P->cb_pagetype == 'itemoverview' || $P->cb_pagetype == 'itemoverviewgrpd' || $P->cb_pagetype == 'itemdetail')) { // no payload is fine if page is one of these
             $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
             header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
         }
-    } elseif($P->oPayload->cl_lang != NULL && $P->oPayload->cl_lang != $sLang) {
+    } elseif($P->oPayload->cl_lang != NULL && $P->oPayload->cl_lang != $sLang) { // if the page is available but not in the current language, display info
         $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang").'<br><br>'.$P->oPayload->cl_html;
     }
     //die(var_dump($P));
