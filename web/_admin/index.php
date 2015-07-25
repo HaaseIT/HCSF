@@ -40,17 +40,9 @@ if (file_exists(PATH_TEMPLATECACHE)) {
 $sH .= '</p>';
 
 if ($C["enable_module_shop"]) {
-    $sH .= '<p>Log Directory for orders ' . realpath(PATH_ORDERLOG) . ' exists: ';
-    if (file_exists(PATH_ORDERLOG)) {
-        $sH .= 'YES, and it is ' . (is_writable(PATH_ORDERLOG) ? '' : 'NOT ') . 'writable.';
-    } else {
-        $sH .= 'NO!';
-    }
-    $sH .= '</p>';
-
-    $sH .= '<p>Log Directory for PayPal Transactions ' . realpath(PATH_PAYPALLOG) . ' exists: ';
-    if (file_exists(PATH_PAYPALLOG)) {
-        $sH .= 'YES, and it is ' . (is_writable(PATH_PAYPALLOG) ? '' : 'NOT ') . 'writable.';
+    $sH .= '<p>Log Directory ' . realpath(PATH_LOGS) . ' exists: ';
+    if (file_exists(PATH_LOGS)) {
+        $sH .= 'YES, and it is ' . (is_writable(PATH_LOGS) ? '' : 'NOT ') . 'writable.';
     } else {
         $sH .= 'NO!';
     }

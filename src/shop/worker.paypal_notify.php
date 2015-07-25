@@ -110,8 +110,8 @@ if ($hResult->rowCount() == 1) {
             $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
         }
         $bNufile = false;
-        if (!file_exists(PATH_PAYPALLOG . FILE_PAYPALLOG)) $bNufile = true;
-        $fp = fopen(PATH_PAYPALLOG . FILE_PAYPALLOG, 'a');
+        if (!file_exists(PATH_LOGS . FILE_PAYPALLOG)) $bNufile = true;
+        $fp = fopen(PATH_LOGS . FILE_PAYPALLOG, 'a');
         // Write $somecontent to our opened file.
         fwrite($fp, $sLogData);
         fclose($fp);

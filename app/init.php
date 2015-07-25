@@ -67,8 +67,7 @@ $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.count
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
 if ($C["enable_module_shop"]) {
-    define("PATH_ORDERLOG", __DIR__.'/../hcsflogs/');
-    define("PATH_PAYPALLOG", __DIR__.'/../hcsflogs/');
+    define("PATH_LOGS", __DIR__.'/../hcsflogs/');
     define("FILE_PAYPALLOG", 'ipnlog.txt');
     $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
     if (isset($C["vat_disable"]) && $C["vat_disable"]) {
