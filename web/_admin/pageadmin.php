@@ -69,21 +69,15 @@ function showPageselect($DB, $C) {
 }
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-    $aPage = admin_getPage($_REQUEST["page_id"], $DB, $sLang);
+    $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true);
 
-    if (isset($aPage["base"]) && !isset($aPage["text"])) {
-        $aData = array(
-            'cl_cb' => $aPage["base"]["cb_id"],
-            'cl_lang' => $sLang,
-        );
-        //HaaseIT\Tools::debug($aData);
-        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
-        //HaaseIT\Tools::debug($sQ);
-        $DB->exec($sQ);
-        header('Location: '.$_SERVER["PHP_SELF"]."?page_id=".$_REQUEST["page_id"].'&action=edit');
+    if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
+        $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
+        header('Location: '.$_SERVER["PHP_SELF"]."?page_key=".$Ptoinsertlang->cb_key.'&action=edit');
         die();
+    } else {
+        die('Could not insert language data.');
     }
-    //HaaseIT\Tools::debug($aItemdata);
 }
 
 if (!isset($_GET["action"])) {

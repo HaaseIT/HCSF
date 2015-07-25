@@ -53,4 +53,13 @@ class UserPagePayload extends PagePayload
         return $hResult->execute();
     }
 
+    public function insert($iParentID) {
+        $aData = array(
+            'cl_cb' => $iParentID,
+            'cl_lang' => $this->sLang,
+        );
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
+        $this->DB->exec($sQ);
+    }
+
 }
