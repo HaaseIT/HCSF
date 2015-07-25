@@ -18,6 +18,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function requireAdminAuth($C) {
+    $valid_users = array_keys($C['admin_users']);
+
+    $user = $_SERVER['PHP_AUTH_USER'];
+    $pass = $_SERVER['PHP_AUTH_PW'];
+
+    $validated = (in_array($user, $valid_users)) && ($pass == $C['admin_users'][$user]);
+
+    if (!$validated) {
+        header('WWW-Authenticate: Basic realm="'.$C['admin_authrealm'].'"');
+        header('HTTP/1.0 401 Unauthorized');
+        die ("Not authorized");
+    }
+}
+
 function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
     //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
     $mail = new PHPMailer;

@@ -147,27 +147,30 @@ if ($C["enable_module_customer"]) {
     require_once __DIR__.'/../src/customer/functions.customer.php';
 }
 
+$C["navstruct"]["admin"]["Admin Home"] = '/_admin/index.html';
+
 if ($C["enable_module_shop"]) {
     require_once __DIR__ . '/../src/shop/Items.php';
     require_once __DIR__ . '/../src/shop/functions.shoppingcart.php';
 
     $oItem = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
 
-    $C["navstruct"]["admin"]["Bestellungen"] = '/_admin/shop/shopadmin.php';
-    $C["navstruct"]["admin"]["Artikel"] = '/_admin/shop/itemadmin.php';
-    $C["navstruct"]["admin"]["Artikelgruppen"] = '/_admin/shop/itemgroupadmin.php';
+    $C["navstruct"]["admin"]["Bestellungen"] = '/_admin/shopadmin.html';
+    $C["navstruct"]["admin"]["Artikel"] = '/_admin/itemadmin.html';
+    $C["navstruct"]["admin"]["Artikelgruppen"] = '/_admin/itemgroupadmin.html';
 } else {
     $oItem = '';
 }
 
 if ($C["enable_module_customer"]) {
     require_once __DIR__.'/../src/customer/functions.customer.php';
-    $C["navstruct"]["admin"]["Kunden"] = '/_admin/customer/customeradmin.php';
+    $C["navstruct"]["admin"]["Kunden"] = '/_admin/customeradmin.html';
 }
 
-$C["navstruct"]["admin"]["Seiten"] = '/_admin/pageadmin.php';
-$C["navstruct"]["admin"]["Textkataloge"] = '/_admin/textcatadmin.php';
-$C["navstruct"]["admin"]["Templatecache leeren"] = '/_admin/cleartemplatecache.php';
+$C["navstruct"]["admin"]["Seiten"] = '/_admin/pageadmin.html';
+$C["navstruct"]["admin"]["Textkataloge"] = '/_admin/textcatadmin.html';
+$C["navstruct"]["admin"]["Templatecache leeren"] = '/_admin/cleartemplatecache.html';
+$C["navstruct"]["admin"]["PHPInfo"] = '/_admin/phpinfo.html';
 
 // ----------------------------------------------------------------------------
 // Begin routing
@@ -179,7 +182,81 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     $sPath = $aURL["path"];
 
     // if the path is one of the predefined urls, skip further routing
-    if ($C["enable_module_customer"] && $sPath == '/_misc/login.html') {
+    if ($sPath == '/_admin/index.html' || $sPath == '/_admin/') {
+        requireAdminAuth($C);
+
+        $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+        $P->cb_pagetype = 'content';
+        $P->cb_subnav = 'admin';
+
+        $sH = '<h1>Welcome to the administration area</h1><h3>Quick check of required PHP Extensions:</h3>';
+        $sH .= '<p>Filter is: ' . (extension_loaded('filter') ? 'enabled' : 'disabled') . '</p>';
+        $sH .= '<h3>Quick check of required file/directory permissions:</h3>';
+        $sH .= '<p>Template cache ' . realpath(PATH_TEMPLATECACHE) . ' exists: ';
+        if (file_exists(PATH_TEMPLATECACHE)) {
+            $sH .= 'YES, and it is ' . (is_writable(PATH_TEMPLATECACHE) ? '' : 'NOT ') . 'writable.';
+        } else {
+            $sH .= 'NO!';
+        }
+        $sH .= '</p>';
+
+        if ($C["enable_module_shop"]) {
+            $sH .= '<p>Log Directory ' . realpath(PATH_LOGS) . ' exists: ';
+            if (file_exists(PATH_LOGS)) {
+                $sH .= 'YES, and it is ' . (is_writable(PATH_LOGS) ? '' : 'NOT ') . 'writable.';
+            } else {
+                $sH .= 'NO!';
+            }
+            $sH .= '</p>';
+        }
+
+        if (function_exists('apache_get_modules')) {
+            $aApacheModules = apache_get_modules();
+            $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ') . 'enabled.</p>';
+        }
+
+        $P->oPayload->cl_html = $sH;
+
+    } elseif ($sPath == '/_admin/cleartemplatecache.html') {
+        requireAdminAuth($C);
+
+        $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+        $P->cb_pagetype = 'content';
+        $P->cb_subnav = 'admin';
+        $P->oPayload->cl_html = 'The template cache has been cleared.';
+
+        $twig->clearTemplateCache();
+        $twig->clearCacheFiles();
+    } elseif ($sPath == '/_admin/phpinfo.html') {
+        requireAdminAuth($C);
+        phpinfo();
+        die();
+    } elseif ($sPath == '/_admin/pageadmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/worker.pageadmin.php';
+    } elseif ($sPath == '/_admin/textcatadmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/worker.textcatadmin.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_admin/customeradmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/customer/functions.admin.customer.php';
+        $aPData = handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang);
+        $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+        $P->cb_pagetype = 'content';
+        $P->cb_subnav = 'admin';
+        $P->cb_customcontenttemplate = 'customer/customeradmin';
+        $P->oPayload->cl_html = $aPData["customeradmin"]["text"];
+        $P->cb_customdata = $aPData;
+    } elseif ($C["enable_module_shop"] && $sPath == '/_admin/itemadmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/shop/worker.itemadmin.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_admin/shopadmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/shop/worker.shopadmin.php';
+    } elseif ($C["enable_module_shop"] && $sPath == '/_admin/itemgroupadmin.html') {
+        requireAdminAuth($C);
+        require_once __DIR__.'/../src/shop/worker.itemgroupadmin.php';
+    } elseif ($C["enable_module_customer"] && $sPath == '/_misc/login.html') {
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'content';
 

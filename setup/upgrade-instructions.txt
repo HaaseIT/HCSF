@@ -23,6 +23,7 @@ src/customer/worker.verifyemail.php
 src/shop/worker.checkedout.php
 src/functions.db.php
 src/function.admin.pages.php
+web/_admin/*
 
 V2.1.0
 delete directory: web/_misc/

@@ -1,56 +1,7 @@
 <?php
 
-/*
-    HCSF - A multilingual CMS and Shopsystem
-    Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
-$P = array(
-'head_scripts' => '<script type="text/javascript" src="/jquery.js"></script>
-<script type="text/javascript" src="/_admin/_tinymce/tinymce.min.js"></script>
-<script type="text/javascript">
-tinymce.init({
-selector: "textarea.wysiwyg",
-language : "de",
-content_css: "/screen-global.css",
-theme : "modern",
-plugins: [
-"advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-"searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-"save table contextmenu directionality emoticons template paste textcolor"
-],
-templates : [
-{
-title: "2-Spaltige Tabelle 50/50",
-url: "/_admin/_tinymce/templates/table5050.html",
-description: "2-Spaltige Tabelle 50/50"
-}
-]
-});
-</script>',
-
-// append new values here
-'' => '',
-);
-*/
-
-require_once __DIR__.'/../../../app/init.php';
-require_once __DIR__.'/../../../src/shop/functions.admin.items.php';
-require_once __DIR__.'/../../../src/shop/functions.admin.itemgroups.php';
+require_once __DIR__.'/../../src/shop/functions.admin.items.php';
+require_once __DIR__.'/../../src/shop/functions.admin.itemgroups.php';
 
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
@@ -128,7 +79,3 @@ if (isset($_REQUEST["action"])) {
         $P->cb_customdata["err"] = $aErr;
     }
 }
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);

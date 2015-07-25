@@ -4,6 +4,8 @@ Added the Aura Autoloader
 Rewrite of page handling
 Moved all page related stuff to new page objects
 Added new directory /customviews for easier upgrading
+Removed serveral files for easier upgrading
+Moved admin area from web directory to internal routing
 
 2.1.0
 now works with hosting at 1&1 and other mass hosters

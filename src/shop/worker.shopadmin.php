@@ -1,26 +1,7 @@
 <?php
 
-/*
-    HCSF - A multilingual CMS and Shopsystem
-    Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-require_once __DIR__.'/../../../app/init.php';
-require_once __DIR__.'/../../../src/shop/functions.admin.shop.php';
-require_once __DIR__.'/../../../src/shop/functions.shoppingcart.php';
+require_once __DIR__.'/../../src/shop/functions.admin.shop.php';
+require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
 
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
@@ -93,22 +74,7 @@ $aShopadmin = handleShopAdmin($CSA, $twig, $DB, $C, $sLang);
 
 $P->cb_customdata = array_merge($aPData, $aShopadmin);
 
-/* Druckansicht für Acrylx
-$sH .= '<div>
-	<a href="#" onclick="return hs.htmlExpand(this, {
-			width: 736,
-			headingText: \'Acrylx Bestellung\', wrapperClassName: \'titlebar\' })">Druckansicht</a>
-	<div class="highslide-maincontent">
-		<a class="control" onclick="return hs.getExpander(this).printHtml()" href="#">Drucken</a>
-		'.$sShopadmin.'
-	</div>
-</div>';
-*/
-
 $sH .= $aShopadmin["html"];
 
 $P->oPayload->cl_html = $sH;
-
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
-
-echo $twig->render($C["template_base"], $aP);
+unset($sH);
