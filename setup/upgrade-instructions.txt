@@ -1,5 +1,6 @@
 
 V2.2.0
+Define admin users in config.core.yml
 Move your custom views (templates) to /customviews, cleanup /src/views and upload default views there
 
 ALTER TABLE `content_lang`
