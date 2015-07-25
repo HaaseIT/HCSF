@@ -62,4 +62,9 @@ class UserPagePayload extends PagePayload
         $this->DB->exec($sQ);
     }
 
+    public function remove($sParentID) {
+        $sQ = "DELETE FROM content_lang WHERE cl_cb = '".$sParentID."'";
+        return $this->DB->exec($sQ);
+    }
+
 }

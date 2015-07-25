@@ -86,14 +86,12 @@ if (!isset($_GET["action"])) {
 } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
     if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
         // delete and put message in customdata
-        // delete children
-        $sQ = "DELETE FROM content_lang WHERE cl_cb = '".\filter_var($_GET["page_id"], FILTER_SANITIZE_NUMBER_INT)."'";
-        $DB->exec($sQ);
-
-        // then delete base row
-        $sQ = "DELETE FROM content_base WHERE cb_id = '".\filter_var($_GET["page_id"], FILTER_SANITIZE_NUMBER_INT)."'";
-        $DB->exec($sQ);
-
+        $Ptodelete = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_GET["page_key"], true);
+        if ($Ptodelete->cb_id != NULL) {
+            $Ptodelete->remove();
+        } else {
+            die('Page to delete not found error.');
+        }
         $P->cb_customdata["deleted"] = true;
     } else { // edit or update page
         if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true)) {
@@ -130,8 +128,6 @@ if (!isset($_GET["action"])) {
         } else {
             die('Page selected not found error.');
         }
-
-
     }
 } elseif ($_GET["action"] == 'addpage') {
     $aErr = array();

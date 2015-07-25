@@ -66,4 +66,13 @@ class UserPage extends Page
         return $hResult = $this->DB->exec($sQ);
     }
 
+    public function remove() {
+        // delete children
+        $this->oPayload->remove($this->cb_id);
+
+        // then delete base row
+        $sQ = "DELETE FROM content_base WHERE cb_id = '".$this->cb_id."'";
+        return $this->DB->exec($sQ);
+    }
+
 }
