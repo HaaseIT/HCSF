@@ -1,7 +1,8 @@
-2.2.x
+2.2.0
 Removed cl_background and cl_pdf from content_lang - legacy, unneeded
 Added the Aura Autoloader
 Rewrite of page handling
+Moved all page related stuff to new page objects
 Added new directory /customviews for easier upgrading
 
 2.1.0

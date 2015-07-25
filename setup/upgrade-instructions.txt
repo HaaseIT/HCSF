@@ -1,5 +1,5 @@
 
-V2.2.x
+V2.2.0
 Move your custom views (templates) to /customviews, cleanup /src/views and upload default views there
 
 ALTER TABLE `content_lang`
