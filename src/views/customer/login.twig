@@ -1,6 +1,6 @@
 {% if isloggedin %}
-    <a href="/_misc/logout.html">{{ T("nav_logout") }}</a>
-    <a href="/_misc/userhome.html">{{ T("nav_myaccount") }}</a>
+    <a href="/_misc/userhome.html" class="pure-button button-green">{{ T("nav_myaccount") }}</a>
+    <a href="/_misc/logout.html" class="pure-button button-orange">{{ T("nav_logout") }}</a>
 {% else %}
     <a href="/_misc/register.html" class="pure-button button-orange pure-u-23-24 pure-u-md-12-24 button-head" id="button-register"><i class="fa fa-user"></i> {{ T("nav_register") }}</a>
     <form action="/_misc/login.html" method="POST" name="login">
