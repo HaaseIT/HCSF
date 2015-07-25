@@ -84,7 +84,7 @@ date_default_timezone_set($C["defaulttimezone"]);
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$loader = new Twig_Loader_Filesystem(__DIR__.'/../src/views/');
+$loader = new Twig_Loader_Filesystem(array(__DIR__.'/../customviews', __DIR__.'/../src/views/'));
 $twig_options = array(
     'autoescape' => false,
     'debug' => (isset($C["debug"]) && $C["debug"] ? true : false)
