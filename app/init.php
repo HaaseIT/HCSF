@@ -406,6 +406,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 
             if (isset($P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
                 $P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
+                $P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
             }
         }
     }

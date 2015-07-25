@@ -163,11 +163,11 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         if ($aP["pagetype"] == 'itemdetail') {
 
             // Todo: move building of paths for itemindexes to better location
-            $sQ = "SELECT * FROM ".DB_CONTENTTABLE_BASE." WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
+            $sQ = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
             $oQuery = $DB->query($sQ);
             while ($aRow = $oQuery->fetch()) {
                 $aItemoverviewpages[] = array(
-                    'path' => $aRow[DB_CONTENTFIELD_BASE_KEY],
+                    'path' => $aRow['cb_key'],
                     'pageconfig' => json_decode($aRow["cb_pageconfig"], true),
                 );
             }
@@ -189,13 +189,13 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                 }
             }
             //HaaseIT\Tools::debug($aP["pageconfig"]["itemindex"], '$aP["pageconfig"]["itemindex"]');
-            if (isset($aP["pageconfig"]["itemindex"])) {
-                if (is_array($aP["pageconfig"]["itemindex"])) {
+            if (isset($aP["pageconfig"]->itemindex)) {
+                if (is_array($aP["pageconfig"]->itemindex)) {
                     foreach ($aP["pageconfig"]["itemindex"] as $sItemIndexValue) {
                         $aP["itemindexpathtreeforsuggestions"][$sItemIndexValue] = '';
                     }
                 } else {
-                    $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]["itemindex"]] = '';
+                    $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
                 }
             }
             unset($aItemoverviewpages);
@@ -206,7 +206,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
             $aP["pagetype"] = 'itemoverview';
             if (count($aP["items"]["item"])) {
                 foreach ($aP["items"]["item"] as $sKey => $aValue) {
-                    if ($aValue[DB_ITEMFIELD_NUMBER] == $P["base"]["itemno"]) {
+                    if ($aValue[DB_ITEMFIELD_NUMBER] == $P->cb_pageconfig->itemno) {
                         $aP["pagetype"] = 'itemdetail';
                         $aP["item"]["data"] = $aValue;
                         $aP["item"]["key"] = $sKey;
@@ -299,14 +299,14 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                 if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
                                     $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
                                     foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
-                                        if (isset($aP["pageconfig"]["itemindex"])) { // check if there is an index configured on this page
-                                            if (is_array($aP["pageconfig"]["itemindex"])) { // check if it is an array
+                                        if (isset($aP["pageconfig"]->itemindex)) { // check if there is an index configured on this page
+                                            if (is_array($aP["pageconfig"]->itemindex)) { // check if it is an array
                                                 if (in_array($sSuggestionIndexesValue, $aP["pageconfig"]["itemindex"])) { // if the suggestions index is in that array, set path to empty string
                                                     $aSuggestions[$aSuggestionsKey]["path"] = '';
                                                     continue 2; // path to suggestion set, continue with next suggestion
                                                 }
                                             } else {
-                                                if ($aP["pageconfig"]["itemindex"] == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
+                                                if ($aP["pageconfig"]->itemindex == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
                                                     $aSuggestions[$aSuggestionsKey]["path"] = '';
                                                     continue 2; // path to suggestion set, continue with next suggestion
                                                 }
@@ -319,9 +319,9 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                     }
                                     unset($aSuggestionIndexes);
                                 } else {
-                                     if (isset($aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]])) {
-                                         $aSuggestions[$aSuggestionsKey]["path"] = $aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]];
-                                     }
+                                    if (isset($aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]])) {
+                                        $aSuggestions[$aSuggestionsKey]["path"] = $aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]];
+                                    }
                                 }
                             }
                             //HaaseIT\Tools::debug($aSuggestions, '$aSuggestions');
