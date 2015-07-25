@@ -20,7 +20,7 @@ src/customer/worker.login.php
 src/customer/worker.logout.php
 src/customer/worker.resendverificationmail.php
 src/customer/worker.verifyemail.php
-src/customer/worker.checkedout.php
+src/shop/worker.checkedout.php
 src/functions.db.php
 src/function.admin.pages.php
 
