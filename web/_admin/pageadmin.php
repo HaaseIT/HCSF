@@ -68,6 +68,7 @@ function showPageselect($DB, $C) {
     return $aSData;
 }
 
+// adding language to page here
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true);
 
@@ -135,27 +136,23 @@ if (!isset($_GET["action"])) {
 } elseif ($_GET["action"] == 'addpage') {
     $aErr = array();
     if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
-        if (mb_substr($_POST["pagekey"], 0, 2) == '/_') {
+        $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
+
+        if (mb_substr($sPagekeytoadd, 0, 2) == '/_') {
             $aErr["reservedpath"] = true;
-        } elseif (strlen($_POST["pagekey"]) < 4) {
+        } elseif (strlen($sPagekeytoadd) < 4) {
             $aErr["keytooshort"] = true;
         } else {
-            $sQ = "SELECT cb_key FROM content_base WHERE cb_key = '";
-            $sQ .= \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-            $hResult = $DB->query($sQ);
-            $iRows = $hResult->rowCount();
-            if ($iRows > 0) {
-                $aErr["keyalreadyinuse"] = true;
+            $Ptoadd = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPagekeytoadd, true);
+            if ($Ptoadd->cb_id == NULL) {
+                if ($Ptoadd->insert($sPagekeytoadd)) {
+                    header('Location: '.$_SERVER["PHP_SELF"].'?page_key='.$sPagekeytoadd.'&action=edit');
+                    die();
+                } else {
+                    die('Could not insert error.');
+                }
             } else {
-                $aData = array('cb_key' => trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS)),);
-                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
-                //HaaseIT\Tools::debug($sQ);
-                $hResult = $DB->exec($sQ);
-                $iInsertID = $DB->lastInsertId();
-                $sQ = "SELECT cb_id FROM content_base WHERE cb_id = '".$iInsertID."'";
-                $hResult = $DB->query($sQ);
-                $aRow = $hResult->fetch();
-                header('Location: '.$_SERVER["PHP_SELF"].'?page_key='.$aRow["cb_key"].'&action=edit');
+                $aErr["keyalreadyinuse"] = true;
             }
         }
         $P->cb_customdata["err"] = $aErr;

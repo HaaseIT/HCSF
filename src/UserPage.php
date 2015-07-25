@@ -39,6 +39,10 @@ class UserPage extends Page
         }
     }
 
+    protected function getPayload() {
+        return new UserPagePayload($this->C, $this->sLang, $this->DB, $this->cb_id, $this->bReturnRaw);
+    }
+
     public function write() {
         $aData = array(
             'cb_pagetype' => $this->cb_pagetype,
@@ -54,8 +58,12 @@ class UserPage extends Page
         return $hResult->execute();
     }
 
-    protected function getPayload() {
-        return new UserPagePayload($this->C, $this->sLang, $this->DB, $this->cb_id, $this->bReturnRaw);
+    public function insert($sPagekeytoadd) {
+        $aData = array(
+            'cb_key' => $sPagekeytoadd,
+        );
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
+        return $hResult = $this->DB->exec($sQ);
     }
 
 }
