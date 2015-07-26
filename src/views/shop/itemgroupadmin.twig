@@ -30,13 +30,13 @@
                 <textarea name="details" rows="8" cols="70" id="groupadmin-details">{{ customdata.group.lang.details }}</textarea><br>
             {% else %}
                 In dieser Sprache sind noch keine Texte angelegt!
-                <a href="/_admin/shop/itemgroupadmin.php?action=insert_lang&gid={{ customdata.group.id }}">[Anlegen]</a><br>
+                <a href="/_admin/shop/itemgroupadmin.html?action=insert_lang&gid={{ customdata.group.id }}">[Anlegen]</a><br>
             {% endif %}
         {% endif %}
         <input type="submit" value="Submit" id="groupadmin-submit">
     </form>
 {% else %}
-    <a href="/_admin/shop/itemgroupadmin.php?action=addgroup">[Eine neue Gruppe anlegen]</a><br><br>
+    <a href="/_admin/shop/itemgroupadmin.html?action=addgroup">[Eine neue Gruppe anlegen]</a><br><br>
 {% endif %}
 {{  customdata.err.nogroupsavaliable ? 'Zur Zeit sind keine Gruppen angelegt.' : '' }}
 {{ content }}

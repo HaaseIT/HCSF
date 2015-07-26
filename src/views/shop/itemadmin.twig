@@ -75,7 +75,7 @@
         {% else %}
             <br>
             In dieser Sprache sind noch keine Texte angelegt!
-            <a href="/_admin/shop/itemadmin.php?itemno={{ customdata.item.itemno }}&action=insert_lang">[Anlegen]</a>
+            <a href="/_admin/shop/itemadmin.html?itemno={{ customdata.item.itemno }}&action=insert_lang">[Anlegen]</a>
             <br>
             <br>
         {% endif %}
@@ -104,11 +104,11 @@ Keine Zeilenumbrüche in Zeichenketten, sonst funktioniert das ganze nicht!
 {% elseif customdata.showaddform %}
     {{ customdata.err.itemnotooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br><br>' : '' }}
     {{ customdata.err.itemnoalreadytaken ? 'Diese Artikelnummer ist bereits vergeben.<br><br>' : '' }}
-    <form action="/_admin/shop/itemadmin.php?action=additem" method="POST" name="additem" class="pure-form">
+    <form action="/_admin/shop/itemadmin.html?action=additem" method="POST" name="additem" class="pure-form">
         <input type="hidden" name="additem" value="do">
         <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext" id="itemadmin-add-itemno" placeholder="Artikelnummer">
         <button type="submit" class="pure-button pure-button-primary">Artikel anlegen</button>
     </form>
 {% else %}
-    <a href="/_admin/shop/itemadmin.php?action=additem">[Artikel hinzufügen]</a><br>
+    <a href="/_admin/shop/itemadmin.html?action=additem">[Artikel hinzufügen]</a><br>
 {% endif %}

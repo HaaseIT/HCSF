@@ -86,7 +86,7 @@
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button>
     </form>
     <p>
-    <form action="/_admin/pageadmin.php?action=delete&amp;page_key={{ customdata.page.cb_key }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
+    <form action="/_admin/pageadmin.html?action=delete&amp;page_key={{ customdata.page.cb_key }}" method="post" name="deletepage" class="pure-form pure-form-stacked">
     <fieldset>
     <legend>Seite löschen</legend>
             <label for="page-delete-confirm" class="pure-checkbox">
@@ -101,7 +101,7 @@
     {{ customdata.err.reservedpath ? 'Der von Ihnen gewählte Schlüssel ist für das System reserviert, er darf nicht mit "/_" beginnen.<br><br>' : '' }}
     {{ customdata.err.keytooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für den Seitenschlüssel.<br><br>' : '' }}
     {{ customdata.err.keyalreadyinuse ? 'Dieser Seitenschlüssel ist bereits vergeben.<br><br>' : '' }}
-    <form action="/_admin/pageadmin.php?action=addpage" method="POST" name="addpage" class="pure-form pure-form-stacked">
+    <form action="/_admin/pageadmin.html?action=addpage" method="POST" name="addpage" class="pure-form pure-form-stacked">
         <input type="hidden" name="addpage" value="do">
         <label for="pagekey">Seitenschlüssel:</label>
         <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="pure-u-1" id="pagekey">
