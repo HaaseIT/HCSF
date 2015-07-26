@@ -108,4 +108,5 @@ define("DB_ORDERTABLE_ITEMS", 'orders_items');
 define("PATH_BASEDIR", __DIR__.'/../../');
 define("PATH_DOCROOT", PATH_BASEDIR.'web/');
 
-define("PATH_TEMPLATECACHE", PATH_BASEDIR.'templatecache/');
+define("PATH_TEMPLATECACHE", PATH_BASEDIR.'cache/templates/');
+define("PATH_PURIFIERCACHE", PATH_BASEDIR.'cache/htmlpurifier/');
