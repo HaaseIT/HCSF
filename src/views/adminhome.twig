@@ -13,6 +13,16 @@
         <span style="color:red">NO!</span>
     {% endif %}
 </p>
+
+<p>HTMLPurifier cache {{ customdata.path_purifiercache }} exists:
+    {% if customdata.path_purifiercache_exists %}
+        <span style="color:green">YES</span>, and it is
+        {{ customdata.path_purifiercache_writable ? '<span style="color:green">' : '<span style="color:red">NOT ' }}writable</span>
+    {% else %}
+        <span style="color:red">NO!</span>
+    {% endif %}
+</p>
+
 {% if customdata.enable_module_shop %}
 <p>Log Directory {{ customdata.path_logs }} exists:
     {% if customdata.path_logs_exists %}

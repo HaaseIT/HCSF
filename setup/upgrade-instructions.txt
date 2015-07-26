@@ -27,6 +27,7 @@ src/functions.db.php
 src/function.admin.pages.php
 web/_admin/*
 web/* except: app.php, fs.php, .htaccess and of course your own files(!!)
+templatecache
 
 V2.1.0
 delete directory: web/_misc/

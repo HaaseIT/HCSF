@@ -5,7 +5,7 @@ namespace HaaseIT\HCSF;
 
 class UserPagePayload extends PagePayload
 {
-    public $cl_id, $cl_cb, $cl_lang;
+    public $cl_id, $cl_cb, $cl_lang, $purifier;
 
     public function __construct($C, $sLang, $DB, $iParentID, $bReturnRaw = false) {
         if (!$bReturnRaw) $this->C = $C;
@@ -40,10 +40,10 @@ class UserPagePayload extends PagePayload
 
     public function write() {
         $aData = array(
-            'cl_html' => $this->cl_html,
-            'cl_title' => $this->cl_title,
-            'cl_description' => $this->cl_description,
-            'cl_keywords' => $this->cl_keywords,
+            'cl_html' => $this->purifier->purify($this->cl_html),
+            'cl_title' => filter_var($this->cl_title, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'cl_description' => filter_var($this->cl_description, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'cl_keywords' => filter_var($this->cl_keywords, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_id' => $this->cl_id,
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_lang', 'cl_id');

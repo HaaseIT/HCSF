@@ -12,7 +12,7 @@ namespace HaaseIT\HCSF;
 class UserPage extends Page
 {
     protected $DB, $bReturnRaw;
-    public $cb_id, $cb_key, $cb_group;
+    public $cb_id, $cb_key, $cb_group, $purifier;
 
     public function __construct($C, $sLang, $DB, $sPagekey, $bReturnRaw = false) {
         if (!$bReturnRaw) $this->C = $C;
@@ -45,10 +45,10 @@ class UserPage extends Page
 
     public function write() {
         $aData = array(
-            'cb_pagetype' => $this->cb_pagetype,
-            'cb_group' => $this->cb_group,
-            'cb_pageconfig' => $this->cb_pageconfig,
-            'cb_subnav' => $this->cb_subnav,
+            'cb_pagetype' => filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'cb_group' => filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'cb_pageconfig' => $this->purifier->purify($this->cb_pageconfig),
+            'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_key' => $this->cb_key,
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
