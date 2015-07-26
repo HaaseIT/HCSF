@@ -21,3 +21,9 @@ db_password:    pwd
 db_name:        dbname
 
 blowfish_salt:  $2a$07$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx$
+
+admin_authrealm: HCSF
+# If no user is defined here, the whole admin area except adminhome will be disabled.
+# Use the encryption tool at the adminhome page to encrypt your password, set blowfish_salt first!
+admin_users:
+#    adminuser: encryptedadminpwd

@@ -33,9 +33,6 @@ lang_by_domain:
     de: domain.de
     en: domain.com
     es: domain.es
-admin_authrealm: HCSF
-admin_users:
-    adminuser: adminpwd
 admin_page_groups:
     - _|_Keine_
     - admin|Administration
