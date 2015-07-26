@@ -190,29 +190,29 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         $P->cb_subnav = 'admin';
 
         $sH = '<h1>Welcome to the administration area</h1><h3>Quick check of required PHP Extensions:</h3>';
-        $sH .= '<p>Filter is: ' . (extension_loaded('filter') ? 'enabled' : 'disabled') . '</p>';
+        $sH .= '<p>Filter is: ' . (extension_loaded('filter') ? '<span style="color:green">enabled' : '<span style="color:red">disabled') . '</span></p>';
         $sH .= '<h3>Quick check of required file/directory permissions:</h3>';
         $sH .= '<p>Template cache ' . realpath(PATH_TEMPLATECACHE) . ' exists: ';
         if (file_exists(PATH_TEMPLATECACHE)) {
-            $sH .= 'YES, and it is ' . (is_writable(PATH_TEMPLATECACHE) ? '' : 'NOT ') . 'writable.';
+            $sH .= '<span style="color:green">YES</span>, and it is ' . (is_writable(PATH_TEMPLATECACHE) ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'writable</span>.';
         } else {
-            $sH .= 'NO!';
+            $sH .= '<span style="color:red">NO!</span>';
         }
         $sH .= '</p>';
 
         if ($C["enable_module_shop"]) {
             $sH .= '<p>Log Directory ' . realpath(PATH_LOGS) . ' exists: ';
             if (file_exists(PATH_LOGS)) {
-                $sH .= 'YES, and it is ' . (is_writable(PATH_LOGS) ? '' : 'NOT ') . 'writable.';
+                $sH .= '<span style="color:green">YES</span>, and it is ' . (is_writable(PATH_LOGS) ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'writable</span>.';
             } else {
-                $sH .= 'NO!';
+                $sH .= '<span style="color:red">NO!</span>';
             }
             $sH .= '</p>';
         }
 
         if (function_exists('apache_get_modules')) {
             $aApacheModules = apache_get_modules();
-            $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '' : 'NOT ') . 'enabled.</p>';
+            $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'enabled</span>.</p>';
         }
 
         $P->oPayload->cl_html = $sH;
