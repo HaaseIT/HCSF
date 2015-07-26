@@ -28,8 +28,9 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
     //HaaseIT\Tools::debug($iNumRowsBasis.' / '.$iNumRowsLang);
 
     if ($iNumRowsBasis == 1 && $iNumRowsLang == 0) {
+        $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
         $aData = array(
-            DB_ITEMGROUPTABLE_TEXT_PARENTPKEY => $_REQUEST["gid"],
+            DB_ITEMGROUPTABLE_TEXT_PARENTPKEY => $iGID,
             DB_ITEMGROUPFIELD_LANGUAGE => $sLang,
         );
         //HaaseIT\Tools::debug($aData);
@@ -38,7 +39,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
         $hResult = $DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
-        header('Location: '.$_SERVER["PHP_SELF"]."?gid=".$_REQUEST["gid"].'&action=editgroup');
+        header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
         die();
     }
     //HaaseIT\Tools::debug($aItemdata);
@@ -46,9 +47,16 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 
 if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-        $P->cb_customdata["updatestatus"] = admin_updateGroup($DB, $sLang);
+        $purifier_config = HTMLPurifier_Config::createDefault();
+        $purifier_config->set('Core.Encoding', 'UTF-8');
+        $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        $purifier = new HTMLPurifier($purifier_config);
+
+        $P->cb_customdata["updatestatus"] = admin_updateGroup($DB, $sLang, $purifier);
     }
-    $aGroup = admin_getItemgroups($_REQUEST["gid"], $DB, $sLang);
+
+    $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
+    $aGroup = admin_getItemgroups($iGID, $DB, $sLang);
     if (isset($_REQUEST["added"])) {
         $P->cb_customdata["groupjustadded"] = true;
     }
@@ -58,21 +66,25 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
 } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
     $aErr = array();
     if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-        if (strlen($_REQUEST["name"]) < 3) $aErr["nametooshort"] = true;
-        if (strlen($_REQUEST["no"]) < 3) $aErr["grouptooshort"] = true;
+        $sName = filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $sImg = filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+
+        if (strlen($sName) < 3) $aErr["nametooshort"] = true;
+        if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
         if (count($aErr) == 0) {
             $sQ = "SELECT ".DB_ITEMGROUPFIELD_NUMBER." FROM ".DB_ITEMGROUPTABLE_BASE;
             $sQ .= " WHERE ".DB_ITEMGROUPFIELD_NUMBER." = :no";
             $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':no', $_REQUEST["no"]);
+            $hResult->bindValue(':no', $sGNo);
             $hResult->execute();
             if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
         }
         if (count($aErr) == 0) {
             $aData = array(
-                DB_ITEMGROUPFIELD_NAME => $_REQUEST["name"],
-                DB_ITEMGROUPFIELD_NUMBER => $_REQUEST["no"],
-                DB_ITEMGROUPFIELD_IMG => $_REQUEST["img"],
+                DB_ITEMGROUPFIELD_NAME => $sName,
+                DB_ITEMGROUPFIELD_NUMBER => $sGNo,
+                DB_ITEMGROUPFIELD_IMG => $sImg,
             );
             $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
             //HaaseIT\Tools::debug($sQ);
@@ -80,7 +92,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
             $iLastInsertID = $DB->lastInsertId();
-            header('Location: '.$_SERVER["PHP_SELF"].'?action=editgroup&added&gid='.$iLastInsertID);
+            header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
         } else {
             $P->cb_customdata["err"] = $aErr;
             $P->cb_customdata["showform"] = 'add';

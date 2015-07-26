@@ -18,23 +18,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function admin_updateGroup($DB, $sLang)
+function admin_updateGroup($DB, $sLang, $purifier)
 {
     $sQ = "SELECT * FROM " . DB_ITEMGROUPTABLE_BASE . " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " != :id AND ";
     $sQ .= DB_ITEMGROUPFIELD_NUMBER . " = :gno";
     $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':id', $_REQUEST["gid"]);
-    $hResult->bindValue(':gno', $_REQUEST["no"]);
+    $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
+    $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+    $hResult->bindValue(':id', $iGID);
+    $hResult->bindValue(':gno', $sGNo);
     $hResult->execute();
     $iNumRows = $hResult->rowCount();
 
     if ($iNumRows > 0) return 'duplicateno';
 
     $aData = array(
-        DB_ITEMGROUPFIELD_NAME => $_REQUEST["name"],
-        DB_ITEMGROUPFIELD_NUMBER => $_REQUEST["no"],
-        DB_ITEMGROUPFIELD_IMG => $_REQUEST["img"],
-        DB_ITEMGROUPTABLE_BASE_PKEY => $_REQUEST["gid"],
+        DB_ITEMGROUPFIELD_NAME => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMGROUPFIELD_NUMBER => $sGNo,
+        DB_ITEMGROUPFIELD_IMG => filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMGROUPTABLE_BASE_PKEY => $iGID,
     );
 
     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
@@ -50,7 +52,7 @@ function admin_updateGroup($DB, $sLang)
     $sQ .= " AND " . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
     //HaaseIT\Tools::debug($sQ);
     $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':gid', $_REQUEST["gid"]);
+    $hResult->bindValue(':gid', $iGID);
     $hResult->bindValue(':lang', $sLang, PDO::PARAM_STR);
     $hResult->execute();
 
@@ -60,8 +62,8 @@ function admin_updateGroup($DB, $sLang)
         $aRow = $hResult->fetch();
         //HaaseIT\Tools::debug($aRow);
         $aData = array(
-            DB_ITEMGROUPFIELD_SHORTTEXT => $_REQUEST["shorttext"],
-            DB_ITEMGROUPFIELD_DETAILS => $_REQUEST["details"],
+            DB_ITEMGROUPFIELD_SHORTTEXT => $purifier->purify($_REQUEST["shorttext"]),
+            DB_ITEMGROUPFIELD_DETAILS => $purifier->purify($_REQUEST["details"]),
             DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
@@ -77,7 +79,7 @@ function admin_updateGroup($DB, $sLang)
 function admin_prepareGroup($sPurpose = 'none', $aData = array())
 {
     $aGData = array(
-        'formaction' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"]),
+        'formaction' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
         'id' => isset($aData[DB_ITEMGROUPTABLE_BASE_PKEY]) ? $aData[DB_ITEMGROUPTABLE_BASE_PKEY] : '',
         'name' => \HaaseIT\Tools::getFormField('name', isset($aData[DB_ITEMGROUPFIELD_NAME]) ? $aData[DB_ITEMGROUPFIELD_NAME] : ''),
         'no' => \HaaseIT\Tools::getFormField('no', isset($aData[DB_ITEMGROUPFIELD_NUMBER]) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : ''),
@@ -122,7 +124,7 @@ function admin_showItemgroups($aGroups, $twig)
     $aList = array(
         array('title' => 'Gruppe', 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'),
         array('title' => 'Gruppenname', 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'),
-        array('title' => 'edit', 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => $_SERVER["PHP_SELF"], 'lkeyname' => 'gid', 'lgetvars' => array('action' => 'editgroup'), 'style-data' => 'padding: 5px 0;'),
+        array('title' => 'edit', 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => array('action' => 'editgroup'), 'style-data' => 'padding: 5px 0;'),
     );
     if (count($aGroups) > 0) {
         foreach ($aGroups as $aValue) {
