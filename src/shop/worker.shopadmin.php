@@ -29,7 +29,7 @@ if (isset($_POST["change"])) {
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
     $hResult->execute();
-    header('Location: '.$_SERVER["PHP_SELF"].'?action=edit&id='.$iID);
+    header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
     die();
 }
 
@@ -55,7 +55,7 @@ $CSA = array(
             'key' => 'o_id',
             'width' => 45,
             'linked' => true,
-            'ltarget' => $_SERVER["PHP_SELF"],
+            'ltarget' => '/_admin/shopadmin.html',
             'lkeyname' => 'id',
             'lgetvars' => array(
                 'action' => 'edit',

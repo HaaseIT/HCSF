@@ -81,16 +81,16 @@ function admin_prepareGroup($sPurpose = 'none', $aData = array())
     $aGData = array(
         'formaction' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
         'id' => isset($aData[DB_ITEMGROUPTABLE_BASE_PKEY]) ? $aData[DB_ITEMGROUPTABLE_BASE_PKEY] : '',
-        'name' => \HaaseIT\Tools::getFormField('name', isset($aData[DB_ITEMGROUPFIELD_NAME]) ? $aData[DB_ITEMGROUPFIELD_NAME] : ''),
-        'no' => \HaaseIT\Tools::getFormField('no', isset($aData[DB_ITEMGROUPFIELD_NUMBER]) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : ''),
-        'img' => \HaaseIT\Tools::getFormField('img', isset($aData[DB_ITEMGROUPFIELD_IMG]) ? $aData[DB_ITEMGROUPFIELD_IMG] : ''),
+        'name' => isset($aData[DB_ITEMGROUPFIELD_NAME]) ? $aData[DB_ITEMGROUPFIELD_NAME] : '',
+        'no' => isset($aData[DB_ITEMGROUPFIELD_NUMBER]) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : '',
+        'img' => isset($aData[DB_ITEMGROUPFIELD_IMG]) ? $aData[DB_ITEMGROUPFIELD_IMG] : '',
     );
 
     if ($sPurpose == 'edit') {
         if ($aData[DB_ITEMGROUPTABLE_TEXT_PKEY] != '') {
             $aGData["lang"] = array(
-                'shorttext' => \HaaseIT\Tools::getFormField('shorttext', isset($aData[DB_ITEMGROUPFIELD_SHORTTEXT]) ? $aData[DB_ITEMGROUPFIELD_SHORTTEXT] : ''),
-                'details' => \HaaseIT\Tools::getFormField('details', isset($aData[DB_ITEMGROUPFIELD_DETAILS]) ? $aData[DB_ITEMGROUPFIELD_DETAILS] : ''),
+                'shorttext' => isset($aData[DB_ITEMGROUPFIELD_SHORTTEXT]) ? $aData[DB_ITEMGROUPFIELD_SHORTTEXT] : '',
+                'details' => isset($aData[DB_ITEMGROUPFIELD_DETAILS]) ? $aData[DB_ITEMGROUPFIELD_DETAILS] : '',
             );
         }
     }

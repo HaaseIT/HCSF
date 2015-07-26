@@ -67,7 +67,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
 
     if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
         $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
-        header('Location: '.$_SERVER["PHP_SELF"]."?page_key=".$Ptoinsertlang->cb_key.'&action=edit');
+        header('Location: /_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
         die();
     } else {
         die('Could not insert language data.');
@@ -144,7 +144,7 @@ if (!isset($_GET["action"])) {
             $Ptoadd = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPagekeytoadd, true);
             if ($Ptoadd->cb_id == NULL) {
                 if ($Ptoadd->insert($sPagekeytoadd)) {
-                    header('Location: '.$_SERVER["PHP_SELF"].'?page_key='.$sPagekeytoadd.'&action=edit');
+                    header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                     die();
                 } else {
                     die('Could not insert error.');

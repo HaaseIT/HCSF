@@ -37,7 +37,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             'key' => 'tc_id',
             'width' => 35,
             'linked' => true,
-            'ltarget' => $_SERVER["PHP_SELF"],
+            'ltarget' => '/_admin/textcatadmin.html',
             'lkeyname' => 'id',
             'lgetvars' => array(
                 'action' => 'edit',
