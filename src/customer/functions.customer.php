@@ -48,8 +48,11 @@ function handleForgotPassword($DB, $C, $aErr) {
         $aErr[] = 'emailinvalid';
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
+
+        $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+
         $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':email', $_POST["email"], PDO::PARAM_STR);
+        $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
         $hResult->execute();
         if ($hResult->rowCount() != 1) {
             $aErr[] = 'emailunknown';
@@ -279,6 +282,10 @@ function getLogin($C, $DB)
     $bTryEmail = false;
     if (DB_CUSTOMERFIELD_USER != DB_CUSTOMERFIELD_EMAIL) $bTryEmail = true;
     $sEnc = crypt($_POST["password"], $C["blowfish_salt"]);
+
+    $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
+    $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+
     $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ";
     if ($bTryEmail) $sQ .= "(";
     $sQ .= DB_CUSTOMERFIELD_USER." = :user";
@@ -290,9 +297,9 @@ function getLogin($C, $DB)
     $sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
 
     $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':user', $_POST["user"], PDO::PARAM_STR);
+    $hResult->bindValue(':user', $sUser, PDO::PARAM_STR);
     if ($bTryEmail) {
-        $hResult->bindValue(':email', $_POST["user"], PDO::PARAM_STR);
+        $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
     }
     $hResult->bindValue(':pwd', $sEnc, PDO::PARAM_STR);
     $hResult->execute();
