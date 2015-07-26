@@ -2,7 +2,7 @@
     Der Wert wurde aktualisiert ({{ macro.showClienttime() }}).
 {% endif %}
 {% if customdata.edit %}
-    <form action="/_admin/textcatadmin.php?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat" class="pure-form pure-form-stacked">
+    <form action="/_admin/textcatadmin.html?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat" class="pure-form pure-form-stacked">
         <input type="hidden" name="edit" value="do">
         <input type="hidden" name="lid" value="{{ customdata.editform.lid }}">
         <fieldset>
@@ -19,7 +19,7 @@
         </fieldset>
     </form>
     <p>
-    <form action="/_admin/textcatadmin.php?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat" class="pure-form pure-form-stacked">
+    <form action="/_admin/textcatadmin.html?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat" class="pure-form pure-form-stacked">
     <fieldset>
     <legend>Text löschen</legend>
         <label for="textcat-delete-confirm" class="pure-checkbox">
@@ -37,12 +37,12 @@
     {{ customdata.err.invalidcharacter ? 'Dieser Schlüssel enthält ungültige Zeichen, bitte benutzen Sie nur Buchstaben, Zahlen und den Unterstrich ( _ ).<br>' : '' }}
     {% if customdata.addform.key is defined %}
         Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br><br>
-        <a href="/_admin/textcatadmin.php?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
+        <a href="/_admin/textcatadmin.html?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
     {% endif %}
     <br>
     <label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen:</label>
     <br>
-    <form action="/_admin/textcatadmin.php?action=add" method="post" name="addtext" class="pure-form">
+    <form action="/_admin/textcatadmin.html?action=add" method="post" name="addtext" class="pure-form">
         <input type="hidden" name="add" value="do">
         <div class="pure-u-1-2"><input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formfieldwithpaddingright" id="textcat-add-textkey" placeholder="Textschlüssel"></div><div
                 class="pure-u-3-24"><button type="submit" class="pure-button pure-button-primary">Anlegen</button></div>
