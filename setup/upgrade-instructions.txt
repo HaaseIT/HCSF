@@ -1,6 +1,7 @@
 
 V2.2.0
-Define admin users in config.core.yml
+Update the dependencies with composer update
+Define admin users in config.scrts.yml
 Move your custom views (templates) to /customviews, cleanup /src/views and upload default views there
 
 ALTER TABLE `content_lang`
@@ -25,6 +26,7 @@ src/shop/worker.checkedout.php
 src/functions.db.php
 src/function.admin.pages.php
 web/_admin/*
+web/* except: app.php, fs.php, .htaccess and of course your own files(!!)
 
 V2.1.0
 delete directory: web/_misc/

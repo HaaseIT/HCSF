@@ -6,6 +6,9 @@ Moved all page related stuff to new page objects
 Added new directory /customviews for easier upgrading
 Removed serveral files for easier upgrading
 Moved admin area from web directory to internal routing
+Moved markup from adminhome to twig template
+Added tool to encrypt admin passwords to /_admin/index.html
+If there are no admin users set in config.scrts.yml, you can access /_admin/index.html without authenticating to use the encryption tool
 
 2.1.0
 now works with hosting at 1&1 and other mass hosters

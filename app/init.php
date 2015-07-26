@@ -183,7 +183,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
 
     // if the path is one of the predefined urls, skip further routing
     if ($sPath == '/_admin/index.html' || $sPath == '/_admin/') {
-        requireAdminAuth($C);
+        requireAdminAuth($C, true);
 
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'content';
@@ -205,6 +205,9 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
             $P->cb_customdata['check_mod_rewrite'] = true;
             $P->cb_customdata['mod_rewrite_available'] = (array_search('mod_rewrite', $aApacheModules) !== false);
             unset($aApacheModules);
+        }
+        if (isset($_POST['string']) && trim($_POST['string']) != '') {
+            $P->cb_customdata['encrypted_string'] = crypt($_POST["string"], $C["blowfish_salt"]);
         }
     } elseif ($sPath == '/_admin/cleartemplatecache.html') {
         requireAdminAuth($C);

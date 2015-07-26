@@ -18,18 +18,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function requireAdminAuth($C) {
-    $valid_users = array_keys($C['admin_users']);
+function requireAdminAuth($C, $bAdminhome = false) {
+    if (!count($C['admin_users']) && $bAdminhome) {
+        return true;
+    } elseif (count($C['admin_users'])) {
+        $valid_users = array_keys($C['admin_users']);
 
-    $user = $_SERVER['PHP_AUTH_USER'];
-    $pass = $_SERVER['PHP_AUTH_PW'];
+        if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+            $user = $_SERVER['PHP_AUTH_USER'];
+            $pass = crypt($_SERVER['PHP_AUTH_PW'], $C["blowfish_salt"]);
 
-    $validated = (in_array($user, $valid_users)) && ($pass == $C['admin_users'][$user]);
+            $validated = (in_array($user, $valid_users)) && ($pass == $C['admin_users'][$user]);
+        } else {
+            $validated = false;
+        }
 
-    if (!$validated) {
-        header('WWW-Authenticate: Basic realm="'.$C['admin_authrealm'].'"');
+        if (!$validated) {
+            header('WWW-Authenticate: Basic realm="' . $C['admin_authrealm'] . '"');
+            header('HTTP/1.0 401 Unauthorized');
+            die("Not authorized");
+        }
+    } else {
+        header('WWW-Authenticate: Basic realm="' . $C['admin_authrealm'] . '"');
         header('HTTP/1.0 401 Unauthorized');
-        die ("Not authorized");
+        die('Not authorized');
     }
 }
 

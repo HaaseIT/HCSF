@@ -28,4 +28,21 @@
     <p>The Apache module mod_rewrite is {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">NOT ' }}available</span>.</p>
 {% endif %}
 
+<hr>
+<form action="{{ requesturi }}" method="POST" class="pure-form">
+    <fieldset>
+        <legend>String encryption tool for admin passwords (set in config.scrts.yml)</legend>
+    <label for="string">String to encrypt:</label><br>
+    <input type="text" id="string" name="string" class="pure-u-1-2" value="{{ gFF("string") }}">
+        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Submit</button>
+    </fieldset>
+</form>
+
+{% if customdata.encrypted_string %}
+<p>
+    The encrypted form of your submitted string <em>{{ gFF("string") }}</em> is:<br>
+    <form class="pure-form"><input type="text" readonly value="{{ customdata.encrypted_string }}" class="pure-u-1-2"></form>
+</p>
+{% endif %}
+
 {{content}}
