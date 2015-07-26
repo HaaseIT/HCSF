@@ -93,7 +93,6 @@ if (!isset($_GET["action"])) {
                 $purifier_config = HTMLPurifier_Config::createDefault();
                 $purifier_config->set('Core.Encoding', 'UTF-8');
                 $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-                // Cache.SerializerPath
                 $purifier = new HTMLPurifier($purifier_config);
                 //$clean_html = $purifier->purify($dirty_html);
 
