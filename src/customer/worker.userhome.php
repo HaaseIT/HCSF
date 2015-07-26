@@ -39,9 +39,11 @@ if (!getUserData()) {
             $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
             $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
 
+            $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':id', $_SESSION["user"][DB_CUSTOMERTABLE_PKEY], PDO::PARAM_INT);
-            $hResult->bindValue(':email', trim($_POST["email"]), PDO::PARAM_STR);
+            $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
             $hResult->execute();
             //debug($sQ);
             $iRows = $hResult->rowCount();
@@ -51,16 +53,16 @@ if (!getUserData()) {
             if ($sErr == '') {
                 if ($C["allow_edituserprofile"]) {
                     $aData = array(
-                        //DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]), // disabled until renwewd email verification implemented
-                        DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
-                        DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
-                        DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
-                        DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
-                        DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
-                        DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
-                        DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
-                        DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
-                        DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
+                        //DB_CUSTOMERFIELD_EMAIL => $sEmail, // disabled until renwewd email verification implemented
+                        DB_CUSTOMERFIELD_CORP => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_NAME => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_STREET => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_ZIP => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_TOWN => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_PHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_CELLPHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_FAX => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                        DB_CUSTOMERFIELD_COUNTRY => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                     );
                 }
                 if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
