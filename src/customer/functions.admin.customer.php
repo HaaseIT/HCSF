@@ -72,15 +72,17 @@ function handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang)
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $aErr = array();
         if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
-            if (strlen(trim($_POST["custno"])) < $C["minimum_length_custno"]) {
+            $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if (strlen($sCustno) < $C["minimum_length_custno"]) {
                 $aErr["custnoinvalid"] = true;
             } else {
+
                 $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
                 $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
                 $sQ .= " AND " . DB_CUSTOMERFIELD_NUMBER . " = :custno";
                 $hResult = $DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
-                $hResult->bindValue(':custno', trim($_POST["custno"]));
+                $hResult->bindValue(':custno', $sCustno);
                 $hResult->execute();
                 //HaaseIT\Tools::debug($sQ);
                 $iRows = $hResult->rowCount();
@@ -102,18 +104,18 @@ function handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang)
                 $aErr = validateCustomerForm($C, $sLang, $aErr, true);
                 if (count($aErr) == 0) {
                     $aData = array(
-                        DB_CUSTOMERFIELD_NUMBER => $_POST["custno"],
-                        DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]),
-                        DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
-                        DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
-                        DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
-                        DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
-                        DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
-                        DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
-                        DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
-                        DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
-                        DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
-                        DB_CUSTOMERFIELD_GROUP => trim($_POST["custgroup"]),
+                        DB_CUSTOMERFIELD_NUMBER => $sCustno,
+                        DB_CUSTOMERFIELD_EMAIL => \trim(\filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
+                        DB_CUSTOMERFIELD_CORP => \trim(\filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_NAME => \trim(\filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_STREET => \trim(\filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_ZIP => \trim(\filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_TOWN => \trim(\filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_PHONE => \trim(\filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_CELLPHONE => \trim(\filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_FAX => \trim(\filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_COUNTRY => \trim(\filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                        DB_CUSTOMERFIELD_GROUP => \trim(\filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                         DB_CUSTOMERFIELD_EMAILVERIFIED => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
                         DB_CUSTOMERFIELD_ACTIVE => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
                         DB_CUSTOMERTABLE_PKEY => $iId,
