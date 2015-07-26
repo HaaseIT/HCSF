@@ -11,7 +11,7 @@ Added tool to encrypt admin passwords to /_admin/index.html
 If there are no admin users set in config.scrts.yml, you can access /_admin/index.html without authenticating to use the encryption tool
 Moved templatecache to new central cache directory
 Now uses HTMLPurifier to sanitize input
-added input sanitizing for itemsearch, pageadmin, submitshoppingcart, login, register, editprofile, forgotpw, shopadmin, textcatadmin, itemadmin
+added input sanitizing for itemsearch, pageadmin, submitshoppingcart, login, register, editprofile, forgotpw, shopadmin, textcatadmin, itemadmin, itemgroupadmin
 
 2.1.0
 now works with hosting at 1&1 and other mass hosters
