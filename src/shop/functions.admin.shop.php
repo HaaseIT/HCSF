@@ -34,12 +34,16 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
         elseif ($_REQUEST["type"] == 'all') {
             $sQ .= "o_ordercompleted != 'd' ";
             $bIgnoreStorno = true;
+        } else {
+            die('Invalid request error.');
         }
         $bFromTo = false;
         if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
             $sQ .= "AND ";
-            $sFrom = $_REQUEST["fromyear"].'-'.dateAddLeadingZero($_REQUEST["frommonth"]).'-'.dateAddLeadingZero($_REQUEST["fromday"]);
-            $sTo = $_REQUEST["toyear"].'-'.dateAddLeadingZero($_REQUEST["tomonth"]).'-'.dateAddLeadingZero($_REQUEST["today"]);
+            $sFrom = filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.dateAddLeadingZero(filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
+            $sFrom .= '-'.dateAddLeadingZero(filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
+            $sTo = filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.dateAddLeadingZero(filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
+            $sTo .= '-'.dateAddLeadingZero(filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
             $sQ .= "o_orderdate >= :from ";
             $sQ .= "AND o_orderdate <= :to ";
             $bFromTo = true;
