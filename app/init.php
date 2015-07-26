@@ -188,35 +188,24 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $P->cb_pagetype = 'content';
         $P->cb_subnav = 'admin';
+        $P->cb_customcontenttemplate = 'adminhome';
 
-        $sH = '<h1>Welcome to the administration area</h1><h3>Quick check of required PHP Extensions:</h3>';
-        $sH .= '<p>Filter is: ' . (extension_loaded('filter') ? '<span style="color:green">enabled' : '<span style="color:red">disabled') . '</span></p>';
-        $sH .= '<h3>Quick check of required file/directory permissions:</h3>';
-        $sH .= '<p>Template cache ' . realpath(PATH_TEMPLATECACHE) . ' exists: ';
-        if (file_exists(PATH_TEMPLATECACHE)) {
-            $sH .= '<span style="color:green">YES</span>, and it is ' . (is_writable(PATH_TEMPLATECACHE) ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'writable</span>.';
-        } else {
-            $sH .= '<span style="color:red">NO!</span>';
-        }
-        $sH .= '</p>';
-
-        if ($C["enable_module_shop"]) {
-            $sH .= '<p>Log Directory ' . realpath(PATH_LOGS) . ' exists: ';
-            if (file_exists(PATH_LOGS)) {
-                $sH .= '<span style="color:green">YES</span>, and it is ' . (is_writable(PATH_LOGS) ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'writable</span>.';
-            } else {
-                $sH .= '<span style="color:red">NO!</span>';
-            }
-            $sH .= '</p>';
-        }
-
+        $P->cb_customdata = array(
+            'filter_enabled' => extension_loaded('filter'),
+            'path_templatecache' => realpath(PATH_TEMPLATECACHE),
+            'path_templatecache_exists' => file_exists(PATH_TEMPLATECACHE),
+            'path_templatecache_writable' => is_writable(PATH_TEMPLATECACHE),
+            'enable_module_shop' => $C["enable_module_shop"],
+            'path_logs' => realpath(PATH_LOGS),
+            'path_logs_exists' => file_exists(PATH_LOGS),
+            'path_logs_writable' => is_writable(PATH_LOGS),
+        );
         if (function_exists('apache_get_modules')) {
             $aApacheModules = apache_get_modules();
-            $sH .= '<p>The Apache module mod_rewrite is ' . (array_search('mod_rewrite', $aApacheModules) !== false ? '<span style="color:green">' : '<span style="color:red">NOT ') . 'enabled</span>.</p>';
+            $P->cb_customdata['check_mod_rewrite'] = true;
+            $P->cb_customdata['mod_rewrite_available'] = (array_search('mod_rewrite', $aApacheModules) !== false);
+            unset($aApacheModules);
         }
-
-        $P->oPayload->cl_html = $sH;
-
     } elseif ($sPath == '/_admin/cleartemplatecache.html') {
         requireAdminAuth($C);
 
