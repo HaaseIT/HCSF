@@ -54,14 +54,15 @@ class Items
             }
         }
         elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
+            $sSearchtext = filter_var(trim($_REQUEST["searchtext"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             if (isset($_REQUEST["artnoexact"])) {
-                $hResult->bindValue(':searchtext', $_REQUEST["searchtext"], \PDO::PARAM_STR);
+                $hResult->bindValue(':searchtext', $sSearchtext, \PDO::PARAM_STR);
             }
-            $hResult->bindValue(':searchtextwild1', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild2', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild3', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild4', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild5', '%'.$_REQUEST["searchtext"].'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild1', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild2', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild3', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild4', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild5', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
         //HaaseIT\Tools::debug($hResult->errorinfo());
