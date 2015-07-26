@@ -110,6 +110,18 @@ class Items
 
     function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
     {
+        if ($mItemno != '') {
+            if (is_array($mItemno)) {
+                foreach ($mItemno as $sKey => $sValue) {
+                    $TMP[$sKey] = filter_var(trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                }
+                $mItemno = $TMP;
+                unset($TMP);
+            } else {
+                $mItemno = filter_var(trim($mItemno), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            }
+        }
+
         $hResult = $this->queryItem($mItemIndex, $mItemno);
 
         while ($aRow = $hResult->fetch()) {
