@@ -86,7 +86,7 @@ function admin_prepareItemlist($aItemlist, $twig)
     $aList = array(
         array('title' => 'Art. Nr.', 'key' => 'itemno', 'width' => 100, 'linked' => false,),
         array('title' => 'Name', 'key' => 'name', 'width' => 350, 'linked' => false,),
-        array('title' => 'edit', 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => $_SERVER["PHP_SELF"], 'lkeyname' => 'itemno', 'lgetvars' => array('action' => 'showitem'),),
+        array('title' => 'edit', 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => array('action' => 'showitem'),),
     );
     foreach ($aItemlist["data"] as $aValue) {
         $aData[] = array(
@@ -104,7 +104,7 @@ function admin_prepareItemlist($aItemlist, $twig)
 
 function admin_getItem($sItemno = '', $DB, $sLang)
 {
-    if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = $_REQUEST["itemno"];
+    if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = filter_var($_REQUEST["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
     elseif ($sItemno == '') return false;
 
     $sItemno = \filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -134,10 +134,10 @@ function admin_getItem($sItemno = '', $DB, $sLang)
 function admin_prepareItem($aItemdata, $C, $DB, $sLang)
 {
     $aData = array(
-        'form' => array('action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["PHP_SELF"], array('action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER])),),
+        'form' => array('action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', array('action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER])),),
         'id' => $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY],
         'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER],
-        'name' => htmlspecialchars($aItemdata["base"][DB_ITEMFIELD_NAME]),
+        'name' => $aItemdata["base"][DB_ITEMFIELD_NAME],
         'img' => $aItemdata["base"][DB_ITEMFIELD_IMG],
         'price' => $aItemdata["base"][DB_ITEMFIELD_PRICE],
         'vatid' => $aItemdata["base"][DB_ITEMFIELD_VAT],
@@ -166,7 +166,7 @@ function admin_prepareItem($aItemdata, $C, $DB, $sLang)
     if (isset($aItemdata["text"])) {
         $aData["lang"] = array(
             'textid' => $aItemdata["text"][DB_ITEMTABLE_TEXT_PKEY],
-            'nameoverride' => htmlspecialchars($aItemdata["text"][DB_ITEMFIELD_NAME_OVERRIDE]),
+            'nameoverride' => $aItemdata["text"][DB_ITEMFIELD_NAME_OVERRIDE],
             'text1' => $aItemdata["text"][DB_ITEMFIELD_TEXT1],
             'text2' => $aItemdata["text"][DB_ITEMFIELD_TEXT2],
         );
@@ -175,21 +175,21 @@ function admin_prepareItem($aItemdata, $C, $DB, $sLang)
     return $aData;
 }
 
-function admin_updateItem($C, $DB)
+function admin_updateItem($C, $DB, $purifier)
 {
     $aData = array(
-        DB_ITEMFIELD_NAME => $_REQUEST["name"],
-        DB_ITEMFIELD_GROUP => $_REQUEST["group"],
-        DB_ITEMFIELD_IMG => $_REQUEST["bild"],
-        DB_ITEMFIELD_INDEX => $_REQUEST["index"],
-        DB_ITEMFIELD_ORDER => $_REQUEST["prio"],
-        DB_ITEMFIELD_PRICE => $_REQUEST["price"],
-        DB_ITEMFIELD_RG => $_REQUEST["rg"],
-        DB_ITEMFIELD_DATA => $_REQUEST["data"],
-        DB_ITEMFIELD_WEIGHT => $_REQUEST["weight"],
-        DB_ITEMTABLE_BASE_PKEY => $_REQUEST["id"],
+        DB_ITEMFIELD_NAME => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMFIELD_GROUP => filter_var($_REQUEST["group"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMFIELD_IMG => filter_var($_REQUEST["bild"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMFIELD_INDEX => filter_var($_REQUEST["index"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMFIELD_ORDER => filter_var($_REQUEST["prio"], FILTER_SANITIZE_NUMBER_INT),
+        DB_ITEMFIELD_PRICE => filter_var($_REQUEST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
+        DB_ITEMFIELD_RG => filter_var($_REQUEST["rg"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        DB_ITEMFIELD_DATA => filter_var($_REQUEST["data"], FILTER_SANITIZE_STRING),
+        DB_ITEMFIELD_WEIGHT => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
+        DB_ITEMTABLE_BASE_PKEY => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
     );
-    if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = $_REQUEST["vatid"];
+    if (!$C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
     else $aData[DB_ITEMFIELD_VAT] = 'full';
     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
     //echo $sQ."\n";
@@ -198,10 +198,10 @@ function admin_updateItem($C, $DB)
     $hResult->execute();
     if (isset($_REQUEST["textid"])) {
         $aData = array(
-            DB_ITEMFIELD_TEXT1 => $_REQUEST["text1"],
-            DB_ITEMFIELD_TEXT2 => $_REQUEST["text2"],
-            DB_ITEMFIELD_NAME_OVERRIDE => $_REQUEST["name_override"],
-            DB_ITEMTABLE_TEXT_PKEY => $_REQUEST["textid"],
+            DB_ITEMFIELD_TEXT1 => $purifier->purify($_REQUEST["text1"]),
+            DB_ITEMFIELD_TEXT2 => $purifier->purify($_REQUEST["text2"]),
+            DB_ITEMFIELD_NAME_OVERRIDE => filter_var($_REQUEST["name_override"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            DB_ITEMTABLE_TEXT_PKEY => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
         //echo $sQ."\n";

@@ -22,7 +22,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
         //HaaseIT\Tools::debug($sQ);
         $DB->exec($sQ);
 
-        header('Location: '.$_SERVER["PHP_SELF"]."?itemno=".$_REQUEST["itemno"].'&action=showitem');
+        header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
         die();
     }
     //HaaseIT\Tools::debug($aItemdata);
@@ -42,7 +42,12 @@ if (isset($_REQUEST["action"])) {
             }
         }
     } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-        admin_updateItem($C, $DB);
+        $purifier_config = HTMLPurifier_Config::createDefault();
+        $purifier_config->set('Core.Encoding', 'UTF-8');
+        $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        $purifier = new HTMLPurifier($purifier_config);
+
+        admin_updateItem($C, $DB, $purifier);
         $P->cb_customdata["itemupdated"] = true;
 
         $aItemdata = admin_getItem('', $DB, $sLang);
@@ -70,7 +75,7 @@ if (isset($_REQUEST["action"])) {
                     $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMTABLE_BASE_PKEY." = '".$iInsertID."'";
                     $hResult = $DB->query($sQ);
                     $aRow = $hResult->fetch();
-                    header('Location: '.$_SERVER["PHP_SELF"].'?itemno='.$aRow[DB_ITEMFIELD_NUMBER].'&action=showitem');
+                    header('Location: /_admin/itemadmin.html?itemno='.$aRow[DB_ITEMFIELD_NUMBER].'&action=showitem');
                     die();
                 }
             }
