@@ -11,16 +11,17 @@ $P->cb_customcontenttemplate = 'shop/shopadmin';
 $sH = '';
 
 if (isset($_POST["change"])) {
+    $iID = filter_var(trim(\HaaseIT\Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
     $aData = array(
         'o_lastedit_timestamp' => time(),
-        'o_remarks_internal' => $_POST["remarks_internal"],
-        'o_transaction_no' => $_POST["transaction_no"],
-        'o_paymentcompleted' => $_POST["order_paymentcompleted"],
-        'o_ordercompleted' => $_POST["order_completed"],
+        'o_remarks_internal' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks_internal")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        'o_transaction_no' => filter_var(trim(\HaaseIT\Tools::getFormfield("transaction_no")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        'o_paymentcompleted' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_paymentcompleted")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        'o_ordercompleted' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_completed")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
         'o_lastedit_user' => ((isset($_SERVER["REMOTE_USER"])) ? $_SERVER["REMOTE_USER"] : ''),
-        'o_shipping_service' => $_POST["order_shipping_service"],
-        'o_shipping_trackingno' => $_POST["order_shipping_trackingno"],
-        'o_id' => $_POST["id"],
+        'o_shipping_service' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_service")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        'o_shipping_trackingno' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_trackingno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+        'o_id' => $iID,
     );
 
     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
@@ -28,7 +29,7 @@ if (isset($_POST["change"])) {
     $hResult = $DB->prepare($sQ);
     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
     $hResult->execute();
-    header('Location: '.$_SERVER["PHP_SELF"].'?action=edit&id='.$_POST["id"]);
+    header('Location: '.$_SERVER["PHP_SELF"].'?action=edit&id='.$iID);
     die();
 }
 
