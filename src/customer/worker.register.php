@@ -33,24 +33,25 @@ if (getUserData()) {
             $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . " FROM " . DB_CUSTOMERTABLE;
             $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email";
 
+            $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
             $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':email', trim($_POST["email"]), PDO::PARAM_STR);
+            $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
 
             if ($iRows == 0) {
                 $sEmailVerificationcode = md5($_POST["email"] . time());
                 $aData = array(
-                    DB_CUSTOMERFIELD_EMAIL => trim($_POST["email"]),
-                    DB_CUSTOMERFIELD_CORP => trim($_POST["corpname"]),
-                    DB_CUSTOMERFIELD_NAME => trim($_POST["name"]),
-                    DB_CUSTOMERFIELD_STREET => trim($_POST["street"]),
-                    DB_CUSTOMERFIELD_ZIP => trim($_POST["zip"]),
-                    DB_CUSTOMERFIELD_TOWN => trim($_POST["town"]),
-                    DB_CUSTOMERFIELD_PHONE => trim($_POST["phone"]),
-                    DB_CUSTOMERFIELD_CELLPHONE => trim($_POST["cellphone"]),
-                    DB_CUSTOMERFIELD_FAX => trim($_POST["fax"]),
-                    DB_CUSTOMERFIELD_COUNTRY => trim($_POST["country"]),
+                    DB_CUSTOMERFIELD_EMAIL => $sEmail,
+                    DB_CUSTOMERFIELD_CORP => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_NAME => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_STREET => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_ZIP => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_TOWN => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_PHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_CELLPHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_FAX => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                    DB_CUSTOMERFIELD_COUNTRY => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                     DB_CUSTOMERFIELD_PASSWORD => crypt($_POST["pwd"], $C["blowfish_salt"]),
                     DB_CUSTOMERFIELD_TOSACCEPTED => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
                     DB_CUSTOMERFIELD_CANCELLATIONDISCLAIMERACCEPTED => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
@@ -69,8 +70,8 @@ if (getUserData()) {
                 }
                 $hResult->execute();
 
-                sendVerificationMail($sEmailVerificationcode, $_POST["email"], $C);
-                sendVerificationMail($sEmailVerificationcode, $_POST["email"], $C, true);
+                sendVerificationMail($sEmailVerificationcode, $sEmail, $C);
+                sendVerificationMail($sEmailVerificationcode, $sEmail, $C, true);
                 $aPData["showsuccessmessage"] = true;
             } else {
                 $aErr["emailalreadyexists"] = true;
