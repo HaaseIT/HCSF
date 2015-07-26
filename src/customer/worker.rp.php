@@ -30,9 +30,12 @@ if (getUserData()) {
         $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
     } else {
         $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
+
+        $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+
         $hResult = $DB->prepare($sQ);
-        $hResult->bindValue(':email', $_GET["email"], PDO::PARAM_STR);
-        $hResult->bindValue(':pwresetcode', $_GET["key"], PDO::PARAM_STR);
+        $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
+        $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), PDO::PARAM_STR);
         $hResult->execute();
         if ($hResult->rowCount() != 1) {
             $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
