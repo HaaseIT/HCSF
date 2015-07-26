@@ -57,6 +57,12 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
 
         // if post:edit is set, update
         if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
+            $purifier_config = HTMLPurifier_Config::createDefault();
+            $purifier_config->set('Core.Encoding', 'UTF-8');
+            $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+            $purifier = new HTMLPurifier($purifier_config);
+            \HaaseIT\Textcat::$purifier = $purifier;
+
             \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
             $P->cb_customdata["updated"] = true;
         }
