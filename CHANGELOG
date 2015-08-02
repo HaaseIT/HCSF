@@ -1,4 +1,4 @@
-2.2.0
+2.2.0-RC1
 Removed cl_background and cl_pdf from content_lang - legacy, unneeded
 Added the Aura Autoloader
 Rewrite of page handling
