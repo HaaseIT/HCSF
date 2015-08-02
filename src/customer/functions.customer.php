@@ -85,7 +85,7 @@ function handleForgotPassword($DB, $C, $aErr) {
                 $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                 $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("forgotpw_mail_text2");
 
-                mailWrapper($sTargetAddress, $C["email_sendername"], $C["email_sender"], $sSubject, $sMessage);
+                mailWrapper($C, $sTargetAddress, $sSubject, $sMessage);
             }
         }
     }
@@ -252,7 +252,7 @@ function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $bCu
         $sTargetAddress = $C["email_sender"];
     }
 
-    mailWrapper($sTargetAddress, $C["email_sendername"], $C["email_sender"], $sSubject, $sMessage);
+    mailWrapper($C, $sTargetAddress, $sSubject, $sMessage);
 }
 
 function getUserData($sField = '', $aUserdata = false)

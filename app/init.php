@@ -56,9 +56,6 @@ if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKI
     }
 }
 
-define("DIRNAME_IMAGES", $C['directory_images'].'/');
-define("PATH_EMAILATTACHMENTS", PATH_DOCROOT.$C['directory_emailattachments'].'/');
-
 if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
@@ -71,8 +68,6 @@ if ($C["enable_module_shop"]) {
     if (isset($C["vat_disable"]) && $C["vat_disable"]) {
         $C["vat"] = array("full" => 0, "reduced" => 0);
     }
-    define("DIRNAME_ITEMS", $C['directory_images_items'].'/');
-    define("DIRNAME_ITEMSSMALLEST", $C['directory_images_items_email'].'/');
 }
 
 require_once PATH_BASEDIR.'src/functions.template.php';

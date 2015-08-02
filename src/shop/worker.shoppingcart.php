@@ -143,8 +143,9 @@ if ($C["show_pricesonlytologgedin"] && !getUserData()) {
                             //echo $aV["img"];
                             // image/png image/jpeg image/gif
                             // data:{mimetype};base64,XXXX
-                            $binImg = file_get_contents(PATH_DOCROOT . DIRNAME_IMAGES . DIRNAME_ITEMS . DIRNAME_ITEMSSMALLEST . $aV["img"]);
-                            $aImgInfo = getimagesize(PATH_DOCROOT . DIRNAME_IMAGES . DIRNAME_ITEMS . DIRNAME_ITEMSSMALLEST . $aV["img"]);
+                            $sPathToImage = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
+                            $binImg = file_get_contents($sPathToImage.$aV["img"]);
+                            $aImgInfo = getimagesize($sPathToImage.$aV["img"]);
                             //echo debug($aImgInfo);
                             $base64Img = 'data:' . $aImgInfo["mime"] . ';base64,';
                             $base64Img .= base64_encode($binImg);
@@ -200,14 +201,13 @@ if ($C["show_pricesonlytologgedin"] && !getUserData()) {
                 fwrite($fp, $sMailbody_us . "\n\n-------------------------------------------------------------------------\n\n");
                 fclose($fp);
 
-                //die(file_exists(PATH_EMAILATTACHMENTS.$C["emailattachment_cancellationform_".$sLang]));
-                if (isset($C["email_orderconfirmation_attachment_cancellationform_" . $sLang]) && file_exists(PATH_EMAILATTACHMENTS . $C["email_orderconfirmation_attachment_cancellationform_" . $sLang])) {
-                    $aFilesToSend[] = PATH_EMAILATTACHMENTS . $C["email_orderconfirmation_attachment_cancellationform_" . $sLang];
+                if (isset($C["email_orderconfirmation_attachment_cancellationform_" . $sLang]) && file_exists(PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang])) {
+                    $aFilesToSend[] = PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang];
                 } else $aFilesToSend = array();
 
                 // Send Mails
-                mailWrapper($_POST["email"], $C["email_sendername"], $C["email_sender"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
-                mailWrapper($C["email_sender"], $C["email_sendername"], $C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
+                mailWrapper($C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+                mailWrapper($C, $C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
 
                 if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
                 if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);

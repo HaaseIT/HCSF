@@ -45,21 +45,22 @@ function requireAdminAuth($C, $bAdminhome = false) {
     }
 }
 
-function mailWrapper($to, $from_user, $from_email, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
+function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
     //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
     $mail = new PHPMailer;
     $mail->CharSet = 'UTF-8';
     $mail->isSendmail();
-    $mail->From = $from_email;
-    $mail->FromName = $from_user;
+    $mail->From = $C["email_sender"];
+    $mail->FromName = $C["email_sendername"];
     $mail->addAddress($to);
     $mail->isHTML(true);
     $mail->Subject = $subject;
     $mail->Body = $message;
 
     if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
+        $sPathImagesToEmbed = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
         foreach ($aImagesToEmbed as $sValue) {
-            if (getimagesize(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue)) $mail->AddEmbeddedImage(PATH_DOCROOT.DIRNAME_IMAGES.DIRNAME_ITEMS.DIRNAME_ITEMSSMALLEST.$sValue, $sValue);
+            if (getimagesize($sPathImagesToEmbed.$sValue)) $mail->AddEmbeddedImage($sPathImagesToEmbed.$sValue, $sValue);
         }
     }
 
