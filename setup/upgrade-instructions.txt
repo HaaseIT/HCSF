@@ -72,7 +72,7 @@ ALTER TABLE `itemgroups_base` CHANGE `itmg_imgsm` `itmg_img` VARCHAR(256) NOT NU
 
 VATID:
 ALTER TABLE `item_base` CHANGE `itm_vatid` `itm_vatid` VARCHAR(16) NOT NULL DEFAULT 'full';
-ALTER TABLE `orders_items` CHANGE `oi_vat_id` `oi_vat_id` VARCHAR(16) NOT NULL;
+ALTER TABLE `orders_items` CHANGE `oi_vat` `oi_vat` VARCHAR(16) NOT NULL;
 
 UPDATE `item_base` SET `itm_vatid` = 'reduced' WHERE `itm_vatid` = '7'
 UPDATE `item_base` SET `itm_vatid` = 'full' WHERE `itm_vatid` != 'reduced'
