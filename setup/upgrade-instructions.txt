@@ -1,5 +1,9 @@
 
 V2.2.0
+New config keys:
+config.core.yml: directory_images, directory_emailattachments
+config.shop.yml: directory_images_items, directory_images_items_email
+
 Update the dependencies with composer update
 Define admin users in config.scrts.yml
 Move your custom views (templates) to /customviews, cleanup /src/views and upload default views there

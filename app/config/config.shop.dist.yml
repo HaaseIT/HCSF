@@ -136,3 +136,5 @@ vat_disable: true
 vat:
   full: 19
   reduced: 7
+directory_images_items: items
+directory_images_items_email: 90

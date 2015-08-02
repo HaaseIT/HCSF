@@ -50,3 +50,5 @@ defaultcountrybylang:
     de: DE
     en: GB
     es: ES
+directory_images: _img
+directory_emailattachments: _assets
