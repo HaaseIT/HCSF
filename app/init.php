@@ -182,7 +182,7 @@ if ($_SERVER["PHP_SELF"] == '/app.php') {
     $sPath = $aURL["path"];
 
     // if the path is one of the predefined urls, skip further routing
-    if ($sPath == '/_admin/index.html' || $sPath == '/_admin/') {
+    if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin') {
         requireAdminAuth($C, true);
 
         $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
