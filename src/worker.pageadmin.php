@@ -18,8 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../src/functions.admin.pages.php';
-
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
 $P->cb_subnav = 'admin';
