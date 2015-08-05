@@ -52,3 +52,7 @@ defaultcountrybylang:
     es: ES
 directory_images: _img
 directory_emailattachments: _assets
+pagetext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+pagetext_loose_filtering: false
+textcat_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+textcat_loose_filtering: false

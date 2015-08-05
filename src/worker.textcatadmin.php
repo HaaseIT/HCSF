@@ -60,6 +60,12 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             $purifier_config = HTMLPurifier_Config::createDefault();
             $purifier_config->set('Core.Encoding', 'UTF-8');
             $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+            if (isset($C['textcat_unsafe_html_whitelist']) && trim($C['textcat_unsafe_html_whitelist']) != '') {
+                $purifier_config->set('HTML.Allowed', $C['textcat_unsafe_html_whitelist']);
+            }
+            if (isset($C['textcat_loose_filtering']) && $C['textcat_loose_filtering']) {
+                $purifier_config->set('HTML.Trusted', true);
+            }
             $purifier = new HTMLPurifier($purifier_config);
             \HaaseIT\Textcat::$purifier = $purifier;
 

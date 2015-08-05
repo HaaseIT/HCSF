@@ -45,6 +45,13 @@ if (isset($_REQUEST["action"])) {
         $purifier_config = HTMLPurifier_Config::createDefault();
         $purifier_config->set('Core.Encoding', 'UTF-8');
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        if (isset($C['itemtext_unsafe_html_whitelist']) && trim($C['itemtext_unsafe_html_whitelist']) != '') {
+            $purifier_config->set('HTML.Allowed', $C['itemtext_unsafe_html_whitelist']);
+        }
+        if (isset($C['itemtext_loose_filtering']) && $C['itemtext_loose_filtering']) {
+            $purifier_config->set('HTML.Trusted', true);
+            $purifier_config->set('Attr.EnableID', true);
+        }
         $purifier = new HTMLPurifier($purifier_config);
 
         admin_updateItem($C, $DB, $purifier);

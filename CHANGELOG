@@ -1,3 +1,10 @@
+2.2.0-RC X
+Added config options to whitelist html tags for the text in items, itemgroups, pages and textcats
+Added config option to loosen filtering of html tags for the text in items, itemgroups, pages and textcats
+
+2.2.0-RC2
+made serveral directory names configurable
+
 2.2.0-RC1
 Removed cl_background and cl_pdf from content_lang - legacy, unneeded
 Added the Aura Autoloader

@@ -1,8 +1,10 @@
 
 V2.2.0
 New config keys:
-config.core.yml: directory_images, directory_emailattachments
-config.shop.yml: directory_images_items, directory_images_items_email
+config.core.yml: directory_images, directory_emailattachments, pagetext_unsafe_html_whitelist, textcat_unsafe_html_whitelist,
+  pagetext_loose_filtering, textcat_loose_filtering
+config.shop.yml: directory_images_items, directory_images_items_email, itemtext_unsafe_html_whitelist,
+  itemgrouptext_unsafe_html_whitelist, itemtext_loose_filtering, itemgrouptext_loose_filtering
 
 Update the dependencies with composer update
 Define admin users in config.scrts.yml

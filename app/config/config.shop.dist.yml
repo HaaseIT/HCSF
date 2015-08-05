@@ -53,6 +53,10 @@ show_pricesonlytologgedin: false
 custom_order_fields:
   - size
 itemdetail_suggestions: 8
+itemtext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+itemtext_loose_filtering: false
+itemgrouptext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+itemgrouptext_loose_filtering: false
 minimumorderamountnet: 0
 reducedorderamountnet1: 0
 reducedorderamountnet2: 0

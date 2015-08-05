@@ -91,6 +91,12 @@ if (!isset($_GET["action"])) {
                 $purifier_config = HTMLPurifier_Config::createDefault();
                 $purifier_config->set('Core.Encoding', 'UTF-8');
                 $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+                if (isset($C['pagetext_unsafe_html_whitelist']) && trim($C['pagetext_unsafe_html_whitelist']) != '') {
+                    $purifier_config->set('HTML.Allowed', $C['pagetext_unsafe_html_whitelist']);
+                }
+                if (isset($C['pagetext_loose_filtering']) && $C['pagetext_loose_filtering']) {
+                    $purifier_config->set('HTML.Trusted', true);
+                }
                 $purifier = new HTMLPurifier($purifier_config);
                 //$clean_html = $purifier->purify($dirty_html);
 

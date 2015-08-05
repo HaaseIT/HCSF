@@ -50,6 +50,12 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
         $purifier_config = HTMLPurifier_Config::createDefault();
         $purifier_config->set('Core.Encoding', 'UTF-8');
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        if (isset($C['itemgrouptext_unsafe_html_whitelist']) && trim($C['itemgrouptext_unsafe_html_whitelist']) != '') {
+            $purifier_config->set('HTML.Allowed', $C['itemgrouptext_unsafe_html_whitelist']);
+        }
+        if (isset($C['itemgrouptext_loose_filtering']) && $C['itemgrouptext_loose_filtering']) {
+            $purifier_config->set('HTML.Trusted', true);
+        }
         $purifier = new HTMLPurifier($purifier_config);
 
         $P->cb_customdata["updatestatus"] = admin_updateGroup($DB, $sLang, $purifier);
