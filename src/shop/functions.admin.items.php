@@ -200,7 +200,7 @@ function admin_updateItem($C, $DB, $purifier)
         $aData = array(
             DB_ITEMFIELD_TEXT1 => $purifier->purify($_REQUEST["text1"]),
             DB_ITEMFIELD_TEXT2 => $purifier->purify($_REQUEST["text2"]),
-            DB_ITEMFIELD_NAME_OVERRIDE => filter_var($_REQUEST["name_override"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            DB_ITEMFIELD_NAME_OVERRIDE => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
             DB_ITEMTABLE_TEXT_PKEY => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
