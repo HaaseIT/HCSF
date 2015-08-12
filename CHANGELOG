@@ -1,6 +1,7 @@
-2.2.0-RC X
+2.2.0-RC3
 Added config options to whitelist html tags for the text in items, itemgroups, pages and textcats
 Added config option to loosen filtering of html tags for the text in items, itemgroups, pages and textcats
+Itemadmin: It is now possible to use html-tags in the itemname again, but only in "Name Override", not in "Name" itself
 
 2.2.0-RC2
 made serveral directory names configurable
