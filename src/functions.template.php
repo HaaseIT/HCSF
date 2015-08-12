@@ -219,7 +219,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
             //HaaseIT\Tools::debug($aP["pageconfig"]["itemindex"], '$aP["pageconfig"]["itemindex"]');
             if (isset($aP["pageconfig"]->itemindex)) {
                 if (is_array($aP["pageconfig"]->itemindex)) {
-                    foreach ($aP["pageconfig"]["itemindex"] as $sItemIndexValue) {
+                    foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
                         $aP["itemindexpathtreeforsuggestions"][$sItemIndexValue] = '';
                     }
                 } else {
