@@ -40,10 +40,10 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
         $bFromTo = false;
         if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
             $sQ .= "AND ";
-            $sFrom = filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.dateAddLeadingZero(filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
-            $sFrom .= '-'.dateAddLeadingZero(filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
-            $sTo = filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.dateAddLeadingZero(filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
-            $sTo .= '-'.dateAddLeadingZero(filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
+            $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
+            $sFrom .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
+            $sTo = \filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
+            $sTo .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
             $sQ .= "o_orderdate >= :from ";
             $sQ .= "AND o_orderdate <= :to ";
             $bFromTo = true;
