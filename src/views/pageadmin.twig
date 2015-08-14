@@ -58,13 +58,13 @@
     {% if customdata.page.oPayload is defined and customdata.page.oPayload.cl_id != NULL %}
     <fieldset>
         <legend>Sprachspezifisch</legend>
-        <label for="page_html">Seiteninhalt</label>
+        <label for="page_html">Seiteninhalt <span tooltip="HTML Quelltext, unsichere Tags werden herausgefiltert." style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
         <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.oPayload.cl_html }}</textarea>
-        <label for="page_title">Seitentitel:</label>
+        <label for="page_title">Seitentitel: <span tooltip="Reiner Text, erscheint im Browser als Titel der Seite.&#xa;Wenn dieses Feld leer gelassen wird, wird der&#xa;Standardseitentitel verwendet." style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
         <input type="text" name="page_title" id="page_title" value="{{ customdata.page.oPayload.cl_title }}" class="pure-u-1">
-        <label for="page_description">Meta-Description:</label>
+        <label for="page_description">Meta-Description: <span tooltip="Reiner Text, eine kurze Zusammenfassung der Seite." style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
         <input type="text" name="page_description" id="page_description" value="{{ customdata.page.oPayload.cl_description }}" class="pure-u-1">
-        <label for="page_keywords">Meta-Keywords (mit Kommas getrennt):</label>
+        <label for="page_keywords">Meta-Keywords: <span tooltip="Reiner Text, Schlüsselwörter, durch die diese&#xa;Seite bei Suchmaschinen gefunden werden soll." style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
         <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.oPayload.cl_keywords }}" class="pure-u-1">
     </fieldset>
     {% else %}
@@ -74,13 +74,13 @@
     {% endif %}
         <fieldset>
             <legend>Sprachunabhängig</legend>
-            <label for="page_type">Page type:</label>
+            <label for="page_type">Page type: <span tooltip="Welche Seitenvorlage soll verwendet werden?&#xa;content: standardlayout&#xa;contentnosubnav: Standardlayout ohne Subnavigation&#xa;itemoverview: Artikelübersichtsseite&#xa;itemoverviewgrpd: Artikelübersichtsseite mit Gruppierung der Artikel&#xa;shorturl: Diese Seite soll den Besucher auf die in Page config angegebene Seite umleiten." style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
             {{ macro.select('page_type', customdata.admin_page_types, customdata.page.cb_pagetype, 'page_type', 'pure-u-1') }}
-            <label for="page_group">Page group:</label>
+            <label for="page_group">Page group: <span tooltip="In welcher Kategorie soll diese Seite in der Seitenverwaltung gruppiert werden?" style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
             {{ macro.select('page_group', customdata.admin_page_groups, customdata.page.cb_group, 'page_group', 'pure-u-1') }}
-            <label for="page_config">Page config (json) oder shorturl Linkziel:</label>
+            <label for="page_config">Page config: <span tooltip="Beim Seitentyp shorturl, hier das Ziel der Weiterleitung angeben, z.B.: http://www.haase-it.com/&#xa;Beim allen anderen Seitentypen ein valides JSON Objekt mit Seitenspezifischen Daten.&#xa;Beim Seitentyp itemoverview/itemoverviewgrpd hier den Artikelindex angeben:&#xa;{&#34;itemindex&#34;:&#34;A01&#34;} oder {&#34;itemindex&#34;:[&#34;A01&#34;, &#34;A02&#34;]}" style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
             <textarea name="page_config" class="pure-u-1" id="page_config">{{ customdata.page.cb_pageconfig }}</textarea>
-            <label for="page_subnav">Page Subnavarea:</label>
+            <label for="page_subnav">Page Subnavarea: <span tooltip="Welche Subnavigation soll auf dieser Seite eingeblendet werden?" style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
             {{ macro.select('page_subnav', customdata.subnavarea_options, customdata.page.cb_subnav, 'page_subnav', 'pure-u-1') }}
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button>
@@ -103,7 +103,7 @@
     {{ customdata.err.keyalreadyinuse ? 'Dieser Seitenschlüssel ist bereits vergeben.<br><br>' : '' }}
     <form action="/_admin/pageadmin.html?action=addpage" method="POST" name="addpage" class="pure-form pure-form-stacked">
         <input type="hidden" name="addpage" value="do">
-        <label for="pagekey">Seitenschlüssel:</label>
+        <label for="pagekey">Seitenschlüssel: <span tooltip="Bitte geben Sie den kompletten Pfad an,&#xa;z.B.: /thema/artikel.html&#xa;Wenn als Dateiname index.html verwendet wird,&#xa;dann wird diese Seite automatisch geladen,&#xa;wenn beim Seitenaufruf nur ein Verzeichnis&#xa;angegeben wird, z.B.: /thema/" style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
         <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="pure-u-1" id="pagekey">
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Anlegen</button>
     </form>
