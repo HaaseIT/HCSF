@@ -39,6 +39,42 @@ import "macros.twig" as macro %}<!DOCTYPE html>
         a:hover{text-decoration: underline;}
         body{background: #000;}
 
+        /* Tooltips */
+        [tooltip] {
+            white-space:pre-wrap;
+        }
+
+        [tooltip]:before {
+            /* needed - do not touch */
+            content: attr(tooltip);
+            position: absolute;
+            opacity: 0;
+
+            /* customizable */
+            transition: all 0.15s ease;
+            padding: 10px;
+            color: #fff;
+            border-radius: 1px;
+            border: 1px solid black;
+            box-shadow: 2px 2px 1px silver;
+        }
+
+        [tooltip]:hover:before {
+            /* needed - do not touch */
+            opacity: 1;
+
+            /* customizable */
+            background: #333;
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+
+        [tooltip]:not([tooltip-persistent]):before {
+            pointer-events: none;
+        }
+
+
+
         .fs{font-size: 0.85em;} /* Set font size */
         .list-unstyled{
             list-style: outside none none;
