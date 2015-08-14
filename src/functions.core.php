@@ -18,6 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function getHardcodedText($sKey) {
+
+}
+
 function requireAdminAuth($C, $bAdminhome = false) {
     if (!count($C['admin_users']) && $bAdminhome) {
         return true;

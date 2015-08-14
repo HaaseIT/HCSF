@@ -70,7 +70,9 @@ if ($C["enable_module_shop"]) {
     }
 }
 
-require_once PATH_BASEDIR.'src/functions.template.php';
+
+
+require_once PATH_BASEDIR.'src/functions.core.php';
 
 date_default_timezone_set($C["defaulttimezone"]);
 
@@ -92,6 +94,7 @@ if (isset($C["debug"]) && $C["debug"]) {
     $twig->addExtension(new Twig_Extension_Debug());
 }
 $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
+$twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
 $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
 
 // ----------------------------------------------------------------------------
@@ -119,6 +122,13 @@ if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is
 if (!isset($sLang)) {
     $sLang = key($C["lang_available"]);
 }
+
+if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
+    require PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php';
+} else {
+    require PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php';
+}
+\HaaseIT\HCSF\HardcodedText::init($HT);
 
 // ----------------------------------------------------------------------------
 // Begin database init
