@@ -1,6 +1,7 @@
 2.3.0-Alpha1
 Added Tooltips to pageadmin
 Added functionality for hardcoded textstrings
+fix: Item Data field filtering broke JSON data content
 
 2.2.0
 No changes from RC3
