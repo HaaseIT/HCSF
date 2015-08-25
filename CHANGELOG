@@ -2,6 +2,7 @@
 Added Tooltips to pageadmin
 Added functionality for hardcoded textstrings
 fix: Item Data field filtering broke JSON data content
+Added purifier_doctype to config
 
 2.2.0
 No changes from RC3

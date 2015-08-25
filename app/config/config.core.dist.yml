@@ -56,3 +56,4 @@ pagetext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
 pagetext_loose_filtering: false
 textcat_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
 textcat_loose_filtering: false
+purifier_doctype: 'HTML 4.01 Transitional' # valid values: 'HTML 4.01 Transitional', 'HTML 4.01 Strict', 'XHTML 1.0 Transitional', 'XHTML 1.0 Strict', 'XHTML 1.1'

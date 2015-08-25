@@ -50,6 +50,7 @@ if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
         $purifier_config = HTMLPurifier_Config::createDefault();
         $purifier_config->set('Core.Encoding', 'UTF-8');
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
         if (isset($C['itemgrouptext_unsafe_html_whitelist']) && trim($C['itemgrouptext_unsafe_html_whitelist']) != '') {
             $purifier_config->set('HTML.Allowed', $C['itemgrouptext_unsafe_html_whitelist']);
         }

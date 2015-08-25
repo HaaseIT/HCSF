@@ -1,6 +1,5 @@
 
-V2.3.0
-delete: src/functions.template.php
+New config value: purifier_doctype
 
 V2.2.0
 New config keys:

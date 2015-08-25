@@ -91,6 +91,7 @@ if (!isset($_GET["action"])) {
                 $purifier_config = HTMLPurifier_Config::createDefault();
                 $purifier_config->set('Core.Encoding', 'UTF-8');
                 $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+                $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
                 if (isset($C['pagetext_unsafe_html_whitelist']) && trim($C['pagetext_unsafe_html_whitelist']) != '') {
                     $purifier_config->set('HTML.Allowed', $C['pagetext_unsafe_html_whitelist']);
                 }
