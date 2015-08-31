@@ -97,6 +97,7 @@ if (!isset($_GET["action"])) {
                 }
                 if (isset($C['pagetext_loose_filtering']) && $C['pagetext_loose_filtering']) {
                     $purifier_config->set('HTML.Trusted', true);
+                    $purifier_config->set('Attr.EnableID', true);
                 }
                 $purifier = new HTMLPurifier($purifier_config);
                 //$clean_html = $purifier->purify($dirty_html);
