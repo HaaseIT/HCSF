@@ -1,3 +1,7 @@
+2.2.2
+fix: wrong variable syntax in functions.template.php
+changed itemdata filter
+
 2.2.1
 fix: Item Data field filtering broke JSON data content
 
