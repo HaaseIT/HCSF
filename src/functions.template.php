@@ -202,21 +202,21 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
             //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
             $aP["itemindexpathtreeforsuggestions"] = array();
             foreach ($aItemoverviewpages as $aValue) {
-                if (isset($aValue["pageconfig"]["itemindex"])) {
-                    if (is_array($aValue["pageconfig"]["itemindex"])) {
-                        foreach ($aValue["pageconfig"]["itemindex"] as $sIndexValue) {
+                if (isset($aValue["pageconfig"]->itemindex)) {
+                    if (is_array($aValue["pageconfig"]->itemindex)) {
+                        foreach ($aValue["pageconfig"]->itemindex as $sIndexValue) {
                             if (!isset($aP["itemindexpathtreeforsuggestions"][$sIndexValue])) {
                                 $aP["itemindexpathtreeforsuggestions"][$sIndexValue] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
                             }
                         }
                     } else {
-                        if (!isset($aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]["itemindex"]])) {
-                            $aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]["itemindex"]] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                        if (!isset($aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]->itemindex])) {
+                            $aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]->itemindex] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
                         }
                     }
                 }
             }
-            //HaaseIT\Tools::debug($aP["pageconfig"]["itemindex"], '$aP["pageconfig"]["itemindex"]');
+            //HaaseIT\Tools::debug($aP["pageconfig"]->itemindex, '$aP["pageconfig"]->itemindex');
             if (isset($aP["pageconfig"]->itemindex)) {
                 if (is_array($aP["pageconfig"]->itemindex)) {
                     foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
@@ -329,7 +329,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                                     foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
                                         if (isset($aP["pageconfig"]->itemindex)) { // check if there is an index configured on this page
                                             if (is_array($aP["pageconfig"]->itemindex)) { // check if it is an array
-                                                if (in_array($sSuggestionIndexesValue, $aP["pageconfig"]["itemindex"])) { // if the suggestions index is in that array, set path to empty string
+                                                if (in_array($sSuggestionIndexesValue, $aP["pageconfig"]->itemindex)) { // if the suggestions index is in that array, set path to empty string
                                                     $aSuggestions[$aSuggestionsKey]["path"] = '';
                                                     continue 2; // path to suggestion set, continue with next suggestion
                                                 }
