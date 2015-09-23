@@ -28,6 +28,10 @@ function requireAdminAuth($C, $bAdminhome = false) {
     } elseif (count($C['admin_users'])) {
         $valid_users = array_keys($C['admin_users']);
 
+        if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
+            list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
+        }
+
         if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
             $user = $_SERVER['PHP_AUTH_USER'];
             $pass = crypt($_SERVER['PHP_AUTH_PW'], $C["blowfish_salt"]);
