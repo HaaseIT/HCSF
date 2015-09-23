@@ -6,109 +6,89 @@
 <form action="/_admin/itemadmin.html" method="GET" class="pure-form">
     <input type="hidden" name="action" value="search">
     <fieldset name="itemsearch">
-        <legend>Artikelsuche</legend>
+        <legend>{{ HT('itemadmin_search_title') }}</legend>
 
-        <div class="pure-u-5-24"><label for="itemadmin-searchstring">Search for:</label><br>
+        <div class="pure-u-5-24"><label for="itemadmin-searchstring">{{ HT('itemadmin_search_searchstring') }}</label><br>
             <input type="text" name="searchstring" value="{{ gFF("searchstring") }}" id="itemadmin-searchstring" class="formfieldwithpaddingright"></div><div
-            class="pure-u-4-24"><label for="itemadmin-searchcats">Search in:</label><br>
+            class="pure-u-4-24"><label for="itemadmin-searchcats">{{ HT('itemadmin_search_searchfield') }}</label><br>
             {{ macro.select("searchcat", customdata.searchform.searchcats, customdata.searchform.searchcat, 'itemadmin-searchcats', 'formfieldwithpaddingright') }}</div><div
-            class="pure-u-4-24"><label for="itemadmin-orderby">Order by:</label><br>
+            class="pure-u-4-24"><label for="itemadmin-orderby">{{ HT('itemadmin_search_searchorder') }}</label><br>
             {{ macro.select("orderby", customdata.searchform.orderbys, customdata.searchform.orderby, 'itemadmin-orderby', 'formfieldwithpaddingright') }}</div><div
-            class="pure-u-4-24"><br><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button></div>
+            class="pure-u-4-24"><br><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('itemadmin_search_submit') }}</button></div>
 
     </fieldset>
 </form>
 <hr>
 {% if customdata.itemupdated %}
-    <b>Der Artikel wurde aktualisiert ({{ macro.showClientTime() }}).</b><br><br>
+    <b>{{ HT('itemadmin_msg_updated') }} ({{ macro.showClientTime() }}).</b><br><br>
 {% endif %}
 {% if customdata.searchresult and customdata.itemlist is not defined and customdata.item is not defined %}
-    No matches found.<br><br>
+    {{ HT('itemadmin_msg_nomatches') }}<br><br>
 {% endif %}
 {% if customdata.itemlist is defined %}
-    Displaying {{ customdata.itemlist.numrows }} results:<br><br>
+    {{ HT('itemadmin_msg_displaying_1') }} {{ customdata.itemlist.numrows }} {{ HT('itemadmin_msg_displaying_2') }}<br><br>
     {{ customdata.itemlist.listtable }}
 {% elseif customdata.item is defined %}
     <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin" class="pure-form pure-form-stacked">
         <input type="hidden" name="id" value="{{ customdata.item.id }}">
         <input type="hidden" name="doaction" value="edititem">
         <fieldset name="itemadmin-base">
-            <legend>Sprachunabhängig</legend>
+            <legend>{{ HT('itemadmin_base_title') }}</legend>
 
-            <div class="pure-u-3-24"><label for="itemadmin-itemno">Artikelnr:</label><input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly class="formfieldwithpaddingright"></div><div
-                    class="pure-u-21-24"><label for="itemadmin-name">Artikelname:</label><input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name" class="formfieldwithoutpadding"></div>
+            <div class="pure-u-3-24"><label for="itemadmin-itemno">{{ HT('itemadmin_base_itemno') }}</label><input type="text" name="itemno" value="{{ customdata.item.itemno }}" id="itemadmin-itemno" readonly class="formfieldwithpaddingright"></div><div
+                    class="pure-u-21-24"><label for="itemadmin-name">{{ HT('itemadmin_base_itemname') }} <span tooltip="{{ HT('itemadmin_base_itemname_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label><input type="text" name="name" value="{{ customdata.item.name }}" id="itemadmin-name" class="formfieldwithoutpadding"></div>
 
-            <div class="pure-u-1-2"><label for="itemadmin-img">Artikelbild:</label><input type="text" name="bild" value="{{ customdata.item.img }}" class="formfieldwithpaddingright" id="itemadmin-img"></div><div
-                    class="pure-u-3-24"><label for="itemadmin-price">Preis:</label><input type="text" name="price" value="{{ customdata.item.price }}" class="formfieldwithpaddingright" id="itemadmin-price"></div>{%
+            <div class="pure-u-1-2"><label for="itemadmin-img">{{ HT('itemadmin_base_img') }} <span tooltip="{{ HT('itemadmin_base_img_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label><input type="text" name="bild" value="{{ customdata.item.img }}" class="formfieldwithpaddingright" id="itemadmin-img"></div><div
+                    class="pure-u-3-24"><label for="itemadmin-price">{{ HT('itemadmin_base_price') }} <span tooltip="{{ HT('itemadmin_base_price_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label><input type="text" name="price" value="{{ customdata.item.price }}" class="formfieldwithpaddingright" id="itemadmin-price"></div>{%
             if customdata.item.vatoptions is defined %}<div
-                    class="pure-u-3-24"><label for="itemadmin-vat">MwSt:</label>{{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vat', 'formfieldwithpaddingright') }}</div>{%
-            endif %}<div class="pure-u-3-24"><label for="itemadmin-rg">RG:</label>{{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg', 'formfieldwithpaddingright') }}</div><div
-                    class="pure-u-3-24"><label for="itemadmin-weight">Gewicht (g):</label><input type="text" name="weight" value="{{ customdata.item.weight }}" class="formfieldwithoutpadding" id="itemadmin-weight"></div>
+                    class="pure-u-3-24"><label for="itemadmin-vat">{{ HT('itemadmin_base_vat') }} <span tooltip="{{ HT('itemadmin_base_vat_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>{{ macro.select('vatid', customdata.item.vatoptions, customdata.item.vatid, 'itemadmin-vat', 'formfieldwithpaddingright') }}</div>{%
+            endif %}<div class="pure-u-3-24"><label for="itemadmin-rg">{{ HT('itemadmin_base_rg') }} <span tooltip="{{ HT('itemadmin_base_rg_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>{{ macro.select('rg', customdata.item.rgoptions, customdata.item.rg, 'itemadmin-rg', 'formfieldwithpaddingright') }}</div><div
+                    class="pure-u-3-24"><label for="itemadmin-weight">{{ HT('itemadmin_base_weight') }} <span tooltip="{{ HT('itemadmin_base_weight_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label><input type="text" name="weight" value="{{ customdata.item.weight }}" class="formfieldwithoutpadding" id="itemadmin-weight"></div>
 
-            <div class="pure-u-1-2"><label for="itemadmin-index">Artikelindex:</label>
+            <div class="pure-u-1-2"><label for="itemadmin-index">{{ HT('itemadmin_base_index') }} <span tooltip="{{ HT('itemadmin_base_index_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <input type="text" name="index" value="{{ customdata.item.index }}" id="itemadmin-index" class="formfieldwithpaddingright"></div><div
-                class="pure-u-3-24"><label for="itemadmin-prio">Prio:</label>
+                class="pure-u-3-24"><label for="itemadmin-prio">{{ HT('itemadmin_base_prio') }} <span tooltip="{{ HT('itemadmin_base_prio_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <input type="text" name="prio" value="{{ customdata.item.prio }}" id="itemadmin-prio" class="formfieldwithpaddingright"></div><div
-                class="pure-u-9-24"><label for="itemadmin-group">Artikelgruppe:</label>
+                class="pure-u-9-24"><label for="itemadmin-group">{{ HT('itemadmin_base_group') }} <span tooltip="{{ HT('itemadmin_base_group_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 {{ macro.select('group', customdata.item.groupoptions, customdata.item.group, 'itemadmin-group', 'formfieldwithoutpadding') }}</div>
 
-            <div class="pure-u-1"><label for="itemadmin-data">Zusatzdaten (JSON):</label>
+            <div class="pure-u-1"><label for="itemadmin-data">{{ HT('itemadmin_base_data') }} <span tooltip="{{ HT('itemadmin_base_data_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
             <textarea name="data" id="itemadmin-data" class="formfieldwithoutpadding">{{ customdata.item.data }}</textarea></div>
 
         </fieldset>
 
         {% if customdata.item.lang is defined %}
             <fieldset name="itemadmin-lang">
-                <legend>Sprachspezifisch</legend>
+                <legend>{{ HT('itemadmin_lang_title') }}</legend>
                 <input type="hidden" name="textid" value="{{ customdata.item.lang.textid }}">
 
-                <div class="pure-u-1"><label for="itemadmin-nameoverrride">Name override:</label>
+                <div class="pure-u-1"><label for="itemadmin-nameoverrride">{{ HT('itemadmin_lang_nameoverride') }} <span tooltip="{{ HT('itemadmin_lang_nameoverride_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                     <input type="text" name="name_override" value="{{ customdata.item.lang.nameoverride }}" id="itemadmin-nameoverrride" class="formfieldwithoutpadding"></div>
 
-                <div class="pure-u-1"><label for="itemadmin-text1">Text 1:</label>
+                <div class="pure-u-1"><label for="itemadmin-text1">{{ HT('itemadmin_lang_text1') }} <span tooltip="{{ HT('itemadmin_lang_text1_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <textarea name="text1" id="itemadmin-text1" class="formfieldwithoutpadding">{{ customdata.item.lang.text1 }}</textarea></div>
 
-                <div class="pure-u-1"><label for="itemadmin-text2">Text 2:</label>
+                <div class="pure-u-1"><label for="itemadmin-text2">{{ HT('itemadmin_lang_text2') }} <span tooltip="{{ HT('itemadmin_lang_text2_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <textarea name="text2" id="itemadmin-text2" class="formfieldwithoutpadding">{{ customdata.item.lang.text2 }}</textarea></div>
 
             </fieldset>
         {% else %}
             <br>
-            In dieser Sprache sind noch keine Texte angelegt!
-            <a href="/_admin/itemadmin.html?itemno={{ customdata.item.itemno }}&action=insert_lang">[Anlegen]</a>
+            {{ HT('itemadmin_msg_notext') }}
+            <a href="/_admin/itemadmin.html?itemno={{ customdata.item.itemno }}&action=insert_lang">{{ HT('itemadmin_msg_notext_add') }}</a>
             <br>
             <br>
         {% endif %}
-        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding" id="itemadmin-submit">Submit</button>
+        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding" id="itemadmin-submit">{{ HT('itemadmin_submit') }}</button>
     </form>
-    <pre>
-Zusatzdaten:
-{
-    "size":"|S|M|L|XL",
-    "suggestions":"0011|0012|0001|0002",
-    "sale": {
-        "price":79.99,
-        "start":"20140809",
-        "end":"20140826"
-    },
-    "detailimg":["image1.jpg","image2.jpg"],
-    "soldout":false
-}
-- set soldout to true and the item will not be orderable
-
-Artikelindex:
-Bei meherern Indizies, die einzelnen Indizies mit einer | trennen, z.B.: A020|A030
-Bei HTML Tags, die Anführungszeichen enthalten unbedingt single quotes (\') verwenden! Beispiel: &lt;img src=\'/_img/gr_damen_t-shirts.jpg\'>
-Keine Zeilenumbrüche in Zeichenketten, sonst funktioniert das ganze nicht!
-</pre>
 {% elseif customdata.showaddform %}
-    {{ customdata.err.itemnotooshort ? 'Bitte verwenden Sie mindestens 4 Zeichen für die Artikelnummer.<br><br>' : '' }}
-    {{ customdata.err.itemnoalreadytaken ? 'Diese Artikelnummer ist bereits vergeben.<br><br>' : '' }}
+    {{ customdata.err.itemnotooshort ? HT('itemadmin_msg_itemnotooshort')~'<br><br>' : '' }}
+    {{ customdata.err.itemnoalreadytaken ? HT('itemadmin_msg_itemnoalreadytaken')~'<br><br>' : '' }}
     <form action="/_admin/itemadmin.html?action=additem" method="POST" name="additem" class="pure-form">
         <input type="hidden" name="additem" value="do">
-        <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext" id="itemadmin-add-itemno" placeholder="Artikelnummer">
-        <button type="submit" class="pure-button pure-button-primary">Artikel anlegen</button>
+        <input type="text" name="itemno" value="{{ gFF("itemno") }}" class="formtext" id="itemadmin-add-itemno" placeholder="{{ HT('itemadmin_add_itemno') }}">
+        <button type="submit" class="pure-button pure-button-primary">{{ HT('itemadmin_add_submit') }}</button>
     </form>
 {% else %}
-    <a href="/_admin/itemadmin.html?action=additem">[Artikel hinzufügen]</a><br>
+    <a href="/_admin/itemadmin.html?action=additem">{{ HT('itemadmin_add_link') }}</a><br>
 {% endif %}
