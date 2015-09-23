@@ -29,6 +29,7 @@
     {{ HT('itemadmin_msg_displaying_1') }} {{ customdata.itemlist.numrows }} {{ HT('itemadmin_msg_displaying_2') }}<br><br>
     {{ customdata.itemlist.listtable }}
 {% elseif customdata.item is defined %}
+    <script src="//cdn.haase-it.com/ace/1.2.0/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin" class="pure-form pure-form-stacked">
         <input type="hidden" name="id" value="{{ customdata.item.id }}">
         <input type="hidden" name="doaction" value="edititem">
@@ -54,6 +55,17 @@
 
             <div class="pure-u-1"><label for="itemadmin-data">{{ HT('itemadmin_base_data') }} <span tooltip="{{ HT('itemadmin_base_data_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
             <textarea name="data" id="itemadmin-data" class="formfieldwithoutpadding">{{ customdata.item.data }}</textarea></div>
+            <div id="data_editor" style="position: relative; width: 100%; height: 17em;"></div>
+            <script>
+                var editor_data = ace.edit("data_editor");
+                editor_data.setTheme("ace/theme/monokai");
+                editor_data.getSession().setMode("ace/mode/json");
+                var textarea_data = $('textarea[name="data"]').hide();
+                editor_data.getSession().setValue(textarea_data.val());
+                editor_data.getSession().on('change', function(){
+                    textarea_data.val(editor_data.getSession().getValue());
+                });
+            </script>
 
         </fieldset>
 
@@ -67,9 +79,31 @@
 
                 <div class="pure-u-1"><label for="itemadmin-text1">{{ HT('itemadmin_lang_text1') }} <span tooltip="{{ HT('itemadmin_lang_text1_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <textarea name="text1" id="itemadmin-text1" class="formfieldwithoutpadding">{{ customdata.item.lang.text1 }}</textarea></div>
+                <div id="text1_editor" style="position: relative; width: 100%; height: 10em;"></div>
+                <script>
+                    var editor_text1 = ace.edit("text1_editor");
+                    editor_text1.setTheme("ace/theme/monokai");
+                    editor_text1.getSession().setMode("ace/mode/html");
+                    var textarea_text1 = $('textarea[name="text1"]').hide();
+                    editor_text1.getSession().setValue(textarea_text1.val());
+                    editor_text1.getSession().on('change', function(){
+                        textarea_text1.val(editor_text1.getSession().getValue());
+                    });
+                </script>
 
                 <div class="pure-u-1"><label for="itemadmin-text2">{{ HT('itemadmin_lang_text2') }} <span tooltip="{{ HT('itemadmin_lang_text2_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
                 <textarea name="text2" id="itemadmin-text2" class="formfieldwithoutpadding">{{ customdata.item.lang.text2 }}</textarea></div>
+                <div id="text2_editor" style="position: relative; width: 100%; height: 10em;"></div>
+                <script>
+                    var editor_text2 = ace.edit("text2_editor");
+                    editor_text2.setTheme("ace/theme/monokai");
+                    editor_text2.getSession().setMode("ace/mode/html");
+                    var textarea_text2 = $('textarea[name="text2"]').hide();
+                    editor_text2.getSession().setValue(textarea_text2.val());
+                    editor_text2.getSession().on('change', function(){
+                        textarea_text2.val(editor_text2.getSession().getValue());
+                    });
+                </script>
 
             </fieldset>
         {% else %}
