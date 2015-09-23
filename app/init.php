@@ -61,8 +61,8 @@ if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
+define("PATH_LOGS", __DIR__.'/../hcsflogs/');
 if ($C["enable_module_shop"]) {
-    define("PATH_LOGS", __DIR__.'/../hcsflogs/');
     define("FILE_PAYPALLOG", 'ipnlog.txt');
     $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
     if (isset($C["vat_disable"]) && $C["vat_disable"]) {
