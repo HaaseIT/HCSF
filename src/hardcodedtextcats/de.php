@@ -35,17 +35,17 @@ $HT = [
     'itemadmin_base_prio' => 'Prio:',
     'itemadmin_base_prio_tooltip' => 'Die Priorität für die Sortierung der Artikel in der Liste.&#xa;Numerisch, 3 Ziffern, je höher, desto weiter unten.',
     'itemadmin_base_group' => 'Artikelgruppe:',
-    'itemadmin_base_group_tooltip' => 'Die Artikelgruppe für die gruppierte&#xa;Listung, siehe Artikelgruppenverwaltung',
+    'itemadmin_base_group_tooltip' => 'Die Artikelgruppe für die gruppierte&#xa;Listung, siehe Artikelgruppenverwaltung.',
     'itemadmin_base_data' => 'Zusatzdaten (JSON):',
     'itemadmin_base_data_tooltip' => 'Zusätzliche Artikelkonfiguration, konfigurierbar.&#xa;Die Standardkonfiguration beinhaltet:&#xa;{&#xa;    &#34;suggestions&#34;:&#34;0011|0012|0001|0002&#34;,&#xa;    &#34;sale&#34;: {&#xa;        &#34;price&#34;:79.99,&#xa;        &#34;start&#34;:&#34;20140809&#34;,&#xa;        &#34;end&#34;:&#34;20140826&#34;&#xa;    },&#xa;    &#34;detailimg&#34;:[&#34;image1.jpg&#34;,&#34;image2.jpg&#34;],&#xa;    &#34;soldout&#34;:false&#xa;}&#xa;- Wenn soldout auf true gesetzt wird, wird der Artikel gelistet, ist aber nicht bestellbar.',
 
     'itemadmin_lang_title' => 'Sprachspezifisch',
     'itemadmin_lang_nameoverride' => 'Sprachspezifischer Name',
-    'itemadmin_lang_nameoverride_tooltip' => 'Wird hier ein Name gesetzt, so wird der Basisname in der aktuellen Sprache des Artikels durch diesen ersetzt',
+    'itemadmin_lang_nameoverride_tooltip' => 'Wird hier ein Name gesetzt, so wird der Basisname in der aktuellen Sprache des Artikels durch diesen ersetzt.',
     'itemadmin_lang_text1' => 'Text 1:',
-    'itemadmin_lang_text1_tooltip' => 'Der Haupttext des Artikels',
+    'itemadmin_lang_text1_tooltip' => 'Der Haupttext des Artikels, HTML Quelltext, unsichere Tags werden herausgefiltert.',
     'itemadmin_lang_text2' => 'Text 2:',
-    'itemadmin_lang_text2_tooltip' => 'Der sekundäre Artikeltext',
+    'itemadmin_lang_text2_tooltip' => 'Der sekundäre Artikeltext, HTML Quelltext, unsichere Tags werden herausgefiltert.',
 
     'itemadmin_submit' => 'Speichern',
 
