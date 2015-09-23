@@ -1,5 +1,7 @@
 2.3.0-Alpha1
-Added Tooltips to pageadmin
+Added the ACE editor to pageadmin and itemadmin
+Added Tooltips to pageadmin and itemadmin
+Exchanged static text with hardcoded textstrings in pageadmin and itemadmin
 Added functionality for hardcoded textstrings
 fix: Item Data field filtering broke JSON data content
 Added purifier_doctype to config
