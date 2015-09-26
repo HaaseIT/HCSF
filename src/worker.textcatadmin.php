@@ -66,6 +66,7 @@ if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             }
             if (isset($C['textcat_loose_filtering']) && $C['textcat_loose_filtering']) {
                 $purifier_config->set('HTML.Trusted', true);
+                $purifier_config->set('Attr.EnableID', true);
             }
             $purifier = new HTMLPurifier($purifier_config);
             \HaaseIT\Textcat::$purifier = $purifier;
