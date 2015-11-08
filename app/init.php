@@ -126,7 +126,11 @@ if (!isset($sLang)) {
 if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
     require PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php';
 } else {
-    require PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php';
+    if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php')) {
+        require PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php';
+    } else {
+        require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
+    }
 }
 \HaaseIT\HCSF\HardcodedText::init($HT);
 

@@ -23,7 +23,7 @@ function getHardcodedText($sKey) {
 }
 
 function requireAdminAuth($C, $bAdminhome = false) {
-    if (!count($C['admin_users']) && $bAdminhome) {
+    if (empty ($C['admin_users']) || (!count($C['admin_users']) && $bAdminhome)) {
         return true;
     } elseif (count($C['admin_users'])) {
         $valid_users = array_keys($C['admin_users']);
