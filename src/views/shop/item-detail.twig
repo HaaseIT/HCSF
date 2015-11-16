@@ -1,27 +1,31 @@
-<script type="text/javascript" language="javascript">
-    {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
-    $( function() {
-        $( '#addtoshoppingcartsubmit' ).click(function() {
-            $.ajax( {
-                url : '/_misc/update-cart.html?ajax', // your ajax file
-                type : 'post',
-                data: $( "#addtoshoppingcart" ).serialize(),
-                success : function( resp ) {
-                    infoboxhtml = $('#infobox_new' , resp);
-                    if (infoboxhtml[0].innerHTML == 'REQUIRED FIELD MISSING' || infoboxhtml[0].innerHTML == 'NO ACTION TAKEN' || infoboxhtml[0].innerHTML == 'ITEMNOTFOUND' || infoboxhtml[0].innerHTML == 'NO ITEMNO OR AMOUNT') {
-                        $('#item-detail-infobox').prepend("{{ T("itemdetail_submit_error") }}<br><br>");
-                    } else {
-                        $('#shoppingcartamount').html($('#shoppingcartamount_new' , resp).html());
-                        $('#shoppingcartinfo').html($('#shoppingcartinfo_new' , resp).html());
-                        infoboxhtmlnew = '{{ T("itemdetail_infobox_addedtocart") }}<br><br><ul><li><a href="/_misc/shoppingcart.html">{{ T("itemdetail_infobox_paynow") }}</a></li><li><a href="../">{{ T("itemdetail_infobox_backtoshop") }}</a></li></ul>';
-                        $('#item-detail-infobox').html(infoboxhtmlnew);
+{% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
+    <script type="text/javascript" language="javascript">
+        $( function() {
+            $( '#addtoshoppingcartsubmit' ).click(function() {
+                $.ajax( {
+                    url : '/_misc/update-cart.html?ajax', // your ajax file
+                    type : 'post',
+                    data: $( "#addtoshoppingcart" ).serialize(),
+                    success : function( resp ) {
+                        infoboxhtml = $('#infobox_new' , resp);
+                        if (infoboxhtml[0].innerHTML == 'REQUIRED FIELD MISSING' || infoboxhtml[0].innerHTML == 'NO ACTION TAKEN' || infoboxhtml[0].innerHTML == 'ITEMNOTFOUND' || infoboxhtml[0].innerHTML == 'NO ITEMNO OR AMOUNT') {
+                            $('#item-detail-infobox').html("{{ T("itemdetail_submit_error") }}");
+                            $('#item-detail-infobox-buttons').html('<button type="button" class="pure-button button-orange" data-dismiss="modal">{{ T("itemdetail_continue_shopping") }}!</button>');
+                        } else {
+                            $('#shoppingcartamount').html($('#shoppingcartamount_new' , resp).html());
+                            $('#shoppingcartinfo').html($('#shoppingcartinfo_new' , resp).html());
+                            infoboxhtmlnew = '{{ T("itemdetail_added_to_cart") }}';
+
+                            $('#item-detail-infobox').html(infoboxhtmlnew);
+                            $('#item-detail-infobox-buttons').html('<button type="button" class="pure-button button-orange" data-dismiss="modal">{{ T("itemdetail_continue_shopping") }}!</button>' +
+                                    ' <a href="/_misc/shoppingcart.html"class="pure-button button-green">{{ T("itemdetail_goto_cart") }}</a>');
+                        }
                     }
-                }
+                });
             });
         });
-    });
-    {% endif %}
-</script>
+    </script>
+{% endif %}
 
 <div class="pure-u-4-5">
     <h2 id="item-detail-title">
@@ -106,12 +110,9 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title"><h4>{{ T("itemdetail_added_to_cart") }}</h4></h4>
+                <h4 class="modal-title" id="item-detail-infobox"></h4>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="pure-button button-orange" data-dismiss="modal">{{ T("itemdetail_continue_shopping") }}!</button>
-                <a href="/_misc/shoppingcart.html"class="pure-button button-green">{{ T("itemdetail_goto_cart") }}</a>
-            </div>
+            <div class="modal-footer" id="item-detail-infobox-buttons"></div>
         </div>
     </div>
 </div>
