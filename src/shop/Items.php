@@ -74,8 +74,8 @@ class Items
     {
         $sQ = " WHERE ";
         if ($mItemno != '') {
-            if (is_array($mItemno)) {
-                $sItemno = "'".implode("','", \filter_var($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
+            if (\is_array($mItemno)) {
+                $sItemno = "'".\implode("','", \filter_var_array($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." IN (".$sItemno.")";
             } else {
                 $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." = :itemno";
@@ -111,14 +111,14 @@ class Items
     function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
     {
         if ($mItemno != '') {
-            if (is_array($mItemno)) {
+            if (\is_array($mItemno)) {
                 foreach ($mItemno as $sKey => $sValue) {
-                    $TMP[$sKey] = filter_var(trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                    $TMP[$sKey] = \filter_var(\trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 }
                 $mItemno = $TMP;
                 unset($TMP);
             } else {
-                $mItemno = filter_var(trim($mItemno), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $mItemno = \filter_var(\trim($mItemno), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             }
         }
 
