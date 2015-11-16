@@ -54,6 +54,23 @@ if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKI
     if (session_id() == '') {
         session_start();
     }
+
+    // check if the stored ip and ua equals the clients, if not, reset. if not set at all, reset
+    if (!empty($_SESSION['hijackprevention'])) {
+        if (
+            $_SESSION['hijackprevention']['remote_addr'] != $_SERVER['REMOTE_ADDR']
+            ||
+            $_SESSION['hijackprevention']['user_agent'] != $_SERVER['HTTP_USER_AGENT']
+        ) {
+            \session_regenerate_id();
+            \session_unset();
+        }
+    } else {
+        \session_regenerate_id();
+        \session_unset();
+        $_SESSION['hijackprevention']['remote_addr'] = $_SERVER['REMOTE_ADDR'];
+        $_SESSION['hijackprevention']['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+    }
 }
 
 if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
