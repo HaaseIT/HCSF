@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Requirements:
-Apache 2.x with mod_rewrite enabled, runs with mod_php and also php5-fpm/fastcgi. I'm pretty sure, it will run on other platforms as well.
-PHP 5.4.x and up with filter extension enabled
+- Apache 2.x with mod_rewrite enabled, runs with mod_php and also php5-fpm/fastcgi. I'm pretty sure, it will run on other platforms as well.
+- PHP 5.4.x and up with filter extension and curl enabled
 
-Dependencies:
-TWIG 1.16.2 and up, see: http://twig.sensiolabs.org/ (install via composer)
-PHPMailer 5.2.9 and up, see: https://github.com/PHPMailer/PHPMailer (install via composer)
-Symfony YAML Component (installed via composer)
-Haase IT Toolbox (installed via composer)
+Dependencies (will be installed with composer):
+- TWIG 1.16.2 and up, see: http://twig.sensiolabs.org/ (install via composer)
+- PHPMailer 5.2.9 and up, see: https://github.com/PHPMailer/PHPMailer (install via composer)
+- Symfony YAML Component (installed via composer)
+- Haase IT Toolbox (installed via composer)
 
 In the setup directory you will find scripts for setting up the database.
 
@@ -32,14 +32,12 @@ like this: config.core.dist.yml -> config.core.yml
 
 Put the required libraries into their configured paths.
 Run the db-scripts.sql on your configured database to init the database.
-Configure user auth for the /_admin/ directory in the .htaccess file
 
 For production use turn of display_errors at the beginning of app/init.php
 
-The following directories must be writeable by the webserver:
-hcsflogs (log directory)
-templatecache
-
+The following directories must be writable by the webserver:
+- hcsflogs (log directory)
+- cache
 at http://www.yourhost.tld/_admin/ you will find an info if these directories exist
 and are writable
 
