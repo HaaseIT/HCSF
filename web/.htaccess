@@ -9,7 +9,7 @@ DirectoryIndex app.php
     RewriteRule .? - [L]
 
     # Rewrite all other queries to the front controller.
-    RewriteRule .? %{ENV:BASE}/app.php [L]
+    RewriteRule .? ./app.php [L]
 
     # workaround for php cgi mode
     SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0

@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__.'/../app/init.php';
+require __DIR__.'/../app/init.php';
 
 //HaaseIT\Tools::debug($P);
 //HaaseIT\Tools::debug($aURL);
@@ -29,4 +29,8 @@ require_once __DIR__.'/../app/init.php';
 
 $aP = generatePage($C, $P, $sLang, $DB, $oItem);
 
-echo $twig->render($C["template_base"], $aP);
+$response = new \Zend\Diactoros\Response();
+$response->getBody()->write($twig->render($C["template_base"], $aP));
+
+$emitter = new \Zend\Diactoros\Response\SapiEmitter();
+$emitter->emit($response);
