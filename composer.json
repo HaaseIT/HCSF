@@ -7,6 +7,7 @@
     "aura/autoload": "2.0.*",
     "ezyang/htmlpurifier": "4.7.*",
     "league/oauth2-google": "1.0.1",
-    "league/oauth2-client": "1.1.0"
+    "league/oauth2-client": "1.1.0",
+    "zendframework/zend-diactoros": "1.1.x"
   }
 }
