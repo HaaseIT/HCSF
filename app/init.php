@@ -265,10 +265,10 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
     die();
 } elseif ($sPath == '/_admin/pageadmin.html') {
     requireAdminAuth($C);
-    require_once PATH_BASEDIR . 'src/worker.pageadmin.php';
+    require_once PATH_BASEDIR . 'src/controller/pageadmin.php';
 } elseif ($sPath == '/_admin/textcatadmin.html') {
     requireAdminAuth($C);
-    require_once PATH_BASEDIR . 'src/worker.textcatadmin.php';
+    require_once PATH_BASEDIR . 'src/controller/textcatadmin.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_admin/customeradmin.html') {
     requireAdminAuth($C);
     require_once PATH_BASEDIR . 'src/customer/functions.admin.customer.php';
@@ -321,9 +321,9 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
     }
     $P->oPayload->cl_html = \HaaseIT\Textcat::T("logout_message");
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/userhome.html') {
-    require_once PATH_BASEDIR . 'src/customer/worker.userhome.php';
+    require_once PATH_BASEDIR . 'src/customer/controller/userhome.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/register.html') {
-    require_once PATH_BASEDIR . 'src/customer/worker.register.php';
+    require_once PATH_BASEDIR . 'src/customer/controller/register.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/forgotpassword.html') {
     $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
     $P->cb_pagetype = 'content';
@@ -344,7 +344,7 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
         }
     }
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/rp.html') {
-    require_once PATH_BASEDIR . 'src/customer/worker.rp.php';
+    require_once PATH_BASEDIR . 'src/customer/controller/rp.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/verifyemail.html') {
     $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
     $P->cb_pagetype = 'content';
