@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__.'/../../src/shop/functions.admin.itemgroups.php';
+requireAdminAuth($C);
+
+require_once __DIR__ . '/../../src/shop/functions.admin.itemgroups.php';
 
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';

@@ -265,13 +265,13 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
     die();
 } elseif ($sPath == '/_admin/pageadmin.html') {
     requireAdminAuth($C);
-    require_once __DIR__.'/../src/worker.pageadmin.php';
+    require_once PATH_BASEDIR . 'src/worker.pageadmin.php';
 } elseif ($sPath == '/_admin/textcatadmin.html') {
     requireAdminAuth($C);
-    require_once __DIR__.'/../src/worker.textcatadmin.php';
+    require_once PATH_BASEDIR . 'src/worker.textcatadmin.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_admin/customeradmin.html') {
     requireAdminAuth($C);
-    require_once __DIR__.'/../src/customer/functions.admin.customer.php';
+    require_once PATH_BASEDIR . 'src/customer/functions.admin.customer.php';
     $aPData = handleCustomerAdmin($CUA, $twig, $DB, $C, $sLang);
     $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
     $P->cb_pagetype = 'content';
@@ -280,14 +280,11 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
     $P->oPayload->cl_html = $aPData["customeradmin"]["text"];
     $P->cb_customdata = $aPData;
 } elseif ($C["enable_module_shop"] && $sPath == '/_admin/itemadmin.html') {
-    requireAdminAuth($C);
-    require_once __DIR__.'/../src/shop/worker.itemadmin.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/itemadmin.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_admin/shopadmin.html') {
-    requireAdminAuth($C);
-    require_once __DIR__.'/../src/shop/worker.shopadmin.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/shopadmin.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_admin/itemgroupadmin.html') {
-    requireAdminAuth($C);
-    require_once __DIR__.'/../src/shop/worker.itemgroupadmin.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/itemgroupadmin.php';
 } elseif ($C["enable_module_customer"] && $sPath == '/_misc/login.html') {
     $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
     $P->cb_pagetype = 'content';
@@ -403,7 +400,7 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
         }
     }
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/myorders.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.myorders.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/myorders.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/itemsearch.html') {
     $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
     $P->cb_pagetype = 'itemoverview';
@@ -431,17 +428,17 @@ if ($sPath == '/_admin/index.html' || $sPath == '/_admin/' || $sPath == '/_admin
         }
     }
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/updateshippingcost.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.updateshippingcost.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/updateshippingcost.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/shoppingcart.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.shoppingcart.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/shoppingcart.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/update-cart.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.update-cart.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/update-cart.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/sofortueberweisung.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.sofortueberweisung.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/sofortueberweisung.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.paypal.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/paypal.php';
 } elseif ($C["enable_module_shop"] && $sPath == '/_misc/paypal_notify.html') {
-    require_once PATH_BASEDIR . 'src/shop/worker.paypal_notify.php';
+    require_once PATH_BASEDIR . 'src/shop/controller/paypal_notify.php';
 } else { // else: do the default routing
     $aPath = explode('/', $sPath);
     //HaaseIT\Tools::debug($aPath);

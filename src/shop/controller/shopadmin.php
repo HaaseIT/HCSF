@@ -1,7 +1,9 @@
 <?php
 
-require_once __DIR__.'/../../src/shop/functions.admin.shop.php';
-require_once __DIR__.'/../../src/shop/functions.shoppingcart.php';
+requireAdminAuth($C);
+
+require_once __DIR__ . '/../../src/shop/functions.admin.shop.php';
+require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
 
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
