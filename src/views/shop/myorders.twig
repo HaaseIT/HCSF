@@ -1,8 +1,21 @@
 <div class="defaultpadding">
 {{content}}
 
-{% if customdata is defined %}
-{% include 'shop/shoppingcarttable.twig' %}
-<a href="/_misc/myorders.html"><i class="fa fa-arrow-left"></i></a>
+{{ customdata.listmyorders is defined ? customdata.listmyorders : '' }}
+{{ customdata.ordernotfound is defined ? T("myorders_order_not_found") : '' }}
+
+{% if customdata.shoppingcart is defined %}
+    <h1>{{ T("myorders_headline_order") }} {{ customdata.orderdata.ordertimestamp }}</h1>
+    {{ customdata.orderdata.orderremarks|trim != '' ? '<p><strong>'~T('myorders_remarks')~'</strong><br>'~customdata.orderdata.orderremarks~'</p>' : '' }}
+    <p>
+        <strong>Zahlungsmethode:</strong> {{ customdata.orderdata.paymentmethod }}<br>
+        <strong>{{ T("myorders_paymentstatus") }}</strong> {{ customdata.orderdata.paymentcompleted }}<br>
+        <strong>{{ T("myorders_orderstatus") }}</strong> {{ customdata.orderdata.orderstatus }}<br>
+        {{ customdata.orderdata.shippingservice|trim != '' ? '<strong>'~T('myorders_shipping_service')~'</strong> '~customdata.orderdata.shippingservice~'<br>' : '' }}
+        {{ customdata.orderdata.trackingno|trim != '' ? '<strong>'~T('myorders_shipping_trackingno')~'</strong> '~customdata.orderdata.trackingno~'<br>' : '' }}
+    </p>
+
+    {% include 'shop/shoppingcarttable.twig' %}
+    <a href="/_misc/myorders.html"><i class="fa fa-arrow-left"></i></a>
 {% endif %}
 </div>

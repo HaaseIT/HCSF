@@ -38,20 +38,14 @@ if (!getUserData()) {
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $P->oPayload->cl_html = '<h1>' . \HaaseIT\Textcat::T("myorders_headline_order") . ' ' . date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]) . ':</h1><br>';
-            if (trim($aOrder["o_remarks"]) != '') {
-                $P->oPayload->cl_html .= '<strong>' . \HaaseIT\Textcat::T("myorders_remarks") . '</strong><br>' . $aOrder["o_remarks"] . '<br><br>';
-            }
-            $P->oPayload->cl_html .= '<strong>Zahlungsmethode:</strong> ' . \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]) . '<br>';
-            $P->oPayload->cl_html .= '<strong>' . \HaaseIT\Textcat::T("myorders_paymentstatus") . '</strong> ' . (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open")) . '<br>';
-            $P->oPayload->cl_html .= '<strong>' . \HaaseIT\Textcat::T("myorders_orderstatus") . '</strong> ' . showOrderStatusText($aOrder["o_ordercompleted"]) . '<br>';
-            if (trim($aOrder["o_shipping_service"]) != '') {
-                $P->oPayload->cl_html .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_service") . '</strong> ' . $aOrder["o_shipping_service"] . '<br>';
-            }
-            if (trim($aOrder["o_shipping_trackingno"]) != '') {
-                $P->oPayload->cl_html .= '<strong>' . \HaaseIT\Textcat::T("myorders_shipping_trackingno") . '</strong> ' . $aOrder["o_shipping_trackingno"] . '<br>';
-            }
-            $P->oPayload->cl_html .= '<br>';
+
+            $P->cb_customdata['orderdata']['ordertimestamp'] = date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
+            $P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
+            $P->cb_customdata['orderdata']['paymentmethod'] = \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
+            $P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open"));
+            $P->cb_customdata['orderdata']['orderstatus'] = showOrderStatusText($aOrder["o_ordercompleted"]);
+            $P->cb_customdata['orderdata']['shippingservice'] = $aOrder["o_shipping_service"];
+            $P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
             $sQ = "SELECT * FROM " . DB_ORDERTABLE_ITEMS . " WHERE oi_o_id = :id";
             $hResult = $DB->prepare($sQ);
@@ -87,7 +81,7 @@ if (!getUserData()) {
                 $aOrder["o_vatreduced"]
             );
         } else {
-            $P->oPayload->cl_html = \HaaseIT\Textcat::T("myorders_order_not_found");
+            $P->cb_customdata['ordernotfound'] = true;
         }
     } else {
         $COList = array(
@@ -108,10 +102,10 @@ if (!getUserData()) {
             ),
         );
 
-        $P->oPayload->cl_html = showMyOrders($COList, $twig, $DB);
+        $P->cb_customdata['listmyorders'] = showMyOrders($COList, $twig, $DB);
     }
 
     if (isset($aShoppingcart)) {
-        $P->cb_customdata = $aShoppingcart;
+        $P->cb_customdata['shoppingcart'] = $aShoppingcart['shoppingcart'];
     }
 }
