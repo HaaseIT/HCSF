@@ -29,12 +29,12 @@
     <hr>
     <form action="{{ requesturiarray.path }}" method="post" class="pure-form pure-form-aligned">
         {% if customdata.orderdata.o_authed == 'y' %}
-    Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
-{% else %}
-    Der Kunde war nicht angemeldet.<br>
-    Die AGBs wurden {{ customdata.orderdata.o_tos != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
-    Die Widerrufsbelehrung wurde {{ customdata.orderdata.o_cancellationdisclaimer != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
-{% endif %}
+            Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
+        {% else %}
+            Der Kunde war nicht angemeldet.<br>
+            Die AGBs wurden {{ customdata.orderdata.o_tos != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
+            Die Widerrufsbelehrung wurde {{ customdata.orderdata.o_cancellationdisclaimer != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
+        {% endif %}
 
         {% include 'customer/customerform-adrform.twig'
 %}<div class="pure-u-1 pure-u-md-2-5">
@@ -58,11 +58,11 @@
                 <input type="text" name="order_shipping_trackingno" value="{{ customdata.orderdata.o_shipping_trackingno }}" id="shadm_order_shipping_trackingno" class="pure-u-1"></div>
             <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shadm_submit" name="change">Bearbeiten</button>
         {% if customdata.orderdata.o_remarks|trim != '' %}
-    <div class="pure-u-1">
-        Bemerkungen des Kunden:<br>
-        <textarea readonly style="height: 150px;" class="pure-u-1">{{ customdata.orderdata.o_remarks }}</textarea>
-    </div>
-{% endif %}
+            <div class="pure-u-1">
+                Bemerkungen des Kunden:<br>
+                <textarea readonly style="height: 150px;" class="pure-u-1">{{ customdata.orderdata.o_remarks }}</textarea>
+            </div>
+        {% endif %}
         </fieldset>
     </form>
     </div>
@@ -75,16 +75,28 @@ customdata.orderdata.o_lastedit_timestamp != '' ? ', die letzte Bearbeitung erfo
     {{ customdata.orderdata.o_lastedit_user != '<br>Die letzte Bearbeitung erfolgte durch: '~customdata.orderdata.o_lastedit_user ? '' : '' }}
     <br><br>
     {% if customdata.orderdata.o_paymentmethod != '' %}
-    <strong>Die vom Kunden gewünschte Zahlungsmethode ist: {{ customdata.orderdata.o_paymentmethod }}</strong><br>
-    {% if customdata.orderdata.o_paymentmethod == 'paypal' %}
-        {% if customdata.orderdata.o_paymentcompleted == 'y' and customdata.orderdata.o_paypal_tx|trim != '' %}
-            <div style="color: green; font-weight: bold;">Laut PayPal ist die Zahlung bereits erfolgt, die Transaktions ID des Vorgangs ist: {{ customdata.orderdata.o_paypal_tx }}</div>
-        {% elseif customdata.orderdata.o_paymentcompleted == 'n' %}
-            <div style="color: red; font-weight: bold;">Laut PayPal ist die Zahlung noch nicht erfolgt.</div>
+        <strong>Die vom Kunden gewünschte Zahlungsmethode ist: {{ customdata.orderdata.o_paymentmethod }}</strong><br>
+        {% if customdata.orderdata.o_paymentmethod == 'paypal' %}
+            {% if customdata.orderdata.o_paymentcompleted == 'y' and customdata.orderdata.o_paypal_tx|trim != '' %}
+                <div style="color: green; font-weight: bold;">Laut PayPal ist die Zahlung bereits erfolgt, die Transaktions ID des Vorgangs ist: {{ customdata.orderdata.o_paypal_tx }}</div>
+            {% elseif customdata.orderdata.o_paymentcompleted == 'n' %}
+                <div style="color: red; font-weight: bold;">Laut PayPal ist die Zahlung noch nicht erfolgt.</div>
+            {% endif %}
         {% endif %}
+        <br>
     {% endif %}
-    <br>
-{% endif %}
     {{ customdata.orderdata.o_srv_hostname|trim != '' ? 'Die Bestellung wurde &uuml;ber die Domain: <strong>'~customdata.orderdata.o_srv_hostname~'</strong> aufgegeben.' : '' }}
 {% endif %}
+{{ customdata.ordernotfound is defined ? '<p>Die gewünschte Bestellung wurde nicht gefunden.</p>' : '' }}
+{{ customdata.nomatchingordersfound is defined ? '<p>Es wurden keine zu Ihren Suchkriterien passenden Bestell-Datensätze gefunden.</p>' : '' }}
+{% if customdata.listtable_orders is defined %}
+    {{ customdata.listtable_orders }}
+    {% if customdata.listtable_i > 0 %}
+        <br>{{ customdata.listtable_i }} Bestellung(en) angezeigt
+        {{ customdata.listtable_k != 0 ? ', davon '~customdata.listtable_k~' stornierte (diese werden bei den Wertberechnungen nicht ber&uuml;cksichtigt).' : '.' }}
+        <br>Gesamtnetto der angezeigten Bestellungen: {{ customdata.listtable_gesamtnetto|number_format(2, ',', '.') }} {{ currency }}
+        <br>Durchschnittlicher Nettobestellwert der angezeigten Bestellungen: {{ (customdata.listtable_gesamtnetto / customdata.listtable_j)|number_format(2, ',', '.') }} {{ currency }}
+    {% endif %}
+{% endif %}
+
 {{content}}

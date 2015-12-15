@@ -20,7 +20,6 @@
 
 function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
 {
-    $sH = '';
     if (!isset($_GET["action"])) {
         $bIgnoreStorno = false;
         $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
@@ -100,14 +99,14 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
                 $i++;
             }
             //HaaseIT\Tools::debug($aData);
-            $sH .= \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
-
-            if ($i > 1) {
-                $sH .= '<br>'.$i.' Bestellung(en) angezeigt'.(($k != 0) ? ', davon '.$k.' stornierte (diese werden bei den Wertberechnungen nicht ber&uuml;cksichtigt)' : '').'.';
-                $sH .= '<br>Gesamtnetto der angezeigten Bestellungen: '.number_format($fGesamtnetto, 2, ",", ".").' '.$C["waehrungssymbol"].'.';
-                $sH .= '<br>Durchschnittlicher Nettobestellwert der angezeigten Bestellungen: '.number_format(($fGesamtnetto / $j), 2, ",", ".").' '.$C["waehrungssymbol"];
-            }
-        } else $sH .= 'Es wurden keine zu Ihren Suchkriterien passenden Bestell-Datensätze gefunden.<br>';
+            $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
+            $aSData['listtable_i'] = $i;
+            $aSData['listtable_j'] = $j;
+            $aSData['listtable_k'] = $k;
+            $aSData['listtable_gesamtnetto'] = $fGesamtnetto;
+        } else {
+            $aSData['nomatchingordersfound'] = true;
+        }
     } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id";
@@ -183,11 +182,9 @@ function handleShopAdmin($CSA, $twig, $DB, $C, $sLang)
                 ),
                 $aSData);
         } else {
-            $sH .= 'Keine entsprechende Bestellung gefunden.';
+            $aSData['ordernotfound'] = true;
         }
     }
-
-    $aSData["html"] = $sH;
 
     return $aSData;
 }
