@@ -24,7 +24,7 @@ $P->cb_pagetype = 'contentnosubnav';
 if ($C["show_pricesonlytologgedin"] && !getUserData()) {
     $P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
 } else {
-    require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
+    require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
     $P->cb_customcontenttemplate = 'shop/shoppingcart';
     $P->oPayload->cl_html = '';

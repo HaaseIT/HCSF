@@ -2,15 +2,13 @@
 
 requireAdminAuth($C);
 
-require_once __DIR__ . '/../../src/shop/functions.admin.shop.php';
-require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
+require_once PATH_BASEDIR . 'src/shop/functions.admin.shop.php';
+require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
 $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
 $P->cb_pagetype = 'content';
 $P->cb_subnav = 'admin';
 $P->cb_customcontenttemplate = 'shop/shopadmin';
-
-$sH = '';
 
 if (isset($_POST["change"])) {
     $iID = filter_var(trim(\HaaseIT\Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
@@ -76,8 +74,3 @@ $CSA = array(
 $aShopadmin = handleShopAdmin($CSA, $twig, $DB, $C, $sLang);
 
 $P->cb_customdata = array_merge($aPData, $aShopadmin);
-
-$sH .= $aShopadmin["html"];
-
-$P->oPayload->cl_html = $sH;
-unset($sH);

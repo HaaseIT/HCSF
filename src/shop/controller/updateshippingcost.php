@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once __DIR__ . '/../../src/shop/functions.shoppingcart.php';
+require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
 mb_internal_encoding('UTF-8');
 header("Content-Type: text/html; charset=UTF-8");
