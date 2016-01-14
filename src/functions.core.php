@@ -57,7 +57,7 @@ function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImages
     //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
     $mail = new PHPMailer;
     $mail->CharSet = 'UTF-8';
-    $mail->isSendmail();
+    $mail->isMail();
     $mail->From = $C["email_sender"];
     $mail->FromName = $C["email_sendername"];
     $mail->addAddress($to);
