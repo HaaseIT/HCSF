@@ -21,6 +21,7 @@ db_password:    pwd
 db_name:        dbname
 
 blowfish_salt:  $2a$07$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx$
+glide_signkey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 admin_authrealm: HCSF
 # If no user is defined here, the whole admin area except adminhome will be disabled.
