@@ -29,6 +29,7 @@ class Router
             '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
             '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
             '/_misc/login.html' => 'Customer\\Login',
+            '/_misc/logout.html' => 'Customer\\Logout',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
