@@ -44,6 +44,7 @@ class Router
             '/_misc/update-cart.html' => 'Shop\\Updatecart',
             '/_misc/sofortueberweisung.html' => 'Shop\\Sofortueberweisung',
             '/_misc/paypal.html' => 'Shop\\Paypal',
+            '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
