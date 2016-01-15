@@ -31,6 +31,7 @@ class Router
             '/_misc/login.html' => 'Customer\\Login',
             '/_misc/logout.html' => 'Customer\\Logout',
             '/_misc/userhome.html' => 'Customer\\Userhome',
+            '/_misc/register.html' => 'Customer\\Register',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
