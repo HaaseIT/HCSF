@@ -40,6 +40,7 @@ class Router
             '/_misc/itemsearch.html' => 'Shop\\Itemsearch',
             '/_misc/checkedout.html' => 'Shop\\Checkedout',
             '/_misc/updateshippingcost.html' => 'Shop\\Updateshippingcost',
+            '/_misc/shoppingcart.html' => 'Shop\\Shoppingcart',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
