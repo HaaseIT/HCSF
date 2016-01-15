@@ -1,7 +1,12 @@
-{% if items.item is defined %}<div id="itemoverview">{%
+{% if items.item is defined %}<script src="//cdn.haase-it.com/lazysizes/1.1.0/lazysizes.min.js" async="async"></script><div id="itemoverview">{%
     for thisitem in items.item %}<div class="pure-u-1-3 pure-u-md-1-4">
     <div class="itemoverview-thumbnail">
-        <a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html"><img class="lazy pure-u-1" data-original="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}" alt=""></a>
+        <a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html"><img
+                    class="lazyload pure-u-1"
+                    data-sizes="auto"
+                    data-srcset="{{ ImgURL('/_img/items/'~thisitem.itm_img, 400) }} 400w, {{ ImgURL('/_img/items/'~thisitem.itm_img, 100) }} 100w, {{ ImgURL('/_img/items/'~thisitem.itm_img, 200) }} 200w, {{ ImgURL('/_img/items/'~thisitem.itm_img, 300) }} 300w"
+                    src="{{ ImgURL('/_img/items/'~thisitem.itm_img, 400) }}"
+                    alt=""></a>
         <div class="itemoverview-caption">
             <p style="float: left;"><a href="{{path.dirname}}/item/{{thisitem.itm_no}}.html">
                     {% if thisitem.itml_name_override|trim == '' %}

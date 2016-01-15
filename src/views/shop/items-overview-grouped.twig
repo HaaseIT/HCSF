@@ -1,3 +1,4 @@
+<script src="//cdn.haase-it.com/lazysizes/1.1.0/lazysizes.min.js" async="async"></script>
 <div id="itemoverview">
     {% for thisitem in items.item %}
         {% if thisitem.group is defined %}
@@ -7,7 +8,7 @@
                     {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_shorttext }}<br>
                     {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_details }}<br>
                 </div><div class="pure-u-1-12">
-                    <img class="lazy pure-u-1" data-original="{{ ImgURL('/_img/items/'~items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_img, 336) }}" alt="">
+                    <img class="lazyload pure-u-1" data-original="{{ ImgURL('/_img/items/'~items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_img, 336) }}" alt="">
                 </div>
             </div>
             {% for thisgroupitem in items.groups[thisitem.group] %}
@@ -70,7 +71,7 @@
                         <br class="clear">
                     </div>
                 </div><div class="pure-u-1-12">
-                    <img class="lazy pure-u-1" data-original="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}" alt="">
+                    <img class="lazyload pure-u-1" data-original="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}" alt="">
                 </div>
 
                 <div class="pure-u-1">----</div>
