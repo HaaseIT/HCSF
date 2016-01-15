@@ -27,6 +27,7 @@ class Router
             '/_admin/customeradmin.html' => 'Admin\\Customer\\Customeradmin',
             '/_admin/itemadmin.html' => 'Admin\\Shop\\Itemadmin',
             '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
+            '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
