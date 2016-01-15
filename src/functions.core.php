@@ -18,10 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function getHardcodedText($sKey) {
-
-}
-
 function getSignedImgURL($file, $w = 0, $h =0) {
     $urlBuilder = League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
 
