@@ -33,7 +33,7 @@ class Verifyemail extends Base
             $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " = :key AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
             //debug( $sQ );
             $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':key', $_GET["key"], PDO::PARAM_STR);
+            $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
             //debug( $iRows );
