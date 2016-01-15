@@ -1,15 +1,32 @@
 <?php
 
+/*
+    HCSF - A multilingual CMS and Shopsystem
+    Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
 class Customeradmin extends Base
 {
-    private $CUA;
-    
+
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
-        $this->CUA = [
+        $CUA = [
             ['title' => 'Nr.', 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             ['title' => 'Firma', 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             ['title' => 'Name', 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
@@ -25,13 +42,13 @@ class Customeradmin extends Base
                 'lgetvars' => ['action' => 'edit',],
             ],
         ];
-        $aPData = $this->handleCustomerAdmin($twig);
+        $aPData = $this->handleCustomerAdmin($CUA, $twig);
         $this->P->cb_customcontenttemplate = 'customer/customeradmin';
         $this->P->oPayload->cl_html = $aPData["customeradmin"]["text"];
         $this->P->cb_customdata = $aPData;
     }
 
-    private function handleCustomerAdmin($twig)
+    private function handleCustomerAdmin($CUA, $twig)
     {
         $sType = 'all';
         if (isset($_REQUEST["type"])) {
@@ -57,7 +74,7 @@ class Customeradmin extends Base
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
                 //HaaseIT\Tools::debug($aData);
-                $sH .= \HaaseIT\Tools::makeListtable($this->CUA, $aData, $twig);
+                $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
             } else {
                 $aInfo["nodatafound"] = true;
             }
