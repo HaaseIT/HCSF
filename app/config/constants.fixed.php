@@ -111,3 +111,5 @@ define("PATH_DOCROOT", PATH_BASEDIR.'web/');
 define("PATH_TEMPLATECACHE", PATH_BASEDIR.'cache/templates/');
 define("PATH_PURIFIERCACHE", PATH_BASEDIR.'cache/htmlpurifier/');
 define("PATH_GLIDECACHE", PATH_BASEDIR.'cache/glide/');
+
+define("GLIDE_SIGNATURE_KEY", $C['glide_signkey']);

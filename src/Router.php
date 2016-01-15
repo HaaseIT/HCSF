@@ -61,79 +61,100 @@ class Router
         } else {
             $aPath = explode('/', $sPath);
 
-            // /xxxx/item/0010.html
-            if ($C["enable_module_shop"]) {
-                $aTMP["parts_in_path"] = count($aPath);
-                // if the last dir in path is 'item' and the last part of the path is not empty
-                if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
+            if ($aPath[1] == $C['directory_images']) {
+                $glideserver = \League\Glide\ServerFactory::create([
+                    'source' => PATH_DOCROOT.$C['directory_images'].'/master',
+                    'cache' => PATH_GLIDECACHE,
+                    'max_image_size' => 2000*2000,
+                ]);
+                $glideserver->setBaseUrl('/'.$C['directory_images'].'/');
+                // Generate a URL
 
-                    // explode the filename by .
-                    $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
-                    //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
+                try {
+                    // Validate HTTP signature
+                    \League\Glide\Signatures\SignatureFactory::create(GLIDE_SIGNATURE_KEY)->validateRequest($sPath, $_GET);
+                    $glideserver->outputImage($sPath, $_GET);
+                    die();
 
-                    // if the filename ends in '.html', get the requested itemno
-                    if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
-                        // to allow dots in the filename, we have to iterate through all parts of the filename
-                        $aRoutingoverride["itemno"] = '';
-                        for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
-                            $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i].'.';
-                        }
-                        // remove the trailing dot
-                        $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
+                } catch (\League\Glide\Signatures\SignatureException $e) {
+                    $this->P = 404;
+                }
 
-                        //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
-                        $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+            } else {
+                // /xxxx/item/0010.html
+                if ($C["enable_module_shop"]) {
+                    $aTMP["parts_in_path"] = count($aPath);
+                    // if the last dir in path is 'item' and the last part of the path is not empty
+                    if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
 
-                        // rebuild the path string without the trailing '/item/itemno.html'
-                        $sPath = '';
-                        for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
-                            $sPath .= $aPath[$i] . '/';
+                        // explode the filename by .
+                        $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
+                        //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
+
+                        // if the filename ends in '.html', get the requested itemno
+                        if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
+                            // to allow dots in the filename, we have to iterate through all parts of the filename
+                            $aRoutingoverride["itemno"] = '';
+                            for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
+                                $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i].'.';
+                            }
+                            // remove the trailing dot
+                            $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
+
+                            //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
+                            $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+
+                            // rebuild the path string without the trailing '/item/itemno.html'
+                            $sPath = '';
+                            for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
+                                $sPath .= $aPath[$i] . '/';
+                            }
                         }
                     }
+                    //HaaseIT\Tools::debug($sPath);
+                    //HaaseIT\Tools::debug($aTMP);
+                    //HaaseIT\Tools::debug($aRoutingoverride);
+                    unset($aTMP);
                 }
-                //HaaseIT\Tools::debug($sPath);
-                //HaaseIT\Tools::debug($aTMP);
-                //HaaseIT\Tools::debug($aRoutingoverride);
-                unset($aTMP);
-            }
-
-            $this->P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
-
-            // go and look if the page can be loaded yet
-            if ($this->P->cb_id == NULL) {
-                /*
-                If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
-                If there is already a slash at the end, the last part of the path array will be empty.
-                 */
-                if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
-
-                if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
 
                 $this->P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
-            }
-            unset($aPath); // no longer needed
-            //die(var_dump($P));
 
-            if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
-                $this->P = 404;
-            } else { // if it is found, go on
-                // Support for shorturls
-                if ($this->P->cb_pagetype == 'shorturl') {
-                    header('Location: '.$this->P->cb_pageconfig, true, 302);
-                    exit();
+                // go and look if the page can be loaded yet
+                if ($this->P->cb_id == NULL) {
+                    /*
+                    If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
+                    If there is already a slash at the end, the last part of the path array will be empty.
+                     */
+                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+
+                    if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
+
+                    $this->P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
                 }
+                unset($aPath); // no longer needed
+                //die(var_dump($this->P));
 
-                if (isset($this->P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
-                    $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
-                    $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
+                if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
+                    $this->P = 404;
+                } else { // if it is found, go on
+                    // Support for shorturls
+                    if ($this->P->cb_pagetype == 'shorturl') {
+                        header('Location: '.$this->P->cb_pageconfig, true, 302);
+                        exit();
+                    }
+
+                    if (isset($this->P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
+                        $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
+                        $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
+                    }
                 }
             }
 
             if (!is_object($this->P) && $this->P == 404) {
-                $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
-                $P->cb_pagetype = 'error';
+                $this->P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+                $this->P->cb_pagetype = 'error';
 
-                $P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
+                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (

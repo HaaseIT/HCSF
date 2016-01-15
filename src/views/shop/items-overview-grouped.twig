@@ -7,7 +7,7 @@
                     {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_shorttext }}<br>
                     {{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmgt_details }}<br>
                 </div><div class="pure-u-1-12">
-                    <img class="lazy pure-u-1" data-original="/_img/groups/336/{{ items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_img }}" alt="">
+                    <img class="lazy pure-u-1" data-original="{{ ImgURL('/_img/items/'~items.groups[thisitem.group]["ITEMGROUP-DATA"].itmg_img, 336) }}" alt="">
                 </div>
             </div>
             {% for thisgroupitem in items.groups[thisitem.group] %}
@@ -70,7 +70,7 @@
                         <br class="clear">
                     </div>
                 </div><div class="pure-u-1-12">
-                    <img class="lazy pure-u-1" data-original="/_img/items/336/{{thisitem.itm_img}}" alt="">
+                    <img class="lazy pure-u-1" data-original="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}" alt="">
                 </div>
 
                 <div class="pure-u-1">----</div>

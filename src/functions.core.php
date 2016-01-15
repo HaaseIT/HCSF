@@ -22,6 +22,17 @@ function getHardcodedText($sKey) {
 
 }
 
+function getSignedImgURL($file, $w = 0, $h =0) {
+    $urlBuilder = League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
+
+    if ($w == 0 && $h == 0) return false;
+    if ($w != 0) $param['w'] = $w;
+    if ($h != 0) $param['h'] = $h;
+    if ($w != 0 && $h != 0) $param['fit'] = 'stretch';
+
+    return $urlBuilder->getUrl($file, $param);
+}
+
 function requireAdminAuth($C, $bAdminhome = false) {
     if (empty ($C['admin_users']) || (!count($C['admin_users']) && $bAdminhome)) {
         return true;

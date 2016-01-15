@@ -50,27 +50,13 @@ if (substr($parsedrequesturi, 1, 1) != '/') {
 $request = $request->withRequestTarget($parsedrequesturi);
 
 use Symfony\Component\Yaml\Yaml;
-use League\Glide\Signatures\SignatureFactory;
-use League\Glide\Signatures\SignatureException;
-
-function imgUR($file, $w = 0, $h =0) {
-    global $C;
-    $urlBuilder = League\Glide\Urls\UrlBuilderFactory::create('', $C['glide_signkey']);
-
-    if ($w == 0 && $h == 0) return false;
-    if ($w != 0) $param['w'] = $w;
-    if ($h != 0) $param['h'] = $h;
-    if ($w != 0 && $h != 0) $param['fit'] = 'stretch';
-
-    //print_r($param);
-
-    return $urlBuilder->getUrl($file, $param);
-}
 
 // Load core config
-require_once __DIR__.'/config/constants.fixed.php';
 $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
+$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
+$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+require_once __DIR__.'/config/constants.fixed.php';
 
 if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
@@ -105,8 +91,6 @@ if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKI
 
 if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 
-$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
 define("PATH_LOGS", __DIR__.'/../hcsflogs/');
 if ($C["enable_module_shop"]) {
@@ -116,7 +100,6 @@ if ($C["enable_module_shop"]) {
         $C["vat"] = array("full" => 0, "reduced" => 0);
     }
 }
-
 
 require_once PATH_BASEDIR.'src/functions.core.php';
 
@@ -142,6 +125,7 @@ if (isset($C["debug"]) && $C["debug"]) {
 $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
 $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
 $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
+$twig->addFunction('ImgURL', new Twig_Function_Function('getSignedImgURL'));
 
 // ----------------------------------------------------------------------------
 // Begin language detection
@@ -234,37 +218,3 @@ $C["navstruct"]["admin"]["PHPInfo"] = '/_admin/phpinfo.html';
 
 $router = new \HaaseIT\HCSF\Router($C, $DB, $sLang, $request, $twig, $oItem);
 $P = $router->getPage();
-
-if (1 == 3) {
-    //$aPath = explode('/', $sPath);
-    //HaaseIT\Tools::debug($aPath);
-
-    if (1 == 2 && $aPath[1] == '_img') {
-        $glideserver = League\Glide\ServerFactory::create([
-            'source' => PATH_DOCROOT.$C['directory_images'].'/master',
-            'cache' => PATH_GLIDECACHE,
-            'max_image_size' => 2000*2000,
-        ]);
-        $glideserver->setBaseUrl('/'.$C['directory_images'].'/');
-        // Generate a URL
-
-        try {
-            // Validate HTTP signature
-            SignatureFactory::create($C['glide_signkey'])->validateRequest($sPath, $_GET);
-            $glideserver->outputImage($sPath, $_GET);
-            die();
-
-        } catch (SignatureException $e) {
-            $url = imgUR('/_img/test2.jpg', 100, 500);
-
-            $P = new \HaaseIT\HCSF\CorePage($C, $sLang);
-            $P->cb_pagetype = 'error';
-
-            $P->oPayload->cl_html = '<a href="'.$url.'">Klick</a>';
-            header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
-        }
-
-    }
-
-}
-
