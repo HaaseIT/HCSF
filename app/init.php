@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 ini_set('xdebug.overload_var_dump', 0);
 ini_set('html_errors', 0);
 error_reporting(E_ALL);
@@ -50,8 +50,6 @@ if (substr($parsedrequesturi, 1, 1) != '/') {
 $request = $request->withRequestTarget($parsedrequesturi);
 
 use Symfony\Component\Yaml\Yaml;
-
-// Load core config
 $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
 if (is_file(__DIR__.'/config/config.core.yml')) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
@@ -195,7 +193,7 @@ if ($C["enable_module_customer"]) {
     require_once __DIR__.'/../src/customer/functions.customer.php';
 }
 
-$C["navstruct"]["admin"]["Admin Home"] = '/_admin/index.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
 
 if ($C["enable_module_shop"]) {
     require_once __DIR__ . '/../src/shop/Items.php';
@@ -203,23 +201,23 @@ if ($C["enable_module_shop"]) {
 
     $oItem = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
 
-    $C["navstruct"]["admin"]["Bestellungen"] = '/_admin/shopadmin.html';
-    $C["navstruct"]["admin"]["Artikel"] = '/_admin/itemadmin.html';
-    $C["navstruct"]["admin"]["Artikelgruppen"] = '/_admin/itemgroupadmin.html';
+    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
+    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
+    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
 } else {
     $oItem = '';
 }
 
 if ($C["enable_module_customer"]) {
     require_once __DIR__.'/../src/customer/functions.customer.php';
-    $C["navstruct"]["admin"]["Kunden"] = '/_admin/customeradmin.html';
+    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
 }
 
-$C["navstruct"]["admin"]["Seiten"] = '/_admin/pageadmin.html';
-$C["navstruct"]["admin"]["Textkataloge"] = '/_admin/textcatadmin.html';
-$C["navstruct"]["admin"]["Templatecache leeren"] = '/_admin/cleartemplatecache.html';
-//$C["navstruct"]["admin"]["Bildercache leeren"] = '/_admin/clearimagecache.html';
-$C["navstruct"]["admin"]["PHPInfo"] = '/_admin/phpinfo.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
+//$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
 
 // ----------------------------------------------------------------------------
 // Begin routing

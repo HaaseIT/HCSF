@@ -1,56 +1,58 @@
-<h1>Welcome to the administration area</h1>
-<h3>Quick check of required PHP Extensions:</h3>
+<h1>{{ HT('adminhome_title') }}</h1>
+<p>{{ HT('adminhome_teaser') }}</p>
+<h3>{{ HT('adminhome_phpextensions') }}</h3>
 
-<p>Filter is: {{ customdata.filter_enabled ? '<span style="color:green">enabled' :  '<span style="color:red">disabled' }}</span></p>
+<p>{{ HT('adminhome_phpextensions_filter') }} {{ customdata.filter_enabled ? '<span style="color:green">'~HT('adminhome_enabled') :  '<span style="color:red">'~HT('adminhome_disabled') }}</span>{{ HT('adminhome_fullstop') }}</p>
 
-<h3>Quick check of required file/directory permissions:</h3>
+<h3>{{ HT('adminhome_directories') }}</h3>
 
-<p>Template cache {{ customdata.path_templatecache }} exists:
+<p>{{ HT('adminhome_templatecache') }} {{ customdata.path_templatecache }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_templatecache_exists %}
-        <span style="color:green">YES</span>, and it is
-        {{ customdata.path_templatecache_writable ? '<span style="color:green">' : '<span style="color:red">NOT ' }}writable</span>
+        <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
+        {{ customdata.path_templatecache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
     {% else %}
-        <span style="color:red">NO!</span>
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
     {% endif %}
 </p>
 
-<p>HTMLPurifier cache {{ customdata.path_purifiercache }} exists:
+<p>{{ HT('adminhome_htmlpurifier') }} {{ customdata.path_purifiercache }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_purifiercache_exists %}
-        <span style="color:green">YES</span>, and it is
-        {{ customdata.path_purifiercache_writable ? '<span style="color:green">' : '<span style="color:red">NOT ' }}writable</span>
+        <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
+        {{ customdata.path_purifiercache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
     {% else %}
-        <span style="color:red">NO!</span>
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
     {% endif %}
 </p>
 
 {% if customdata.enable_module_shop %}
-<p>Log Directory {{ customdata.path_logs }} exists:
+<p>{{ HT('adminhome_log') }} {{ customdata.path_logs }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_logs_exists %}
-    <span style="color:green">YES</span>, and it is
-    {{ customdata.path_logs_writable ? '<span style="color:green">' : '<span style="color:red">NOT ' }}writable</span>.
+    <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
+    {{ customdata.path_logs_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
     {% else %}
-        <span style="color:red">NO!</span>
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
     {% endif %}
 </p>
 {% endif %}
 
 {% if customdata.check_mod_rewrite %}
-    <p>The Apache module mod_rewrite is {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">NOT ' }}available</span>.</p>
+    <h3>{{ HT('adminhome_apache') }}</h3>
+    <p>{{ HT('adminhome_apache_modrewrite') }} {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_enabled') }}</span>{{ HT('adminhome_fullstop') }}</p>
 {% endif %}
 
 <hr>
 <form action="{{ requesturi }}" method="POST" class="pure-form">
     <fieldset>
-        <legend>String encryption tool for admin passwords (set in config.scrts.yml)</legend>
-    <label for="string">String to encrypt:</label><br>
+        <legend>{{ HT('adminhome_encryptiontool') }}</legend>
+    <label for="string">{{ HT('adminhome_encryptiontool_label') }}</label><br>
     <input type="text" id="string" name="string" class="pure-u-1-2" value="{{ gFF("string") }}">
-        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Submit</button>
+        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">{{ HT('adminhome_encryptiontool_submit') }}</button>
     </fieldset>
 </form>
 
 {% if customdata.encrypted_string %}
 <p>
-    The encrypted form of your submitted string <em>{{ gFF("string") }}</em> is:<br>
+    {{ HT('adminhome_encryptiontool_result_1') }} <em>{{ gFF("string") }}</em> {{ HT('adminhome_encryptiontool_result_2') }}<br>
     <form class="pure-form"><input type="text" readonly value="{{ customdata.encrypted_string }}" class="pure-u-1-2"></form>
 </p>
 {% endif %}

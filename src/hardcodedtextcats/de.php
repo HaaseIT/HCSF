@@ -1,6 +1,16 @@
 <?php
-
 $HT = [
+    'admin_nav_home' => 'Admin Home',
+    'admin_nav_orders' => 'Bestellungen',
+    'admin_nav_items' => 'Artikel',
+    'admin_nav_itemgroups' => 'Artikelgruppen',
+    'admin_nav_customers' => 'Kunden',
+    'admin_nav_pages' => 'Seiten',
+    'admin_nav_textcats' => 'Textkataloge',
+    'admin_nav_cleartemplatecache' => 'Templatecache leeren',
+    'admin_nav_clearimagecache' => 'Bildercache leeren',
+    'admin_nav_phpinfo' => 'PHPInfo',
+
     'itemadmin_search_title' => 'Artikelsuche',
     'itemadmin_search_searchstring' => 'Suche nach:',
     'itemadmin_search_searchfield' => 'Suche in:',
@@ -92,4 +102,32 @@ $HT = [
     'pageadmin_edit_deleteconfirm' => 'Ich möchte diese Seite in allen Sprachen löschen',
     'pageadmin_edit_deletesubmit' => 'Löschen',
     'pageadmin_deleted' => 'Die Seite wurde gelöscht.',
+
+    'adminhome_enabled' => 'aktiviert',
+    'adminhome_disabled' => 'deaktiviert',
+    'adminhome_not' => 'NICHT',
+    'adminhome_yes' => 'JA',
+    'adminhome_no' => 'NEIN',
+    'adminhome_writable' => 'erlaubt',
+    'adminhome_fullstop' => '.',
+
+    'adminhome_title' => 'Willkommen im Administrationsbereich',
+    'adminhome_teaser' => 'Auf dieser Seite erhalten Sie eine kurze Übersicht über die Erfüllung der Systemvorraussetzungen zum Betrieb dieses Systems.',
+    'adminhome_phpextensions' => 'PHP Extensions:',
+    'adminhome_phpextensions_filter' => 'Filter ist:',
+    'adminhome_directories' => 'Ordnerrechte:',
+    'adminhome_templatecache' => 'Der Templatecache-Ordner',
+    'adminhome_htmlpurifier' => 'Der HTMLPurifiercache-Ordner',
+    'adminhome_log' => 'Der Log-Ordner',
+    'adminhome_directory_2' => 'existiert:',
+    'adminhome_directory_3' => ', und das Schreiben in den Ordner ist',
+    'adminhome_apache' => 'Apache Webserver',
+    'adminhome_apache_modrewrite' => 'Das Apache-Modul mod_rewrite ist',
+    'adminhome_encryptiontool' => 'Verschlüsselungstool für Admin Passwörter (diese müssen in der config.scrts.yml gesetzt werden)',
+    'adminhome_encryptiontool_label' => 'Das zu verschlüsselnde Passwort:',
+    'adminhome_encryptiontool_submit' => 'Absenden',
+    'adminhome_encryptiontool_result_1' => 'Das verschlüsselte Wert für',
+    'adminhome_encryptiontool_result_2' => 'ist:',
+    'adminhome_' => '',
 ];
+
