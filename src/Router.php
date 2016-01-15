@@ -35,6 +35,7 @@ class Router
             '/_misc/forgotpassword.html' => 'Customer\\Forgotpassword',
             '/_misc/rp.html' => 'Customer\\Resetpassword',
             '/_misc/verifyemail.html' => 'Customer\\Verifyemail',
+            '/_misc/resendverificationmail.html' => 'Customer\\Resendverificationmail',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
