@@ -52,7 +52,8 @@ $request = $request->withRequestTarget($parsedrequesturi);
 use Symfony\Component\Yaml\Yaml;
 
 // Load core config
-$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml'));
+$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
+if (is_file(__DIR__.'/config/config.core.yml')) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
 if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
@@ -91,11 +92,19 @@ if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKI
 
 if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
 
-if ($C["enable_module_customer"]) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
+if ($C["enable_module_customer"]) {
+    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.dist.yml')));
+    if (is_file(__DIR__.'/config/config.customer.yml')) {
+        $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
+    }
+}
 define("PATH_LOGS", __DIR__.'/../hcsflogs/');
 if ($C["enable_module_shop"]) {
     define("FILE_PAYPALLOG", 'ipnlog.txt');
-    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
+    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.dist.yml')));
+    if (is_file(__DIR__.'/config/config.shop.yml')) {
+        $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
+    }
     if (isset($C["vat_disable"]) && $C["vat_disable"]) {
         $C["vat"] = array("full" => 0, "reduced" => 0);
     }
