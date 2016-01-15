@@ -41,6 +41,7 @@ class Router
             '/_misc/checkedout.html' => 'Shop\\Checkedout',
             '/_misc/updateshippingcost.html' => 'Shop\\Updateshippingcost',
             '/_misc/shoppingcart.html' => 'Shop\\Shoppingcart',
+            '/_misc/update-cart.html' => 'Shop\\Updatecart',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
