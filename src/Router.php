@@ -13,7 +13,7 @@ class Router
 {
     private $P;
 
-    public function __construct($C, $DB, $sLang, $request, $twig)
+    public function __construct($C, $DB, $sLang, $request, $twig, $oItem)
     {
         $map = [
             '/_admin/index.html' => 'Admin\\Index',
@@ -28,6 +28,7 @@ class Router
             '/_admin/itemadmin.html' => 'Admin\\Shop\\Itemadmin',
             '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
             '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
+            '/_misc/login.html' => 'Customer\\Login',
         ];
         $this->P = 404;
         $aURL = parse_url($request->getRequestTarget());
@@ -37,10 +38,10 @@ class Router
             $class = '\\HaaseIT\\HCSF\\Controller\\'.$map[$sPath];
 
             try {
-                $controller = new $class($C, $DB, $sLang, $twig);
+                $controller = new $class($C, $DB, $sLang, $twig, $oItem);
                 $this->P = $controller->getPage();
             } catch (\Exception $e) {
-                $this->P = $e;
+                $this->P = $e->getMessage();
             }
 
         }
