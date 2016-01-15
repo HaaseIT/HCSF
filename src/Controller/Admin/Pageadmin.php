@@ -36,7 +36,7 @@ class Pageadmin extends Base
                 header('Location: /_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
                 die();
             } else {
-                die('Could not insert language data.');
+                die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
             }
         }
 
@@ -49,7 +49,7 @@ class Pageadmin extends Base
                 if ($Ptodelete->cb_id != NULL) {
                     $Ptodelete->remove();
                 } else {
-                    die('Page to delete not found error.');
+                    die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
                 }
                 $this->P->cb_customdata["deleted"] = true;
             } else { // edit or update page
@@ -92,7 +92,7 @@ class Pageadmin extends Base
                     $this->P->cb_customdata["page"] = $Ptoedit;
                     $this->P->cb_customdata["admin_page_types"] = $C["admin_page_types"];
                     $this->P->cb_customdata["admin_page_groups"] = $C["admin_page_groups"];
-                    $aOptions = array('');
+                    $aOptions = [''];
                     foreach ($C["navstruct"] as $sKey => $aValue) {
                         if ($sKey == 'admin') {
                             continue;
@@ -102,7 +102,7 @@ class Pageadmin extends Base
                     $this->P->cb_customdata["subnavarea_options"] = $aOptions;
                     unset($aOptions);
                 } else {
-                    die('Page selected not found error.');
+                    die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_pagenotfound'));
                 }
             }
         } elseif ($_GET["action"] == 'addpage') {
@@ -121,7 +121,7 @@ class Pageadmin extends Base
                             header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                             die();
                         } else {
-                            die('Could not insert error.');
+                            die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
                         }
                     } else {
                         $aErr["keyalreadyinuse"] = true;
@@ -171,6 +171,5 @@ class Pageadmin extends Base
 
         return $aSData;
     }
-
 
 }

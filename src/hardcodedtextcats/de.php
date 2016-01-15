@@ -1,5 +1,8 @@
 <?php
 $HT = [
+    'fullstop' => '.',
+    'changescommitted' => 'Änderungen gespeichert:',
+
     'admin_nav_home' => 'Admin Home',
     'admin_nav_orders' => 'Bestellungen',
     'admin_nav_items' => 'Artikel',
@@ -17,7 +20,6 @@ $HT = [
     'itemadmin_search_searchorder' => 'Sortiere nach:',
     'itemadmin_search_submit' => 'Suchen',
 
-    'itemadmin_msg_updated' => 'Der Artikel wurde aktualisiert',
     'itemadmin_msg_nomatches' => 'Die Artikelsuche hat keine Ergebnisse geliefert.',
     'itemadmin_msg_displaying_1' => 'Zeige',
     'itemadmin_msg_displaying_2' => 'Artikel.',
@@ -63,6 +65,13 @@ $HT = [
     'itemadmin_add_submit' => 'Artikel anlegen',
     'itemadmin_add_link' => '[Artikel hinzufügen]',
 
+    'itemadmin_search_itemno' => 'Artikelnummer',
+    'itemadmin_search_itemname' => 'Artikelname',
+    'itemadmin_search_itemindex' => 'Artikelindex',
+
+    'itemadmin_list_itemno' => 'Art. Nr.',
+    'itemadmin_list_name' => 'Name',
+    'itemadmin_list_edit' => 'bearb.',
 
     'pageadmin_choose_pagegroup' => 'Page group:',
     'pageadmin_choose_page' => 'Please choose page to edit:',
@@ -77,7 +86,6 @@ $HT = [
     'pageadmin_add_error_keyalreadyinuse' => 'Dieser Seitenschlüssel ist bereits vergeben.',
 
     'pageadmin_edit_currentpage' => 'Aktuelle Seite:',
-    'pageadmin_edit_changescommitted' => 'Änderungen gespeichert:',
     'pageadmin_edit_languagespecific' => 'Sprachspezifisch',
     'pageadmin_edit_pagecontent' => 'Seiteninhalt',
     'pageadmin_edit_pagecontent_tooltip' => 'HTML Quelltext, unsichere Tags werden herausgefiltert.',
@@ -103,13 +111,17 @@ $HT = [
     'pageadmin_edit_deletesubmit' => 'Löschen',
     'pageadmin_deleted' => 'Die Seite wurde gelöscht.',
 
+    'pageadmin_exception_couldnotinsertlang' => 'Der Sprachdatensatz konnte nicht angelegt werden.',
+    'pageadmin_exception_pagetodeletenotfound' => 'Die zu löschende Seite konnte nicht gefunden werden.',
+    'pageadmin_exception_pagenotfound' => 'Die gewünschte Seite konnte nicht gefunden werden.',
+    'pageadmin_exception_couldnotinsertpage' => 'Die gewünschte Seite konnte nicht angelegt werden.',
+
     'adminhome_enabled' => 'aktiviert',
     'adminhome_disabled' => 'deaktiviert',
     'adminhome_not' => 'NICHT',
     'adminhome_yes' => 'JA',
     'adminhome_no' => 'NEIN',
     'adminhome_writable' => 'erlaubt',
-    'adminhome_fullstop' => '.',
 
     'adminhome_title' => 'Willkommen im Administrationsbereich',
     'adminhome_teaser' => 'Auf dieser Seite erhalten Sie eine kurze Übersicht über die Erfüllung der Systemvorraussetzungen zum Betrieb dieses Systems.',
@@ -128,6 +140,36 @@ $HT = [
     'adminhome_encryptiontool_submit' => 'Absenden',
     'adminhome_encryptiontool_result_1' => 'Das verschlüsselte Wert für',
     'adminhome_encryptiontool_result_2' => 'ist:',
-    'adminhome_' => '',
+
+    'tool_makelissttable_no_config' => 'makeListtable() -> Das Konfigurationsarray ist leer (das erste Argument des Funktionsaufrufs).',
+
+    'textcatadmin_edit_legend' => 'Text bearbeiten',
+    'textcatadmin_edit_textkey' => 'Textschlüssel',
+    'textcatadmin_edit_language' => 'Sprache',
+    'textcatadmin_edit_text' => 'Text',
+    'textcatadmin_edit_submit' => 'Speichern',
+
+    'textcatadmin_delete_legend' => 'Text löschen',
+    'textcatadmin_delete_confirm' => 'Ich möchte diesen Text in allen Sprachen löschen.',
+    'textcatadmin_delete_submit' => 'Löschen',
+    'textcatadmin_delete_done' => 'Der Text wurde gelöscht.',
+
+    'textcatadmin_error_keytooshort' => 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.',
+    'textcatadmin_error_keytoolong' => 'Der Textschlüssel darf aus höchstens 64 Zeichen bestehen.',
+    'textcatadmin_error_keyalreadyexists' => 'Dieser Textschlüssel ist bereits angelegt.',
+    'textcatadmin_error_invalidcharacter' => 'Dieser Schlüssel enthält ungültige Zeichen, bitte benutzen Sie nur Buchstaben, Zahlen und den Unterstrich ( _ ).',
+
+    'textcatadmin_add_done_1' => 'Der Schlüssel',
+    'textcatadmin_add_done_2' => 'wurde hinzugefügt.',
+    'textcatadmin_add_done_clickheretoedit' => 'Klicken Sie hier um ihn zu bearbeiten',
+
+    'textcatadmin_add_label' => 'Neuen Textschlüssel hinzufügen:',
+    'textcatadmin_add_placeholder' => 'Textschlüssel',
+    'textcatadmin_add_submit' => 'Anlegen',
+
+    'textcatadmin_list_add' => 'Neuen Textschlüssel anlegen',
+    'textcatadmin_list_title_key' => 'Textschlüssel',
+    'textcatadmin_list_title_text' => 'Text',
+    'textcatadmin_list_title_edit' => 'bearb.',
 ];
 

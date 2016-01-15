@@ -34,10 +34,10 @@ class Textcatadmin extends Base
             //HaaseIT\Tools::debug($aData);
 
             $aListSetting = array(
-                array('title' => 'TC Key', 'key' => 'tc_key', 'width' => '20%', 'linked' => false,),
-                array('title' => 'TC Text', 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,),
+                array('title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,),
+                array('title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,),
                 array(
-                    'title' => 'Edit',
+                    'title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_edit'),
                     'key' => 'tc_id',
                     'width' => 35,
                     'linked' => true,

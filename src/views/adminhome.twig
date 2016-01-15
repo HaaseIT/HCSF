@@ -2,25 +2,25 @@
 <p>{{ HT('adminhome_teaser') }}</p>
 <h3>{{ HT('adminhome_phpextensions') }}</h3>
 
-<p>{{ HT('adminhome_phpextensions_filter') }} {{ customdata.filter_enabled ? '<span style="color:green">'~HT('adminhome_enabled') :  '<span style="color:red">'~HT('adminhome_disabled') }}</span>{{ HT('adminhome_fullstop') }}</p>
+<p>{{ HT('adminhome_phpextensions_filter') }} {{ customdata.filter_enabled ? '<span style="color:green">'~HT('adminhome_enabled') :  '<span style="color:red">'~HT('adminhome_disabled') }}</span>{{ HT('fullstop') }}</p>
 
 <h3>{{ HT('adminhome_directories') }}</h3>
 
 <p>{{ HT('adminhome_templatecache') }} {{ customdata.path_templatecache }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_templatecache_exists %}
         <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
-        {{ customdata.path_templatecache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
+        {{ customdata.path_templatecache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('fullstop') }}
     {% else %}
-        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('fullstop') }}
     {% endif %}
 </p>
 
 <p>{{ HT('adminhome_htmlpurifier') }} {{ customdata.path_purifiercache }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_purifiercache_exists %}
         <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
-        {{ customdata.path_purifiercache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
+        {{ customdata.path_purifiercache_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('fullstop') }}
     {% else %}
-        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('fullstop') }}
     {% endif %}
 </p>
 
@@ -28,16 +28,16 @@
 <p>{{ HT('adminhome_log') }} {{ customdata.path_logs }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_logs_exists %}
     <span style="color:green">{{ HT('adminhome_yes') }}</span>{{ HT('adminhome_directory_3') }}
-    {{ customdata.path_logs_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('adminhome_fullstop') }}
+    {{ customdata.path_logs_writable ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_writable') }}</span>{{ HT('fullstop') }}
     {% else %}
-        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('adminhome_fullstop') }}
+        <span style="color:red">{{ HT('adminhome_no') }}</span>{{ HT('fullstop') }}
     {% endif %}
 </p>
 {% endif %}
 
 {% if customdata.check_mod_rewrite %}
     <h3>{{ HT('adminhome_apache') }}</h3>
-    <p>{{ HT('adminhome_apache_modrewrite') }} {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_enabled') }}</span>{{ HT('adminhome_fullstop') }}</p>
+    <p>{{ HT('adminhome_apache_modrewrite') }} {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_enabled') }}</span>{{ HT('fullstop') }}</p>
 {% endif %}
 
 <hr>

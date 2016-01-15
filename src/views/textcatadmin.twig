@@ -1,53 +1,53 @@
 {% if customdata.updated %}
-    Der Wert wurde aktualisiert ({{ macro.showClienttime() }}).
+    {{ HT('changescommitted') }} ({{ macro.showClienttime() }}){{ HT('fullstop') }}
 {% endif %}
 {% if customdata.edit %}
     <form action="/_admin/textcatadmin.html?action=edit&amp;id={{ customdata.editform.id }}" method="post" name="edittextcat" class="pure-form pure-form-stacked">
         <input type="hidden" name="edit" value="do">
         <input type="hidden" name="lid" value="{{ customdata.editform.lid }}">
         <fieldset>
-        <legend>Text bearbeiten</legend>
-        <div class="pure-u-6-24"><label for="textcatadmin-textkey">Textschlüssel</label>
+        <legend>{{ HT('textcatadmin_edit_legend') }}</legend>
+        <div class="pure-u-6-24"><label for="textcatadmin-textkey">{{ HT('textcatadmin_edit_textkey') }}</label>
         <input type="text" name="key" value="{{ customdata.editform.key }}" readonly class="formfieldwithpaddingright" id="textcatadmin-textkey"></div><div
-        class="pure-u-2-24"><label for="textcatadmin-lang">Sprache</label>
+        class="pure-u-2-24"><label for="textcatadmin-lang">{{ HT('textcatadmin_edit_language') }}</label>
         <input type="text" name="lang" value="{{ customdata.editform.lang }}" readonly class="formfieldwithoutpadding" id="textcatadmin-lang"></div>
 
-        <div class="pure-u-1"><label for="textcatadmin-text">Text</label>
+        <div class="pure-u-1"><label for="textcatadmin-text">{{ HT('textcatadmin_edit_text') }}</label>
         <textarea rows="10" name="text" class="formfieldwithoutpadding" id="textcatadmin-text">{{ customdata.editform.text }}</textarea></div>
 
-        <div class="pure-u-1"><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">Submit</button></div>
+        <div class="pure-u-1"><button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('textcatadmin_edit_submit') }}</button></div>
         </fieldset>
     </form>
     <p>
     <form action="/_admin/textcatadmin.html?action=delete&amp;id={{ customdata.editform.id }}" method="post" name="deletetextcat" class="pure-form pure-form-stacked">
     <fieldset>
-    <legend>Text löschen</legend>
+    <legend>{{ HT('textcatadmin_delete_legend') }}</legend>
         <label for="textcat-delete-confirm" class="pure-checkbox">
-        <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> Ich möchte diesen Text in allen Sprachen löschen</label>
-        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">Löschen</button>
+        <input type="checkbox" name="delete" value="do" id="textcat-delete-confirm"> {{ HT('textcatadmin_delete_confirm') }}</label>
+        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">{{ HT('textcatadmin_delete_submit') }}</button>
     </fieldset>
     </form>
     </p>
 {% elseif customdata.deleted %}
-    Der Text wurde gelöscht.
+    {{ HT('textcatadmin_delete_done') }}
 {% elseif customdata.add %}
-    {{ customdata.err.keytooshort ? 'Der Textschlüssel muß aus mindestens 3 Zeichen bestehen.<br>' : '' }}
-    {{ customdata.err.keytoolong ? 'Der Textschlüssel darf aus höchstens 64 Zeichen bestehen.<br>' : '' }}
-    {{ customdata.err.keyalreadyexists ? 'Dieser Textschlüssel ist bereits angelegt.<br>' : '' }}
-    {{ customdata.err.invalidcharacter ? 'Dieser Schlüssel enthält ungültige Zeichen, bitte benutzen Sie nur Buchstaben, Zahlen und den Unterstrich ( _ ).<br>' : '' }}
+    {{ customdata.err.keytooshort ? HT('textcatadmin_error_keytooshort')~'<br>' : '' }}
+    {{ customdata.err.keytoolong ? HT('textcatadmin_error_keytoolong')~'<br>' : '' }}
+    {{ customdata.err.keyalreadyexists ? HT('textcatadmin_error_keyalreadyexists')~'<br>' : '' }}
+    {{ customdata.err.invalidcharacter ? HT('textcatadmin_error_invalidcharacter')~'<br>' : '' }}
     {% if customdata.addform.key is defined %}
-        Der Schlüssel "{{ customdata.addform.key }}" wurde hinzugefügt.<br><br>
-        <a href="/_admin/textcatadmin.html?action=edit&id={{ customdata.addform.id }}">Klicken Sie hier um ihn zu bearbeiten</a><br>
+        {{ HT('textcatadmin_add_done_1') }} "{{ customdata.addform.key }}" {{ HT('textcatadmin_add_done_2') }}<br><br>
+        <a href="/_admin/textcatadmin.html?action=edit&id={{ customdata.addform.id }}">{{ HT('textcatadmin_add_done_clickheretoedit') }}</a><br>
     {% endif %}
     <br>
-    <label for="textcat-add-textkey">Neuen Textschlüssel hinzufügen:</label>
+    <label for="textcat-add-textkey">{{ HT('textcatadmin_add_label') }}</label>
     <br>
     <form action="/_admin/textcatadmin.html?action=add" method="post" name="addtext" class="pure-form">
         <input type="hidden" name="add" value="do">
-        <div class="pure-u-1-2"><input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formfieldwithpaddingright" id="textcat-add-textkey" placeholder="Textschlüssel"></div><div
-                class="pure-u-3-24"><button type="submit" class="pure-button pure-button-primary">Anlegen</button></div>
+        <div class="pure-u-1-2"><input type="text" name="key" value="{{ gFF("key") }}" maxlength="64" class="formfieldwithpaddingright" id="textcat-add-textkey" placeholder="{{ HT('textcatadmin_add_placeholder') }}"></div><div
+                class="pure-u-3-24"><button type="submit" class="pure-button pure-button-primary">{{ HT('textcatadmin_add_submit') }}</button></div>
     </form>
 {% else %}
-    <div style="text-align:right;width:100%;"><a href="?action=add">{{ T("misc_add_new_value") }}</a></div>
+    <div style="text-align:right;width:100%;"><a href="?action=add">{{ HT("textcatadmin_list_add") }}</a></div>
 {% endif %}
 {{ content }}

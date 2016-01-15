@@ -54,7 +54,7 @@
             <h3>{{ HT('pageadmin_edit_currentpage') }} {{ customdata.page.cb_key }}</h3>
         </div>
     {% if customdata.updated is defined %}
-    <p>{{ HT('pageadmin_edit_changescommitted') }} {{ macro.showClienttime() }}</p>
+    <p>{{ HT('changescommitted') }} {{ macro.showClienttime() }}</p>
     {% endif %}
     {% if customdata.page.oPayload is defined and customdata.page.oPayload.cl_id != NULL %}
     <fieldset>

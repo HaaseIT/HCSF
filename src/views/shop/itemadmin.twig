@@ -20,7 +20,7 @@
 </form>
 <hr>
 {% if customdata.itemupdated %}
-    <b>{{ HT('itemadmin_msg_updated') }} ({{ macro.showClientTime() }}).</b><br><br>
+    <b>{{ HT('changescommitted') }} ({{ macro.showClientTime() }}).</b><br><br>
 {% endif %}
 {% if customdata.searchresult and customdata.itemlist is not defined and customdata.item is not defined %}
     {{ HT('itemadmin_msg_nomatches') }}<br><br>
