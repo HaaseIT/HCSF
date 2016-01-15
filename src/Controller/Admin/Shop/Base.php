@@ -15,5 +15,8 @@ class Base extends \HaaseIT\HCSF\Controller\Admin\Base
     {
         parent::__construct($C, $DB, $sLang);
 
+        if (empty($C["enable_module_shop"]) || !$C["enable_module_shop"]) {
+            throw new \Exception(404);
+        }
     }
 }
