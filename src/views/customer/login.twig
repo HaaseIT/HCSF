@@ -1,3 +1,4 @@
+{{content is defined and content != '' ? '<p>'~content~'</p>' : ''}}
 {% if isloggedin %}
     <a href="/_misc/userhome.html" class="pure-button button-green">{{ T("nav_myaccount") }}</a>
     <a href="/_misc/logout.html" class="pure-button button-orange">{{ T("nav_logout") }}</a>
@@ -15,6 +16,3 @@
     </form>
     <a href="/_misc/forgotpassword.html" id="loginform-forgotpassword">{{ T("misc_loginform_forgotpassword") }}</a>
 {% endif %}
-
-{{content}}
-
