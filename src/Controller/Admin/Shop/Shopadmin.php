@@ -63,31 +63,31 @@ class Shopadmin extends Base
         ];
 
         $CSA = [
-            'list_orders' => array(
-                array('title' => 'Besteller', 'key' => 'o_cust', 'width' => 280, 'linked' => false,),
-                array('title' => 'Netto', 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,),
-                array('title' => 'Status', 'key' => 'o_order_status', 'width' => 80, 'linked' => false,),
-                array('title' => 'Zeit/VorgNr', 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,),
-                array('title' => '', 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,),
-                array(
+            'list_orders' => [
+                ['title' => 'Besteller', 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
+                ['title' => 'Netto', 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
+                ['title' => 'Status', 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
+                ['title' => 'Zeit/VorgNr', 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
+                ['title' => '', 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
+                [
                     'title' => 'bearb.',
                     'key' => 'o_id',
                     'width' => 45,
                     'linked' => true,
                     'ltarget' => '/_admin/shopadmin.html',
                     'lkeyname' => 'id',
-                    'lgetvars' => array(
+                    'lgetvars' => [
                         'action' => 'edit',
-                    ),
-                ),
-            ),
-            'list_orderitems' => array(
-                array('title' => 'Art Nr', 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,),
-                array('title' => 'Art Name', 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,),
-                array('title' => 'Menge', 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',),
-                array('title' => 'Netto', 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,),
-                array('title' => 'Ges. Netto', 'key' => 'ges_netto', 'width' => 75, 'linked' => false,),
-            ),
+                    ],
+                ],
+            ],
+            'list_orderitems' => [
+                ['title' => 'Art Nr', 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
+                ['title' => 'Art Name', 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
+                ['title' => 'Menge', 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
+                ['title' => 'Netto', 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
+                ['title' => 'Ges. Netto', 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
+            ],
         ];
 
         $aShopadmin = $this->handleShopAdmin($CSA, $twig);
@@ -164,7 +164,7 @@ class Shopadmin extends Base
                         'o_email' => $aRow["o_email"],
                         'o_cust' => $sName.'<br>'.$aRow["o_zip"].' '.$aRow["o_town"],
                         'o_authed' => $aRow["o_authed"],
-                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], 2, ",", ".").' '.$this->C["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], 2, ",", ".").' '.$C["waehrungssymbol"] : ''),
+                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], 2, ",", ".").' '.$this->C["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], 2, ",", ".").' '.$this->C["waehrungssymbol"] : ''),
                         'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
                         'o_ordertime_number' => date("d.m.y H:i", $aRow["o_ordertimestamp"]).((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
                         'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow["o_srv_hostname"],
