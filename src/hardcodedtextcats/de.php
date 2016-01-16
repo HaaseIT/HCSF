@@ -1,5 +1,5 @@
 <?php
-$HT = [
+return [
     'fullstop' => '.',
     'changescommitted' => 'Änderungen gespeichert:',
 
