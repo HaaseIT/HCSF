@@ -188,5 +188,26 @@ return [
     'customeradmin_list_town' => 'Ort',
     'customeradmin_list_active' => 'Aktiv',
     'customeradmin_list_edit' => 'bearb.',
+
+    'itemgroupadmin_info_duplicateno' => 'Diese Gruppennummer wird bereits für eine andere Gruppe verwendet.',
+    'itemgroupadmin_info_groupjustadded' => 'Die Gruppe wurde hinzugefügt.',
+    'itemgroupadmin_info_nolanguagespecificdataexists' => 'In dieser Sprache sind noch keine Texte angelegt!',
+    'itemgroupadmin_info_addlanguagespecificdata' => '[Anlegen]',
+    'itemgroupadmin_error_nametooshort' => 'Der Name ist zu kurz.',
+    'itemgroupadmin_error_grouptooshort' => 'Die Gruppennummer ist zu kurz.',
+    'itemgroupadmin_error_duplicateno' => 'Diese Gruppennummer ist bereits vergeben.',
+    'itemgroupadmin_error_nogroupsavailable' => 'Zur Zeit sind keine Gruppen angelegt.',
+
+    'itemgroupadmin_name' => 'Gruppenname:',
+    'itemgroupadmin_no' => 'Gruppennummer:',
+    'itemgroupadmin_image' => 'Bild:',
+    'itemgroupadmin_text' => 'Kurztext:',
+    'itemgroupadmin_details' => 'Details:',
+    'itemgroupadmin_submit' => 'Speichern',
+    'itemgroupadmin_add' => '[Eine neue Gruppe anlegen]',
+
+    'itemgroupadmin_list_no' => 'Gruppennr.',
+    'itemgroupadmin_list_name' => 'Gruppenname',
+    'itemgroupadmin_list_edit' => 'bearb.',
 ];
 

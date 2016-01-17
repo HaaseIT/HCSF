@@ -1,13 +1,13 @@
 {% if customdata.updatestatus == 'success' %}
-    <b>Die Gruppe wurde aktualisiert ({{ macro.showClientTime() }}).</b><br><br>
+    <b>{{ HT('changescommitted') }} {{ macro.showClientTime() }}</b><br><br>
 {% elseif customdata.updatestatus == 'duplicateno' %}
-    <b>Diese Gruppennummer wird bereits für eine andere Gruppe verwendet.</b><br><br>
+    <strong>{{ HT('itemgroupadmin_info_duplicateno') }}</strong><br><br>
 {% elseif customdata.groupjustadded %}
-    Die Gruppe wurde hinzugefügt.<br><br>
+    {{ HT('itemgroupadmin_info_groupjustadded') }}<br><br>
 {% endif %}
-{{  customdata.err.nametooshort ? 'Der Name ist zu kurz.<br><br>' : '' }}
-{{  customdata.err.grouptooshort ? 'Die Gruppennummer ist zu kurz.<br><br>' : '' }}
-{{  customdata.err.duplicateno ? 'Diese Gruppennummer ist bereits vergeben.<br><br>' : '' }}
+{{  customdata.err.nametooshort ? HT('itemgroupadmin_error_nametooshort')~'<br>' : '' }}
+{{  customdata.err.grouptooshort ? HT('itemgroupadmin_error_grouptooshort')~'<br>' : '' }}
+{{  customdata.err.duplicateno ? HT('itemgroupadmin_error_duplicateno')~'<br>' : '' }}
 {% if customdata.showform is defined %}
     <style type="text/css">
         #groupadmin-name, #groupadmin-no, #groupadmin-img{width: 520px;}
@@ -16,27 +16,27 @@
     </style>
     <form action="{{ customdata.group.formaction }}" method="post">
         <input type="hidden" name="do" value="true">
-        Gruppenname:<br>
+        {{ HT('itemgroupadmin_name') }}<br>
         <input type="text" name="name" value="{{ customdata.group.name }}" id="groupadmin-name"><br>
-        Gruppennummer:<br>
+        {{ HT('itemgroupadmin_no') }}<br>
         <input type="text" name="no" value="{{ customdata.group.no }}" id="groupadmin-no"><br>
-        Bild:<br>
+        {{ HT('itemgroupadmin_image') }}<br>
         <input type="text" name="img" value="{{ customdata.group.img }}" id="groupadmin-img"><br>
         {% if customdata.showform == 'edit' %}
             {% if customdata.group.lang is defined %}
-                Kurztext:<br>
+                {{ HT('itemgroupadmin_text') }}<br>
                 <textarea name="shorttext" rows="8" cols="70" id="groupadmin-shorttext">{{ customdata.group.lang.shorttext }}</textarea><br>
-                Details:<br>
+                {{ HT('itemgroupadmin_details') }}<br>
                 <textarea name="details" rows="8" cols="70" id="groupadmin-details">{{ customdata.group.lang.details }}</textarea><br>
             {% else %}
-                In dieser Sprache sind noch keine Texte angelegt!
-                <a href="/_admin/itemgroupadmin.html?action=insert_lang&gid={{ customdata.group.id }}">[Anlegen]</a><br>
+                {{ HT('itemgroupadmin_info_nolanguagespecificdataexists') }}
+                <a href="/_admin/itemgroupadmin.html?action=insert_lang&gid={{ customdata.group.id }}">{{ HT('itemgroupadmin_info_addlanguagespecificdata') }}</a><br>
             {% endif %}
         {% endif %}
-        <input type="submit" value="Submit" id="groupadmin-submit">
+        <input type="submit" value="{{ HT('itemgroupadmin_submit') }}" id="groupadmin-submit">
     </form>
 {% else %}
-    <a href="/_admin/itemgroupadmin.html?action=addgroup">[Eine neue Gruppe anlegen]</a><br><br>
+    <a href="/_admin/itemgroupadmin.html?action=addgroup">{{ HT('itemgroupadmin_add') }}</a><br><br>
 {% endif %}
-{{  customdata.err.nogroupsavaliable ? 'Zur Zeit sind keine Gruppen angelegt.' : '' }}
+{{  customdata.err.nogroupsavaliable ? HT('itemgroupadmin_error_nogroupsavailable') : '' }}
 {{ content }}

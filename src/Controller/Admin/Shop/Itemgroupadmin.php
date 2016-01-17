@@ -89,7 +89,6 @@ class Itemgroupadmin extends Base
             }
             $this->P->cb_customdata["showform"] = 'edit';
             $this->P->cb_customdata["group"] = $this->admin_prepareGroup('edit', $aGroup[0]);
-            //HaaseIT\Tools::debug($aGroup);
         } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
             $aErr = [];
             if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
@@ -114,7 +113,6 @@ class Itemgroupadmin extends Base
                         DB_ITEMGROUPFIELD_IMG => $sImg,
                     ];
                     $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
-                    //HaaseIT\Tools::debug($sQ);
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
@@ -134,9 +132,7 @@ class Itemgroupadmin extends Base
             if (!$sH .= $this->admin_showItemgroups($this->admin_getItemgroups(''), $twig)) {
                 $this->P->cb_customdata["err"]["nogroupsavaliable"] = true;
             }
-
         }
-
         $this->P->oPayload->cl_html = $sH;
     }
 
@@ -162,7 +158,6 @@ class Itemgroupadmin extends Base
         ];
 
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
-        //HaaseIT\Tools::debug($sQ);
         $hResult = $this->DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) {
             $hResult->bindValue(':' . $sKey, $sValue);
@@ -172,7 +167,6 @@ class Itemgroupadmin extends Base
         $sQ = "SELECT " . DB_ITEMGROUPTABLE_TEXT_PKEY . " FROM " . DB_ITEMGROUPTABLE_TEXT;
         $sQ .= " WHERE " . DB_ITEMGROUPTABLE_TEXT_PARENTPKEY . " = :gid";
         $sQ .= " AND " . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
-        //HaaseIT\Tools::debug($sQ);
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':gid', $iGID);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
@@ -182,14 +176,12 @@ class Itemgroupadmin extends Base
 
         if ($iNumRows == 1) {
             $aRow = $hResult->fetch();
-            //HaaseIT\Tools::debug($aRow);
             $aData = [
                 DB_ITEMGROUPFIELD_SHORTTEXT => $purifier->purify($_REQUEST["shorttext"]),
                 DB_ITEMGROUPFIELD_DETAILS => $purifier->purify($_REQUEST["details"]),
                 DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
             ];
             $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
-            //HaaseIT\Tools::debug($sQ);
             $hResult = $this->DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
@@ -228,25 +220,22 @@ class Itemgroupadmin extends Base
         $sQ .= " AND " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
         if ($iGID != '') $sQ .= " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " = :gid";
         $sQ .= " ORDER BY " . DB_ITEMGROUPFIELD_NUMBER;
-        //HaaseIT\Tools::debug($sQ);
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
 
         $aGroups = $hResult->fetchAll();
-        //HaaseIT\Tools::debug($aGroups);
 
         return $aGroups;
     }
 
     private function admin_showItemgroups($aGroups, $twig)
     {
-        //HaaseIT\Tools::debug($aGroups);
         $aList = [
-            ['title' => 'Gruppe', 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => 'Gruppenname', 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => 'edit', 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_name'), 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
         ];
         if (count($aGroups) > 0) {
             foreach ($aGroups as $aValue) {
