@@ -1,21 +1,21 @@
 <form action="{{requesturiarray.path}}" method="GET" class="pure-form pure-form-stacked">
     <div class="pure-u-1">
-        <label for="type">Anzeigen:</label>
+        <label for="type">{{ HT('customeradmin_search_label') }}</label>
         <select name="type" id="type" class="pure-u-1">
-            <option value="all"{{ customdata.customeradmin.type == 'all' ? ' selected' : '' }}>Alle</option>
-            <option value="active"{{ customdata.customeradmin.type == 'active' ? ' selected' : '' }}>Aktive</option>
-            <option value="inactive"{{ customdata.customeradmin.type == 'inactive' ? ' selected' : '' }}>Inaktive</option>
+            <option value="all"{{ customdata.customeradmin.type == 'all' ? ' selected' : '' }}>{{ HT('customeradmin_search_all') }}</option>
+            <option value="active"{{ customdata.customeradmin.type == 'active' ? ' selected' : '' }}>{{ HT('customeradmin_search_active') }}</option>
+            <option value="inactive"{{ customdata.customeradmin.type == 'inactive' ? ' selected' : '' }}>{{ HT('customeradmin_search_inactive') }}</option>
         </select>
     </div><div class="pure-u-1">
-        <button type="submit" class="pure-button pure-button-primary pure-u-1">Los</button>
+        <button type="submit" class="pure-button pure-button-primary pure-u-1">{{ HT('customeradmin_search_submit') }}</button>
     </div>
 </form>
 
 <p>
-{{ customdata.customeradmin.info.nodatafound ? 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.<br>' : '' }}
-{{ customdata.customeradmin.info.nosuchuserfound ? 'Keine entsprechender Benutzer gefunden.' : '' }}
-{{ customdata.customeradmin.info.passwordchanged ? 'Das Passwort wurde geändert.<br>' : '' }}
-{{ customdata.customeradmin.info.changeswritten ? 'Die Änderungen wurden gespeichert (' ~ macro.showClientTime() ~ ').<br>' : '' }}
+{{ customdata.customeradmin.info.nodatafound ? HT('customeradmin_info_nodatafound')~'<br>' : '' }}
+{{ customdata.customeradmin.info.nosuchuserfound ? HT('customeradmin_info_nosuchuserfound')~'<br>' : '' }}
+{{ customdata.customeradmin.info.passwordchanged ? HT('customeradmin_info_passwordchanged')~'<br>' : '' }}
+{{ customdata.customeradmin.info.changeswritten ? HT('changescommitted') ~ macro.showClientTime() ~ '<br>' : '' }}
 
 {{content}}
 </p>

@@ -171,5 +171,22 @@ return [
     'textcatadmin_list_title_key' => 'Textschlüssel',
     'textcatadmin_list_title_text' => 'Text',
     'textcatadmin_list_title_edit' => 'bearb.',
+
+    'customeradmin_search_label' => 'Anzeigen:',
+    'customeradmin_search_all' => 'Alle',
+    'customeradmin_search_active' => 'Aktive',
+    'customeradmin_search_inactive' => 'Inaktive',
+    'customeradmin_search_submit' => 'Los',
+
+    'customeradmin_info_nodatafound' => 'Es wurden keine zu Ihren Suchkriterien passenden Benutzer-Datensätze gefunden.',
+    'customeradmin_info_nosuchuserfound' => 'Keine entsprechender Benutzer gefunden.',
+    'customeradmin_info_passwordchanged' => 'Das Passwort wurde geändert.',
+
+    'customeradmin_list_no' => 'Nr.',
+    'customeradmin_list_company' => 'Firma',
+    'customeradmin_list_name' => 'Name',
+    'customeradmin_list_town' => 'Ort',
+    'customeradmin_list_active' => 'Aktiv',
+    'customeradmin_list_edit' => 'bearb.',
 ];
 

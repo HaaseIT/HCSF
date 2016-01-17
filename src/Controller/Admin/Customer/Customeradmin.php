@@ -27,13 +27,13 @@ class Customeradmin extends Base
     {
         parent::__construct($C, $DB, $sLang);
         $CUA = [
-            ['title' => 'Nr.', 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => 'Firma', 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => 'Name', 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => 'Ort', 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => 'Aktiv', 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_no'), 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_company'), 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_name'), 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_town'), 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_active'), 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             [
-                'title' => 'bearb.',
+                'title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_edit'),
                 'key' => DB_CUSTOMERTABLE_PKEY,
                 'width' => '16%',
                 'linked' => true,
@@ -67,13 +67,11 @@ class Customeradmin extends Base
                 $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'n'";
             }
             $sQ .= " ORDER BY " . DB_CUSTOMERFIELD_NUMBER . " ASC";
-            //HaaseIT\Tools::debug($sQ);
             $hResult = $this->DB->query($sQ);
             //HaaseIT\Tools::debug($DB->error());
             //HaaseIT\Tools::debug($hResult->rowCount());
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
-                //HaaseIT\Tools::debug($aData);
                 $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
             } else {
                 $aInfo["nodatafound"] = true;
@@ -163,6 +161,5 @@ class Customeradmin extends Base
         if (isset($aInfo)) $aPData["customeradmin"]["info"] = $aInfo;
         return $aPData;
     }
-
 
 }
