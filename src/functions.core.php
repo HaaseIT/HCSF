@@ -100,6 +100,8 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         'subnavkey' => $P->cb_subnav,
         'requesturi' => $_SERVER["REQUEST_URI"],
         'requesturiarray' => parse_url($_SERVER["REQUEST_URI"]),
+        'locale_format_date' => $C['locale_format_date'],
+        'locale_format_date_time' => $C['locale_format_date_time'],
     );
     if ($C["enable_module_customer"]) {
         $aP["isloggedin"] = getUserData();

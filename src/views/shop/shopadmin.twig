@@ -6,34 +6,34 @@
 </style>
 <form action="{{ requesturiarray.path }}" method="get" class="pure-form pure-form-stacked">
     <div class="pure-u-5-24">
-        Zustand:<br>
+        {{ HT('shopadmin_searchform_state') }}<br>
         {{ macro.select('type', searchform_types, customdata.searchform_type, '', 'pure-u-1') }}
     </div><div class="pure-u-5-24">
-        Von:<br>
+        {{ HT('shopadmin_searchform_from') }}<br>
         <div class="pure-u-1-4"><input type="text" name="fromday" maxlength="2" value="{{ customdata.searchform_fromday }}" class="pure-u-1"></div><div
             class="pure-u-1-4"><input type="text" name="frommonth" maxlength="2" value="{{ customdata.searchform_frommonth }}" class="pure-u-1"></div><div
             class="pure-u-1-2"><input type="text" name="fromyear" maxlength="4" value="{{ customdata.searchform_fromyear }}" class="pure-u-1"></div>
     </div><div class="pure-u-5-24">
-        Bis:<br>
+        {{ HT('shopadmin_searchform_to') }}<br>
         <div class="pure-u-1-4"><input type="text" name="today" maxlength="2" value="{{ customdata.searchform_today }}" class="pure-u-1"></div><div
                 class="pure-u-1-4"><input type="text" name="tomonth" maxlength="2" value="{{ customdata.searchform_tomonth }}" class="pure-u-1"></div><div
                 class="pure-u-1-2"><input type="text" name="toyear" maxlength="4" value="{{ customdata.searchform_toyear }}" class="pure-u-1"></div>
     </div><div class="pure-u-9-24">
         <br>
-        <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shsrc_submit">Los...</button>
+        <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shsrc_submit">{{ HT('shopadmin_searchform_submit') }}</button>
     </div>
 </form>
-(Datumseingrenzung nur bei Filtern nach Zustand "Alle", "Abgeschlossen" oder "Gelöschte" berücksichtigt.)
+{{ HT('shopadmin_searchform_remark') }}<br><br>
 
 {% if customdata.customerform is defined and customdata.shoppingcart is defined %}
     <hr>
     <form action="{{ requesturiarray.path }}" method="post" class="pure-form pure-form-aligned">
         {% if customdata.orderdata.o_authed == 'y' %}
-            Der Kunde war mit seinen Benutzerdaten am Webshop angemeldet.<br>
+            {{ HT('shopadmin_info_customerwasloggedin') }}<br>
         {% else %}
-            Der Kunde war nicht angemeldet.<br>
-            Die AGBs wurden {{ customdata.orderdata.o_tos != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
-            Die Widerrufsbelehrung wurde {{ customdata.orderdata.o_cancellationdisclaimer != 'y' ? 'nicht ' : '' }}akzeptiert.<br>
+            {{ HT('shopadmin_info_customerwasnotloggedin') }}<br>
+            {{ HT('shopadmin_info_tos_accepted_1') }} {{ customdata.orderdata.o_tos != 'y' ? HT('shopadmin_info_not')~' ' : '' }}{{ HT('shopadmin_info_tos_accepted_2') }}<br>
+            {{ HT('shopadmin_info_cancellationdisclaimer_accepted_1') }} {{ customdata.orderdata.o_cancellationdisclaimer != 'y' ? HT('shopadmin_info_not')~' ' : '' }}{{ HT('shopadmin_info_cancellationdisclaimer_accepted_2') }}<br>
         {% endif %}
 
         {% include 'customer/customerform-adrform.twig'
@@ -42,24 +42,24 @@
         <input type="hidden" name="id" value="{{ customdata.orderdata.o_id }}">
     <div id="customerform-shad-wrapper">
         <fieldset>
-            <div class="pure-u-1"><label for="shadm_remarks_internal">Bemerkungen intern</label>
+            <div class="pure-u-1"><label for="shadm_remarks_internal">{{ HT('shopadmin_internalremarks') }}</label>
                 <textarea name="remarks_internal" id="shadm_remarks_internal" class="pure-u-1">{{ customdata.orderdata.o_remarks_internal }}</textarea></div>
-            <div class="pure-u-1"><label for="shadm_transaction_no">Interne Vorgnr</label>
+            <div class="pure-u-1"><label for="shadm_transaction_no">{{ HT('shopadmin_internaltransactionno') }}</label>
                 <input type="text" name="transaction_no" value="{{ customdata.orderdata.o_transaction_no }}" id="shadm_transaction_no" class="pure-u-1"></div>
-            <div class="pure-u-1"><label for="shadm_order_paymentcompleted">Zahlungsstatus</label>
-                {% set orderform_paymentmethod_options = ['n|Offen', 'y|Bezahlt'] %}
+            <div class="pure-u-1"><label for="shadm_order_paymentcompleted">{{ HT('shopadmin_paymentstatus') }}</label>
+                {% set orderform_paymentmethod_options = ['n|'~HT('shopadmin_paymentstatus_open'), 'y|'~HT('shopadmin_paymentstatus_paid')] %}
                 {{ macro.select('order_paymentcompleted', orderform_paymentmethod_options, customdata.orderdata.o_paymentcompleted, 'shadm_order_paymentcompleted', 'pure-u-1') }}</div>
-            <div class="pure-u-1"><label for="shadm_order_completed">Status</label>
+            <div class="pure-u-1"><label for="shadm_order_completed">{{ HT('shopadmin_orderstatus') }}</label>
                 {% set orderform_completed_options = ['n|'~HT("shopadmin_orderstatus_open"), 'i|'~HT("shopadmin_orderstatus_inwork"), 'y|'~HT("shopadmin_orderstatus_completed"), 's|'~HT("shopadmin_orderstatus_canceled"), 'd|'~HT("shopadmin_orderstatus_deleted")] %}
                 {{ macro.select('order_completed', orderform_completed_options, customdata.orderdata.o_ordercompleted, 'shadm_order_completed', 'pure-u-1') }}</div>
-            <div class="pure-u-1"><label for="shadm_order_shipping_service">Paketdienst</label>
+            <div class="pure-u-1"><label for="shadm_order_shipping_service">{{ HT('shopadmin_shippingservice') }}</label>
                 {{ macro.select('order_shipping_service', customdata.orderdata.options_shippingservices, customdata.orderdata.o_shipping_service, 'shadm_order_shipping_service', 'pure-u-1') }}</div>
-            <div class="pure-u-1"><label for="shadm_order_shipping_trackingno">Trackingnr</label>
+            <div class="pure-u-1"><label for="shadm_order_shipping_trackingno">{{ HT('shopadmin_trackingno') }}</label>
                 <input type="text" name="order_shipping_trackingno" value="{{ customdata.orderdata.o_shipping_trackingno }}" id="shadm_order_shipping_trackingno" class="pure-u-1"></div>
-            <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shadm_submit" name="change">Bearbeiten</button>
+            <button type="submit" class="pure-button pure-button-primary pure-u-1" id="shadm_submit" name="change">{{ HT('shopadmin_submit') }}</button>
         {% if customdata.orderdata.o_remarks|trim != '' %}
             <div class="pure-u-1">
-                Bemerkungen des Kunden:<br>
+                {{ HT('shopadmin_customerremarks') }}<br>
                 <textarea readonly style="height: 150px;" class="pure-u-1">{{ customdata.orderdata.o_remarks }}</textarea>
             </div>
         {% endif %}
@@ -68,34 +68,34 @@
     </div>
     </div>
 
-    Die folgenden Artikel wurden bestellt:<br>
+    {{ HT('shopadmin_itemsordered') }}<br>
     {% include 'shop/shoppingcarttable.twig' %}
-    Die Bestellung wurde aufgegeben am: {{ customdata.orderdata.o_ordertimestamp|date("d.m.Y H:i") }}{{
-customdata.orderdata.o_lastedit_timestamp != '' ? ', die letzte Bearbeitung erfolgte am: '~customdata.orderdata.o_lastedit_timestamp|date("d.m.Y H:i")~'.' : '.' }}
-    {{ customdata.orderdata.o_lastedit_user != '<br>Die letzte Bearbeitung erfolgte durch: '~customdata.orderdata.o_lastedit_user ? '' : '' }}
+    {{ HT('shopadmin_ordersubmitteddate') }} {{ customdata.orderdata.o_ordertimestamp|date(locale_format_date_time) }}{{
+customdata.orderdata.o_lastedit_timestamp != '' ? HT('shopadmin_orderlasteditdate')~' '~customdata.orderdata.o_lastedit_timestamp|date(locale_format_date_time)~'.' : '.' }}
+    {{ customdata.orderdata.o_lastedit_user != '' ? HT('shopadmin_orderlasteditby')~' '~customdata.orderdata.o_lastedit_user : '' }}
     <br><br>
     {% if customdata.orderdata.o_paymentmethod != '' %}
-        <strong>Die vom Kunden gewünschte Zahlungsmethode ist: {{ customdata.orderdata.o_paymentmethod }}</strong><br>
+        <strong>{{ HT('shopadmin_orderselectedpaymentmethod') }} {{ customdata.orderdata.o_paymentmethod }}</strong><br>
         {% if customdata.orderdata.o_paymentmethod == 'paypal' %}
             {% if customdata.orderdata.o_paymentcompleted == 'y' and customdata.orderdata.o_paypal_tx|trim != '' %}
-                <div style="color: green; font-weight: bold;">Laut PayPal ist die Zahlung bereits erfolgt, die Transaktions ID des Vorgangs ist: {{ customdata.orderdata.o_paypal_tx }}</div>
+                <div style="color: green; font-weight: bold;">{{ HT('shopadmin_orderpaypalpaymentconfirmed') }} {{ customdata.orderdata.o_paypal_tx }}</div>
             {% elseif customdata.orderdata.o_paymentcompleted == 'n' %}
-                <div style="color: red; font-weight: bold;">Laut PayPal ist die Zahlung noch nicht erfolgt.</div>
+                <div style="color: red; font-weight: bold;">{{ HT('shopadmin_orderpaypalpaymentnotconfirmed') }}</div>
             {% endif %}
         {% endif %}
         <br>
     {% endif %}
-    {{ customdata.orderdata.o_srv_hostname|trim != '' ? 'Die Bestellung wurde &uuml;ber die Domain: <strong>'~customdata.orderdata.o_srv_hostname~'</strong> aufgegeben.' : '' }}
+    {{ customdata.orderdata.o_srv_hostname|trim != '' ? HT('shopadmin_orderdomain_1')~' <strong>'~customdata.orderdata.o_srv_hostname~'</strong> '~HT('shopadmin_orderdomain_2') : '' }}
 {% endif %}
-{{ customdata.ordernotfound is defined ? '<p>Die gewünschte Bestellung wurde nicht gefunden.</p>' : '' }}
-{{ customdata.nomatchingordersfound is defined ? '<p>Es wurden keine zu Ihren Suchkriterien passenden Bestell-Datensätze gefunden.</p>' : '' }}
+{{ customdata.ordernotfound is defined ? '<p>'~HT('shopadmin_info_ordernotfound')~'</p>' : '' }}
+{{ customdata.nomatchingordersfound is defined ? '<p>'~HT('shopadmin_info_nomatchingordersfound')~'</p>' : '' }}
 {% if customdata.listtable_orders is defined %}
     {{ customdata.listtable_orders }}
     {% if customdata.listtable_i > 0 %}
-        <br>{{ customdata.listtable_i }} Bestellung(en) angezeigt
-        {{ customdata.listtable_k != 0 ? ', davon '~customdata.listtable_k~' stornierte (diese werden bei den Wertberechnungen nicht ber&uuml;cksichtigt).' : '.' }}
-        <br>Gesamtnetto der angezeigten Bestellungen: {{ customdata.listtable_gesamtnetto|number_format(2, ',', '.') }} {{ currency }}
-        <br>Durchschnittlicher Nettobestellwert der angezeigten Bestellungen: {{ (customdata.listtable_gesamtnetto / customdata.listtable_j)|number_format(2, ',', '.') }} {{ currency }}
+        <br>{{ customdata.listtable_i }} {{ HT('shopadmin_info_ordersshown_1') }}
+        {{ customdata.listtable_k != 0 ? HT('shopadmin_info_ordersshown_2')~' '~customdata.listtable_k~' '~HT('shopadmin_info_ordersshown_3') : '.' }}
+        <br>{{ HT('shopadmin_info_ordersshownsum') }} {{ customdata.listtable_gesamtnetto|number_format(2, ',', '.') }} {{ currency }}
+        <br>{{ HT('shopadmin_info_ordersshownaveragesum') }} {{ (customdata.listtable_gesamtnetto / customdata.listtable_j)|number_format(2, ',', '.') }} {{ currency }}
     {% endif %}
 {% endif %}
 
