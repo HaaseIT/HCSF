@@ -50,7 +50,7 @@
                 {% set orderform_paymentmethod_options = ['n|Offen', 'y|Bezahlt'] %}
                 {{ macro.select('order_paymentcompleted', orderform_paymentmethod_options, customdata.orderdata.o_paymentcompleted, 'shadm_order_paymentcompleted', 'pure-u-1') }}</div>
             <div class="pure-u-1"><label for="shadm_order_completed">Status</label>
-                {% set orderform_completed_options = ['n|'~T("order_status_open"), 'i|'~T("order_status_inwork"), 'y|'~T("order_status_completed"), 's|'~T("order_status_canceled"), 'd|'~T("order_status_deleted")] %}
+                {% set orderform_completed_options = ['n|'~HT("shopadmin_orderstatus_open"), 'i|'~HT("shopadmin_orderstatus_inwork"), 'y|'~HT("shopadmin_orderstatus_completed"), 's|'~HT("shopadmin_orderstatus_canceled"), 'd|'~HT("shopadmin_orderstatus_deleted")] %}
                 {{ macro.select('order_completed', orderform_completed_options, customdata.orderdata.o_ordercompleted, 'shadm_order_completed', 'pure-u-1') }}</div>
             <div class="pure-u-1"><label for="shadm_order_shipping_service">Paketdienst</label>
                 {{ macro.select('order_shipping_service', customdata.orderdata.options_shippingservices, customdata.orderdata.o_shipping_service, 'shadm_order_shipping_service', 'pure-u-1') }}</div>

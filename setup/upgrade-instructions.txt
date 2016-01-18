@@ -1,6 +1,8 @@
 V2.3.0
 New config value: purifier_doctype
 Delete files: functions.template.php
+Delete Textcats (moved to hardcoded): order_status_open_or_inwork, order_status_open, order_status_inwork,
+  order_status_deleted, order_status_all_valid, order_status_canceled, order_status_completed
 
 V2.2.0
 New config keys:
