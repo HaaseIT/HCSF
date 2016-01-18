@@ -64,13 +64,13 @@ class Shopadmin extends Base
 
         $CSA = [
             'list_orders' => [
-                ['title' => 'Besteller', 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
-                ['title' => 'Netto', 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
-                ['title' => 'Status', 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
-                ['title' => 'Zeit/VorgNr', 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
-                ['title' => '', 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_ordertimenumber'), 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_hostpayment'), 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
                 [
-                    'title' => 'bearb.',
+                    'title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_edit'),
                     'key' => 'o_id',
                     'width' => 45,
                     'linked' => true,
@@ -82,11 +82,11 @@ class Shopadmin extends Base
                 ],
             ],
             'list_orderitems' => [
-                ['title' => 'Art Nr', 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
-                ['title' => 'Art Name', 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
-                ['title' => 'Menge', 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
-                ['title' => 'Netto', 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
-                ['title' => 'Ges. Netto', 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemno'), 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemname'), 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemamount'), 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemnetto'), 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemsumnetto'), 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
             ],
         ];
 
@@ -111,7 +111,7 @@ class Shopadmin extends Base
                 $sQ .= "o_ordercompleted != 'd' ";
                 $bIgnoreStorno = true;
             } else {
-                die('Invalid request error.');
+                die(\HaaseIT\HCSF\HardcodedText::get('shopadmin_error_invalidrequest'));
             }
             $bFromTo = false;
             if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
@@ -126,9 +126,6 @@ class Shopadmin extends Base
             }
             $sQ .= "ORDER BY o_ordertimestamp DESC";
 
-            //HaaseIT\Tools::debug($sQ);
-            //HaaseIT\Tools::debug($_REQUEST);
-
             $hResult = $this->DB->prepare($sQ);
             if ($bFromTo) {
                 $hResult->bindValue(':from', $sFrom);
@@ -142,11 +139,11 @@ class Shopadmin extends Base
                 $k = 0;
                 $fGesamtnetto = 0.0;
                 while ($aRow = $hResult->fetch()) {
-                    if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_completed").'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_open").'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.\HaaseIT\Textcat::T("order_status_inwork").'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.\HaaseIT\Textcat::T("order_status_canceled").'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = \HaaseIT\Textcat::T("order_status_deleted");
+                    if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_open').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = \HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_deleted');
 
                     if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
                     else $sZahlungsmethode = '<span style="color: red;">';
@@ -175,7 +172,6 @@ class Shopadmin extends Base
                     } else $k++;
                     $i++;
                 }
-                //HaaseIT\Tools::debug($aData);
                 $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;

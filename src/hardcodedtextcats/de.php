@@ -209,5 +209,28 @@ return [
     'itemgroupadmin_list_no' => 'Gruppennr.',
     'itemgroupadmin_list_name' => 'Gruppenname',
     'itemgroupadmin_list_edit' => 'bearb.',
+
+    'shopadmin_list_customer' => 'Kunde',
+    'shopadmin_list_sumnettoall' => 'Netto',
+    'shopadmin_list_orderstatus' => 'Status',
+    'shopadmin_list_ordertimenumber' => 'Zeit/VorgNr',
+    'shopadmin_list_hostpayment' => '',
+    'shopadmin_list_edit' => 'bearb.',
+
+    'shopadmin_list_itemno' => 'Art Nr',
+    'shopadmin_list_itemname' => 'Art Name',
+    'shopadmin_list_itemamount' => 'Menge',
+    'shopadmin_list_itemnetto' => 'Netto',
+    'shopadmin_list_itemsumnetto' => 'Ges. Netto',
+
+    'shopadmin_error_invalidrequest' => 'Invalid request error.',
+
+    'shopadmin_orderstatus_completed' => 'erledigt',
+    'shopadmin_orderstatus_open' => 'storniert',
+    'shopadmin_orderstatus_inwork' => 'in Arbeit',
+    'shopadmin_orderstatus_canceled' => 'offen',
+    'shopadmin_orderstatus_deleted' => 'gelöscht',
+    'shopadmin_orderstatus_allvalid' => 'alle gültigen',
+    'shopadmin_openorinwork' => 'offen oder in Arbeit',
 ];
 
