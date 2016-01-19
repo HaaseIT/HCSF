@@ -3,6 +3,8 @@ return [
     'fullstop' => '.',
     'changescommitted' => 'Änderungen gespeichert:',
 
+    'site_currently_in_maintenance_mode' => 'Diese Website ist zur Zeit im Wartungsmodus, bitte versuchen Sie es später noch einmal.',
+
     'admin_nav_home' => 'Admin Home',
     'admin_nav_orders' => 'Bestellungen',
     'admin_nav_items' => 'Artikel',

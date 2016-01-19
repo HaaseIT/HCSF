@@ -57,6 +57,15 @@ $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts
 if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 require_once __DIR__.'/config/constants.fixed.php';
 
+if (!empty($C['maintenancemode']) && $C['maintenancemode']) {
+    $C["enable_module_customer"] = false;
+    $C["enable_module_shop"] = false;
+    $C["templatecache_enable"] = false;
+    $C["debug"] = false;
+} else {
+    $C['maintenancemode'] = false;
+}
+
 if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
@@ -171,22 +180,27 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
 }
 \HaaseIT\HCSF\HardcodedText::init($HT);
 
+if (!$C['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
-$DB = new \PDO($C["db_type"].':host='.$C["db_server"].';dbname='.$C["db_name"], $C["db_user"], $C["db_password"], array( \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', ));
-$DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-$DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-$DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
+    $DB = new \PDO($C["db_type"] . ':host=' . $C["db_server"] . ';dbname=' . $C["db_name"], $C["db_user"], $C["db_password"], array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',));
+    $DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+    $DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+    $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
 
-// ----------------------------------------------------------------------------
-// more init stuff
-// ----------------------------------------------------------------------------
-\HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
+    // ----------------------------------------------------------------------------
+    // more init stuff
+    // ----------------------------------------------------------------------------
+    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
 
-require_once __DIR__.'/config/config.navi.php';
-if (isset($C["navstruct"]["admin"])) {
-    unset($C["navstruct"]["admin"]);
+    require_once __DIR__.'/config/config.navi.php';
+    if (isset($C["navstruct"]["admin"])) {
+        unset($C["navstruct"]["admin"]);
+    }
+} else {
+    $c['navstruct'] = [];
+    $DB = null;
 }
 
 if ($C["enable_module_customer"]) {
