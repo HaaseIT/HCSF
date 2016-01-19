@@ -20,6 +20,7 @@
 
 ini_set('display_errors', 0);
 ini_set('xdebug.overload_var_dump', 0);
+ini_set('xdebug.var_display_max_depth', 10);
 ini_set('html_errors', 0);
 error_reporting(E_ALL);
 //error_reporting(0);

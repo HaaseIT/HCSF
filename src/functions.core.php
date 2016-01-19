@@ -18,7 +18,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function getSignedImgURL($file, $w = 0, $h =0) {
+function getPathsForItemIndexes($DB)
+{
+    $itemindexpathtree = [];
+    $aItemoverviewpages = [];
+    $sQ = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
+    $oQuery = $DB->query($sQ);
+    while ($aRow = $oQuery->fetch()) {
+        $aItemoverviewpages[] = array(
+            'path' => $aRow['cb_key'],
+            'pageconfig' => json_decode($aRow["cb_pageconfig"]),
+        );
+    }
+    //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
+    foreach ($aItemoverviewpages as $aValue) {
+        if (isset($aValue["pageconfig"]->itemindex)) {
+            if (is_array($aValue["pageconfig"]->itemindex)) {
+                foreach ($aValue["pageconfig"]->itemindex as $sIndexValue) {
+                    if (!isset($itemindexpathtree[$sIndexValue])) {
+                        $itemindexpathtree[$sIndexValue] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                    }
+                }
+            } else {
+                if (!isset($itemindexpathtree[$aValue["pageconfig"]->itemindex])) {
+                    $itemindexpathtree[$aValue["pageconfig"]->itemindex] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                }
+            }
+        }
+    }
+    //HaaseIT\Tools::debug($itemindexpathtree, '$itemindexpathtree');
+    //HaaseIT\Tools::debug($aP["pageconfig"]->itemindex, '$aP["pageconfig"]->itemindex');
+
+    return $itemindexpathtree;
+}
+
+function getSignedImgURL($file, $w = 0, $h =0)
+{
     $urlBuilder = League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
 
     if ($w == 0 && $h == 0) return false;
@@ -211,33 +246,9 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
         if ($aP["pagetype"] == 'itemdetail') {
 
-            // Todo: move building of paths for itemindexes to better location
-            $sQ = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
-            $oQuery = $DB->query($sQ);
-            while ($aRow = $oQuery->fetch()) {
-                $aItemoverviewpages[] = array(
-                    'path' => $aRow['cb_key'],
-                    'pageconfig' => json_decode($aRow["cb_pageconfig"], true),
-                );
-            }
-            //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
-            $aP["itemindexpathtreeforsuggestions"] = array();
-            foreach ($aItemoverviewpages as $aValue) {
-                if (isset($aValue["pageconfig"]->itemindex)) {
-                    if (is_array($aValue["pageconfig"]->itemindex)) {
-                        foreach ($aValue["pageconfig"]->itemindex as $sIndexValue) {
-                            if (!isset($aP["itemindexpathtreeforsuggestions"][$sIndexValue])) {
-                                $aP["itemindexpathtreeforsuggestions"][$sIndexValue] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
-                            }
-                        }
-                    } else {
-                        if (!isset($aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]->itemindex])) {
-                            $aP["itemindexpathtreeforsuggestions"][$aValue["pageconfig"]->itemindex] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
-                        }
-                    }
-                }
-            }
-            //HaaseIT\Tools::debug($aP["pageconfig"]->itemindex, '$aP["pageconfig"]->itemindex');
+            $aP["itemindexpathtreeforsuggestions"] = getPathsForItemIndexes($DB);
+            //HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
+
             if (isset($aP["pageconfig"]->itemindex)) {
                 if (is_array($aP["pageconfig"]->itemindex)) {
                     foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
@@ -247,8 +258,7 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
                     $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
                 }
             }
-            unset($aItemoverviewpages);
-            //HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
+            HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
 
             // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
             // if it is not found, we will show the overview
