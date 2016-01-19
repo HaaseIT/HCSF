@@ -54,17 +54,19 @@ $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
 if (is_file(__DIR__.'/config/config.core.yml')) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
-if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
-require_once __DIR__.'/config/constants.fixed.php';
 
 if (!empty($C['maintenancemode']) && $C['maintenancemode']) {
     $C["enable_module_customer"] = false;
     $C["enable_module_shop"] = false;
     $C["templatecache_enable"] = false;
     $C["debug"] = false;
+    $C['textcatsverbose'] = false;
 } else {
     $C['maintenancemode'] = false;
 }
+
+if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+require_once __DIR__.'/config/constants.fixed.php';
 
 if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
@@ -192,7 +194,7 @@ if (!$C['maintenancemode']) {
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]));
+    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]), ($C['textcatsverbose']));
 
     require_once __DIR__.'/config/config.navi.php';
     if (isset($C["navstruct"]["admin"])) {

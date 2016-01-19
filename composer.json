@@ -3,7 +3,7 @@
     "twig/twig": "1.*",
     "phpmailer/phpmailer": "5.2.*",
     "symfony/yaml": "@stable",
-    "haaseit/toolbox": "1.2.5",
+    "haaseit/toolbox": "1.2.6",
     "aura/autoload": "2.0.*",
     "ezyang/htmlpurifier": "4.7.*",
     "league/oauth2-google": "1.0.1",

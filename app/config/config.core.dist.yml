@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 maintenancemode: true
+textcatsverbose: false
 debug: false
 enable_module_shop: true
 enable_module_customer: true

@@ -1,4 +1,4 @@
-{% if pagetype == 'contentnosubnav' %}{%
+{% if pagetype == 'contentnosubnav' or maintenancemode %}{%
 set widecontent = true %}{%
 else %}{%
 set widecontent = false %}{%
@@ -460,6 +460,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
         <div class="container">
             <div class="fs pure-menu-horizontal">
                 <ul id="topnav">
+                    {% if not maintenancemode %}
                     <li class="pure-u-1 pure-u-md-4-24"><a href="/kategorie1/" id="topnav-1"{{ subnavkey == 'category1' ? ' class="active"' : '' }}>{{ T("topnav_category1") }}</a>
                         {% if subnavkey == 'category1' %}
                             <ul id="topnav-sub">
@@ -507,6 +508,9 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                             </ul>{% endif %}</li>
                     <li class="pure-u-1 pure-u-md-3-24"><a href="/faq.html" id="topnav-6"{{ requesturi == '/faq.html' ? ' class="active"' : '' }}>{{ T("topnav_faq") }}</a></li>
                     <li class="pure-u-1 pure-u-md-1-24"><a href="/_misc/login.html" id="topnav-7"{{ requesturi == '/_misc/login.html' ? ' class="active"' : '' }}><i class="fa fa-user"></i> <span class="only-sm">Login / Register</span></a></li>
+                    {% else %}
+                    <li class="pure-u-1"><a href="#">&nbsp;</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
