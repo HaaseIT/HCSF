@@ -161,7 +161,7 @@ class Shopadmin extends Base
                         'o_email' => $aRow["o_email"],
                         'o_cust' => $sName.'<br>'.$aRow["o_zip"].' '.$aRow["o_town"],
                         'o_authed' => $aRow["o_authed"],
-                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], 2, ",", ".").' '.$this->C["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], 2, ",", ".").' '.$this->C["waehrungssymbol"] : ''),
+                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']).' '.$this->C["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']).' '.$this->C["waehrungssymbol"] : ''),
                         'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
                         'o_ordertime_number' => date("d.m.y H:i", $aRow["o_ordertimestamp"]).((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
                         'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow["o_srv_hostname"],

@@ -31,12 +31,12 @@ class Updateshippingcost extends Base
 
         header("Content-Type: text/html; charset=UTF-8");
         $sH = '<div>';
-        $sH .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"], 2, ',', '.') . '</div>';
-        $sH .= '<div id="vatfull_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2), 2, ',', '.') . '</div>';
-        $sH .= '<div id="totalbrutto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2), 2, ',', '.') . '</div>';
-        $sH .= '<div id="shippingcostnetto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostennetto"], 2, ',', '.') . '</div>';
-        $sH .= '<div id="vatreduced_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuererm"], 2), 2, ',', '.') . '</div>';
-        $sH .= '<div id="totalnetto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtnetto"], 2), 2, ',', '.') . '</div>';
+        $sH .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="vatfull_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="totalbrutto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="shippingcostnetto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostennetto"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="vatreduced_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuererm"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="totalnetto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtnetto"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
         $sH .= '</div>';
         die($sH);
     }
