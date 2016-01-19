@@ -103,6 +103,9 @@ function generatePage($C, $P, $sLang, $DB, $oItem)
         'locale_format_date' => $C['locale_format_date'],
         'locale_format_date_time' => $C['locale_format_date_time'],
         'maintenancemode' => $C['maintenancemode'],
+        'numberformat_decimals' => $C['numberformat_decimals'],
+        'numberformat_decimal_point' => $C['numberformat_decimal_point'],
+        'numberformat_thousands_seperator' => $C['numberformat_thousands_seperator'],
     );
     if ($C["enable_module_customer"]) {
         $aP["isloggedin"] = getUserData();

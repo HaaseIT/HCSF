@@ -94,8 +94,8 @@ customdata.orderdata.o_lastedit_timestamp != '' ? HT('shopadmin_orderlasteditdat
     {% if customdata.listtable_i > 0 %}
         <br>{{ customdata.listtable_i }} {{ HT('shopadmin_info_ordersshown_1') }}
         {{ customdata.listtable_k != 0 ? HT('shopadmin_info_ordersshown_2')~' '~customdata.listtable_k~' '~HT('shopadmin_info_ordersshown_3') : '.' }}
-        <br>{{ HT('shopadmin_info_ordersshownsum') }} {{ customdata.listtable_gesamtnetto|number_format(2, ',', '.') }} {{ currency }}
-        <br>{{ HT('shopadmin_info_ordersshownaveragesum') }} {{ (customdata.listtable_gesamtnetto / customdata.listtable_j)|number_format(2, ',', '.') }} {{ currency }}
+        <br>{{ HT('shopadmin_info_ordersshownsum') }} {{ customdata.listtable_gesamtnetto|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }} {{ currency }}
+        <br>{{ HT('shopadmin_info_ordersshownaveragesum') }} {{ (customdata.listtable_gesamtnetto / customdata.listtable_j)|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }} {{ currency }}
     {% endif %}
 {% endif %}
 

@@ -78,17 +78,17 @@
                     <h4 id="item-detail-price">
                         {% if item.data.pricedata.netto_sale is defined and (item.data.pricedata.netto_rebated is not defined or item.data.pricedata.netto_sale < item.data.pricedata.netto_rebated) %}
                             {#Angebotspreis:<br>#}
-                            {#Netto: {{item.data.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
-                            {#Brutto: #}<span class="salesprice">{{item.data.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                            {#Netto: {{item.data.pricedata.netto_sale|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                            {#Brutto: #}<span class="salesprice">{{item.data.pricedata.brutto_sale|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}</span>
                         {% endif %}
                         {% if item.data.pricedata.netto_rebated is defined and (item.data.pricedata.netto_sale is not defined or item.data.pricedata.netto_rebated < item.data.pricedata.netto_sale) %}
                             {#Ihr Preis:<br>#}
-                            {#Netto: {{item.data.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
-                            {#Brutto: #}{{item.data.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                            {#Netto: {{item.data.pricedata.netto_rebated|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                            {#Brutto: #}{{item.data.pricedata.brutto_rebated|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}
                         {% endif %}
                         {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? ' <span class="sale-listprice">' : '' }}
-                        {#Netto: {{item.data.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
-                        {#Brutto: #}{{item.data.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                        {#Netto: {{item.data.pricedata.netto_list|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                        {#Brutto: #}{{item.data.pricedata.brutto_list|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}
                         {{ item.data.pricedata.netto_sale is defined or item.data.pricedata.netto_rebated is defined ? '</span>' : '' }}
                     </h4>
 

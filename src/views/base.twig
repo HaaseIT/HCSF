@@ -415,7 +415,7 @@ import "macros.twig" as macro %}<!DOCTYPE html>
             {% if enable_module_shop %}<div class="pure-u-1-3 pure-u-md-1 button-head-container">
                 <button class="pure-button pure-u-23-24 pure-u-md-1 button-orange button-head" data-dropdown="#dropdown-1">
                     <i class="fa fa-shopping-cart"></i>
-                    <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("utilities_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }} {{ currency }}</span></button>
+                    <span id="shoppingcartamount" class="hidden-sm">{{cartinfo.numberofitems}} {{ T("utilities_shoppingcart_numberofitems") }}, {{ cartinfo.cartsumbrutto|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }} {{ currency }}</span></button>
                 <div id="dropdown-1" class="dropdown dropdown-tip">
                     <div class="dropdown-panel fs">
                         <ul id="shoppingcartinfo">
@@ -424,12 +424,12 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                                     <li>
                                         <a href="/_misc/shoppingcart.html">
                                             <b>{{ item.amount }}x {{ item.name }}</b>
-                                            <span id="shoppingcartsum">{{ item.price.brutto_use|number_format(2, ',', '.') }}&nbsp;{{ currency }}</span>
+                                            <span id="shoppingcartsum">{{ item.price.brutto_use|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }}&nbsp;{{ currency }}</span>
                                         </a>
                                     </li>
                                 {% endfor %}
                                 <li class="divider"></li>
-                                <li><a href="/_misc/shoppingcart.html">{{ T("utilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ cartinfo.cartsumbrutto|number_format(2, ',', '.') }}</span> {{ currency }}</a></li>
+                                <li><a href="/_misc/shoppingcart.html">{{ T("utilities_shoppingcart_total") }} <span id="shoppingcartsum">{{ cartinfo.cartsumbrutto|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }}</span> {{ currency }}</a></li>
                                 <li class="divider"></li>
                                 <li><a href="/_misc/shoppingcart.html" class="pure-button button-green">{{ T("utilities_gotoshoppingcart") }}</a></li>
                             {% else %}

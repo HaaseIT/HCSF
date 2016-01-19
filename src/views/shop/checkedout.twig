@@ -5,7 +5,7 @@
     {% if customdata.order.o_paymentmethod == 'prepay' %}
         <p>
             {{ T("checkoutdone_prepay_1") }}
-            {{ customdata.gesamtbrutto|number_format(2, ",", ".") }} {{ currency }}
+            {{ customdata.gesamtbrutto|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }} {{ currency }}
             {{ T("checkoutdone_prepay_2") }}
             {{ customdata.order.o_id }}
             {{ T("checkoutdone_prepay_3") }}
@@ -13,7 +13,7 @@
     {% elseif customdata.order.o_paymentmethod == 'nachnahme' %}
         <p>
             {{ T("checkoutdone_nachnahme_1") }}
-            {{ customdata.gesamtbrutto|number_format(2, ",", ".") }} {{ currency }}
+            {{ customdata.gesamtbrutto|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator) }} {{ currency }}
             {{ T("checkoutdone_nachnahme_2") }}
         </p>
     {% endif %}

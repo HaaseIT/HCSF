@@ -17,18 +17,18 @@
                 </a></p>
             <p class="pull-right">
                 {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '<span class="sale-listprice">' : '' }}
-                {#Netto: {{thisitem.pricedata.netto_list|number_format(2, ',', '.')}} {{currency}}<br>#}
-                {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(2, ',', '.')}} {{currency}}
+                {#Netto: {{thisitem.pricedata.netto_list|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                {#Brutto: #}{{thisitem.pricedata.brutto_list|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}
                 {{ thisitem.pricedata.netto_sale is defined or thisitem.pricedata.netto_rebated is defined ? '</span><br>' : '' }}
                 {% if thisitem.pricedata.netto_sale is defined and (thisitem.pricedata.netto_rebated is not defined or thisitem.pricedata.netto_sale < thisitem.pricedata.netto_rebated) %}
                     {#Angebotspreis#}
-                    {#Netto: {{thisitem.pricedata.netto_sale|number_format(2, ',', '.')}} {{currency}}<br>#}
-                    {#Brutto: #}<span class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(2, ',', '.')}} {{currency}}</span>
+                    {#Netto: {{thisitem.pricedata.netto_sale|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                    {#Brutto: #}<span class="salesprice">{{thisitem.pricedata.brutto_sale|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}</span>
                 {% endif %}
                 {% if thisitem.pricedata.netto_rebated is defined and (thisitem.pricedata.netto_sale is not defined or thisitem.pricedata.netto_rebated < thisitem.pricedata.netto_sale) %}
                     {#Ihr Preis:<br>#}
-                    {#Netto: {{thisitem.pricedata.netto_rebated|number_format(2, ',', '.')}} {{currency}}<br>#}
-                    {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(2, ',', '.')}} {{currency}}
+                    {#Netto: {{thisitem.pricedata.netto_rebated|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}<br>#}
+                    {#Brutto: #}{{thisitem.pricedata.brutto_rebated|number_format(numberformat_decimals, numberformat_decimal_point, numberformat_thousands_seperator)}} {{currency}}
                 {% endif %}
             </p>
             <br class="clear">
