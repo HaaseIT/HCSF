@@ -24,15 +24,50 @@ class Items
 {
     private $C;
     //private $P;
-    private $DB;
-    private $sLang;
+    private $DB, $sLang, $itemindexpathtree;
+    // make method getItemPathByIndex()
+    // if itemindexpathtree not set, load from db
 
     // Initialize Class
-    function __construct($C, $DB, $sLang)
+    public function __construct($C, $DB, $sLang)
     {
         $this->C = $C;
         $this->DB = $DB;
         $this->sLang = $sLang;
+    }
+
+    public function getItemPathTree()
+    {
+        $itemindexpathtree = [];
+        $aItemoverviewpages = [];
+        $sQ = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
+        $oQuery = $this->DB->query($sQ);
+        while ($aRow = $oQuery->fetch()) {
+            $aItemoverviewpages[] = [
+                'path' => $aRow['cb_key'],
+                'pageconfig' => json_decode($aRow["cb_pageconfig"]),
+            ];
+        }
+        //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
+        foreach ($aItemoverviewpages as $aValue) {
+            if (isset($aValue["pageconfig"]->itemindex)) {
+                if (is_array($aValue["pageconfig"]->itemindex)) {
+                    foreach ($aValue["pageconfig"]->itemindex as $sIndexValue) {
+                        if (!isset($itemindexpathtree[$sIndexValue])) {
+                            $itemindexpathtree[$sIndexValue] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                        }
+                    }
+                } else {
+                    if (!isset($itemindexpathtree[$aValue["pageconfig"]->itemindex])) {
+                        $itemindexpathtree[$aValue["pageconfig"]->itemindex] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                    }
+                }
+            }
+        }
+        //HaaseIT\Tools::debug($itemindexpathtree, '$itemindexpathtree');
+        //HaaseIT\Tools::debug($aP["pageconfig"]->itemindex, '$aP["pageconfig"]->itemindex');
+
+        return $itemindexpathtree;
     }
 
     function queryItem($mItemIndex = '', $mItemno = '', $sOrderby = '')
