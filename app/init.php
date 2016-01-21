@@ -144,7 +144,7 @@ if (isset($C["debug"]) && $C["debug"]) {
 $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
 $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
 $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
-$twig->addFunction('ImgURL', new Twig_Function_Function('getSignedImgURL'));
+$twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
 
 // ----------------------------------------------------------------------------
 // Begin language detection

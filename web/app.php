@@ -27,7 +27,7 @@ require __DIR__.'/../app/init.php';
 //HaaseIT\Tools::debug($aPath);
 //HaaseIT\Tools::debug('Path: '.$sPath);
 
-$aP = generatePage($C, $P, $sLang, $DB, $oItem);
+$aP = \HaaseIT\HCSF\Helper::generatePage($C, $P, $sLang, $oItem);
 
 $response = new \Zend\Diactoros\Response();
 $response->getBody()->write($twig->render($C["template_base"], $aP));

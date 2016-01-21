@@ -26,7 +26,7 @@ class Base extends \HaaseIT\HCSF\Controller\Base
     public function __construct($C, $DB, $sLang)
     {
         parent::__construct($C, $DB, $sLang);
-        requireAdminAuth($C, true);
+        \HaaseIT\HCSF\Helper::requireAdminAuth($C, true);
 
         $this->P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $this->P->cb_pagetype = 'content';

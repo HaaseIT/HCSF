@@ -217,8 +217,8 @@ class Shoppingcart extends Base
                         } else $aFilesToSend = array();
 
                         // Send Mails
-                        mailWrapper($C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
-                        mailWrapper($C, $C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
+                        \HaaseIT\HCSF\Helper::mailWrapper($C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+                        \HaaseIT\HCSF\Helper::mailWrapper($C, $C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
 
                         if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
                         if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);
