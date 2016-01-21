@@ -55,7 +55,7 @@ $C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
 if (is_file(__DIR__.'/config/config.core.yml')) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
 $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
-
+$C['directory_images'] = trim($C['directory_images'], " \t\n\r\0\x0B/"); // trim this
 if (!empty($C['maintenancemode']) && $C['maintenancemode']) {
     $C["enable_module_customer"] = false;
     $C["enable_module_shop"] = false;
@@ -119,8 +119,6 @@ if ($C["enable_module_shop"]) {
         $C["vat"] = array("full" => 0, "reduced" => 0);
     }
 }
-
-require_once PATH_BASEDIR.'src/functions.core.php';
 
 date_default_timezone_set($C["defaulttimezone"]);
 

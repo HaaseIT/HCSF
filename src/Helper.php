@@ -25,10 +25,6 @@ class Helper
 {
     public static function getSignedGlideURL($file, $w = 0, $h =0)
     {
-        if (!is_file($file)) {
-            return false;
-        }
-
         $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
 
         if ($w == 0 && $h == 0) return false;

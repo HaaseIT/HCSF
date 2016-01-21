@@ -71,24 +71,30 @@ class Router
                 $aPath = explode('/', $sPath);
 
                 if ($aPath[1] == $C['directory_images']) {
-                    $glideserver = \League\Glide\ServerFactory::create([
-                        'source' => PATH_DOCROOT . $C['directory_images'] . '/master',
-                        'cache' => PATH_GLIDECACHE,
-                        'max_image_size' => 2000 * 2000,
-                    ]);
-                    $glideserver->setBaseUrl('/' . $C['directory_images'] . '/');
-                    // Generate a URL
+                    $sImageroot = PATH_DOCROOT . $C['directory_images'] . '/master';
 
-                    try {
-                        // Validate HTTP signature
-                        \League\Glide\Signatures\SignatureFactory::create(GLIDE_SIGNATURE_KEY)->validateRequest($sPath, $_GET);
-                        $glideserver->outputImage($sPath, $_GET);
-                        die();
+                    if (
+                        is_file($sImageroot.substr($sPath, strlen($C['directory_images']) + 1))
+                        && getimagesize($sImageroot.substr($sPath, strlen($C['directory_images']) + 1))
+                    ) {
+                        $glideserver = \League\Glide\ServerFactory::create([
+                            'source' => $sImageroot,
+                            'cache' => PATH_GLIDECACHE,
+                            'max_image_size' => $C['glide_max_imagesize'],
+                        ]);
+                        $glideserver->setBaseUrl('/' . $C['directory_images'] . '/');
+                        // Generate a URL
 
-                    } catch (\League\Glide\Signatures\SignatureException $e) {
-                        $this->P = 404;
+                        try {
+                            // Validate HTTP signature
+                            \League\Glide\Signatures\SignatureFactory::create(GLIDE_SIGNATURE_KEY)->validateRequest($sPath, $_GET);
+                            $glideserver->outputImage($sPath, $_GET);
+                            die();
+
+                        } catch (\League\Glide\Signatures\SignatureException $e) {
+                            $this->P = 404;
+                        }
                     }
-
                 } else {
                     // /xxxx/item/0010.html
                     if ($C["enable_module_shop"]) {
