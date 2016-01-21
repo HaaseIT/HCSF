@@ -11,14 +11,24 @@ namespace HaaseIT\HCSF;
 
 class Router
 {
-    private $P;
+    private $P, $C, $DB, $sLang, $twig, $oItem, $request;
 
     public function __construct($C, $DB, $sLang, $request, $twig, $oItem)
     {
-        if ($C['maintenancemode']) {
+        $this->C = $C;
+        $this->DB = $DB;
+        $this->sLang = $sLang;
+        $this->request = $request;
+        $this->twig = $twig;
+        $this->oItem = $oItem;
+    }
+
+    public function getPage()
+    {
+        if ($this->C['maintenancemode']) {
             $class = '\\HaaseIT\\HCSF\\Controller\\Maintenance';
             try {
-                $controller = new $class($C, $DB, $sLang, $twig, $oItem);
+                $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem);
                 $this->P = $controller->getPage();
             } catch (\Exception $e) {
                 $this->P = $e->getMessage();
@@ -56,13 +66,14 @@ class Router
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
             $this->P = 404;
-            $aURL = parse_url($request->getRequestTarget());
+            $aURL = parse_url($this->request->getRequestTarget());
             $sPath = $aURL["path"];
 
             if (!empty($map[$sPath])) {
+
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$sPath];
                 try {
-                    $controller = new $class($C, $DB, $sLang, $twig, $oItem);
+                    $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = $e->getMessage();
@@ -70,19 +81,19 @@ class Router
             } else {
                 $aPath = explode('/', $sPath);
 
-                if ($aPath[1] == $C['directory_images']) {
-                    $sImageroot = PATH_DOCROOT . $C['directory_images'] . '/master';
+                if ($aPath[1] == $this->C['directory_images']) {
+                    $sImageroot = PATH_DOCROOT . $this->C['directory_images'] . '/master';
 
                     if (
-                        is_file($sImageroot.substr($sPath, strlen($C['directory_images']) + 1))
-                        && getimagesize($sImageroot.substr($sPath, strlen($C['directory_images']) + 1))
+                        is_file($sImageroot.substr($sPath, strlen($this->C['directory_images']) + 1))
+                        && getimagesize($sImageroot.substr($sPath, strlen($this->C['directory_images']) + 1))
                     ) {
                         $glideserver = \League\Glide\ServerFactory::create([
                             'source' => $sImageroot,
                             'cache' => PATH_GLIDECACHE,
-                            'max_image_size' => $C['glide_max_imagesize'],
+                            'max_image_size' => $this->C['glide_max_imagesize'],
                         ]);
-                        $glideserver->setBaseUrl('/' . $C['directory_images'] . '/');
+                        $glideserver->setBaseUrl('/' . $this->C['directory_images'] . '/');
                         // Generate a URL
 
                         try {
@@ -97,7 +108,7 @@ class Router
                     }
                 } else {
                     // /xxxx/item/0010.html
-                    if ($C["enable_module_shop"]) {
+                    if ($this->C["enable_module_shop"]) {
                         $aTMP["parts_in_path"] = count($aPath);
                         // if the last dir in path is 'item' and the last part of the path is not empty
                         if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
@@ -132,7 +143,7 @@ class Router
                         unset($aTMP);
                     }
 
-                    $this->P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
+                    $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $sPath);
 
                     // go and look if the page can be loaded yet
                     if ($this->P->cb_id == NULL) {
@@ -144,7 +155,7 @@ class Router
 
                         if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
 
-                        $this->P = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $sPath);
+                        $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $sPath);
                     }
                     unset($aPath); // no longer needed
                     //die(var_dump($this->P));
@@ -166,7 +177,7 @@ class Router
                 }
 
                 if (!is_object($this->P) && $this->P == 404) {
-                    $this->P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+                    $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
                     $this->P->cb_pagetype = 'error';
 
                     $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
@@ -182,15 +193,11 @@ class Router
                         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
                         header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
                     }
-                } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $sLang) { // if the page is available but not in the current language, display info
+                } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->sLang) { // if the page is available but not in the current language, display info
                     $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
                 }
             }
         }
-    }
-
-    public function getPage()
-    {
         return $this->P;
     }
 }
