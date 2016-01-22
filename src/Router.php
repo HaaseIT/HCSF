@@ -11,7 +11,7 @@ namespace HaaseIT\HCSF;
 
 class Router
 {
-    private $P, $C, $DB, $sLang, $twig, $oItem, $request;
+    private $P, $C, $DB, $sLang, $twig, $oItem, $request, $sPath;
 
     public function __construct($C, $DB, $sLang, $request, $twig, $oItem)
     {
@@ -67,44 +67,37 @@ class Router
             ];
             $this->P = 404;
             $aURL = parse_url($this->request->getRequestTarget());
-            $sPath = $aURL["path"];
+            $this->sPath = $aURL["path"];
 
-            if (!empty($map[$sPath])) {
+            /*
+            Roadmap for next refactoring:
+            */
 
-                $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$sPath];
+            // first, check, if the needed controller is in the $map, set classname according to map
+
+            // if not, check if this is a glide request, if so, set classname to glide controller
+
+            // next, check if this is a request for an item, if so, set the classname to the correct controller or whatever :)
+
+            // last, check in db for page and set classname to page controller or set to page controller and handle 404 there
+
+            $aPath = explode('/', $this->sPath);
+            if (!empty($map[$this->sPath])) {
+                $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
                 try {
-                    $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem);
+                    $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = $e->getMessage();
                 }
             } else {
-                $aPath = explode('/', $sPath);
-
                 if ($aPath[1] == $this->C['directory_images']) {
-                    $sImageroot = PATH_DOCROOT . $this->C['directory_images'] . '/master';
-
-                    if (
-                        is_file($sImageroot.substr($sPath, strlen($this->C['directory_images']) + 1))
-                        && getimagesize($sImageroot.substr($sPath, strlen($this->C['directory_images']) + 1))
-                    ) {
-                        $glideserver = \League\Glide\ServerFactory::create([
-                            'source' => $sImageroot,
-                            'cache' => PATH_GLIDECACHE,
-                            'max_image_size' => $this->C['glide_max_imagesize'],
-                        ]);
-                        $glideserver->setBaseUrl('/' . $this->C['directory_images'] . '/');
-                        // Generate a URL
-
-                        try {
-                            // Validate HTTP signature
-                            \League\Glide\Signatures\SignatureFactory::create(GLIDE_SIGNATURE_KEY)->validateRequest($sPath, $_GET);
-                            $glideserver->outputImage($sPath, $_GET);
-                            die();
-
-                        } catch (\League\Glide\Signatures\SignatureException $e) {
-                            $this->P = 404;
-                        }
+                    $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
+                    try {
+                        $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
+                        $this->P = $controller->getPage();
+                    } catch (\Exception $e) {
+                        $this->P = $e->getMessage();
                     }
                 } else {
                     // /xxxx/item/0010.html
@@ -131,19 +124,19 @@ class Router
                                 $aRoutingoverride["cb_pagetype"] = 'itemdetail';
 
                                 // rebuild the path string without the trailing '/item/itemno.html'
-                                $sPath = '';
+                                $this->sPath = '';
                                 for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
-                                    $sPath .= $aPath[$i] . '/';
+                                    $this->sPath .= $aPath[$i] . '/';
                                 }
                             }
                         }
-                        //HaaseIT\Tools::debug($sPath);
+                        //HaaseIT\Tools::debug($this->sPath);
                         //HaaseIT\Tools::debug($aTMP);
                         //HaaseIT\Tools::debug($aRoutingoverride);
                         unset($aTMP);
                     }
 
-                    $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $sPath);
+                    $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
 
                     // go and look if the page can be loaded yet
                     if ($this->P->cb_id == NULL) {
@@ -151,11 +144,11 @@ class Router
                         If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
                         If there is already a slash at the end, the last part of the path array will be empty.
                          */
-                        if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $sPath .= '/';
+                        if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $this->sPath .= '/';
 
-                        if ($sPath[strlen($sPath) - 1] == '/') $sPath .= 'index.html';
+                        if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
-                        $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $sPath);
+                        $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
                     }
                     unset($aPath); // no longer needed
                     //die(var_dump($this->P));
