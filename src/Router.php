@@ -100,40 +100,8 @@ class Router
                         $this->P = $e->getMessage();
                     }
                 } else {
-                    // /xxxx/item/0010.html
                     if ($this->C["enable_module_shop"]) {
-                        $aTMP["parts_in_path"] = count($aPath);
-                        // if the last dir in path is 'item' and the last part of the path is not empty
-                        if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
-
-                            // explode the filename by .
-                            $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
-                            //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
-
-                            // if the filename ends in '.html', get the requested itemno
-                            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
-                                // to allow dots in the filename, we have to iterate through all parts of the filename
-                                $aRoutingoverride["itemno"] = '';
-                                for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
-                                    $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i] . '.';
-                                }
-                                // remove the trailing dot
-                                $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
-
-                                //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
-                                $aRoutingoverride["cb_pagetype"] = 'itemdetail';
-
-                                // rebuild the path string without the trailing '/item/itemno.html'
-                                $this->sPath = '';
-                                for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
-                                    $this->sPath .= $aPath[$i] . '/';
-                                }
-                            }
-                        }
-                        //HaaseIT\Tools::debug($this->sPath);
-                        //HaaseIT\Tools::debug($aTMP);
-                        //HaaseIT\Tools::debug($aRoutingoverride);
-                        unset($aTMP);
+                        $aRoutingoverride = $this->getRoutingoverride($aPath);
                     }
 
                     $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
@@ -192,5 +160,43 @@ class Router
             }
         }
         return $this->P;
+    }
+
+    private function getRoutingoverride($aPath)
+    {
+        $aRoutingoverride = [];
+        // /xxxx/item/0010.html
+        $aTMP["parts_in_path"] = count($aPath);
+        // if the last dir in path is 'item' and the last part of the path is not empty
+        if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
+
+            // explode the filename by .
+            $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
+            //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
+
+            // if the filename ends in '.html', get the requested itemno
+            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
+                // to allow dots in the filename, we have to iterate through all parts of the filename
+                $aRoutingoverride["itemno"] = '';
+                for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
+                    $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i] . '.';
+                }
+                // remove the trailing dot
+                $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
+
+                //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
+                $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+
+                // rebuild the path string without the trailing '/item/itemno.html'
+                $this->sPath = '';
+                for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
+                    $this->sPath .= $aPath[$i] . '/';
+                }
+            }
+        }
+        //HaaseIT\Tools::debug($this->sPath);
+        //HaaseIT\Tools::debug($aTMP);
+        //HaaseIT\Tools::debug($aRoutingoverride);
+        return $aRoutingoverride;
     }
 }
