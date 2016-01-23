@@ -69,21 +69,16 @@ class Router
             $aURL = parse_url($this->request->getRequestTarget());
             $this->sPath = $aURL["path"];
 
-            /*
-            Roadmap for next refactoring:
-            */
-
-            // first, check, if the needed controller is in the $map, set classname according to map
-
-            // if not, check if this is a glide request, if so, set classname to glide controller
-
-            // next, check if this is a request for an item, if so, set the classname to the correct controller or whatever :)
-
-            // last, check in db for page and set classname to page controller or set to page controller and handle 404 there
-
             $aPath = explode('/', $this->sPath);
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
+            } else {
+                if ($aPath[1] == $this->C['directory_images']) {
+                    $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
+                }
+            }
+
+            if (!empty($class)) {
                 try {
                     $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
                     $this->P = $controller->getPage();
@@ -91,72 +86,62 @@ class Router
                     $this->P = $e->getMessage();
                 }
             } else {
-                if ($aPath[1] == $this->C['directory_images']) {
-                    $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
-                    try {
-                        $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
-                        $this->P = $controller->getPage();
-                    } catch (\Exception $e) {
-                        $this->P = $e->getMessage();
-                    }
-                } else {
-                    if ($this->C["enable_module_shop"]) {
-                        $aRoutingoverride = $this->getRoutingoverride($aPath);
-                    }
+                if ($this->C["enable_module_shop"]) {
+                    $aRoutingoverride = $this->getRoutingoverride($aPath);
+                }
+
+                $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
+
+                // go and look if the page can be loaded yet
+                if ($this->P->cb_id == NULL) {
+                    /*
+                    If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
+                    If there is already a slash at the end, the last part of the path array will be empty.
+                     */
+                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $this->sPath .= '/';
+
+                    if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
                     $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
+                }
+                unset($aPath); // no longer needed
+                //die(var_dump($this->P));
 
-                    // go and look if the page can be loaded yet
-                    if ($this->P->cb_id == NULL) {
-                        /*
-                        If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
-                        If there is already a slash at the end, the last part of the path array will be empty.
-                         */
-                        if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $this->sPath .= '/';
-
-                        if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
-
-                        $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
+                if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
+                    $this->P = 404;
+                } else { // if it is found, go on
+                    // Support for shorturls
+                    if ($this->P->cb_pagetype == 'shorturl') {
+                        header('Location: ' . $this->P->cb_pageconfig, true, 302);
+                        exit();
                     }
-                    unset($aPath); // no longer needed
-                    //die(var_dump($this->P));
 
-                    if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
-                        $this->P = 404;
-                    } else { // if it is found, go on
-                        // Support for shorturls
-                        if ($this->P->cb_pagetype == 'shorturl') {
-                            header('Location: ' . $this->P->cb_pageconfig, true, 302);
-                            exit();
-                        }
-
-                        if (isset($this->P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
-                            $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
-                            $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
-                        }
+                    if (isset($this->P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
+                        $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
+                        $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
                     }
                 }
+            }
 
-                if (!is_object($this->P) && $this->P == 404) {
-                    $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
-                    $this->P->cb_pagetype = 'error';
+            if (!is_object($this->P) && $this->P == 404) {
+                $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+                $this->P->cb_pagetype = 'error';
 
-                    $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
+                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
+                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+            } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
+                if (
+                !(
+                    $this->P->cb_pagetype == 'itemoverview'
+                    || $this->P->cb_pagetype == 'itemoverviewgrpd'
+                    || $this->P->cb_pagetype == 'itemdetail'
+                )
+                ) { // no payload is fine if page is one of these
+                    $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
                     header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
-                } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
-                    if (
-                    !(
-                        $this->P->cb_pagetype == 'itemoverview'
-                        || $this->P->cb_pagetype == 'itemoverviewgrpd'
-                        || $this->P->cb_pagetype == 'itemdetail'
-                    )
-                    ) { // no payload is fine if page is one of these
-                        $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
-                        header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
-                    }
-                } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->sLang) { // if the page is available but not in the current language, display info
-                    $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
                 }
+            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->sLang) { // if the page is available but not in the current language, display info
+                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
             }
         }
         return $this->P;
