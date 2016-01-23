@@ -56,24 +56,22 @@
     <form id="addtoshoppingcart" method="POST" target="/_misc/update-cart.html" class="pure-form pure-form-stacked">
         <div id="item-detail-text">
             {{item.data.itml_text1}}
-            {% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
+            <p>{% if item.data.itm_data.soldout is not defined or not item.data.itm_data.soldout %}
                 {% if item.data.itm_data.size is defined %}
                     {% set itemsizes = item.data.itm_data.size|split('|') %}
                 {% endif %}
                 <input type="hidden" name="itemno" value="{{item.data.itm_no}}">
-                <div class="pure-u-1-2">
-                <label class="block">{{ T("itemdetail_label_amount") }}</label>
-                {{ macro.select('amount', orderamounts, '', 'item-detail-amount', 'block') }}
-                </div>{% if itemsizes is defined %}<div class="pure-u-1-2"><div
-                        id="item-detail-size-cont">
+            <div class="pure-u-1-2">{% if itemsizes is defined %}
                     <label class="block">{{ T("itemdetail_label_size") }}</label>
                     {{ macro.select('size', itemsizes, '', 'item-detail-size', 'block') }}
-                </div></div>
-            {% endif %}
-            {% endif %}
-
+            {% endif %}</div><div class="pure-u-1-2"><div id="item-detail-amount-cont">
+                <label class="block">{{ T("itemdetail_label_amount") }}</label>
+                {{ macro.select('amount', orderamounts, '', 'item-detail-amount', 'block') }}
+            </div></div>{% endif %}
+            </p>
             <div class="pure-u-1-2">
-            </div><div class="pure-u-1-2"><div
+            </div><div class="pure-u-1-2">
+                <div
                         id="item-detail-price-cont">
                     <h4 id="item-detail-price">
                         {% if item.data.pricedata.netto_sale is defined and (item.data.pricedata.netto_rebated is not defined or item.data.pricedata.netto_sale < item.data.pricedata.netto_rebated) %}
