@@ -243,7 +243,7 @@ class Shopadmin extends Base
                 //HaaseIT\Tools::debug($aItemsforShoppingcarttable);
 
                 $aSData = array_merge(
-                    buildShoppingCartTable(
+                    \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
                         $this->sLang,
                         $this->C,

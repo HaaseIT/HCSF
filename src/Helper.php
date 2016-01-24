@@ -176,7 +176,7 @@ class Helper
         // Shopping cart infos
         if ($C["enable_module_shop"]) {
             if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-                $aCartsums = calculateCartItems($C, $_SESSION["cart"]);
+                $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
                 $aP["cartinfo"] = array(
                     'numberofitems' => count($_SESSION["cart"]),
                     'cartsums' => $aCartsums,

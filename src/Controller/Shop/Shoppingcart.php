@@ -22,9 +22,11 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Shoppingcart extends Base
 {
+    private $twig;
     public function __construct($C, $DB, $sLang, $twig, $oItem)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
 
         $this->P->cb_pagetype = 'contentnosubnav';
 
@@ -87,7 +89,7 @@ class Shoppingcart extends Base
                         $aErr["paymentmethod"] = true;
                     }
                 }
-                $aShoppingcart = buildShoppingCartTable($_SESSION["cart"], $sLang, $C, false, '', $aErr);
+                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $sLang, $C, false, '', $aErr);
             }
 
             // ----------------------------------------------------------------------------
@@ -124,7 +126,7 @@ class Shoppingcart extends Base
                                 'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
                                 'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
                                 'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-                                'o_shippingcost' => getShippingcost($C, $sLang),
+                                'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($C, $sLang),
                                 'o_orderdate' => date("Y-m-d"),
                                 'o_ordertimestamp' => time(),
                                 'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
@@ -203,8 +205,8 @@ class Shoppingcart extends Base
                             $DB->rollBack();
                         }
                         //die(debug($aDataOrderClean, true).debug($aDataOrderItemsClean, true));
-                        $sMailbody_us = buildOrderMailBody($C, $sLang, $twig, false, $iInsertID);
-                        $sMailbody_they = buildOrderMailBody($C, $sLang, $twig, true, $iInsertID);
+                        $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
+                        $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
 
                         // write to file
                         $fp = fopen(PATH_LOGS . 'shoplog_' . date("Y-m-d") . '.html', 'a');
@@ -241,4 +243,46 @@ class Shoppingcart extends Base
             }
         }
     }
+
+    private function buildOrderMailBody($bCust = true, $iId = 0)
+    {
+        $aSHC = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->sLang, $this->C, true);
+
+        $aData = array(
+            'customerversion' => $bCust,
+            //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
+            'datetime' => date("d.m.Y - H:i"),
+            'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $this->C["minimum_length_custno"] ? $_POST["custno"] : ''),
+            'corpname' => (isset($_POST["corpname"]) && trim($_POST["corpname"]) != '' ? $_POST["corpname"] : ''),
+            'name' => (isset($_POST["name"]) && trim($_POST["name"]) != '' ? $_POST["name"] : ''),
+            'street' => (isset($_POST["street"]) && trim($_POST["street"]) != '' ? $_POST["street"] : ''),
+            'zip' => (isset($_POST["zip"]) && trim($_POST["zip"]) != '' ? $_POST["zip"] : ''),
+            'town' => (isset($_POST["town"]) && trim($_POST["town"]) != '' ? $_POST["town"] : ''),
+            'phone' => (isset($_POST["phone"]) && trim($_POST["phone"]) != '' ? $_POST["phone"] : ''),
+            'cellphone' => (isset($_POST["cellphone"]) && trim($_POST["cellphone"]) != '' ? $_POST["cellphone"] : ''),
+            'fax' => (isset($_POST["fax"]) && trim($_POST["fax"]) != '' ? $_POST["fax"] : ''),
+            'email' => (isset($_POST["email"]) && trim($_POST["email"]) != '' ? $_POST["email"] : ''),
+            'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ? (isset($this->C["countries_".$this->sLang][$_POST["country"]]) ? $this->C["countries_".$this->sLang][$_POST["country"]] : $_POST["country"]) : ''),
+            'remarks' => (isset($_POST["remarks"]) && trim($_POST["remarks"]) != '' ? $_POST["remarks"] : ''),
+            'tos' => (isset($_POST["tos"]) && trim($_POST["tos"]) != '' ? $_POST["tos"] : ''),
+            'cancellationdisclaimer' => (isset($_POST["cancellationdisclaimer"]) && trim($_POST["cancellationdisclaimer"]) != '' ? $_POST["cancellationdisclaimer"] : ''),
+            'paymentmethod' => (isset($_POST["paymentmethod"]) && trim($_POST["paymentmethod"]) != '' ? $_POST["paymentmethod"] : ''),
+            'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
+            'paypallink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' ?  $_SERVER["HTTP_HOST"].'/_misc/paypal.html?id='.$iId : ''),
+            'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["HTTP_HOST"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
+            'SESSION' => (!$bCust ? \HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
+            'POST' => (!$bCust ? \HaaseIT\Tools::debug($_POST, '$_POST', true, true) : ''),
+            'orderid' => $iId,
+        );
+
+        $aM["customdata"] = $aSHC;
+        $aM['currency'] = $this->C["waehrungssymbol"];
+        if (isset($this->C["custom_order_fields"])) $aM["custom_order_fields"] = $this->C["custom_order_fields"];
+        $aM["customdata"]["mail"] = $aData;
+
+        $sH = $this->twig->render('shop/mail-order-html.twig', $aM);
+
+        return $sH;
+    }
+
 }

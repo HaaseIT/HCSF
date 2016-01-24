@@ -42,7 +42,7 @@ class Checkedout extends Base
 
             if ($hResult->rowCount() == 1) {
                 $this->P->cb_customdata["order"] = $hResult->fetch();
-                $this->P->cb_customdata["gesamtbrutto"] = calculateTotalFromDB($this->P->cb_customdata["order"]);
+                $this->P->cb_customdata["gesamtbrutto"] = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($this->P->cb_customdata["order"]);
             }
         }
     }

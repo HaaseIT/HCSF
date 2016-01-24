@@ -52,7 +52,7 @@ class Login extends Base
         }
 
         if ($C["enable_module_shop"]) {
-            refreshCartItems($C, $oItem);
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($C, $oItem);
         }
     }
 

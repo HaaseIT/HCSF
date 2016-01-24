@@ -77,7 +77,7 @@ class Myorders extends Base
                         ];
                     }
 
-                    $aShoppingcart = buildShoppingCartTable(
+                    $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
                         $sLang,
                         $C,

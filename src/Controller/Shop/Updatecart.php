@@ -109,7 +109,7 @@ class Updatecart extends Base
             $aAR = [
                 'cart' => $_SESSION["cart"],
                 'reply' => $sReply,
-                'cartsums' => calculateCartItems($this->C, $_SESSION["cart"]),
+                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->C, $_SESSION["cart"]),
                 'currency' => $this->C["waehrungssymbol"],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);

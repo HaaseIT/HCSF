@@ -37,7 +37,7 @@ class Sofortueberweisung extends Base
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $fGesamtbrutto = calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $C["sofortueberweisung"]["user_id"];
             $sPURL .= '&amp;project_id=' . $C["sofortueberweisung"]["project_id"] . '&amp;amount='.number_format($fGesamtbrutto, 2, '.', '');

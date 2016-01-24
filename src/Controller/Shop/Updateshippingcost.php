@@ -27,7 +27,7 @@ class Updateshippingcost extends Base
         parent::__construct($C, $DB, $sLang);
 
         $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-        buildShoppingCartTable($_SESSION["cart"], $sLang, $C);
+        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $sLang, $C);
 
         header("Content-Type: text/html; charset=UTF-8");
         $sH = '<div>';

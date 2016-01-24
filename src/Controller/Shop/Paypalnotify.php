@@ -36,7 +36,7 @@ class Paypalnotify extends Base
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $fGesamtbrutto = calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $postdata = '';
 

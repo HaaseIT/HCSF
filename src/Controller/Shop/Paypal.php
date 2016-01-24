@@ -38,7 +38,7 @@ class Paypal extends Base
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
             //\HaaseIT\Tools::debug($aOrder);
-            $fGesamtbrutto = calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $sPaypalURL = $C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $C["paypal"]["business"];
             $sPaypalURL .= '&notify_url=http://' . $_SERVER["HTTP_HOST"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;

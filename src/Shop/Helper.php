@@ -113,7 +113,7 @@ class Helper
 
         if (isset($C["shippingcoststandardrate"]) && $C["shippingcoststandardrate"] != 0 &&
             ((!isset($C["mindestbetragversandfrei"]) || !$C["mindestbetragversandfrei"]) || $fGesamtnettoitems < $C["mindestbetragversandfrei"]))  {
-            $aOrder["fVersandkostennetto"] = getShippingcost($C, $sLang);
+            $aOrder["fVersandkostennetto"] = self::getShippingcost($C, $sLang);
             $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
             $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
@@ -129,7 +129,6 @@ class Helper
     public static function getShippingcost($C, $sLang) {
         $fShippingcost = $C["shippingcoststandardrate"];
 
-        $sCountry = '';
         if (isset($_SESSION["user"]["cust_country"])) {
             $sCountry = $_SESSION["user"]["cust_country"];
         } elseif (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes' && isset($_POST["country"])) {
@@ -139,7 +138,6 @@ class Helper
         } else {
             $sCountry = \HaaseIT\HCSF\Customer\Helper::getDefaultCountryByConfig($C, $sLang);
         }
-        //HaaseIT\Tools::debug($sCountry);
 
         foreach ($C["shippingcosts"] as $aValue) {
             if (isset($aValue["countries"][$sCountry])) {
@@ -149,48 +147,6 @@ class Helper
         }
 
         return $fShippingcost;
-    }
-
-    public static function buildOrderMailBody($C, $sLang, $twig, $bCust = true, $iId = 0)
-    {
-        $aSHC = buildShoppingCartTable($_SESSION["cart"], $sLang, $C, true);
-
-        $aData = array(
-            'customerversion' => $bCust,
-            //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
-            'datetime' => date("d.m.Y - H:i"),
-            'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $C["minimum_length_custno"] ? $_POST["custno"] : ''),
-            'corpname' => (isset($_POST["corpname"]) && trim($_POST["corpname"]) != '' ? $_POST["corpname"] : ''),
-            'name' => (isset($_POST["name"]) && trim($_POST["name"]) != '' ? $_POST["name"] : ''),
-            'street' => (isset($_POST["street"]) && trim($_POST["street"]) != '' ? $_POST["street"] : ''),
-            'zip' => (isset($_POST["zip"]) && trim($_POST["zip"]) != '' ? $_POST["zip"] : ''),
-            'town' => (isset($_POST["town"]) && trim($_POST["town"]) != '' ? $_POST["town"] : ''),
-            'phone' => (isset($_POST["phone"]) && trim($_POST["phone"]) != '' ? $_POST["phone"] : ''),
-            'cellphone' => (isset($_POST["cellphone"]) && trim($_POST["cellphone"]) != '' ? $_POST["cellphone"] : ''),
-            'fax' => (isset($_POST["fax"]) && trim($_POST["fax"]) != '' ? $_POST["fax"] : ''),
-            'email' => (isset($_POST["email"]) && trim($_POST["email"]) != '' ? $_POST["email"] : ''),
-            'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ? (isset($C["countries_".$sLang][$_POST["country"]]) ? $C["countries_".$sLang][$_POST["country"]] : $_POST["country"]) : ''),
-            'remarks' => (isset($_POST["remarks"]) && trim($_POST["remarks"]) != '' ? $_POST["remarks"] : ''),
-            'tos' => (isset($_POST["tos"]) && trim($_POST["tos"]) != '' ? $_POST["tos"] : ''),
-            'cancellationdisclaimer' => (isset($_POST["cancellationdisclaimer"]) && trim($_POST["cancellationdisclaimer"]) != '' ? $_POST["cancellationdisclaimer"] : ''),
-            'paymentmethod' => (isset($_POST["paymentmethod"]) && trim($_POST["paymentmethod"]) != '' ? $_POST["paymentmethod"] : ''),
-            'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
-            'paypallink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' ?  $_SERVER["HTTP_HOST"].'/_misc/paypal.html?id='.$iId : ''),
-            'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["HTTP_HOST"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
-            'SESSION' => (!$bCust ? HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
-            'POST' => (!$bCust ? HaaseIT\Tools::debug($_POST, '$_POST', true, true) : ''),
-            'orderid' => $iId,
-        );
-
-        $aM["customdata"] = $aSHC;
-        $aM['currency'] = $C["waehrungssymbol"];
-        if (isset($C["custom_order_fields"])) $aM["custom_order_fields"] = $C["custom_order_fields"];
-        $aM["customdata"]["mail"] = $aData;
-        //HaaseIT\Tools::debug($aM, '$aM');
-
-        $sH = $twig->render('shop/mail-order-html.twig', $aM);
-
-        return $sH;
     }
 
     public static function calculateCartItems($C, $aCart)
@@ -241,13 +197,13 @@ class Helper
             $iVATfull = $C["vat"]["full"];
             $iVATreduced = $C["vat"]["reduced"];
         }
-        $aSumme = calculateCartItems($C, $aCart);
+        $aSumme = self::calculateCartItems($C, $aCart);
         $aData["shoppingcart"] = array(
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
             'rebategroups' => $C["rebate_groups"],
-            'additionalcoststoitems' => addAdditionalCostsToItems($C, $sLang, $aSumme, $iVATfull, $iVATreduced),
+            'additionalcoststoitems' => self::addAdditionalCostsToItems($C, $sLang, $aSumme, $iVATfull, $iVATreduced),
             'minimumorderamountnet' => $C["minimumorderamountnet"],
             'reducedorderamountnet1' => $C["reducedorderamountnet1"],
             'reducedorderamountnet2' => $C["reducedorderamountnet2"],

@@ -28,7 +28,7 @@ class Logout extends Base
 
         unset($_SESSION["user"]);
         if ($C["enable_module_shop"] && isset($_SESSION["cart"])) {
-            refreshCartItems($C, $oItem);
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($C, $oItem);
         }
         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("logout_message");
     }
