@@ -26,7 +26,7 @@ class Verifyemail extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (getUserData()) {
+        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . ", " . DB_CUSTOMERTABLE_PKEY . " FROM " . DB_CUSTOMERTABLE;

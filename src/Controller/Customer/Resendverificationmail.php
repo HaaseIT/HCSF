@@ -26,7 +26,7 @@ class Resendverificationmail extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (getUserData()) {
+        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $sQ = "SELECT " . DB_ADDRESSFIELDS . ", " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " FROM " . DB_CUSTOMERTABLE;
@@ -41,7 +41,7 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow[DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE];
 
-                sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C, true);
+                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C, true);
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("register_verificationmailresent");
             }

@@ -26,7 +26,7 @@ class Userhome extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (!getUserData()) {
+        if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
@@ -91,10 +91,10 @@ class Userhome extends Base
                         }
                     }
                 }
-                $this->P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'editprofile', $sErr);
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'editprofile', $sErr);
                 //if ($C["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'userhome');
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'userhome');
             }
             $aPData["showprofilelinks"] = false;
             if (!isset($_GET["editprofile"])) {

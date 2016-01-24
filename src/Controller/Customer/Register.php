@@ -26,7 +26,7 @@ class Register extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (getUserData()) {
+        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
@@ -75,18 +75,18 @@ class Register extends Base
                         }
                         $hResult->execute();
 
-                        sendVerificationMail($sEmailVerificationcode, $sEmail, $C);
-                        sendVerificationMail($sEmailVerificationcode, $sEmail, $C, true);
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C);
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C, true);
                         $aPData["showsuccessmessage"] = true;
                     } else {
                         $aErr["emailalreadyexists"] = true;
-                        $this->P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'register', $aErr);
+                        $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'register', $aErr);
                     }
                 } else {
-                    $this->P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'register', $aErr);
+                    $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'register', $aErr);
                 }
             } else {
-                $this->P->cb_customdata["customerform"] = buildCustomerForm($C, $sLang, 'register');
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'register');
             }
             if (isset($aPData) && count($aPData)) {
                 $this->P->cb_customdata["register"] = $aPData;

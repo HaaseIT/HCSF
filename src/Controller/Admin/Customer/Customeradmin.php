@@ -151,7 +151,7 @@ class Customeradmin extends Base
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
                 //HaaseIT\Tools::debug($aUser);
-                $aPData["customerform"] = buildCustomerForm($this->C, $this->sLang, 'admin', $aErr, $aUser);
+                $aPData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'admin', $aErr, $aUser);
             } else {
                 $aInfo["nosuchuserfound"] = true;
             }

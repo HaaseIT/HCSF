@@ -26,7 +26,7 @@ class Checkedout extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if ($C["show_pricesonlytologgedin"] && !getUserData()) {
+        if ($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'shop/checkedout';

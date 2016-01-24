@@ -26,7 +26,7 @@ class Updatecart extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (($C["show_pricesonlytologgedin"] && !getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
+        if (($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $iAmount = '';

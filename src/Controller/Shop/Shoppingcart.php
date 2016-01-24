@@ -28,7 +28,7 @@ class Shoppingcart extends Base
 
         $this->P->cb_pagetype = 'contentnosubnav';
 
-        if ($C["show_pricesonlytologgedin"] && !getUserData()) {
+        if ($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
             require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
@@ -77,10 +77,10 @@ class Shoppingcart extends Base
                 $aErr = array();
                 if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
                     $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr, true);
-                    if (!getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
+                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }
-                    if (!getUserData() && (!isset($_POST["cancellationdisclaimer"]) || $_POST["cancellationdisclaimer"] != 'y')) {
+                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["cancellationdisclaimer"]) || $_POST["cancellationdisclaimer"] != 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
                     if (!isset($_POST["paymentmethod"]) || array_search($_POST["paymentmethod"], $C["paymentmethods"]) === false) {
@@ -112,10 +112,10 @@ class Shoppingcart extends Base
                                 'o_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'o_group' => trim(getUserData(DB_CUSTOMERFIELD_GROUP)),
+                                'o_group' => trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP)),
                                 'o_remarks' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'o_tos' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y' || getUserData()) ? 'y' : 'n'),
-                                'o_cancellationdisclaimer' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y' || getUserData()) ? 'y' : 'n'),
+                                'o_tos' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
+                                'o_cancellationdisclaimer' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
                                 'o_paymentmethod' => filter_var(trim(\HaaseIT\Tools::getFormfield("paymentmethod")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_sumvoll' => $_SESSION["cartpricesums"]["sumvoll"],
                                 'o_sumerm' => $_SESSION["cartpricesums"]["sumerm"],
@@ -127,7 +127,7 @@ class Shoppingcart extends Base
                                 'o_shippingcost' => getShippingcost($C, $sLang),
                                 'o_orderdate' => date("Y-m-d"),
                                 'o_ordertimestamp' => time(),
-                                'o_authed' => ((getUserData()) ? 'y' : 'n'),
+                                'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
                                 'o_sessiondata' => serialize($_SESSION),
                                 'o_postdata' => serialize($_POST),
                                 'o_remote_address' => $_SERVER["REMOTE_ADDR"],
@@ -178,7 +178,7 @@ class Shoppingcart extends Base
                                         'oi_price_brutto_rebated' => isset($aV["price"]["brutto_rebated"]) ? $aV["price"]["brutto_rebated"] : '',
                                         'oi_vat' => $C["vat"][$aV["vat"]],
                                         'oi_rg' => $aV["rg"],
-                                        'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(getUserData(DB_CUSTOMERFIELD_GROUP))]) ? $C["rebate_groups"][$aV["rg"]][trim(getUserData(DB_CUSTOMERFIELD_GROUP))] : '',
+                                        'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))]) ? $C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))] : '',
                                         'oi_itemname' => $aV["name"],
                                         'oi_img' => $base64Img,
                                     );

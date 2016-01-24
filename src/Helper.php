@@ -114,7 +114,7 @@ class Helper
             'numberformat_thousands_seperator' => $C['numberformat_thousands_seperator'],
         );
         if ($C["enable_module_customer"]) {
-            $aP["isloggedin"] = getUserData();
+            $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP["enable_module_customer"] = true;
         }
         if ($C["enable_module_shop"]) {
@@ -175,7 +175,7 @@ class Helper
 
         // Shopping cart infos
         if ($C["enable_module_shop"]) {
-            if ((!$C["show_pricesonlytologgedin"] || getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+            if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
                 $aCartsums = calculateCartItems($C, $_SESSION["cart"]);
                 $aP["cartinfo"] = array(
                     'numberofitems' => count($_SESSION["cart"]),

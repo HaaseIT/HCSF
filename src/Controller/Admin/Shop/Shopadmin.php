@@ -211,7 +211,7 @@ class Shopadmin extends Base
                     DB_CUSTOMERFIELD_COUNTRY => $aSData["orderdata"]["o_country"],
                     DB_CUSTOMERFIELD_GROUP => $aSData["orderdata"]["o_group"],
                 ];
-                $aSData["customerform"] = buildCustomerForm($this->C, $this->sLang, 'shopadmin', '', $aUserdata);
+                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'shopadmin', '', $aUserdata);
 
                 $aSData["orderdata"]["options_shippingservices"] = [''];
                 foreach ($this->C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;

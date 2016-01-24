@@ -229,9 +229,9 @@ class Items
                     $aPrice["brutto_sale"] =  ($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$sMwstart] / 100) + $aData["itm_data"]["sale"]["price"];
                 }
             }
-            if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][getUserData('cust_group')])) {
-                $aPrice["netto_rebated"] = $fPrice * (100 - $this->C["rebate_groups"][$sRG][\getUserData('cust_group')]) / 100;
-                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$sMwstart] / 100) + $aPrice["netto_rebated"];;
+            if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])) {
+                $aPrice["netto_rebated"] = $fPrice * (100 - $this->C["rebate_groups"][$sRG][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]) / 100;
+                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$sMwstart] / 100) + $aPrice["netto_rebated"];
             }
             $fBrutto = ($fPrice * $this->C["vat"][$sMwstart] / 100) + $fPrice;
             $aPrice["netto_list"] = $fPrice;

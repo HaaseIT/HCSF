@@ -26,7 +26,7 @@ class Myorders extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (!getUserData()) {
+        if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
             require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';

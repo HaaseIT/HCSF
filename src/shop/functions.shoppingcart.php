@@ -43,7 +43,7 @@ function showMyOrders($COList, $twig, $DB)
     $sQ .= "ORDER BY o_ordertimestamp DESC";
 
     $hResult = $DB->prepare($sQ);
-    $hResult->bindValue(':custno', getUserData('cust_no'));
+    $hResult->bindValue(':custno', \HaaseIT\HCSF\Customer\Helper::getUserData('cust_no'));
     $hResult->execute();
 
     if ($hResult->rowCount() >= 1) {
@@ -172,7 +172,7 @@ function getShippingcost($C, $sLang) {
     } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
         $sCountry = $_SESSION["formsave_addrform"]["country"];
     } else {
-        $sCountry = getDefaultCountryByConfig($C, $sLang);
+        $sCountry = \HaaseIT\HCSF\Customer\Helper::getDefaultCountryByConfig($C, $sLang);
     }
     //HaaseIT\Tools::debug($sCountry);
 
@@ -301,7 +301,7 @@ function buildShoppingCartTable($aCart, $sLang, $C, $bReadonly = false, $sCustom
     }
 
     if ($aData["shoppingcart"]["additionalcoststoitems"]["bMindesterreicht"] && !$bReadonly) {
-        $aData["customerform"] = buildCustomerForm($C, $sLang, 'shoppingcart', $aErr);
+        $aData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'shoppingcart', $aErr);
     }
     
     return $aData;

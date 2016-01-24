@@ -26,7 +26,7 @@ class Forgotpassword extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (getUserData()) {
+        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
