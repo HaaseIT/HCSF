@@ -26,7 +26,7 @@ class Resetpassword extends Base
     {
         parent::__construct($C, $DB, $sLang);
 
-        if (getUserData()) {
+        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
@@ -37,8 +37,8 @@ class Resetpassword extends Base
                 $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
                 $hResult = $DB->prepare($sQ);
-                $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
-                $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), PDO::PARAM_STR);
+                $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
+                $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
                 if ($hResult->rowCount() != 1) {
                     $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
@@ -52,7 +52,7 @@ class Resetpassword extends Base
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
                         $this->P->cb_customdata["pwreset"]["minpwlength"] = $C["minimum_length_password"];
                         if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                            $aErr = handlePasswordReset($DB, $C, $aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
+                            $aErr = $this->handlePasswordReset($aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
                             if (count($aErr) == 0) {
                                 $this->P->cb_customdata["pwreset"]["showsuccessmessage"] = true;
                             } else {
@@ -64,4 +64,28 @@ class Resetpassword extends Base
             }
         }
     }
+
+    private function handlePasswordReset($aErr, $iID) {
+        if (isset($_POST["pwd"]) && trim($_POST["pwd"]) != '') {
+            if (strlen($_POST["pwd"]) < $this->C["minimum_length_password"] || strlen($_POST["pwd"]) > $C["maximum_length_password"]) $aErr[] = 'pwlength';
+            if ($_POST["pwd"] != $_POST["pwdc"]) $aErr[] = 'pwmatch';
+            if (count($aErr) == 0) {
+                $sEnc = crypt($_POST["pwd"], $this->C["blowfish_salt"]);
+                $aData = array(
+                    DB_CUSTOMERFIELD_PASSWORD => $sEnc,
+                    DB_CUSTOMERFIELD_PWRESETCODE => '',
+                    DB_CUSTOMERTABLE_PKEY => $iID,
+                );
+                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                $hResult = $this->DB->prepare($sQ);
+                foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                $hResult->execute();
+            }
+        } else {
+            $aErr[] = 'nopw';
+        }
+
+        return $aErr;
+    }
+
 }
