@@ -204,10 +204,6 @@ if (!$C['maintenancemode']) {
     $DB = null;
 }
 
-if ($C["enable_module_customer"]) {
-    require_once __DIR__.'/../src/customer/functions.customer.php';
-}
-
 $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
 
 if ($C["enable_module_shop"]) {
@@ -224,7 +220,7 @@ if ($C["enable_module_shop"]) {
 }
 
 if ($C["enable_module_customer"]) {
-    require_once __DIR__.'/../src/customer/functions.customer.php';
+    require_once __DIR__ . '/../src/Customer/functions.customer.php';
     $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
 }
 
