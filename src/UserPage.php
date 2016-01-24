@@ -28,6 +28,7 @@ class UserPage extends Page
 
     public function __construct($C, $sLang, $DB, $sPagekey, $bReturnRaw = false) {
         if (!$bReturnRaw) $this->C = $C;
+        $this->iStatus = 200;
         $this->sLang = $sLang;
         $this->DB = $DB;
         $this->bReturnRaw = $bReturnRaw;

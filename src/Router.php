@@ -126,6 +126,7 @@ class Router
             if (!is_object($this->P) && $this->P == 404) {
                 $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
                 $this->P->cb_pagetype = 'error';
+                $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");

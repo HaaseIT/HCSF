@@ -30,6 +30,7 @@ require __DIR__.'/../app/init.php';
 $aP = \HaaseIT\HCSF\Helper::generatePage($C, $P, $sLang, $oItem);
 
 $response = new \Zend\Diactoros\Response();
+$response = $response->withStatus($P->iStatus);
 $response->getBody()->write($twig->render($C["template_base"], $aP));
 
 $emitter = new \Zend\Diactoros\Response\SapiEmitter();

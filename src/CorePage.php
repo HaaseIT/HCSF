@@ -25,6 +25,7 @@ class CorePage extends Page
 {
     public function __construct($C, $sLang)
     {
+        $this->iStatus = 200;
         $this->C = $C;
         $this->sLang = $sLang;
         $this->getPayload();
