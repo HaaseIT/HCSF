@@ -50,6 +50,8 @@ class Glide extends Base
             } catch (\League\Glide\Signatures\SignatureException $e) {
                 $this->P = 404;
             }
+        } else {
+            $this->P = 404;
         }
     }
 
