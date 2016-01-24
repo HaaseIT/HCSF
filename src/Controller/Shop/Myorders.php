@@ -22,9 +22,11 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Myorders extends Base
 {
+    private $twig;
     public function __construct($C, $DB, $sLang, $twig, $oItem)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
@@ -48,7 +50,7 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open"));
-                    $this->P->cb_customdata['orderdata']['orderstatus'] = showOrderStatusText($aOrder["o_ordercompleted"]);
+                    $this->P->cb_customdata['orderdata']['orderstatus'] = \HaaseIT\HCSF\Shop\Helper::showOrderStatusText($aOrder["o_ordercompleted"]);
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder["o_shipping_service"];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
@@ -107,7 +109,7 @@ class Myorders extends Base
                     ],
                 ];
 
-                $this->P->cb_customdata['listmyorders'] = showMyOrders($COList, $twig, $DB);
+                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $twig, $DB);
             }
 
             if (isset($aShoppingcart)) {
@@ -115,4 +117,46 @@ class Myorders extends Base
             }
         }
     }
+
+    private function showMyOrders($COList)
+    {
+        $sH = '';
+        $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
+        $sQ .= "o_custno = :custno ";
+        $sQ .= "ORDER BY o_ordertimestamp DESC";
+
+        $hResult = $this->DB->prepare($sQ);
+        $hResult->bindValue(':custno', \HaaseIT\HCSF\Customer\Helper::getUserData('cust_no'));
+        $hResult->execute();
+
+        if ($hResult->rowCount() >= 1) {
+            while ($aRow = $hResult->fetch()) {
+                $sStatus = self::showOrderStatusText($aRow["o_ordercompleted"]);
+
+                if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_prepay");
+                elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_paypal");
+                elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_debit");
+                elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_invoice");
+                else $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);
+
+                if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_yes"));
+                else $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_no"));
+
+                $aData[] = array(
+                    'o_id' => $aRow["o_id"],
+                    'o_order_status' => $sStatus,
+                    'o_ordertime' => date("d.m.y H:i", $aRow["o_ordertimestamp"]),
+                    'o_paymentmethod' => $sPaymentmethod,
+                    'o_paymentcompleted' => $sPaymentstatus,
+                    'o_shipping_service' => $aRow["o_shipping_service"],
+                    'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
+                );
+            }
+            $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
+            //HaaseIT\Tools::debug($aData);
+        } else $sH .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
+
+        return $sH;
+    }
+
 }
