@@ -109,7 +109,7 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
                     }
-                    $aErr = validateCustomerForm($this->C, $this->sLang, $aErr, true);
+                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
                             DB_CUSTOMERFIELD_NUMBER => $sCustno,

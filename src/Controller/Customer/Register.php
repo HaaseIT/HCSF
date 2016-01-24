@@ -33,7 +33,7 @@ class Register extends Base
 
             $aErr = array();
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
-                $aErr = validateCustomerForm($C, $sLang, $aErr);
+                $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr);
                 if (count($aErr) == 0) {
                     $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . " FROM " . DB_CUSTOMERTABLE;
                     $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email";

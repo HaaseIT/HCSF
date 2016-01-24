@@ -76,7 +76,7 @@ class Shoppingcart extends Base
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                 $aErr = array();
                 if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
-                    $aErr = validateCustomerForm($C, $sLang, $aErr, true);
+                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr, true);
                     if (!getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }

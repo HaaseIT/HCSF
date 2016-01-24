@@ -53,7 +53,7 @@ class Userhome extends Base
                     //debug($sQ);
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse") . '<br>';
-                    $sErr = validateCustomerForm($C, $sLang, $sErr, true);
+                    $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $sErr, true);
 
                     if ($sErr == '') {
                         if ($C["allow_edituserprofile"]) {
