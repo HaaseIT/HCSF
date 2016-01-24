@@ -29,7 +29,7 @@ class Login extends Base
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
-            $mLogin = getLogin($C, $DB);
+            $mLogin = $this->getLogin($C, $DB);
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
@@ -55,4 +55,58 @@ class Login extends Base
             refreshCartItems($C, $oItem);
         }
     }
+
+    private function getLogin()
+    {
+        $bTryEmail = false;
+        if (DB_CUSTOMERFIELD_USER != DB_CUSTOMERFIELD_EMAIL) $bTryEmail = true;
+        $sEnc = crypt($_POST["password"], $this->C["blowfish_salt"]);
+
+        $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
+        $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+
+        $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ";
+        if ($bTryEmail) $sQ .= "(";
+        $sQ .= DB_CUSTOMERFIELD_USER." = :user";
+        if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." = :email) ";
+        $sQ .= " AND ";
+        if ($bTryEmail) $sQ .= "(";
+        $sQ .= DB_CUSTOMERFIELD_USER." != ''";
+        if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." != '')";
+        $sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
+
+        $hResult = $this->DB->prepare($sQ);
+        $hResult->bindValue(':user', $sUser, PDO::PARAM_STR);
+        if ($bTryEmail) {
+            $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
+        }
+        $hResult->bindValue(':pwd', $sEnc, PDO::PARAM_STR);
+        $hResult->execute();
+        //HaaseIT\Tools::debug($sQ);
+        //HaaseIT\Tools::debug($sEnc);
+
+        $iRows = $hResult->rowCount();
+        if($iRows == 1) {
+            $aRow = $hResult->fetch();
+            //HaaseIT\Tools::debug($aRow);
+            if ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'y' && $aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'y' && $aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'y') {
+                $_SESSION["user"] = $aRow;
+                $mGet["status"] = 'success';
+            } elseif ($aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'n') {
+                $mGet["status"] = 'tosnotaccepted';
+            } elseif ($aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'n') {
+                $mGet["status"] = 'emailnotverified';
+                $mGet["data"] = $aRow;
+            } elseif ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'n') {
+                $mGet["status"] = 'accountinactive';
+            } else {
+                $mGet = false;
+            }
+        } else {
+            $mGet = false;
+        }
+
+        return $mGet;
+    }
+
 }
