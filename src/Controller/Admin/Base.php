@@ -23,13 +23,45 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Base extends \HaaseIT\HCSF\Controller\Base
 {
+    protected $bAdminhome = false;
     public function __construct($C, $DB, $sLang)
     {
         parent::__construct($C, $DB, $sLang);
-        \HaaseIT\HCSF\Helper::requireAdminAuth($C, true);
+        $this->requireAdminAuth($this->bAdminhome);
 
         $this->P = new \HaaseIT\HCSF\CorePage($C, $sLang);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
+    }
+
+    private function requireAdminAuth($bAdminhome = false) {
+        if ((empty($this->C['admin_users']) || !count($this->C['admin_users'])) && $bAdminhome) {
+            return true;
+        } elseif (count($this->C['admin_users'])) {
+            $valid_users = array_keys($this->C['admin_users']);
+
+            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
+                list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
+            }
+
+            if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+                $user = $_SERVER['PHP_AUTH_USER'];
+                $pass = crypt($_SERVER['PHP_AUTH_PW'], $this->C["blowfish_salt"]);
+
+                $validated = (in_array($user, $valid_users)) && ($pass == $this->C['admin_users'][$user]);
+            } else {
+                $validated = false;
+            }
+
+            if (!$validated) {
+                header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+                header('HTTP/1.0 401 Unauthorized');
+                die("Not authorized");
+            }
+        } else {
+            header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+            header('HTTP/1.0 401 Unauthorized');
+            die('Not authorized');
+        }
     }
 }

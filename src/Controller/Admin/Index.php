@@ -24,6 +24,7 @@ class Index extends Base
 {
     public function __construct($C, $DB, $sLang)
     {
+        $this->bAdminhome = true;
         parent::__construct($C, $DB, $sLang);
         $this->P->cb_customcontenttemplate = 'adminhome';
         $this->P->cb_customdata = array(
