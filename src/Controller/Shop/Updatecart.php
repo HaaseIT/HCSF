@@ -96,7 +96,6 @@ class Updatecart extends Base
                     } else { // if this item is not in the cart yet, add it
                         $_SESSION["cart"][$sCartKey] = $aItem;
                     }
-                    //debug($_SESSION);
                     $this->replyToCartUpdate($twig, 'added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
             }
@@ -111,6 +110,9 @@ class Updatecart extends Base
                 'reply' => $sReply,
                 'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->C, $_SESSION["cart"]),
                 'currency' => $this->C["waehrungssymbol"],
+                'numberformat_decimals' => $this->C['numberformat_decimals'],
+                'numberformat_decimal_point' => $this->C['numberformat_decimal_point'],
+                'numberformat_thousands_seperator' => $this->C['numberformat_thousands_seperator'],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);
             echo $twig->render('shop/update-cart.twig', $aAR);
