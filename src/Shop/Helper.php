@@ -151,7 +151,6 @@ class Helper
 
     public static function calculateCartItems($C, $aCart)
     {
-        //HaaseIT\Tools::debug($aCart);
         $fErm = 0;
         $fVoll = 0;
         $fTaxErm = 0;
