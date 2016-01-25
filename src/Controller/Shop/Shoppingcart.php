@@ -33,7 +33,7 @@ class Shoppingcart extends Base
         if ($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
-            require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
+            //require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
             $this->P->oPayload->cl_html = '';
