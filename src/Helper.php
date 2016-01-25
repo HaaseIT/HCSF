@@ -35,42 +35,11 @@ class Helper
         return $urlBuilder->getUrl($file, $param);
     }
 
-    public static function requireAdminAuth($C, $bAdminhome = false) {
-        if (empty ($C['admin_users']) || (!count($C['admin_users']) && $bAdminhome)) {
-            return true;
-        } elseif (count($C['admin_users'])) {
-            $valid_users = array_keys($C['admin_users']);
-
-            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
-                list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
-            }
-
-            if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
-                $user = $_SERVER['PHP_AUTH_USER'];
-                $pass = crypt($_SERVER['PHP_AUTH_PW'], $C["blowfish_salt"]);
-
-                $validated = (in_array($user, $valid_users)) && ($pass == $C['admin_users'][$user]);
-            } else {
-                $validated = false;
-            }
-
-            if (!$validated) {
-                header('WWW-Authenticate: Basic realm="' . $C['admin_authrealm'] . '"');
-                header('HTTP/1.0 401 Unauthorized');
-                die("Not authorized");
-            }
-        } else {
-            header('WWW-Authenticate: Basic realm="' . $C['admin_authrealm'] . '"');
-            header('HTTP/1.0 401 Unauthorized');
-            die('Not authorized');
-        }
-    }
-
-    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
-        //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
-        $mail = new PHPMailer;
-        $mail->CharSet = 'UTF-8';
-        $mail->isMail();
+   public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
+       //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
+       $mail = new PHPMailer;
+       $mail->CharSet = 'UTF-8';
+       $mail->isMail();
         $mail->From = $C["email_sender"];
         $mail->FromName = $C["email_sendername"];
         $mail->addAddress($to);
@@ -153,54 +122,12 @@ class Helper
         // Language selector
         // TODO: move content of langselector out of php script
         if (count($C["lang_available"]) > 1) {
-            $aP["langselector"] = '';
-            if ($C["lang_detection_method"] == 'domain') {
-                $aSessionGetVarsForLangSelector = array();
-                if (session_status() == PHP_SESSION_ACTIVE) {
-                    $aSessionGetVarsForLangSelector[session_name()] = session_id();
-                }
-                $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
-            }
-            foreach ($C["lang_available"] as $sKey => $sValue) {
-                if ($sLang != $sKey) {
-                    if ($C["lang_detection_method"] == 'domain') {
-                        $aP["langselector"] .= '<a href="//www.' . $C["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
-                    } else {
-                        $aP["langselector"] .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
-                    }
-                }
-            }
-            $aP["langselector"] = \HaaseIT\Tools::cutStringend($aP["langselector"], 1);
+            $aP["langselector"] = self::getLangSelector($C, $sLang);
         }
 
         // Shopping cart infos
         if ($C["enable_module_shop"]) {
-            if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-                $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
-                $aP["cartinfo"] = array(
-                    'numberofitems' => count($_SESSION["cart"]),
-                    'cartsums' => $aCartsums,
-                    'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
-                    'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
-                );
-                unset($aCartsums);
-                foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                    $aP["cartinfo"]["cartitems"][$sKey] = array(
-                        'cartkey' => $sKey,
-                        'name' => $aValue["name"],
-                        'amount' => $aValue["amount"],
-                        'img' => $aValue["img"],
-                        'price' => $aValue["price"],
-                    );
-                }
-            } else {
-                $aP["cartinfo"] = array(
-                    'numberofitems' => 0,
-                    'cartsums' => array(),
-                    'cartsumnetto' => 0,
-                    'cartsumbrutto' => 0,
-                );
-            }
+            $aP["cartinfo"] = self::getShoppingcartData($C);
         }
 
         $aP["countrylist"][] = ' | ';
@@ -397,5 +324,59 @@ class Helper
         return $aP;
     }
 
+    public static function getShoppingcartData($C)
+    {
+        if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
+            $aCartinfo = array(
+                'numberofitems' => count($_SESSION["cart"]),
+                'cartsums' => $aCartsums,
+                'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
+                'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
+            );
+            unset($aCartsums);
+            foreach ($_SESSION["cart"] as $sKey => $aValue) {
+                $aCartinfo["cartitems"][$sKey] = array(
+                    'cartkey' => $sKey,
+                    'name' => $aValue["name"],
+                    'amount' => $aValue["amount"],
+                    'img' => $aValue["img"],
+                    'price' => $aValue["price"],
+                );
+            }
+        } else {
+            $aCartinfo = array(
+                'numberofitems' => 0,
+                'cartsums' => array(),
+                'cartsumnetto' => 0,
+                'cartsumbrutto' => 0,
+            );
+        }
 
+        return $aCartinfo;
+    }
+
+    public static function getLangSelector($C, $sLang)
+    {
+        $sLangselector = '';
+        if ($C["lang_detection_method"] == 'domain') {
+            $aSessionGetVarsForLangSelector = array();
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                $aSessionGetVarsForLangSelector[session_name()] = session_id();
+            }
+            $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
+        }
+        foreach ($C["lang_available"] as $sKey => $sValue) {
+            if ($sLang != $sKey) {
+                if ($C["lang_detection_method"] == 'domain') {
+                    $sLangselector .= '<a href="//www.' . $C["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                } else {
+                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                }
+            }
+        }
+        $sLangselector = \HaaseIT\Tools::cutStringend($sLangselector, 1);
+
+        return $sLangselector;
+    }
 }
