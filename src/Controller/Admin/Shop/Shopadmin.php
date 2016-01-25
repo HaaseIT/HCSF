@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
-require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
 class Shopadmin extends Base
 {
