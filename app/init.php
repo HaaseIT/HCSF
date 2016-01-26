@@ -223,7 +223,7 @@ if ($C["enable_module_customer"]) {
 $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
 $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
 $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-//$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
 $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
 
 // ----------------------------------------------------------------------------

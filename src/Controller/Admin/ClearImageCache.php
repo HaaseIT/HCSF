@@ -25,13 +25,11 @@ class ClearImageCache extends Base
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
-        $this->P->oPayload->cl_html = 'The image cache has been cleared. - No, wait, this is not implemented yet!';
+        $this->P->oPayload->cl_html = 'The image cache has been cleared.';
 
-        // todo: implement this! the following does not work
-        $glideserver = \League\Glide\ServerFactory::create([
-            'source' => PATH_DOCROOT.$C['directory_images'].'/master',
-            'cache' => PATH_GLIDECACHE,
-        ]);
-        $glideserver->deleteCache('/');
+        $adapter = new \League\Flysystem\Adapter\Local(PATH_CACHE);
+        $filesystem = new \League\Flysystem\Filesystem($adapter);
+        $filesystem->deleteDir(DIRNAME_GLIDECACHE);
+        $filesystem->createDir(DIRNAME_GLIDECACHE);
     }
 }
