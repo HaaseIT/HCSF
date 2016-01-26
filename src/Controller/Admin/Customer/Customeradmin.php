@@ -19,6 +19,7 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
+use \HaaseIT\HCSF\HardcodedText;
 
 class Customeradmin extends Base
 {
@@ -27,13 +28,13 @@ class Customeradmin extends Base
     {
         parent::__construct($C, $DB, $sLang);
         $CUA = [
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_no'), 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_company'), 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_name'), 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_town'), 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_active'), 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_no'), 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_company'), 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_name'), 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_town'), 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_active'), 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             [
-                'title' => \HaaseIT\HCSF\HardcodedText::get('customeradmin_list_edit'),
+                'title' => HardcodedText::get('customeradmin_list_edit'),
                 'key' => DB_CUSTOMERTABLE_PKEY,
                 'width' => '16%',
                 'linked' => true,
