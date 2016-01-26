@@ -19,7 +19,7 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
-
+use \HaaseIT\HCSF\HardcodedText;
 
 class Shopadmin extends Base
 {
@@ -63,13 +63,13 @@ class Shopadmin extends Base
 
         $CSA = [
             'list_orders' => [
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_ordertimenumber'), 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_hostpayment'), 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_ordertimenumber'), 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_hostpayment'), 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
                 [
-                    'title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_edit'),
+                    'title' => HardcodedText::get('shopadmin_list_edit'),
                     'key' => 'o_id',
                     'width' => 45,
                     'linked' => true,
@@ -81,11 +81,11 @@ class Shopadmin extends Base
                 ],
             ],
             'list_orderitems' => [
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemno'), 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemname'), 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemamount'), 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemnetto'), 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('shopadmin_list_itemsumnetto'), 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_itemno'), 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_itemname'), 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_itemamount'), 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
+                ['title' => HardcodedText::get('shopadmin_list_itemnetto'), 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
+                ['title' => HardcodedText::get('shopadmin_list_itemsumnetto'), 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
             ],
         ];
 
@@ -96,6 +96,8 @@ class Shopadmin extends Base
 
     private function handleShopAdmin($CSA, $twig)
     {
+        $aSData = [];
+        $aData = [];
         if (!isset($_GET["action"])) {
             $bIgnoreStorno = false;
             $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
@@ -110,9 +112,11 @@ class Shopadmin extends Base
                 $sQ .= "o_ordercompleted != 'd' ";
                 $bIgnoreStorno = true;
             } else {
-                die(\HaaseIT\HCSF\HardcodedText::get('shopadmin_error_invalidrequest'));
+                die(HardcodedText::get('shopadmin_error_invalidrequest'));
             }
             $bFromTo = false;
+            $sFrom = null;
+            $sTo = null;
             if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
                 $sQ .= "AND ";
                 $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
@@ -138,11 +142,12 @@ class Shopadmin extends Base
                 $k = 0;
                 $fGesamtnetto = 0.0;
                 while ($aRow = $hResult->fetch()) {
-                    if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_open').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.\HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = \HaaseIT\HCSF\HardcodedText::get('shopadmin_orderstatus_deleted');
+                    if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_open').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
+                    elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = HardcodedText::get('shopadmin_orderstatus_deleted');
+                    else $sStatus = '';
 
                     if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
                     else $sZahlungsmethode = '<span style="color: red;">';
@@ -188,12 +193,10 @@ class Shopadmin extends Base
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aSData["orderdata"] = $hResult->fetch();
-                //HaaseIT\Tools::debug($aSData["orderdata"], true);
                 $sQ = "SELECT * FROM ".DB_ORDERTABLE_ITEMS." WHERE oi_o_id = :id";
                 $hResult = $this->DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
-                //HaaseIT\Tools::debug($DB->numRows($hResult));
                 $aItems = $hResult->fetchAll();
 
                 $aUserdata = [
@@ -215,7 +218,7 @@ class Shopadmin extends Base
                 $aSData["orderdata"]["options_shippingservices"] = [''];
                 foreach ($this->C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
 
-                //HaaseIT\Tools::debug($aItems);
+                $aItemsforShoppingcarttable = [];
                 foreach ($aItems as $aValue) {
                     $aPrice = array(
                         'netto_list' => $aValue["oi_price_netto_list"],
@@ -239,7 +242,6 @@ class Shopadmin extends Base
                         'img' => $aValue["oi_img"],
                     ];
                 }
-                //HaaseIT\Tools::debug($aItemsforShoppingcarttable);
 
                 $aSData = array_merge(
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
