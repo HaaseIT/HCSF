@@ -127,7 +127,7 @@ class Helper
 
         // Shopping cart infos
         if ($C["enable_module_shop"]) {
-            $aP["cartinfo"] = self::getShoppingcartData($C);
+            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($C);
         }
 
         $aP["countrylist"][] = ' | ';
@@ -145,7 +145,6 @@ class Helper
             if ($aP["pagetype"] == 'itemdetail') {
 
                 $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
-                //HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
 
                 if (isset($aP["pageconfig"]->itemindex)) {
                     if (is_array($aP["pageconfig"]->itemindex)) {
@@ -156,7 +155,6 @@ class Helper
                         $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
                     }
                 }
-                \HaaseIT\Tools::debug($aP["itemindexpathtreeforsuggestions"], '$aP["itemindexpathtreeforsuggestions"]');
 
                 // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
                 // if it is not found, we will show the overview
@@ -182,109 +180,15 @@ class Helper
                             }
                             // build item suggestions if needed
                             if ($C["itemdetail_suggestions"] > 0) {
-                                $aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
-                                unset($aPossibleSuggestions[$sKey]); // remove the currently shown item from this list, we do not want to show it as a suggestion
-                                //HaaseIT\Tools::debug($aPossibleSuggestions, '$aPossibleSuggestions');
-
-                                $aDefinedSuggestions = array();
-                                if (isset($aValue[DB_ITEMFIELD_DATA]["suggestions"]) && trim($aValue[DB_ITEMFIELD_DATA]["suggestions"]) != '') {
-                                    if (mb_strpos($aValue[DB_ITEMFIELD_DATA]["suggestions"], '|') !== false) {
-                                        $aDefinedSuggestions = explode('|', $aValue[DB_ITEMFIELD_DATA]["suggestions"]); // convert all defined suggestions to array
-                                    } else {
-                                        $aDefinedSuggestions[] = $aValue[DB_ITEMFIELD_DATA]["suggestions"];
-                                    }
-                                }
-                                //HaaseIT\Tools::debug($aDefinedSuggestions, '$aDefinedSuggestions');
-                                foreach ($aDefinedSuggestions as $aDefinedSuggestionsValue) { // iterate all defined suggestions and put those not loaded yet into array
-                                    if (!isset($aPossibleSuggestions[$aDefinedSuggestionsValue])) {
-                                        $aSuggestionsToLoad[] = $aDefinedSuggestionsValue;
-                                    }
-                                }
-                                //HaaseIT\Tools::debug($aSuggestionsToLoad, '$aSuggestionsToLoad');
-                                if (isset($aSuggestionsToLoad)) { // if there are not yet loaded suggestions, load them
-                                    $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad, false);
-                                    //HaaseIT\Tools::debug($aItemsNotInCategory, '$aItemsNotInCategory');
-                                    if (isset($aItemsNotInCategory)) { // merge loaded and newly loaded items
-                                        $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
-                                    }
-                                }
-                                unset($aSuggestionsToLoad, $aItemsNotInCategory);
-                                //HaaseIT\Tools::debug($aPossibleSuggestions, '$aPossibleSuggestions');
-                                $aSuggestions = array();
-                                $aAdditionalSuggestions = array();
-                                foreach ($aPossibleSuggestions as $aPossibleSuggestionsKey => $aPossibleSuggestionsValue) { // iterate through all possible suggestions
-                                    if (in_array($aPossibleSuggestionsKey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
-                                        $aSuggestions[$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
-                                    } else { // if not, put into this one
-                                        $aAdditionalSuggestions[$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
-                                    }
-                                }
-                                unset($aPossibleSuggestions, $aDefinedSuggestions); // not needed anymore
-                                //HaaseIT\Tools::debug($aSuggestions, '$aSuggestions');
-                                //HaaseIT\Tools::debug($aAdditionalSuggestions, '$aAdditionalSuggestions');
-                                $iNumberOfSuggestions = count($aSuggestions);
-                                $iNumberOfAdditionalSuggestions = count($aAdditionalSuggestions);
-                                if ($iNumberOfSuggestions > $C["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
-                                    $aKeysSuggestions = array_rand($aSuggestions, $C["itemdetail_suggestions"]); // get the array keys that will stay
-                                    foreach ($aSuggestions as $aSuggestionsKey => $aSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
-                                        if (!in_array($aSuggestionsKey, $aKeysSuggestions)) {
-                                            unset($aSuggestions[$aSuggestionsKey]);
-                                        }
-                                    }
-                                    unset($aKeysSuggestions);
-                                } else { // if less or equal continue here
-                                    if ($iNumberOfSuggestions < $C["itemdetail_suggestions"] && $iNumberOfAdditionalSuggestions > 0) { // if there are less suggestions than should be displayed and there are additional available
-                                        $iAdditionalSuggestionsRequired = $C["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
-                                        if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) { // see if there are more available than required, if so, pick as many as needed
-                                            if ($iAdditionalSuggestionsRequired == 1) { // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
-                                                $aKeysAdditionalSuggestions[] = array_rand($aAdditionalSuggestions, $iAdditionalSuggestionsRequired);
-                                            } else {
-                                                $aKeysAdditionalSuggestions = array_rand($aAdditionalSuggestions, $iAdditionalSuggestionsRequired);
-                                            }
-                                            foreach ($aAdditionalSuggestions as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
-                                                if (!in_array($aAdditionalSuggestionsKey, $aKeysAdditionalSuggestions)) {
-                                                    unset($aAdditionalSuggestions[$aAdditionalSuggestionsKey]);
-                                                }
-                                            }
-                                            unset($aKeysAdditionalSuggestions);
-                                        }
-                                        $aSuggestions = array_merge($aSuggestions, $aAdditionalSuggestions); // merge
-                                        unset($iAdditionalSuggestionsRequired);
-                                    }
-                                }
-                                foreach ($aSuggestions as $aSuggestionsKey => $aSuggestionsValue) { // build the paths to the suggested items
-                                    if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
-                                        $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
-                                        foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
-                                            if (isset($aP["pageconfig"]->itemindex)) { // check if there is an index configured on this page
-                                                if (is_array($aP["pageconfig"]->itemindex)) { // check if it is an array
-                                                    if (in_array($sSuggestionIndexesValue, $aP["pageconfig"]->itemindex)) { // if the suggestions index is in that array, set path to empty string
-                                                        $aSuggestions[$aSuggestionsKey]["path"] = '';
-                                                        continue 2; // path to suggestion set, continue with next suggestion
-                                                    }
-                                                } else {
-                                                    if ($aP["pageconfig"]->itemindex == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
-                                                        $aSuggestions[$aSuggestionsKey]["path"] = '';
-                                                        continue 2; // path to suggestion set, continue with next suggestion
-                                                    }
-                                                }
-                                            }
-                                            if (isset($aP["itemindexpathtreeforsuggestions"][$sSuggestionIndexesValue])) {
-                                                $aSuggestions[$aSuggestionsKey]["path"] = $aP["itemindexpathtreeforsuggestions"][$sSuggestionIndexesValue];
-                                                continue 2;
-                                            }
-                                        }
-                                        unset($aSuggestionIndexes);
-                                    } else {
-                                        if (isset($aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]])) {
-                                            $aSuggestions[$aSuggestionsKey]["path"] = $aP["itemindexpathtreeforsuggestions"][$aSuggestionsValue["itm_index"]];
-                                        }
-                                    }
-                                }
-                                //HaaseIT\Tools::debug($aSuggestions, '$aSuggestions');
-                                $aP["item"]["suggestions"] = $aSuggestions;
-                                unset($aSuggestions, $aAdditionalSuggestions, $iNumberOfSuggestions, $iNumberOfAdditionalSuggestions);
-                                shuffle($aP["item"]["suggestions"]);
+                                $aP["item"]["suggestions"] = \HaaseIT\HCSF\Shop\Helper::getItemSuggestions(
+                                    $C["itemdetail_suggestions"],
+                                    $oItem,
+                                    $aP["items"]["item"],
+                                    (!empty($aValue[DB_ITEMFIELD_DATA]["suggestions"]) ? $aValue[DB_ITEMFIELD_DATA]["suggestions"] : ''),
+                                    $sKey,
+                                    (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
+                                    (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
+                                );
                             }
                             // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
                             break;
@@ -322,38 +226,6 @@ class Helper
         $aP["debugdata"] = \HaaseIT\Tools::$sDebug;
 
         return $aP;
-    }
-
-    public static function getShoppingcartData($C)
-    {
-        if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
-            $aCartinfo = array(
-                'numberofitems' => count($_SESSION["cart"]),
-                'cartsums' => $aCartsums,
-                'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
-                'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
-            );
-            unset($aCartsums);
-            foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                $aCartinfo["cartitems"][$sKey] = array(
-                    'cartkey' => $sKey,
-                    'name' => $aValue["name"],
-                    'amount' => $aValue["amount"],
-                    'img' => $aValue["img"],
-                    'price' => $aValue["price"],
-                );
-            }
-        } else {
-            $aCartinfo = array(
-                'numberofitems' => 0,
-                'cartsums' => array(),
-                'cartsumnetto' => 0,
-                'cartsumbrutto' => 0,
-            );
-        }
-
-        return $aCartinfo;
     }
 
     public static function getLangSelector($C, $sLang)
