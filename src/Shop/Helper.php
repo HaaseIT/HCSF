@@ -353,4 +353,70 @@ class Helper
 
         return $aSuggestions;
     }
+
+    static function handleItemPage($C, $oItem, $P, $aP)
+    {
+        if (isset($P->cb_pageconfig->itemindex)) {
+            $mItemIndex = $P->cb_pageconfig->itemindex;
+        } else {
+            $mItemIndex = '';
+        }
+        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
+        if ($aP["pagetype"] == 'itemdetail') {
+
+            $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
+
+            if (isset($aP["pageconfig"]->itemindex)) {
+                if (is_array($aP["pageconfig"]->itemindex)) {
+                    foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
+                        $aP["itemindexpathtreeforsuggestions"][$sItemIndexValue] = '';
+                    }
+                } else {
+                    $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
+                }
+            }
+
+            // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
+            // if it is not found, we will show the overview
+            $aP["pagetype"] = 'itemoverview';
+            if (count($aP["items"]["item"])) {
+                foreach ($aP["items"]["item"] as $sKey => $aValue) {
+                    if ($aValue[DB_ITEMFIELD_NUMBER] == $P->cb_pageconfig->itemno) {
+                        $aP["pagetype"] = 'itemdetail';
+                        $aP["item"]["data"] = $aValue;
+                        $aP["item"]["key"] = $sKey;
+
+                        $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
+                        $aP["item"]["currentitem"] = $iPositionInItems + 1;
+                        if ($iPositionInItems == 0) {
+                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                        } else {
+                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
+                        }
+                        if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
+                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
+                        } else {
+                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
+                        }
+                        // build item suggestions if needed
+                        if ($C["itemdetail_suggestions"] > 0) {
+                            $aP["item"]["suggestions"] = self::getItemSuggestions(
+                                $C["itemdetail_suggestions"],
+                                $oItem,
+                                $aP["items"]["item"],
+                                (!empty($aValue[DB_ITEMFIELD_DATA]["suggestions"]) ? $aValue[DB_ITEMFIELD_DATA]["suggestions"] : ''),
+                                $sKey,
+                                (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
+                                (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
+                            );
+                        }
+                        // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $aP;
+    }
 }
