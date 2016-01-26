@@ -108,8 +108,11 @@ define("DB_ORDERTABLE_ITEMS", 'orders_items');
 define("PATH_BASEDIR", __DIR__.'/../../');
 define("PATH_DOCROOT", PATH_BASEDIR.'web/');
 
-define("PATH_TEMPLATECACHE", PATH_BASEDIR.'cache/templates/');
-define("PATH_PURIFIERCACHE", PATH_BASEDIR.'cache/htmlpurifier/');
-define("PATH_GLIDECACHE", PATH_BASEDIR.'cache/glide/');
+define("PATH_CACHE", PATH_BASEDIR.'cache/');
+define("DIRNAME_TEMPLATECACHE", 'templates');
+define("PATH_TEMPLATECACHE", PATH_CACHE.DIRNAME_TEMPLATECACHE);
+define("PATH_PURIFIERCACHE", PATH_CACHE.'htmlpurifier/');
+define("DIRNAME_GLIDECACHE", 'glide');
+define("PATH_GLIDECACHE", PATH_CACHE.DIRNAME_GLIDECACHE);
 
 define("GLIDE_SIGNATURE_KEY", $C['glide_signkey']);
