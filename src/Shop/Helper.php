@@ -210,13 +210,9 @@ class Helper
             'reducedorderamountfee2' => $C["reducedorderamountfee2"],
             'minimumamountforfreeshipping' => $C["minimumamountforfreeshipping"],
         );
-        //HaaseIT\Tools::debug($aData["additionalcoststoitems"]);
 
         if (!$bReadonly) {
             $aCartpricesums = $aData["shoppingcart"]["additionalcoststoitems"];
-            //$aCartpricesums["mindergebuehr"] = $aData["shoppingcart"]["additionalcoststoitems"]["fMindergebuehr"];
-            //$aCartpricesums["mindergebuehrid"] = $aData["shoppingcart"]["additionalcoststoitems"]["iMindergebuehr_id"];
-            //$aCartpricesums["shippingcost"] = $aData["shoppingcart"]["additionalcoststoitems"]["fVersandkosten"];
             $_SESSION["cartpricesums"] = $aCartpricesums;
         }
 
