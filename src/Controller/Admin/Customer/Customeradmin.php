@@ -69,8 +69,6 @@ class Customeradmin extends Base
             }
             $sQ .= " ORDER BY " . DB_CUSTOMERFIELD_NUMBER . " ASC";
             $hResult = $this->DB->query($sQ);
-            //HaaseIT\Tools::debug($DB->error());
-            //HaaseIT\Tools::debug($hResult->rowCount());
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
                 $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
@@ -93,7 +91,6 @@ class Customeradmin extends Base
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':custno', $sCustno);
                     $hResult->execute();
-                    //HaaseIT\Tools::debug($sQ);
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
                         $aErr["custnoalreadytaken"] = true;
@@ -105,7 +102,6 @@ class Customeradmin extends Base
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                     $hResult->execute();
-                    //HaaseIT\Tools::debug($sQ);
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
@@ -133,13 +129,10 @@ class Customeradmin extends Base
                             $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $this->C["blowfish_salt"]);
                             $aInfo["passwordchanged"] = true;
                         }
-                        //HaaseIT\Tools::debug($aData);
                         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-                        //HaaseIT\Tools::debug($sQ);
                         $hResult = $this->DB->prepare($sQ);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();
-                        //HaaseIT\Tools::debug($hResult->errorInfo());
                         $aInfo["changeswritten"] = true;
                     }
                 }
@@ -151,7 +144,6 @@ class Customeradmin extends Base
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
-                //HaaseIT\Tools::debug($aUser);
                 $aPData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'admin', $aErr, $aUser);
             } else {
                 $aInfo["nosuchuserfound"] = true;
