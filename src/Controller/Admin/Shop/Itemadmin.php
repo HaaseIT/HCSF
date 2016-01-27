@@ -19,6 +19,7 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
+use \HaaseIT\HCSF\HardcodedText;
 
 class Itemadmin extends Base
 {
@@ -117,13 +118,13 @@ class Itemadmin extends Base
     private function admin_prepareItemlistsearchform()
     {
         $aData["searchcats"] = [
-            'nummer|'.\HaaseIT\HCSF\HardcodedText::get('itemadmin_search_itemno'),
-            'name|'.\HaaseIT\HCSF\HardcodedText::get('itemadmin_search_itemname'),
-            'index|'.\HaaseIT\HCSF\HardcodedText::get('itemadmin_search_itemindex'),
+            'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
+            'name|'.HardcodedText::get('itemadmin_search_itemname'),
+            'index|'.HardcodedText::get('itemadmin_search_itemindex'),
         ];
         $aData["orderbys"] = [
-            'nummer|'.\HaaseIT\HCSF\HardcodedText::get('itemadmin_search_itemno'),
-            'name|'.\HaaseIT\HCSF\HardcodedText::get('itemadmin_search_itemname'),
+            'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
+            'name|'.HardcodedText::get('itemadmin_search_itemname'),
         ];
 
         if (isset($_GET["searchcat"])) {
@@ -180,9 +181,9 @@ class Itemadmin extends Base
     private function admin_prepareItemlist($aItemlist, $twig)
     {
         $aList = [
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
+            ['title' => HardcodedText::get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
+            ['title' => HardcodedText::get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
+            ['title' => HardcodedText::get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
         ];
         foreach ($aItemlist["data"] as $aValue) {
             $aData[] = [
