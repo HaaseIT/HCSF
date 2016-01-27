@@ -144,31 +144,7 @@ $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText
 $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
 $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
 
-// ----------------------------------------------------------------------------
-// Begin language detection
-// ----------------------------------------------------------------------------
-if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is_array($C["lang_by_domain"])) { // domain based language detection
-    foreach ($C["lang_by_domain"] as $sKey => $sValue) {
-        if ($_SERVER["HTTP_HOST"] == $sValue || $_SERVER["HTTP_HOST"] == 'www.'.$sValue) {
-            $sLang = $sKey;
-            break;
-        }
-    }
-} elseif ($C["lang_detection_method"] == 'legacy') { // legacy language detection
-    if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
-        $sLang = strtolower($_GET["language"]);
-        setcookie('language', strtolower($_GET["language"]), 0, '/');
-    } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $C["lang_available"])) {
-        $sLang = strtolower($_COOKIE["language"]);
-    } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
-        $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
-    } else {
-        $sLang = key($C["lang_available"]);
-    }
-}
-if (!isset($sLang)) {
-    $sLang = key($C["lang_available"]);
-}
+$sLang = \HaaseIT\HCSF\Helper::getLanguage($C);
 
 if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
     $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php';
@@ -179,7 +155,8 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
         $HT = require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
     }
 }
-\HaaseIT\HCSF\HardcodedText::init($HT);
+use \HaaseIT\HCSF\HardcodedText;
+HardcodedText::init($HT);
 
 if (!$C['maintenancemode']) {
 // ----------------------------------------------------------------------------
@@ -204,27 +181,27 @@ if (!$C['maintenancemode']) {
     $DB = null;
 }
 
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
 
 if ($C["enable_module_shop"]) {
     $oItem = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
 
-    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
-    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
-    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
+    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
+    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
+    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
 } else {
     $oItem = '';
 }
 
 if ($C["enable_module_customer"]) {
-    $C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
+    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
 }
 
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
-$C["navstruct"]["admin"][\HaaseIT\HCSF\HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
 
 // ----------------------------------------------------------------------------
 // Begin routing

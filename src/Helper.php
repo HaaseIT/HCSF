@@ -192,4 +192,32 @@ class Helper
 
         return $sLangselector;
     }
+
+    public static function getLanguage($C)
+    {
+        if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is_array($C["lang_by_domain"])) { // domain based language detection
+            foreach ($C["lang_by_domain"] as $sKey => $sValue) {
+                if ($_SERVER["HTTP_HOST"] == $sValue || $_SERVER["HTTP_HOST"] == 'www.'.$sValue) {
+                    $sLang = $sKey;
+                    break;
+                }
+            }
+        } elseif ($C["lang_detection_method"] == 'legacy') { // legacy language detection
+            if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
+                $sLang = strtolower($_GET["language"]);
+                setcookie('language', strtolower($_GET["language"]), 0, '/');
+            } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $C["lang_available"])) {
+                $sLang = strtolower($_COOKIE["language"]);
+            } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
+                $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
+            } else {
+                $sLang = key($C["lang_available"]);
+            }
+        }
+        if (!isset($sLang)) {
+            $sLang = key($C["lang_available"]);
+        }
+
+        return $sLang;
+    }
 }
