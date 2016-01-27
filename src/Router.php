@@ -39,7 +39,7 @@ class Router
                 '/_admin/' => 'Admin\\Index',
                 '/_admin' => 'Admin\\Index',
                 '/_admin/cleartemplatecache.html' => 'Admin\\ClearTemplateCache',
-                //'/_admin/clearimagecache.html' => 'Admin\\ClearImageCache',
+                '/_admin/clearimagecache.html' => 'Admin\\ClearImageCache',
                 '/_admin/phpinfo.html' => 'Admin\\Phpinfo',
                 '/_admin/pageadmin.html' => 'Admin\\Pageadmin',
                 '/_admin/textcatadmin.html' => 'Admin\\Textcatadmin',
