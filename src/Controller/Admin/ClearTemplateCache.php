@@ -27,8 +27,9 @@ class ClearTemplateCache extends Base
         parent::__construct($C, $DB, $sLang);
         $this->P->oPayload->cl_html = 'The template cache has been cleared.';
 
-        // todo: the following methods are deprecated. clear cache folder manually!!
-        $twig->clearTemplateCache();
-        $twig->clearCacheFiles();
+        $adapter = new \League\Flysystem\Adapter\Local(PATH_CACHE);
+        $filesystem = new \League\Flysystem\Filesystem($adapter);
+        $filesystem->deleteDir(DIRNAME_TEMPLATECACHE);
+        $filesystem->createDir(DIRNAME_TEMPLATECACHE);
     }
 }
