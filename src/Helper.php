@@ -37,7 +37,7 @@ class Helper
 
    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
        //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
-       $mail = new PHPMailer;
+       $mail = new \PHPMailer;
        $mail->CharSet = 'UTF-8';
        $mail->isMail();
         $mail->From = $C["email_sender"];
