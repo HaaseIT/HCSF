@@ -145,7 +145,7 @@ class Myorders extends Base
                 $aData[] = array(
                     'o_id' => $aRow["o_id"],
                     'o_order_status' => $sStatus,
-                    'o_ordertime' => date("d.m.y H:i", $aRow["o_ordertimestamp"]),
+                    'o_ordertime' => date($this->C['locale_format_date_time'], $aRow["o_ordertimestamp"]),
                     'o_paymentmethod' => $sPaymentmethod,
                     'o_paymentcompleted' => $sPaymentstatus,
                     'o_shipping_service' => $aRow["o_shipping_service"],

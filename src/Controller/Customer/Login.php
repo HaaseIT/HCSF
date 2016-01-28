@@ -76,14 +76,12 @@ class Login extends Base
         $sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
 
         $hResult = $this->DB->prepare($sQ);
-        $hResult->bindValue(':user', $sUser, PDO::PARAM_STR);
+        $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
-            $hResult->bindValue(':email', $sEmail, PDO::PARAM_STR);
+            $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
         }
-        $hResult->bindValue(':pwd', $sEnc, PDO::PARAM_STR);
+        $hResult->bindValue(':pwd', $sEnc, \PDO::PARAM_STR);
         $hResult->execute();
-        //HaaseIT\Tools::debug($sQ);
-        //HaaseIT\Tools::debug($sEnc);
 
         $iRows = $hResult->rowCount();
         if($iRows == 1) {

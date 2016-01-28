@@ -58,7 +58,6 @@ class Forgotpassword extends Base
                 $aErr[] = 'emailunknown';
             } else {
                 $aResult = $hResult->fetch();
-                //HaaseIT\Tools::debug($aResult, '$aResult');
                 $iTimestamp = time();
                 if ($iTimestamp - HOUR < $aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP]) { // 1 hour delay between requests
                     $aErr[] = 'pwresetstilllocked';
@@ -69,9 +68,7 @@ class Forgotpassword extends Base
                         DB_CUSTOMERFIELD_PWRESETTIMESTAMP => $iTimestamp,
                         DB_CUSTOMERTABLE_PKEY => $aResult[DB_CUSTOMERTABLE_PKEY],
                     );
-                    //HaaseIT\Tools::debug($aData, '$aData');
                     $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
-                    //HaaseIT\Tools::debug($sQ);
                     $hResult = $this->DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();

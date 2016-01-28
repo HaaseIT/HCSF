@@ -67,7 +67,7 @@ class Paypalnotify extends Base
                 $info = implode(',', $info);
                 if (!(strpos($info, 'VERIFIED') === false)) {
 
-                    $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\n";
+                    $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
                     $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true)."\n\n";
 
@@ -108,12 +108,12 @@ class Paypalnotify extends Base
                         }
                     } else {
                         // INVALID LOGGING ERROR
-                        $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nPHAIL\n\n";
+                        $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\nPHAIL\n\n";
                         $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: " . $_REQUEST["txn_id"] . " !!!\n\n";
                         $sLogData .= "!!! INVALID !!!\n\n";
                     }
                 } else {
-                    $sLogData .= "-- new entry - " . date("d.m.Y H:i:s") . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
+                    $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
                 }
                 $bNufile = false;
                 if (!file_exists(PATH_LOGS . FILE_PAYPALLOG)) $bNufile = true;
