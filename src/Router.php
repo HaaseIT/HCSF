@@ -104,8 +104,6 @@ class Router
 
                     $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
                 }
-                unset($aPath); // no longer needed
-                //die(var_dump($this->P));
 
                 if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
                     $this->P = 404;
@@ -158,7 +156,6 @@ class Router
 
             // explode the filename by .
             $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
-            //\HaaseIT\Tools::debug($aTMP["exploded_request_file"]);
 
             // if the filename ends in '.html', get the requested itemno
             if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
@@ -170,7 +167,6 @@ class Router
                 // remove the trailing dot
                 $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
 
-                //\HaaseIT\Tools::debug($aRoutingoverride["itemno"]);
                 $aRoutingoverride["cb_pagetype"] = 'itemdetail';
 
                 // rebuild the path string without the trailing '/item/itemno.html'
@@ -180,9 +176,7 @@ class Router
                 }
             }
         }
-        //HaaseIT\Tools::debug($this->sPath);
-        //HaaseIT\Tools::debug($aTMP);
-        //HaaseIT\Tools::debug($aRoutingoverride);
+
         return $aRoutingoverride;
     }
 }
