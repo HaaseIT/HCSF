@@ -75,11 +75,11 @@ class Register extends Base
                         }
                         $hResult->execute();
 
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C);
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C, true);
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C, $twig);
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $C, $twig, true);
                         $aPData["showsuccessmessage"] = true;
                     } else {
-                        $aErr["emailalreadyexists"] = true;
+                        $aErr["emailalreadytaken"] = true;
                         $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($C, $sLang, 'register', $aErr);
                     }
                 } else {

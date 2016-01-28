@@ -277,5 +277,9 @@ return [
     'shopadmin_info_ordersshown_3' => 'stornierte (diese werden bei den Wertberechnungen nicht ber&uuml;cksichtigt).',
     'shopadmin_info_ordersshownsum' => 'Gesamtnetto der angezeigten Bestellungen:',
     'shopadmin_info_ordersshownaveragesum' => 'Durchschnittlicher Nettobestellwert der angezeigten Bestellungen:',
+
+    'newcustomerregistration_mail_subject' => 'Neue Kundenregistrierung',
+    'newcustomerregistration_mail_text1' => 'Von:',
+    'newcustomerregistration_mail_text2' => '<br>Am:',
 ];
 

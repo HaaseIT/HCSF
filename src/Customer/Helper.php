@@ -165,20 +165,20 @@ class Helper
         return $aData;
     }
 
-    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $bCust = false)
+    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $twig, $bCust = false)
     {
         if ($bCust) {
             $sSubject = \HaaseIT\Textcat::T("register_mail_emailverification_subject");
-            $sMessage = \HaaseIT\Textcat::T("register_mail_emailverification_text1");
-            $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
-            $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode.'">';
-            $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
-            $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode.'</a>';
-            $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("register_mail_emailverification_text2");
+
+            $aP['link'] = 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
+            $aP['link'] .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
+
+            $sMessage = $twig->render('customer/sendverificationmail.twig', $aP);
         }
         else {
-            $sSubject = 'Neue Kundenregistrierung';
-            $sMessage = 'Von: '.$sTargetAddress.'<br>Am:'.date("d.m.Y H:i:s");
+            $sSubject = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_subject');
+            $sMessage = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text1').' ';
+            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text2').' '.date($C['locale_format_date_time']);
             $sTargetAddress = $C["email_sender"];
         }
 
@@ -192,8 +192,6 @@ class Helper
             elseif ($sField == '') return true;
 
             if ($sField != '' && isset($_SESSION["user"][$sField]) && $_SESSION["user"][$sField] != '') return $_SESSION["user"][$sField];
-            //HaaseIT\Tools::debug($sField);
-            //HaaseIT\Tools::debug($_SESSION["user"]);
         } else {
             if (isset($aUserdata[$sField])) return $aUserdata[$sField];
             elseif ($sField = '') return false;

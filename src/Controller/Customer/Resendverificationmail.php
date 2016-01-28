@@ -32,7 +32,6 @@ class Resendverificationmail extends Base
             $sQ = "SELECT " . DB_ADDRESSFIELDS . ", " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " FROM " . DB_CUSTOMERTABLE;
             $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email";
             $sQ .= " AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
-            //debug($sQ);
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
             $hResult->execute();
@@ -41,7 +40,7 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow[DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE];
 
-                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C, true);
+                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C, $twig, true);
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("register_verificationmailresent");
             }
