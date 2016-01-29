@@ -30,28 +30,30 @@ class UserPagePayload extends PagePayload
         $this->sLang = $sLang;
         $this->DB = $DB;
 
-        $sQ = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
-        $sQ .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
-        $hResult = $this->DB->prepare($sQ);
-
-        // Try to get the payload in the current language
-        $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-        $hResult->bindValue(':lang', $sLang, \PDO::PARAM_STR);
-        $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
-        $hResult->execute();
-
-        if ($hResult->rowCount() == 1) {
-            $hResult->fetch();
-        } elseif (!$bReturnRaw) { // if raw data is required, don't try to fetch default lang data
-            // if the current language data is not available, lets see if we can get the default languages data
+        if ($iParentID != '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
+            $sQ = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
+            $sQ .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
             $hResult = $this->DB->prepare($sQ);
+
+            // Try to get the payload in the current language
             $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-            $hResult->bindValue(':lang', key($this->C["lang_available"]), \PDO::PARAM_STR);
+            $hResult->bindValue(':lang', $sLang, \PDO::PARAM_STR);
             $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
             $hResult->execute();
 
             if ($hResult->rowCount() == 1) {
                 $hResult->fetch();
+            } elseif (!$bReturnRaw) { // if raw data is required, don't try to fetch default lang data
+                // if the current language data is not available, lets see if we can get the default languages data
+                $hResult = $this->DB->prepare($sQ);
+                $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
+                $hResult->bindValue(':lang', key($this->C["lang_available"]), \PDO::PARAM_STR);
+                $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
+                $hResult->execute();
+
+                if ($hResult->rowCount() == 1) {
+                    $hResult->fetch();
+                }
             }
         }
     }

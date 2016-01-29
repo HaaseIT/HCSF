@@ -33,21 +33,29 @@ class UserPage extends Page
         $this->DB = $DB;
         $this->bReturnRaw = $bReturnRaw;
 
-        // first get base data
-        $sQ = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
-        $sQ .= "FROM content_base WHERE cb_key = :key ";
-        $hResult = $this->DB->prepare($sQ);
+        if ($sPagekey == '/_misc/index.html') {
+            $this->cb_id = $sPagekey;
+            $this->cb_key = $sPagekey;
+            $this->cb_pagetype = 'itemoverview';
+            $this->oPayload = $this->getPayload();
+            $this->cb_pageconfig = (object) [];
+        } else {
+            // first get base data
+            $sQ = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
+            $sQ .= "FROM content_base WHERE cb_key = :key ";
+            $hResult = $this->DB->prepare($sQ);
 
-        $hResult->bindValue(':key', $sPagekey, \PDO::PARAM_STR);
-        $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
-        $hResult->execute();
+            $hResult->bindValue(':key', $sPagekey, \PDO::PARAM_STR);
+            $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
+            $hResult->execute();
 
-        if ($hResult->rowCount() == 1) {
-            $hResult->fetch();
+            if ($hResult->rowCount() == 1) {
+                $hResult->fetch();
 
-            if ($this->cb_pagetype != 'shorturl') {
-                if (!$bReturnRaw) $this->cb_pageconfig = json_decode($this->cb_pageconfig);
-                $this->oPayload = $this->getPayload();
+                if ($this->cb_pagetype != 'shorturl') {
+                    if (!$bReturnRaw) $this->cb_pageconfig = json_decode($this->cb_pageconfig);
+                    $this->oPayload = $this->getPayload();
+                }
             }
         }
     }
