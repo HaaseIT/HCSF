@@ -1,13 +1,31 @@
 {
+  "name": "haaseit/hcsf",
+  "description": "A multilingual CMS and Shopsystem",
+  "type": "project",
+  "homepage": "http://www.haase-it.com/",
+  "keywords": [
+    "cms",
+    "shop",
+  ],
+  "authors" : [
+    {
+      "name": "Marcus Haase",
+      "email": "mail@marcus.haase.name",
+      "homepage": "http://www.haase-it.com",
+      "role": "Developer"
+    }
+  ],
+  "license": "GPL-3.0+",
   "require": {
+    "php": "^5.4 | ^7.0",
     "twig/twig": "1.*",
     "phpmailer/phpmailer": "5.2.*",
     "symfony/yaml": "@stable",
-    "haaseit/toolbox": "1.2.6",
+    "haaseit/toolbox": "^1.2.6",
     "aura/autoload": "2.0.*",
     "ezyang/htmlpurifier": "4.7.*",
-    "league/oauth2-google": "1.0.1",
-    "league/oauth2-client": "1.1.0",
+    "league/oauth2-google": "^1.0.1",
+    "league/oauth2-client": "^1.1.0",
     "zendframework/zend-diactoros": "1.1.x",
     "league/glide": "^1.0.0"
   }
