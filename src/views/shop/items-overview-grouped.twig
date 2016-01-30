@@ -78,7 +78,14 @@
                         <br class="clear">
                     </div>
                 </div><div class="pure-u-1-12">
-                    <img class="lazyload pure-u-1" data-original="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}" alt="">
+                    <img class="lazyload pure-u-1"
+                         src="{{ ImgURL('/_img/items/'~thisitem.itm_img, 336) }}"
+                         data-sizes="auto"
+                         data-srcset="{{ ImgURL('/_img/items/'~thisitem.itm_img, 400) }} 400w,
+                          {{ ImgURL('/_img/items/'~thisitem.itm_img, 100) }} 100w,
+                           {{ ImgURL('/_img/items/'~thisitem.itm_img, 200) }} 200w,
+                            {{ ImgURL('/_img/items/'~thisitem.itm_img, 300) }} 300w"
+                         alt="">
                 </div>
 
                 <div class="pure-u-1">----</div>
