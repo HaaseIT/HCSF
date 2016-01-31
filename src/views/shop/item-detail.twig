@@ -40,15 +40,25 @@
 
 <div class="pure-u-1 pure-u-md-1-2 pure-u-lg-2-5">
     <div class="pure-u-1" id="item-detail-img-main">
-        <img src="{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}" class="pure-u-1" id="item-detail-img-main-img">
+        <img
+                src="{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}"
+                srcset="{{ ImgURL('/_img/items/'~item.data.itm_img, 400) }} 400w, {{ ImgURL('/_img/items/'~item.data.itm_img, 100) }} 100w, {{ ImgURL('/_img/items/'~item.data.itm_img, 200) }} 200w, {{ ImgURL('/_img/items/'~item.data.itm_img, 300) }} 300w"
+                class="pure-u-1" id="item-detail-img-main-img">
     </div>
     <script type="text/javascript">
+        function chimg2(img,img2,img3){
+            document.getElementById('item-detail-img-main').innerHTML='<img src="'+img+'" srcset="'+img2+' 400w, '+img3+' 600w" alt="" width="100%" id="item-detail-img-main-img">';
+        }
+
         function chimg (img) {
             window.document.images["item-detail-img-main-img"].src = img;
         }
     </script>
     <ul id="item-detail-img-thumbs">
-        <li class="pure-u-1-3"><img src="{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}" onclick="chimg('{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}')" class="pointer"></li>{%
+        <li class="pure-u-1-3"><img
+                    src="{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}"
+                    onclick="chimg('{{ ImgURL('/_img/items/'~item.data.itm_img, 336) }}')"
+                    class="pointer"></li>{%
         for detailimg in item.data.itm_data.detailimg %}<li
                 class="pure-u-1-3"><img src="{{ ImgURL('/_img/items/'~detailimg, 336) }}" onclick="chimg('{{ ImgURL('/_img/items/'~detailimg, 336) }}')" class="pointer"></li>{% endfor %}
     </ul>
