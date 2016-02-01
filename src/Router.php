@@ -47,6 +47,7 @@ class Router
                 '/_admin/itemadmin.html' => 'Admin\\Shop\\Itemadmin',
                 '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
                 '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
+                '/_admin/dbstatus.html' => 'Admin\\DBStatus',
                 '/_misc/login.html' => 'Customer\\Login',
                 '/_misc/logout.html' => 'Customer\\Logout',
                 '/_misc/userhome.html' => 'Customer\\Userhome',

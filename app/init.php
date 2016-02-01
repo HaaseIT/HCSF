@@ -202,6 +202,7 @@ $C["navstruct"]["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/te
 $C["navstruct"]["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
 $C["navstruct"]["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
 $C["navstruct"]["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
+$C["navstruct"]["admin"][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
 
 // ----------------------------------------------------------------------------
 // Begin routing

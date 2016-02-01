@@ -15,6 +15,7 @@ return [
     'admin_nav_cleartemplatecache' => 'Templatecache leeren',
     'admin_nav_clearimagecache' => 'Bildercache leeren',
     'admin_nav_phpinfo' => 'PHPInfo',
+    'admin_nav_dbstatus' => 'DB Status',
 
     'itemadmin_search_title' => 'Artikelsuche',
     'itemadmin_search_searchstring' => 'Suche nach:',
