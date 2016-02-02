@@ -31,23 +31,22 @@ class Textcatadmin extends Base
 
         if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             $aData = \HaaseIT\Textcat::getCompleteTextcatForCurrentLang();
-            //HaaseIT\Tools::debug($aData);
 
-            $aListSetting = array(
-                array('title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,),
-                array('title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,),
-                array(
+            $aListSetting = [
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
+                ['title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                [
                     'title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_edit'),
                     'key' => 'tc_id',
                     'width' => 35,
                     'linked' => true,
                     'ltarget' => '/_admin/textcatadmin.html',
                     'lkeyname' => 'id',
-                    'lgetvars' => array(
+                    'lgetvars' => [
                         'action' => 'edit',
-                    ),
-                ),
-            );
+                    ],
+                ],
+            ];
             $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $twig);
         } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
