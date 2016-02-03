@@ -284,5 +284,9 @@ return [
     'newcustomerregistration_mail_subject' => 'Neue Kundenregistrierung',
     'newcustomerregistration_mail_text1' => 'Von:',
     'newcustomerregistration_mail_text2' => '<br>Am:',
+
+    'dbstatus_title' => 'DB Status',
+    'dbstatus_orphanedrowsinfo' => 'Anzahl der verwaisten Datensätze in',
+    'dbstatus_orphanedrowsremove' => 'Klicken Sie hier um sie zu löschen.',
 ];
 

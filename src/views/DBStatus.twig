@@ -1,48 +1,48 @@
-<h1>DB Status - remove hardcoded text</h1>
+<h1>{{ HT('dbstatus_title') }}</h1>
 
-<div>Orphaned rows in textcat_lang: {{ customdata.rows_textcat_lang }}
-{{ customdata.rows_textcat_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcats">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} textcat_lang: {{ customdata.rows_textcat_lang }}
+{{ customdata.rows_textcat_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcats">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_textcat_lang_list is defined ? customdata.rows_textcat_lang_list : '' }}
 </div>
 <br>
 
-<div>Orphaned rows in textcat_lang_archive: {{ customdata.rows_textcat_lang_archive }}
-{{ customdata.rows_textcat_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcatsarchive">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} textcat_lang_archive: {{ customdata.rows_textcat_lang_archive }}
+{{ customdata.rows_textcat_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcatsarchive">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_textcat_lang_archive_list is defined ? customdata.rows_textcat_lang_archive_list : '' }}
 </div>
 <br>
 
-<div>Orphaned rows in content_lang: {{ customdata.rows_content_lang }}
-{{ customdata.rows_content_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontent">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} content_lang: {{ customdata.rows_content_lang }}
+{{ customdata.rows_content_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontent">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_content_lang_list is defined ? customdata.rows_content_lang_list : '' }}
 </div>
 <br>
 
-<div>Orphaned rows in content_lang_archive: {{ customdata.rows_content_lang_archive }}
-{{ customdata.rows_content_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontentarchive">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} content_lang_archive: {{ customdata.rows_content_lang_archive }}
+{{ customdata.rows_content_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontentarchive">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_content_lang_archive_list is defined ? customdata.rows_content_lang_archive_list : '' }}
 </div>
 <br>
 
 {% if customdata.rows_item_lang is defined %}
-<div>Orphaned rows in item_lang: {{ customdata.rows_item_lang }}
-{{ customdata.rows_item_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditems">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} item_lang: {{ customdata.rows_item_lang }}
+{{ customdata.rows_item_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditems">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_item_lang_list is defined ? customdata.rows_item_lang_list : '' }}
 </div>
 <br>
 {% endif %}
 
 {% if customdata.rows_itemgroups_text is defined %}
-<div>Orphaned rows in itemgroups_text: {{ customdata.rows_itemgroups_text }}
-    {{ customdata.rows_itemgroups_text > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditemgroups">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} itemgroups_text: {{ customdata.rows_itemgroups_text }}
+    {{ customdata.rows_itemgroups_text > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditemgroups">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_itemgroups_text_list is defined ? customdata.rows_itemgroups_text_list : '' }}
 </div>
 <br>
 {% endif %}
 
 {% if customdata.rows_orders_items is defined %}
-<div>Orphaned rows in orders_items: {{ customdata.rows_orders_items }}
-    {{ customdata.rows_orders_items > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedorderitems">Click here to remove them.</a>' : '' }}
+<div>{{ HT('dbstatus_orphanedrowsinfo') }} orders_items: {{ customdata.rows_orders_items }}
+    {{ customdata.rows_orders_items > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedorderitems">'~HT('dbstatus_orphanedrowsremove')~'</a>' : '' }}
     {{ customdata.rows_orders_items_list is defined ? customdata.rows_orders_items_list : '' }}
 </div>
 {% endif %}
