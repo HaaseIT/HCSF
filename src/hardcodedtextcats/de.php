@@ -119,6 +119,8 @@ return [
     'pageadmin_exception_pagenotfound' => 'Die gewünschte Seite konnte nicht gefunden werden.',
     'pageadmin_exception_couldnotinsertpage' => 'Die gewünschte Seite konnte nicht angelegt werden.',
 
+    'pageadmin_archive_lang_title' => 'Archivierte Versionen dieser Seite (Sprachabhängige Daten):',
+
     'adminhome_enabled' => 'aktiviert',
     'adminhome_disabled' => 'deaktiviert',
     'adminhome_not' => 'NICHT',

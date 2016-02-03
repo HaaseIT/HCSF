@@ -22,7 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Pageadmin extends Base
 {
-    public function __construct($C, $DB, $sLang)
+    public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
         $this->P->cb_customcontenttemplate = 'pageadmin';
@@ -101,6 +101,27 @@ class Pageadmin extends Base
                     }
                     $this->P->cb_customdata["subnavarea_options"] = $aOptions;
                     unset($aOptions);
+
+                    // show archived versions of this page
+                    if ($Ptoedit->oPayload->cl_id != NULL) {
+                        $hResult = $DB->query(
+                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".$sLang."' ORDER BY cla_timestamp DESC"
+                        );
+                        $iArchivedRows = $hResult->rowCount();
+                        if ($iArchivedRows > 0) {
+                            $aListSetting = [
+                                ['title' => 'cla_timestamp', 'key' => 'cla_timestamp', 'width' => '15%', 'linked' => false,],
+                                ['title' => 'cl_html', 'key' => 'cl_html', 'width' => '40%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                                ['title' => 'cl_keywords', 'key' => 'cl_keywords', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                                ['title' => 'cl_description', 'key' => 'cl_description', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                                ['title' => 'cl_title', 'key' => 'cl_title', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                            ];
+                            $aData = $hResult->fetchAll();
+                            $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+                                $aData, $twig);
+                        }
+                    }
+
                 } else {
                     die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_pagenotfound'));
                 }

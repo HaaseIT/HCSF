@@ -122,6 +122,7 @@
         </fieldset>
     </form>
     </p>
+    {{ customdata.archived_list is defined ? HT('pageadmin_archive_lang_title')~'<br>'~customdata.archived_list : '' }}
 {% endif %}
 {% if customdata.showaddform %}
     {{ customdata.err.reservedpath ? HT('pageadmin_add_error_reservedpath')~'<br><br>' : '' }}
