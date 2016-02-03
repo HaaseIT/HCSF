@@ -1,4 +1,5 @@
 {% if C|length > 0 %}
+    {% if counter_listtable <= 1 %}
     <script type="text/javascript">
         function toggleHighlight(sRowID) {
             var a = document.getElementById(sRowID);
@@ -11,6 +12,7 @@
             }
         }
     </script>
+    {% endif %}
     <table class="listtable">
         <thead>
         <tr>
