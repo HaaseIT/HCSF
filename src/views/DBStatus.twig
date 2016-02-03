@@ -1,33 +1,50 @@
 <h1>DB Status - remove hardcoded text</h1>
 
-<p>Orphaned rows in textcat_lang: {{ customdata.rows_textcat_lang }}
+<div>Orphaned rows in textcat_lang: {{ customdata.rows_textcat_lang }}
 {{ customdata.rows_textcat_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcats">Click here to remove them.</a>' : '' }}
     {{ customdata.rows_textcat_lang_list is defined ? customdata.rows_textcat_lang_list : '' }}
-</p>
+</div>
+<br>
 
-<p>Orphaned rows in textcat_lang_archive: {{ customdata.rows_textcat_lang_archive }}
+<div>Orphaned rows in textcat_lang_archive: {{ customdata.rows_textcat_lang_archive }}
 {{ customdata.rows_textcat_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedtextcatsarchive">Click here to remove them.</a>' : '' }}
     {{ customdata.rows_textcat_lang_archive_list is defined ? customdata.rows_textcat_lang_archive_list : '' }}
-</p>
+</div>
+<br>
 
-<p>Orphaned rows in content_lang: {{ customdata.rows_content_lang }}
+<div>Orphaned rows in content_lang: {{ customdata.rows_content_lang }}
 {{ customdata.rows_content_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontent">Click here to remove them.</a>' : '' }}
-</p>
+    {{ customdata.rows_content_lang_list is defined ? customdata.rows_content_lang_list : '' }}
+</div>
+<br>
 
-<p>Orphaned rows in content_lang_archive: {{ customdata.rows_content_lang_archive }}
+<div>Orphaned rows in content_lang_archive: {{ customdata.rows_content_lang_archive }}
 {{ customdata.rows_content_lang_archive > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedcontentarchive">Click here to remove them.</a>' : '' }}
-</p>
+    {{ customdata.rows_content_lang_archive_list is defined ? customdata.rows_content_lang_archive_list : '' }}
+</div>
+<br>
 
-<p>Orphaned rows in item_lang: {{ customdata.rows_item_lang }}
+{% if customdata.rows_item_lang is defined %}
+<div>Orphaned rows in item_lang: {{ customdata.rows_item_lang }}
 {{ customdata.rows_item_lang > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditems">Click here to remove them.</a>' : '' }}
-</p>
+    {{ customdata.rows_item_lang_list is defined ? customdata.rows_item_lang_list : '' }}
+</div>
+<br>
+{% endif %}
 
-<p>Orphaned rows in itemgroups_text: {{ customdata.rows_itemgroups_text }}
-{{ customdata.rows_itemgroups_text > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditemgroups">Click here to remove them.</a>' : '' }}
-</p>
+{% if customdata.rows_itemgroups_text is defined %}
+<div>Orphaned rows in itemgroups_text: {{ customdata.rows_itemgroups_text }}
+    {{ customdata.rows_itemgroups_text > 0 ? '<a href="'~requesturiarray.path~'?clearorphaneditemgroups">Click here to remove them.</a>' : '' }}
+    {{ customdata.rows_itemgroups_text_list is defined ? customdata.rows_itemgroups_text_list : '' }}
+</div>
+<br>
+{% endif %}
 
-<p>Orphaned rows in orders_items: {{ customdata.rows_orders_items }}
-{{ customdata.rows_orders_items > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedorderitems">Click here to remove them.</a>' : '' }}
-</p>
+{% if customdata.rows_orders_items is defined %}
+<div>Orphaned rows in orders_items: {{ customdata.rows_orders_items }}
+    {{ customdata.rows_orders_items > 0 ? '<a href="'~requesturiarray.path~'?clearorphanedorderitems">Click here to remove them.</a>' : '' }}
+    {{ customdata.rows_orders_items_list is defined ? customdata.rows_orders_items_list : '' }}
+</div>
+{% endif %}
 
 {{ content }}
