@@ -177,6 +177,8 @@ return [
     'textcatadmin_list_title_text' => 'Text',
     'textcatadmin_list_title_edit' => 'bearb.',
 
+    'textcatadmin_archive_lang_title' => 'Archivierte Versionen dieses Textes (Sprachabhängige Daten):',
+
     'customeradmin_search_label' => 'Anzeigen:',
     'customeradmin_search_all' => 'Alle',
     'customeradmin_search_active' => 'Aktive',

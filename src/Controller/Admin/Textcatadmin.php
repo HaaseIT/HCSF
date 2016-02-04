@@ -79,7 +79,6 @@ class Textcatadmin extends Base
                 }
 
                 $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
-                //HaaseIT\Tools::debug($aData);
                 $this->P->cb_customdata["editform"] = array(
                     'id' => $aData["tc_id"],
                     'lid' => $aData["tcl_id"],
@@ -87,6 +86,21 @@ class Textcatadmin extends Base
                     'lang' => $aData["tcl_lang"],
                     'text' => $aData["tcl_text"],
                 );
+
+                // show archived versions of this textcat
+                    $hResult = $DB->query(
+                        'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".$sLang."' ORDER BY tcla_timestamp DESC"
+                    );
+                    $iArchivedRows = $hResult->rowCount();
+                    if ($iArchivedRows > 0) {
+                        $aListSetting = [
+                            ['title' => 'tcla_timestamp', 'key' => 'tcla_timestamp', 'width' => '15%', 'linked' => false,],
+                            ['title' => 'tcl_text', 'key' => 'tcl_text', 'width' => '85%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                        ];
+                        $aData = $hResult->fetchAll();
+                        $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+                            $aData, $twig);
+                    }
             }
         } elseif ($_GET["action"] == 'add') {
             $this->P->cb_customdata["add"] = true;

@@ -28,6 +28,7 @@
     </fieldset>
     </form>
     </p>
+    {{ customdata.archived_list is defined ? HT('textcatadmin_archive_lang_title')~'<br>'~customdata.archived_list : '' }}
 {% elseif customdata.deleted %}
     {{ HT('textcatadmin_delete_done') }}
 {% elseif customdata.add %}
