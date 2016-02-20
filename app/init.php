@@ -43,7 +43,7 @@ $AuraLoader->addPrefix('\HaaseIT\HCSF', __DIR__.'/../src');
 $request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
 // cleanup request
-$requesturi = $request->getRequestTarget();
+$requesturi = urldecode($request->getRequestTarget());
 $parsedrequesturi = \substr($requesturi, \strlen(\dirname($_SERVER['PHP_SELF'])));
 if (substr($parsedrequesturi, 1, 1) != '/') {
     $parsedrequesturi = '/'.$parsedrequesturi;

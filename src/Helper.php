@@ -66,15 +66,15 @@ class Helper
         return $mail->send();
     }
 
-    public static function generatePage($C, $P, $sLang, $oItem)
+    public static function generatePage($C, $P, $sLang, $oItem, $requesturi)
     {
         $aP = array(
             'language' => $sLang,
             'pageconfig' => $P->cb_pageconfig,
             'pagetype' => $P->cb_pagetype,
             'subnavkey' => $P->cb_subnav,
-            'requesturi' => $_SERVER["REQUEST_URI"],
-            'requesturiarray' => parse_url($_SERVER["REQUEST_URI"]),
+            'requesturi' => $requesturi,
+            'requesturiarray' => parse_url($requesturi),
             'locale_format_date' => $C['locale_format_date'],
             'locale_format_date_time' => $C['locale_format_date_time'],
             'maintenancemode' => $C['maintenancemode'],

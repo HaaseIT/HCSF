@@ -27,7 +27,7 @@ require __DIR__.'/../app/init.php';
 //HaaseIT\Tools::debug($aPath);
 //HaaseIT\Tools::debug('Path: '.$sPath);
 
-$aP = \HaaseIT\HCSF\Helper::generatePage($C, $P, $sLang, $oItem);
+$aP = \HaaseIT\HCSF\Helper::generatePage($C, $P, $sLang, $oItem, $requesturi);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
