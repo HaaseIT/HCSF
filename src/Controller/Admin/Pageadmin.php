@@ -66,6 +66,7 @@ class Pageadmin extends Base
                         if (isset($C['pagetext_loose_filtering']) && $C['pagetext_loose_filtering']) {
                             $purifier_config->set('HTML.Trusted', true);
                             $purifier_config->set('Attr.EnableID', true);
+                            $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
                         }
                         $purifier = new \HTMLPurifier($purifier_config);
                         //$clean_html = $purifier->purify($dirty_html);

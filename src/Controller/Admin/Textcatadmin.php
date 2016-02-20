@@ -70,6 +70,7 @@ class Textcatadmin extends Base
                     if (isset($C['textcat_loose_filtering']) && $C['textcat_loose_filtering']) {
                         $purifier_config->set('HTML.Trusted', true);
                         $purifier_config->set('Attr.EnableID', true);
+                        $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
                     }
                     $purifier = new \HTMLPurifier($purifier_config);
                     \HaaseIT\Textcat::$purifier = $purifier;
