@@ -136,6 +136,11 @@ if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] &&
     $twig_options["cache"] = PATH_TEMPLATECACHE;
 }
 $twig = new Twig_Environment($loader, $twig_options);
+
+if ($C['allow_parsing_of_page_content']) {
+    $twig->addExtension(new Twig_Extension_StringLoader());
+}
+
 if (isset($C["debug"]) && $C["debug"]) {
     $twig->addExtension(new Twig_Extension_Debug());
 }

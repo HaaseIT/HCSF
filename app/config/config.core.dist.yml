@@ -63,3 +63,4 @@ numberformat_decimals: 2
 numberformat_decimal_point: ','
 numberformat_thousands_seperator: '.'
 glide_max_imagesize: 1000000 # the maximum allowed imagesize for glide operations in pixels total
+allow_parsing_of_page_content: false

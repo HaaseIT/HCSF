@@ -561,12 +561,20 @@ import "macros.twig" as macro %}<!DOCTYPE html>
                                     </div>
                                 {% else %}
                                     <div class="fs">
-                                        {{content}}
+                                        {% if pageconfig.parsecontent == true %}
+                                            {{ include(template_from_string(content)) }}
+                                        {% else %}
+                                            {{content}}
+                                        {% endif %}
                                     </div>
                                 {% endif %}
                             {% else %}
                                 <div class="fs">
-                                    {{content}}
+                                    {% if pageconfig.parsecontent == true %}
+                                        {{ include(template_from_string(content)) }}
+                                    {% else %}
+                                        {{content}}
+                                    {% endif %}
                                 </div>
                             {% endif %}
                         {% endif %}
