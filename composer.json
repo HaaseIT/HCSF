@@ -18,7 +18,7 @@
   "license": "GPL-3.0+",
   "require": {
     "php": "^5.4 | ^7.0",
-    "twig/twig": "1.*",
+    "twig/twig": "^1.24.0",
     "phpmailer/phpmailer": "5.2.*",
     "symfony/yaml": "@stable",
     "haaseit/toolbox": "^1.2.6",
