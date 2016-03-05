@@ -29,7 +29,7 @@
     {{ HT('itemadmin_msg_displaying_1') }} {{ customdata.itemlist.numrows }} {{ HT('itemadmin_msg_displaying_2') }}<br><br>
     {{ customdata.itemlist.listtable }}
 {% elseif customdata.item is defined %}
-    <script src="//cdn.haase-it.com/ace/1.2.0/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js" type="text/javascript" charset="utf-8"></script>
     <form method="post" action="{{ customdata.item.form.action }}" name="itemadmin" class="pure-form pure-form-stacked">
         <input type="hidden" name="id" value="{{ customdata.item.id }}">
         <input type="hidden" name="doaction" value="edititem">
