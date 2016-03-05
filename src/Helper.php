@@ -66,6 +66,11 @@ class Helper
         return $mail->send();
     }
 
+    // don't remove this, this is the fallback for unavailable twig functions
+    public static function reachThrough($string) {
+        return $string;
+    }
+
     public static function generatePage($C, $P, $sLang, $oItem, $requesturi)
     {
         $aP = array(
