@@ -139,10 +139,12 @@ $twig = new Twig_Environment($loader, $twig_options);
 
 if ($C['allow_parsing_of_page_content']) {
     $twig->addExtension(new Twig_Extension_StringLoader());
+} else { // make sure, template_from_string is callable
+    $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
 }
 
 if (isset($C["debug"]) && $C["debug"]) {
-    $twig->addExtension(new Twig_Extension_Debug());
+    //$twig->addExtension(new Twig_Extension_Debug());
 }
 $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
 $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
