@@ -63,20 +63,7 @@ class Itemadmin extends Base
                     }
                 }
             } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-                $purifier_config = \HTMLPurifier_Config::createDefault();
-                $purifier_config->set('Core.Encoding', 'UTF-8');
-                $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-                $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
-                if (isset($C['itemtext_unsafe_html_whitelist']) && trim($C['itemtext_unsafe_html_whitelist']) != '') {
-                    $purifier_config->set('HTML.Allowed', $C['itemtext_unsafe_html_whitelist']);
-                }
-                if (isset($C['itemtext_loose_filtering']) && $C['itemtext_loose_filtering']) {
-                    $purifier_config->set('HTML.Trusted', true);
-                    $purifier_config->set('Attr.EnableID', true);
-                }
-                $purifier = new \HTMLPurifier($purifier_config);
-
-                $this->admin_updateItem($purifier);
+                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($C, 'item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();

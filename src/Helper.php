@@ -245,4 +245,57 @@ class Helper
 
         return $sLang;
     }
+
+    public static function getPurifier($C, $purpose)
+    {
+        $purifier_config = \HTMLPurifier_Config::createDefault();
+        $purifier_config->set('Core.Encoding', 'UTF-8');
+        $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
+        $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
+
+        if ($purpose == 'textcat') {
+            // textcats
+            if (isset($C['textcat_unsafe_html_whitelist']) && trim($C['textcat_unsafe_html_whitelist']) != '') {
+                $purifier_config->set('HTML.Allowed', $C['textcat_unsafe_html_whitelist']);
+            }
+            if (isset($C['textcat_loose_filtering']) && $C['textcat_loose_filtering']) {
+                $purifier_config->set('HTML.Trusted', true);
+                $purifier_config->set('Attr.EnableID', true);
+                $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
+            }
+        } elseif ($purpose == 'page') {
+            // pageadmin
+            if (isset($C['pagetext_unsafe_html_whitelist']) && trim($C['pagetext_unsafe_html_whitelist']) != '') {
+                $purifier_config->set('HTML.Allowed', $C['pagetext_unsafe_html_whitelist']);
+            }
+            if (isset($C['pagetext_loose_filtering']) && $C['pagetext_loose_filtering']) {
+                $purifier_config->set('HTML.Trusted', true);
+                $purifier_config->set('Attr.EnableID', true);
+                $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
+            }
+        } elseif ($purpose == 'item') {
+            if (isset($C['itemtext_unsafe_html_whitelist']) && trim($C['itemtext_unsafe_html_whitelist']) != '') {
+                $purifier_config->set('HTML.Allowed', $C['itemtext_unsafe_html_whitelist']);
+            }
+            if (isset($C['itemtext_loose_filtering']) && $C['itemtext_loose_filtering']) {
+                $purifier_config->set('HTML.Trusted', true);
+                $purifier_config->set('Attr.EnableID', true);
+                $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
+            }
+        } elseif ($purpose == 'itemgroup') {
+            if (isset($C['itemgrouptext_unsafe_html_whitelist']) && trim($C['itemgrouptext_unsafe_html_whitelist']) != '') {
+                $purifier_config->set('HTML.Allowed', $C['itemgrouptext_unsafe_html_whitelist']);
+            }
+            if (isset($C['itemgrouptext_loose_filtering']) && $C['itemgrouptext_loose_filtering']) {
+                $purifier_config->set('HTML.Trusted', true);
+                $purifier_config->set('Attr.EnableID', true);
+                $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
+            }
+        } else {
+            return false;
+        }
+
+
+        return new \HTMLPurifier($purifier_config);
+    }
 }

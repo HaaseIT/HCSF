@@ -67,19 +67,7 @@ class Itemgroupadmin extends Base
 
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-                $purifier_config = \HTMLPurifier_Config::createDefault();
-                $purifier_config->set('Core.Encoding', 'UTF-8');
-                $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-                $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
-                if (isset($C['itemgrouptext_unsafe_html_whitelist']) && trim($C['itemgrouptext_unsafe_html_whitelist']) != '') {
-                    $purifier_config->set('HTML.Allowed', $C['itemgrouptext_unsafe_html_whitelist']);
-                }
-                if (isset($C['itemgrouptext_loose_filtering']) && $C['itemgrouptext_loose_filtering']) {
-                    $purifier_config->set('HTML.Trusted', true);
-                }
-                $purifier = new \HTMLPurifier($purifier_config);
-
-                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup($purifier);
+                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier($C, 'itemgroup'));
             }
 
             $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);

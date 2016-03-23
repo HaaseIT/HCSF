@@ -60,21 +60,7 @@ class Textcatadmin extends Base
 
                 // if post:edit is set, update
                 if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-                    $purifier_config = \HTMLPurifier_Config::createDefault();
-                    $purifier_config->set('Core.Encoding', 'UTF-8');
-                    $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-                    $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
-                    if (isset($C['textcat_unsafe_html_whitelist']) && trim($C['textcat_unsafe_html_whitelist']) != '') {
-                        $purifier_config->set('HTML.Allowed', $C['textcat_unsafe_html_whitelist']);
-                    }
-                    if (isset($C['textcat_loose_filtering']) && $C['textcat_loose_filtering']) {
-                        $purifier_config->set('HTML.Trusted', true);
-                        $purifier_config->set('Attr.EnableID', true);
-                        $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
-                    }
-                    $purifier = new \HTMLPurifier($purifier_config);
-                    \HaaseIT\Textcat::$purifier = $purifier;
-
+                    \HaaseIT\Textcat::$purifier = \HaaseIT\HCSF\Helper::getPurifier($C, 'textcat');
                     \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
                     $this->P->cb_customdata["updated"] = true;
                 }

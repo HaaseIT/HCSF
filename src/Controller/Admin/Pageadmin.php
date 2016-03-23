@@ -56,26 +56,12 @@ class Pageadmin extends Base
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
-                        $purifier_config = \HTMLPurifier_Config::createDefault();
-                        $purifier_config->set('Core.Encoding', 'UTF-8');
-                        $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-                        $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
-                        if (isset($C['pagetext_unsafe_html_whitelist']) && trim($C['pagetext_unsafe_html_whitelist']) != '') {
-                            $purifier_config->set('HTML.Allowed', $C['pagetext_unsafe_html_whitelist']);
-                        }
-                        if (isset($C['pagetext_loose_filtering']) && $C['pagetext_loose_filtering']) {
-                            $purifier_config->set('HTML.Trusted', true);
-                            $purifier_config->set('Attr.EnableID', true);
-                            $purifier_config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
-                        }
-                        $purifier = new \HTMLPurifier($purifier_config);
-                        //$clean_html = $purifier->purify($dirty_html);
 
                         $Ptoedit->cb_pagetype = $_POST['page_type'];
                         $Ptoedit->cb_group = $_POST['page_group'];
                         $Ptoedit->cb_pageconfig = $_POST['page_config'];
                         $Ptoedit->cb_subnav = $_POST['page_subnav'];
-                        $Ptoedit->purifier = $purifier;
+                        $Ptoedit->purifier = \HaaseIT\HCSF\Helper::getPurifier($C, 'page');
                         $bBaseupdated = $Ptoedit->write();
 
                         if ($Ptoedit->oPayload->cl_id != NULL) {
