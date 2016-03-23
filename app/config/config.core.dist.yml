@@ -64,3 +64,11 @@ numberformat_decimal_point: ','
 numberformat_thousands_seperator: '.'
 glide_max_imagesize: 1000000 # the maximum allowed imagesize for glide operations in pixels total
 allow_parsing_of_page_content: false
+mail_method: mail # mail (uses the PHP mail() function) / sendmail (uses the systems sendmail) / smtp (use a smtp server, configure server details below)
+mail_smtp_server: localhost
+mail_smtp_port: 25
+mail_smtp_auth: true
+mail_smtp_auth_user: username
+mail_smtp_auth_pwd: password
+mail_smtp_secure: true
+mail_smtp_secure_method: tls # tls / ssl

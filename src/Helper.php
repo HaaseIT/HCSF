@@ -35,11 +35,31 @@ class Helper
         return $urlBuilder->getUrl($file, $param);
     }
 
-   public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
-       //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
-       $mail = new \PHPMailer;
-       $mail->CharSet = 'UTF-8';
-       $mail->isMail();
+    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
+        //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
+        $mail = new \PHPMailer;
+        $mail->CharSet = 'UTF-8';
+        if ($C['mail_method'] == 'sendmail') {
+            $mail->isSendmail();
+        } elseif ($C['mail_method'] == 'smtp') {
+            $mail->isSMTP();
+            $mail->Host = $C['mail_smtp_server'];
+            $mail->Port = $C['mail_smtp_port'];
+            if ($C['mail_smtp_auth'] == true) {
+                $mail->SMTPAuth = true;
+                $mail->Username = $C['mail_smtp_auth_user'];
+                $mail->Password = $C['mail_smtp_auth_pwd'];
+                if ($C['mail_smtp_secure']) {
+                    if ($C['mail_smtp_secure_method'] == 'ssl') {
+                        $mail->SMTPSecure = 'ssl';
+                    } else {
+                        $mail->SMTPSecure = 'tls';
+                    }
+                }
+            }
+        } else {
+            $mail->isMail();
+        }
         $mail->From = $C["email_sender"];
         $mail->FromName = $C["email_sendername"];
         $mail->addAddress($to);
