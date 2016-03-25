@@ -21,7 +21,7 @@
     "twig/twig": "^1.24.0",
     "phpmailer/phpmailer": "5.2.*",
     "symfony/yaml": "@stable",
-    "haaseit/toolbox": "^1.2.6",
+    "haaseit/toolbox": "^1.2.7",
     "aura/autoload": "2.0.*",
     "ezyang/htmlpurifier": "4.7.*",
     "league/oauth2-google": "^1.0.1",

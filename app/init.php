@@ -177,7 +177,7 @@ if (!$C['maintenancemode']) {
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]), ($C['textcatsverbose']));
+    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]), ($C['textcatsverbose']), PATH_LOGS);
 
     require_once __DIR__.'/config/config.navi.php';
     if (isset($C["navstruct"]["admin"])) {
