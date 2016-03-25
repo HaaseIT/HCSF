@@ -11,6 +11,9 @@ DirectoryIndex app.php
     # Rewrite all other queries to the front controller.
     RewriteRule .? ./app.php [L]
 
+    # For 1and1 the above won't work, use this instead:
+    # RewriteRule .? %{ENV:BASE}/app.php [L]
+
     # workaround for php cgi mode
     SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
 </IfModule>
