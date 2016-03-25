@@ -70,12 +70,12 @@ class Resetpassword extends Base
             if (strlen($_POST["pwd"]) < $this->C["minimum_length_password"] || strlen($_POST["pwd"]) > $C["maximum_length_password"]) $aErr[] = 'pwlength';
             if ($_POST["pwd"] != $_POST["pwdc"]) $aErr[] = 'pwmatch';
             if (count($aErr) == 0) {
-                $sEnc = crypt($_POST["pwd"], $this->C["blowfish_salt"]);
-                $aData = array(
+                $sEnc = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
+                $aData = [
                     DB_CUSTOMERFIELD_PASSWORD => $sEnc,
                     DB_CUSTOMERFIELD_PWRESETCODE => '',
                     DB_CUSTOMERTABLE_PKEY => $iID,
-                );
+                ];
                 $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
                 $hResult = $this->DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);

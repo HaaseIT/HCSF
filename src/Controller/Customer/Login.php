@@ -60,46 +60,55 @@ class Login extends Base
     {
         $bTryEmail = false;
         if (DB_CUSTOMERFIELD_USER != DB_CUSTOMERFIELD_EMAIL) $bTryEmail = true;
-        $sEnc = crypt($_POST["password"], $this->C["blowfish_salt"]);
+        //$sEnc = crypt($_POST["password"], $this->C["blowfish_salt"]);
 
         $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
         $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
-        $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ";
+        $sQ = 'SELECT '.DB_CUSTOMERFIELD_USER.', '.DB_CUSTOMERFIELD_EMAIL.', '.DB_CUSTOMERFIELD_PASSWORD.', ';
+        $sQ .= DB_CUSTOMERFIELD_ACTIVE.', '.DB_CUSTOMERFIELD_EMAILVERIFIED.', '.DB_CUSTOMERFIELD_TOSACCEPTED;
+        $sQ .= ' FROM '.DB_CUSTOMERTABLE.' WHERE ';
         if ($bTryEmail) $sQ .= "(";
         $sQ .= DB_CUSTOMERFIELD_USER." = :user";
         if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." = :email) ";
         $sQ .= " AND ";
         if ($bTryEmail) $sQ .= "(";
         $sQ .= DB_CUSTOMERFIELD_USER." != ''";
+
         if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." != '')";
-        $sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
+        //$sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
         }
-        $hResult->bindValue(':pwd', $sEnc, \PDO::PARAM_STR);
+        //$hResult->bindValue(':pwd', $sEnc, \PDO::PARAM_STR);
         $hResult->execute();
 
         $iRows = $hResult->rowCount();
         if($iRows == 1) {
             $aRow = $hResult->fetch();
-            //HaaseIT\Tools::debug($aRow);
-            if ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'y' && $aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'y' && $aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'y') {
-                $_SESSION["user"] = $aRow;
-                $mGet["status"] = 'success';
-            } elseif ($aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'n') {
-                $mGet["status"] = 'tosnotaccepted';
-            } elseif ($aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'n') {
-                $mGet["status"] = 'emailnotverified';
-                $mGet["data"] = $aRow;
-            } elseif ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'n') {
-                $mGet["status"] = 'accountinactive';
+
+            if (password_verify($_POST["password"], $aRow[DB_CUSTOMERFIELD_PASSWORD])) {
+                //HaaseIT\Tools::debug($aRow);
+                if ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'y' && $aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'y' && $aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'y') {
+                    $_SESSION["user"] = $aRow;
+                    $mGet["status"] = 'success';
+                } elseif ($aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'n') {
+                    $mGet["status"] = 'tosnotaccepted';
+                } elseif ($aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'n') {
+                    $mGet["status"] = 'emailnotverified';
+                    $mGet["data"] = $aRow;
+                } elseif ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'n') {
+                    $mGet["status"] = 'accountinactive';
+                } else {
+                    $mGet = false;
+                }
             } else {
                 $mGet = false;
             }
+
         } else {
             $mGet = false;
         }

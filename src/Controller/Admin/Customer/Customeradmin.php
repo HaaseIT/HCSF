@@ -126,7 +126,7 @@ class Customeradmin extends Base
                             DB_CUSTOMERTABLE_PKEY => $iId,
                         ];
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $this->C["blowfish_salt"]);
+                            $aData[DB_CUSTOMERFIELD_PASSWORD] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aInfo["passwordchanged"] = true;
                         }
                         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);

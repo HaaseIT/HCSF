@@ -71,7 +71,7 @@ class Userhome extends Base
                             );
                         }
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData[DB_CUSTOMERFIELD_PASSWORD] = crypt($_POST["pwd"], $C["blowfish_salt"]);
+                            $aData[DB_CUSTOMERFIELD_PASSWORD] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aPData["infopasswordchanged"] = true;
                         }
                         //debug($aData);

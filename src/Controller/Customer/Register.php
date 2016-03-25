@@ -57,7 +57,7 @@ class Register extends Base
                             DB_CUSTOMERFIELD_CELLPHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             DB_CUSTOMERFIELD_FAX => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             DB_CUSTOMERFIELD_COUNTRY => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_PASSWORD => crypt($_POST["pwd"], $C["blowfish_salt"]),
+                            DB_CUSTOMERFIELD_PASSWORD => password_hash($_POST["pwd"], PASSWORD_DEFAULT),
                             DB_CUSTOMERFIELD_TOSACCEPTED => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
                             DB_CUSTOMERFIELD_CANCELLATIONDISCLAIMERACCEPTED => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
                             DB_CUSTOMERFIELD_EMAILVERIFIED => 'n',

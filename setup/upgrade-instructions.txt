@@ -4,6 +4,8 @@ Delete files: functions.template.php
 Delete Textcats (moved to hardcoded): order_status_open_or_inwork, order_status_open, order_status_inwork,
   order_status_deleted, order_status_all_valid, order_status_canceled, order_status_completed
 
+ALTER TABLE `customer` CHANGE `cust_password` `cust_password` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
 V2.2.0
 New config keys:
 config.core.yml: directory_images, directory_emailattachments, pagetext_unsafe_html_whitelist, textcat_unsafe_html_whitelist,
