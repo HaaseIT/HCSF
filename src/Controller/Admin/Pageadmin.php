@@ -56,12 +56,13 @@ class Pageadmin extends Base
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($C, $sLang, $DB, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
+                        $purifier = \HaaseIT\HCSF\Helper::getPurifier($C, 'page');
 
                         $Ptoedit->cb_pagetype = $_POST['page_type'];
                         $Ptoedit->cb_group = $_POST['page_group'];
                         $Ptoedit->cb_pageconfig = $_POST['page_config'];
                         $Ptoedit->cb_subnav = $_POST['page_subnav'];
-                        $Ptoedit->purifier = \HaaseIT\HCSF\Helper::getPurifier($C, 'page');
+                        $Ptoedit->purifier = $purifier;
                         $bBaseupdated = $Ptoedit->write();
 
                         if ($Ptoedit->oPayload->cl_id != NULL) {
