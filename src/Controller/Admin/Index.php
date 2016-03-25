@@ -47,7 +47,7 @@ class Index extends Base
             unset($aApacheModules);
         }
         if (isset($_POST['string']) && trim($_POST['string']) != '') {
-            $this->P->cb_customdata['encrypted_string'] = crypt($_POST["string"], $C["blowfish_salt"]);
+            $this->P->cb_customdata['encrypted_string'] = password_hash($_POST["string"], PASSWORD_DEFAULT);
         }
     }
 

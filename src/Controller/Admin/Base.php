@@ -46,9 +46,9 @@ class Base extends \HaaseIT\HCSF\Controller\Base
 
             if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
                 $user = $_SERVER['PHP_AUTH_USER'];
-                $pass = crypt($_SERVER['PHP_AUTH_PW'], $this->C["blowfish_salt"]);
+                $pass = $_SERVER['PHP_AUTH_PW'];
 
-                $validated = (in_array($user, $valid_users)) && ($pass == $this->C['admin_users'][$user]);
+                $validated = !empty($this->C['admin_users'][$user]) && password_verify($pass, $this->C['admin_users'][$user]);
             } else {
                 $validated = false;
             }
