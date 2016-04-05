@@ -27,7 +27,7 @@ class Glide extends Base
     {
         parent::__construct($C, $DB, $sLang);
         $sPath = implode('/', $aPath);
-        $sImageroot = PATH_DOCROOT . $this->C['directory_images'] . '/master';
+        $sImageroot = PATH_BASEDIR . $this->C['directory_glide_master'];
 
         if (
             is_file($sImageroot.substr($sPath, strlen($this->C['directory_images']) + 1))
