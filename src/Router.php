@@ -84,7 +84,10 @@ class Router
                     $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
-                    $this->P = $e->getMessage();
+                    $this->P = 500;
+                    // todo: write error message
+                    //echo $e->getMessage();
+
                 }
             } else {
                 if ($this->C["enable_module_shop"]) {
@@ -129,6 +132,13 @@ class Router
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+            } elseif (!is_object($this->P) && $this->P == 500) {
+                $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+                $this->P->cb_pagetype = 'error';
+                $this->P->iStatus = 500;
+
+                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_server_error");
+                header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
                 !(
