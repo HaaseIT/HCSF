@@ -36,7 +36,7 @@ class Checkedout extends Base
             $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
 
             $hResult = $DB->prepare($sQ);
-            $hResult->bindValue(':id', $iId, PDO::PARAM_INT);
+            $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
             $hResult->execute();
 
