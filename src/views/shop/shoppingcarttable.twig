@@ -40,7 +40,7 @@
         <div class="cart-product">
             <div class="pure-u-1 pure-u-md-1-6">{{thiscart.name}}</div><div
                     class="pure-u-1 pure-u-md-1-6">
-                <img src="{{ customdata.shoppingcart.readonly == false ? ImgURL('/_img/items/'~thiscart.img, 100) : '' }}{{ customdata.mail is defined ? 'cid:'~thiscart.img : '' }}">
+                <img src="{{ customdata.shoppingcart.readonly == false ? ImgURL('/_img/items/'~thiscart.img, 100) : '' }}{{ customdata.shoppingcart.readonly == true ? thiscart.img : '' }}">
             </div><div
                     class="pure-u-1 pure-u-md-1-6">
                 {% if custom_order_fields is defined and custom_order_fields|length > 0 %}
