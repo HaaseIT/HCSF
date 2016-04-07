@@ -31,7 +31,7 @@
     <table class="shctable">
         <tr>
             <td class="shctablecol1">
-                <img src="{{ customdata.shoppingcart.readonly == false ? '/_img/items/90/' : '' }}{{ customdata.mail is defined ? 'cid:' : '' }}{{ thiscart.img }}">
+                <img src="{{ customdata.mail is defined ? 'cid:'~thiscart.img : '' }}">
             </td>
             <td class="shctablecol2">
                 {{thiscart.name}}<br>
