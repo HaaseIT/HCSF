@@ -18,7 +18,7 @@ email_orderconfirmation_attachment_cancellationform_de: ''
 email_orderconfirmation_embed_itemimages: true
 email_orderconfirmation_embed_itemimages_glideparams:
   w: 100
-email_orderconfirmation_embed_itemimages_method: glide # glide or path
+email_orderconfirmation_embed_itemimages_method: path # glide or path
 items_orderdirection_default: ASC
 paypal:
 business: paypalseller@domain.tld
