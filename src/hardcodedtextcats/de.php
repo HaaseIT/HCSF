@@ -233,9 +233,9 @@ return [
     'shopadmin_error_invalidrequest' => 'Invalid request error.',
 
     'shopadmin_orderstatus_completed' => 'erledigt',
-    'shopadmin_orderstatus_open' => 'storniert',
+    'shopadmin_orderstatus_open' => 'offen',
     'shopadmin_orderstatus_inwork' => 'in Arbeit',
-    'shopadmin_orderstatus_canceled' => 'offen',
+    'shopadmin_orderstatus_canceled' => 'storniert',
     'shopadmin_orderstatus_deleted' => 'gelöscht',
     'shopadmin_orderstatus_allvalid' => 'alle gültigen',
     'shopadmin_openorinwork' => 'offen oder in Arbeit',
