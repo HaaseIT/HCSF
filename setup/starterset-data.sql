@@ -298,7 +298,8 @@ INSERT INTO textcat_base (tc_id, tc_key, tcl_group) VALUES
   (232, 'itemoverview_no_items_found', ''),
   (233, 'shoppingcart_mail_subject', ''),
   (234, 'sidenav_root_impressum', ''),
-  (235, 'sidenav_root_datenschutz', '');
+  (235, 'sidenav_root_datenschutz', ''),
+  (236, 'misc_server_error', '');
 
 --
 -- Daten für Tabelle textcat_lang
@@ -1000,4 +1001,7 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
   (696, 234, 'es', 'Información legal'),
   (697, 235, 'es', 'Protección de datos '),
   (698, 235, 'de', 'Datenschutz'),
-  (699, 235, 'en', 'Privacy information');
+  (699, 235, 'en', 'Privacy information'),
+  (699, 236, 'de', 'Es ist ein interner Fehler aufgetreten. Bitte kontaktieren Sie den Seitenbetreiber.'),
+  (699, 236, 'en', 'An internal error has occurred. Please contact the site operator.'),
+  (699, 236, 'es', 'Error interno del servidor');
