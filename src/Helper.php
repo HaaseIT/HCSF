@@ -35,8 +35,7 @@ class Helper
         return $urlBuilder->getUrl($file, $param);
     }
 
-    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = array(), $aFilesToAttach = array()) {
-        //include_once(PATH_LIBRARIESROOT.'phpmailer/PHPMailerAutoload.php');
+    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
         $mail = new \PHPMailer;
         $mail->CharSet = 'UTF-8';
         if ($C['mail_method'] == 'sendmail') {
@@ -68,9 +67,9 @@ class Helper
         $mail->Body = $message;
 
         if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
-            $sPathImagesToEmbed = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
-            foreach ($aImagesToEmbed as $sValue) {
-                if (getimagesize($sPathImagesToEmbed.$sValue)) $mail->AddEmbeddedImage($sPathImagesToEmbed.$sValue, $sValue);
+            foreach ($aImagesToEmbed as $sKey => $binValue) {
+                $imginfo = getimagesizefromstring($binValue);
+                $mail->AddStringEmbeddedImage($binValue, $sKey, $sKey, 'base64', $imginfo['mime']);
             }
         }
 
