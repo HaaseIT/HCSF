@@ -148,25 +148,54 @@ class Shoppingcart extends Base
                             $hResult->execute();
                             $iInsertID = $DB->lastInsertId();
 
-                            $aDataOrderItems = array();
-                            $aImagesToSend = array();
+                            $aDataOrderItems = [];
+                            $aImagesToSend = [];
                             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                                 foreach ($_SESSION["cart"] as $sK => $aV) {
                                     // base64 encode img and prepare for db
                                     //echo $aV["img"];
                                     // image/png image/jpeg image/gif
                                     // data:{mimetype};base64,XXXX
-                                    $sPathToImage = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
-                                    $binImg = file_get_contents($sPathToImage.$aV["img"]);
-                                    $aImgInfo = getimagesize($sPathToImage.$aV["img"]);
-                                    //echo debug($aImgInfo);
-                                    $base64Img = 'data:' . $aImgInfo["mime"] . ';base64,';
-                                    $base64Img .= base64_encode($binImg);
-                                    if (isset($C["email_orderconfirmation_embed_itemimages"]) && $C["email_orderconfirmation_embed_itemimages"]) $aImagesToSend[] = $aV["img"];
+                                    if ($C['email_orderconfirmation_embed_itemimages_method'] == 'glide') {
+                                        $sPathToImage = '/'.$C['directory_images'].'/'.$C['directory_images_items'].'/';
+                                        $sImageroot = PATH_BASEDIR . $this->C['directory_glide_master'];
+
+                                        if (
+                                            is_file($sImageroot.substr($sPathToImage.$aV["img"], strlen($this->C['directory_images']) + 1))
+                                            && $aImgInfo = getimagesize($sImageroot.substr($sPathToImage.$aV["img"], strlen($this->C['directory_images']) + 1))
+                                        ) {
+                                            $glideserver = \League\Glide\ServerFactory::create([
+                                                'source' => $sImageroot,
+                                                'cache' => PATH_GLIDECACHE,
+                                                'max_image_size' => $this->C['glide_max_imagesize'],
+                                            ]);
+                                            $glideserver->setBaseUrl('/' . $this->C['directory_images'] . '/');
+                                            $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV["img"], $C['email_orderconfirmation_embed_itemimages_glideparams']);
+                                            $TMP = explode(',', $base64Img);
+                                            $binImg = base64_decode($TMP[1]);
+                                            unset($TMP);
+                                        } else {
+                                            $base64Img = false;
+                                            $binImg = false;
+                                        }
+                                    } else {
+                                        $sPathToImage = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
+                                        if ($aImgInfo = getimagesize($sPathToImage.$aV["img"])) {
+                                            $binImg = file_get_contents($sPathToImage.$aV["img"]);
+                                            $base64Img = 'data:' . $aImgInfo["mime"] . ';base64,';
+                                            $base64Img .= base64_encode($binImg);
+                                        } else {
+                                            $base64Img = false;
+                                            $binImg = false;
+                                        }
+                                    }
+                                    if (isset($C["email_orderconfirmation_embed_itemimages"]) && $C["email_orderconfirmation_embed_itemimages"]) {
+                                        $aImagesToSend[$aV["img"]] = $binImg;
+                                    }
                                     unset($binImg, $aImgInfo);
                                     //echo $base64Img;
 
-                                    $aDataOrderItems[] = array(
+                                    $aDataOrderItems[] = [
                                         'oi_o_id' => $iInsertID,
                                         'oi_cartkey' => $sK,
                                         'oi_amount' => $aV["amount"],
@@ -183,8 +212,7 @@ class Shoppingcart extends Base
                                         'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))]) ? $C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))] : '',
                                         'oi_itemname' => $aV["name"],
                                         'oi_img' => $base64Img,
-                                    );
-                                    //$_SESSION["cart"][$sK]["img"] = $base64Img;
+                                    ];
                                     unset($base64Img);
                                 }
                             }
