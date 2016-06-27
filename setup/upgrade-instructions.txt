@@ -1,3 +1,9 @@
+V2.4.0
+ALTER TABLE `orders_items`
+  DROP `oi_price_brutto_list`,
+  DROP `oi_price_brutto_sale`,
+  DROP `oi_price_brutto_rebated`;
+
 V2.3.0
 New config value: purifier_doctype
 Delete files: functions.template.php

@@ -198,43 +198,52 @@ class Items
     public function calcPrice($aData)
     {
         $aPrice = [];
-        $fPrice = $aData['itm_price'];
-        $sRG = $aData['itm_rg'];
         $sMwstart = $aData['itm_vatid'];
         if ($sMwstart != 'reduced') {
             $sMwstart = 'full';
         }
 
-        //if ($iMwstart == 0) return false;
-        if(\trim($fPrice) != '' && \trim($fPrice) != '0') {
-            if (isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"]) && isset($aData["itm_data"]["sale"]["price"])) {
+        // todo: change this to check for a positive number
+        if(\trim($aData['itm_price']) != '' && \trim($aData['itm_price']) != '0') {
+            $aPrice["netto_list"] = $aData['itm_price'];
+            if (
+                isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
+                && isset($aData["itm_data"]["sale"]["price"])
+            ) {
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
-                    $aPrice["brutto_sale"] =  ($aData["itm_data"]["sale"]["price"] * $this->C["vat"][$sMwstart] / 100) + $aData["itm_data"]["sale"]["price"];
                 }
             }
-            if ($sRG != '' && isset($this->C["rebate_groups"][$sRG][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])) {
-                $aPrice["netto_rebated"] = $fPrice * (100 - $this->C["rebate_groups"][$sRG][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]) / 100;
-                $aPrice["brutto_rebated"] = ($aPrice["netto_rebated"] * $this->C["vat"][$sMwstart] / 100) + $aPrice["netto_rebated"];
+            if (
+                $aData['itm_rg'] != ''
+                && isset($this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
+            ) {
+                $aPrice["netto_rebated"] =
+                    $aData['itm_price'] * (100 - $this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
+                    / 100;
             }
-            $fBrutto = ($fPrice * $this->C["vat"][$sMwstart] / 100) + $fPrice;
-            $aPrice["netto_list"] = $fPrice;
-            $aPrice["brutto_list"] = $fBrutto;
-        } else return false;
-        if (isset($aPrice["netto_list"])) {
-            $aPrice["netto_use"] = $aPrice["netto_list"];
-            $aPrice["brutto_use"] = $aPrice["brutto_list"];
+        } else {
+            return false;
         }
+
+        $aPrice["netto_use"] = $aPrice["netto_list"];
+        $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_list"], $sMwstart) + $aPrice["netto_list"];
+
         if (isset($aPrice["netto_rebated"]) && $aPrice["netto_rebated"] < $aPrice["netto_use"]) {
             $aPrice["netto_use"] = $aPrice["netto_rebated"];
-            $aPrice["brutto_use"] = $aPrice["brutto_rebated"];
+            $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_rebated"], $sMwstart) + $aPrice["netto_rebated"];
         }
         if (isset($aPrice["netto_sale"]) && $aPrice["netto_sale"] < $aPrice["netto_use"]) {
             $aPrice["netto_use"] = $aPrice["netto_sale"];
-            $aPrice["brutto_use"] = $aPrice["brutto_sale"];
+            $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_sale"], $sMwstart) + $aPrice["netto_sale"];
         }
 
         return $aPrice;
+    }
+
+    public function getVAT($fNetto, $sMwstart)
+    {
+        return $fNetto * $this->C["vat"][$sMwstart] / 100;
     }
 }

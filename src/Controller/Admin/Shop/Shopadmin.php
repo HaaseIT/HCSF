@@ -221,11 +221,8 @@ class Shopadmin extends Base
                 foreach ($aItems as $aValue) {
                     $aPrice = [
                         'netto_list' => $aValue["oi_price_netto_list"],
-                        'brutto_list' => $aValue["oi_price_brutto_list"],
                         'netto_sale' => $aValue["oi_price_netto_sale"],
-                        'brutto_sale' => $aValue["oi_price_brutto_sale"],
                         'netto_rebated' => $aValue["oi_price_netto_rebated"],
-                        'brutto_rebated' => $aValue["oi_price_brutto_rebated"],
                         'netto_use' => $aValue["oi_price_netto_use"],
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
