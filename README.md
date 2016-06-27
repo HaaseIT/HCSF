@@ -1,6 +1,8 @@
 HCSF - A multilingual CMS and Shopsystem
 Copyright (C) 2014-2015  Marcus Haase - mail@marcus.haase.name
 
+Build Status: [![Build Status](https://travis-ci.org/HaaseIT/HCSF.svg?branch=master)](https://travis-ci.org/HaaseIT/HCSF)
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
