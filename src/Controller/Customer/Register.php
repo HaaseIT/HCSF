@@ -31,7 +31,7 @@ class Register extends Base
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 
-            $aErr = array();
+            $aErr = [];
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
                 $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr);
                 if (count($aErr) == 0) {
@@ -45,7 +45,7 @@ class Register extends Base
 
                     if ($iRows == 0) {
                         $sEmailVerificationcode = md5($_POST["email"] . time());
-                        $aData = array(
+                        $aData = [
                             'cust_email' => $sEmail,
                             'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             'cust_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -63,7 +63,7 @@ class Register extends Base
                             'cust_emailverificationcode' => $sEmailVerificationcode,
                             'cust_active' => (($C["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
-                        );
+                        ];
                         $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
 
                         $hResult = $DB->prepare($sQ);

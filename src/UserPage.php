@@ -65,13 +65,13 @@ class UserPage extends Page
     }
 
     public function write() {
-        $aData = array(
+        $aData = [
             'cb_pagetype' => filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_group' => filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_pageconfig' => $this->purifier->purify($this->cb_pageconfig),
             'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_key' => $this->cb_key,
-        );
+        ];
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
 
         $hResult = $this->DB->prepare($sQ);
@@ -80,9 +80,9 @@ class UserPage extends Page
     }
 
     public function insert($sPagekeytoadd) {
-        $aData = array(
+        $aData = [
             'cb_key' => $sPagekeytoadd,
-        );
+        ];
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
         return $hResult = $this->DB->exec($sQ);
     }

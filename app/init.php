@@ -116,7 +116,7 @@ if ($C["enable_module_shop"]) {
         $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
     }
     if (isset($C["vat_disable"]) && $C["vat_disable"]) {
-        $C["vat"] = array("full" => 0, "reduced" => 0);
+        $C["vat"] = ["full" => 0, "reduced" => 0];
     }
 }
 
@@ -126,11 +126,11 @@ date_default_timezone_set($C["defaulttimezone"]);
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$loader = new Twig_Loader_Filesystem(array(__DIR__.'/../customviews', __DIR__.'/../src/views/'));
-$twig_options = array(
+$loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
+$twig_options = [
     'autoescape' => false,
     'debug' => (isset($C["debug"]) && $C["debug"] ? true : false)
-);
+];
 if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] &&
     is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
     $twig_options["cache"] = PATH_TEMPLATECACHE;
@@ -169,7 +169,7 @@ if (!$C['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
-    $DB = new \PDO($C["db_type"] . ':host=' . $C["db_server"] . ';dbname=' . $C["db_name"], $C["db_user"], $C["db_password"], array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',));
+    $DB = new \PDO($C["db_type"] . ':host=' . $C["db_server"] . ';dbname=' . $C["db_name"], $C["db_user"], $C["db_password"], [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',]);
     $DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
     $DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
     $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION

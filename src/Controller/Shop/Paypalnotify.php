@@ -84,11 +84,11 @@ class Paypalnotify extends Base
                             && $_REQUEST["mc_currency"] == $C["paypal"]["currency_id"]
                             && $_REQUEST["business"] == $C["paypal"]["business"]
                         ) {
-                            $aTxnUpdateData = array(
+                            $aTxnUpdateData = [
                                 'o_paypal_tx' => $_REQUEST["txn_id"],
                                 'o_paymentcompleted' => 'y',
                                 'o_id' => $iId,
-                            );
+                            ];
                             $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
                             $hResult = $DB->prepare($sQ);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {

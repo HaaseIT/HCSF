@@ -24,7 +24,7 @@ namespace HaaseIT\HCSF\Customer;
 class Helper
 {
 
-    public static function validateCustomerForm($C, $sLang, $aErr = array(), $bEdit = false)
+    public static function validateCustomerForm($C, $sLang, $aErr = [], $bEdit = false)
     {
         if (!isset($_POST["email"]) || !\filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) $aErr["email"] = true;
         if ($C["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;

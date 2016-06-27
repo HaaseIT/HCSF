@@ -59,13 +59,13 @@ class UserPagePayload extends PagePayload
     }
 
     public function write() {
-        $aData = array(
+        $aData = [
             'cl_html' => $this->purifier->purify($this->cl_html),
             'cl_title' => filter_var($this->cl_title, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_description' => filter_var($this->cl_description, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_keywords' => filter_var($this->cl_keywords, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_id' => $this->cl_id,
-        );
+        ];
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_lang', 'cl_id');
 
         $hResult = $this->DB->prepare($sQ);
@@ -74,10 +74,10 @@ class UserPagePayload extends PagePayload
     }
 
     public function insert($iParentID) {
-        $aData = array(
+        $aData = [
             'cl_cb' => $iParentID,
             'cl_lang' => $this->sLang,
-        );
+        ];
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
         $this->DB->exec($sQ);
     }

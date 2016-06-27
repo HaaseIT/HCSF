@@ -30,7 +30,7 @@ class Shopadmin extends Base
 
         if (isset($_POST["change"])) {
             $iID = filter_var(trim(\HaaseIT\Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
-            $aData = array(
+            $aData = [
                 'o_lastedit_timestamp' => time(),
                 'o_remarks_internal' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks_internal")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_transaction_no' => filter_var(trim(\HaaseIT\Tools::getFormfield("transaction_no")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -40,7 +40,7 @@ class Shopadmin extends Base
                 'o_shipping_service' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_service")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_shipping_trackingno' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_trackingno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_id' => $iID,
-            );
+            ];
 
             $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
             $hResult = $DB->prepare($sQ);
@@ -219,7 +219,7 @@ class Shopadmin extends Base
 
                 $aItemsforShoppingcarttable = [];
                 foreach ($aItems as $aValue) {
-                    $aPrice = array(
+                    $aPrice = [
                         'netto_list' => $aValue["oi_price_netto_list"],
                         'brutto_list' => $aValue["oi_price_brutto_list"],
                         'netto_sale' => $aValue["oi_price_netto_sale"],
@@ -228,7 +228,7 @@ class Shopadmin extends Base
                         'brutto_rebated' => $aValue["oi_price_brutto_rebated"],
                         'netto_use' => $aValue["oi_price_netto_use"],
                         'brutto_use' => $aValue["oi_price_brutto_use"],
-                    );
+                    ];
 
                     //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $C["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = [

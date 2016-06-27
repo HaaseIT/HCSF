@@ -92,7 +92,7 @@ class Helper
 
     public static function generatePage($C, $P, $sLang, $oItem, $requesturi)
     {
-        $aP = array(
+        $aP = [
             'language' => $sLang,
             'pageconfig' => $P->cb_pageconfig,
             'pagetype' => $P->cb_pagetype,
@@ -105,7 +105,7 @@ class Helper
             'numberformat_decimals' => $C['numberformat_decimals'],
             'numberformat_decimal_point' => $C['numberformat_decimal_point'],
             'numberformat_thousands_seperator' => $C['numberformat_thousands_seperator'],
-        );
+        ];
         if ($C["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP["enable_module_customer"] = true;
@@ -197,7 +197,7 @@ class Helper
     {
         $sLangselector = '';
         if ($C["lang_detection_method"] == 'domain') {
-            $aSessionGetVarsForLangSelector = array();
+            $aSessionGetVarsForLangSelector = [];
             if (session_status() == PHP_SESSION_ACTIVE) {
                 $aSessionGetVarsForLangSelector[session_name()] = session_id();
             }
@@ -208,7 +208,7 @@ class Helper
                 if ($C["lang_detection_method"] == 'domain') {
                     $sLangselector .= '<a href="//www.' . $C["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
                 } else {
-                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', array('language' => $sKey)) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
                 }
             }
         }

@@ -66,13 +66,13 @@ class Textcatadmin extends Base
                 }
 
                 $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
-                $this->P->cb_customdata["editform"] = array(
+                $this->P->cb_customdata["editform"] = [
                     'id' => $aData["tc_id"],
                     'lid' => $aData["tcl_id"],
                     'key' => $aData["tc_key"],
                     'lang' => $aData["tcl_lang"],
                     'text' => $aData["tcl_text"],
-                );
+                ];
 
                 // show archived versions of this textcat
                     $hResult = $DB->query(
@@ -95,10 +95,10 @@ class Textcatadmin extends Base
                 $this->P->cb_customdata["err"] = \HaaseIT\Textcat::verifyAddTextKey($_POST["key"]);
 
                 if (count($this->P->cb_customdata["err"]) == 0) {
-                    $this->P->cb_customdata["addform"] = array(
+                    $this->P->cb_customdata["addform"] = [
                         'key' => $_POST["key"],
                         'id' => \HaaseIT\Textcat::addTextKey($_POST["key"]),
-                    );
+                    ];
                 }
             }
         }

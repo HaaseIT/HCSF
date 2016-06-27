@@ -76,7 +76,7 @@ class Shoppingcart extends Base
             // Display the shoppingcart
             // ----------------------------------------------------------------------------
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
-                $aErr = array();
+                $aErr = [];
                 if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
                     $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr, true);
                     if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
@@ -102,7 +102,7 @@ class Shoppingcart extends Base
                     if (count($aErr) == 0) {
                         try {
                             $DB->beginTransaction();
-                            $aDataOrder = array(
+                            $aDataOrder = [
                                 'o_custno' => filter_var(trim(\HaaseIT\Tools::getFormfield("custno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_email' => filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL),
                                 'o_corpname' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -138,7 +138,7 @@ class Shoppingcart extends Base
                                 'o_srv_hostname' => $_SERVER["HTTP_HOST"],
                                 'o_vatfull' => $C["vat"]["full"],
                                 'o_vatreduced' => $C["vat"]["reduced"],
-                            );
+                            ];
                             $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, 'orders');
                             //die($sQ);
                             $hResult = $DB->prepare($sQ);
@@ -244,7 +244,7 @@ class Shoppingcart extends Base
 
                         if (isset($C["email_orderconfirmation_attachment_cancellationform_" . $sLang]) && file_exists(PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang])) {
                             $aFilesToSend[] = PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang];
-                        } else $aFilesToSend = array();
+                        } else $aFilesToSend = [];
 
                         // Send Mails
                         \HaaseIT\HCSF\Helper::mailWrapper($C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
@@ -276,7 +276,7 @@ class Shoppingcart extends Base
     {
         $aSHC = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->sLang, $this->C, true);
 
-        $aData = array(
+        $aData = [
             'customerversion' => $bCust,
             //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
             'datetime' => date("d.m.Y - H:i"),
@@ -301,7 +301,7 @@ class Shoppingcart extends Base
             'SESSION' => (!$bCust ? \HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
             'POST' => (!$bCust ? \HaaseIT\Tools::debug($_POST, '$_POST', true, true) : ''),
             'orderid' => $iId,
-        );
+        ];
 
         $aM["customdata"] = $aSHC;
         $aM['currency'] = $this->C["waehrungssymbol"];

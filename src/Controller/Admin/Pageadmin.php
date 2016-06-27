@@ -115,7 +115,7 @@ class Pageadmin extends Base
                 }
             }
         } elseif ($_GET["action"] == 'addpage') {
-            $aErr = array();
+            $aErr = [];
             if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
                 $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
 
@@ -173,10 +173,10 @@ class Pageadmin extends Base
         }
         unset($TMP);
 
-        $aSData = array(
-            'options_groups' => isset($aOptions_g) ? $aOptions_g : array(),
-            'tree' => isset($aTree) ? $aTree : array(),
-        );
+        $aSData = [
+            'options_groups' => isset($aOptions_g) ? $aOptions_g : [],
+            'tree' => isset($aTree) ? $aTree : [],
+        ];
 
         return $aSData;
     }

@@ -27,7 +27,7 @@ class Index extends Base
         $this->bAdminhome = true;
         parent::__construct($C, $DB, $sLang);
         $this->P->cb_customcontenttemplate = 'adminhome';
-        $this->P->cb_customdata = array(
+        $this->P->cb_customdata = [
             'filter_enabled' => extension_loaded('filter'),
             'path_templatecache' => realpath(PATH_TEMPLATECACHE),
             'path_templatecache_exists' => file_exists(PATH_TEMPLATECACHE),
@@ -39,7 +39,7 @@ class Index extends Base
             'path_logs' => realpath(PATH_LOGS),
             'path_logs_exists' => file_exists(PATH_LOGS),
             'path_logs_writable' => is_writable(PATH_LOGS),
-        );
+        ];
         if (function_exists('apache_get_modules')) {
             $aApacheModules = apache_get_modules();
             $this->P->cb_customdata['check_mod_rewrite'] = true;

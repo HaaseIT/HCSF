@@ -52,7 +52,7 @@ class Updatecart extends Base
                     if (isset($C["custom_order_fields"])) {
                         foreach ($C["custom_order_fields"] as $sValue) {
                             if (isset($aData["item"][$sItemno]["itm_data"][$sValue])) {
-                                $aOptions = array();
+                                $aOptions = [];
                                 $TMP = explode('|', $aData["item"][$sItemno]["itm_data"][$sValue]);
                                 foreach ($TMP as $sTMPValue) {
                                     if (trim($sTMPValue) != '') {
@@ -73,14 +73,14 @@ class Updatecart extends Base
                     if (!isset($_SESSION["cart"][$sCartKey]) && $iAmount == 0) {
                         $this->replyToCartUpdate($twig, 'noactiontaken');
                     }
-                    $aItem = array(
+                    $aItem = [
                         'amount' => $iAmount,
                         'price' => $oItem->calcPrice($aData["item"][$sItemno]),
                         'rg' => $aData["item"][$sItemno]['itm_rg'],
                         'vat' => $aData["item"][$sItemno]['itm_vatid'],
                         'name' => $aData["item"][$sItemno]['itm_name'],
                         'img' => $aData["item"][$sItemno]['itm_img'],
-                    );
+                    ];
                     //debug($aItem);
                     if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
                         if ($iAmount == 0) { // new amount == 0 -> remove from cart

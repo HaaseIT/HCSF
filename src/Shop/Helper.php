@@ -72,14 +72,14 @@ class Helper
         $fSteuererm = $aSumme["sumerm"] * $iVATreduced / 100;
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
-        $aOrder = array(
+        $aOrder = [
             'sumvoll' => $aSumme["sumvoll"],
             'sumerm' => $aSumme["sumerm"],
             'sumnettoall' => $fGesamtnetto,
             'taxvoll' => $fSteuervoll,
             'taxerm' => $fSteuererm,
             'sumbruttoall' => $fGesamtbrutto,
-        );
+        ];
 
         $fGesamtnettoitems = $aOrder["sumnettoall"];
         $aOrder["fVoll"] = $aOrder["sumvoll"];
@@ -167,7 +167,7 @@ class Helper
                 $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($C["vat"]["reduced"] / 100));
             }
         }
-        $aSumme = array('sumvoll' => $fVoll, 'sumerm' => $fErm, 'taxvoll' => $fTaxVoll, 'taxerm' => $fTaxErm);
+        $aSumme = ['sumvoll' => $fVoll, 'sumerm' => $fErm, 'taxvoll' => $fTaxVoll, 'taxerm' => $fTaxErm];
 
         return $aSumme;
     }
@@ -197,7 +197,7 @@ class Helper
             $iVATreduced = $C["vat"]["reduced"];
         }
         $aSumme = self::calculateCartItems($C, $aCart);
-        $aData["shoppingcart"] = array(
+        $aData["shoppingcart"] = [
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
@@ -209,7 +209,7 @@ class Helper
             'reducedorderamountfee1' => $C["reducedorderamountfee1"],
             'reducedorderamountfee2' => $C["reducedorderamountfee2"],
             'minimumamountforfreeshipping' => $C["minimumamountforfreeshipping"],
-        );
+        ];
 
         if (!$bReadonly) {
             $aCartpricesums = $aData["shoppingcart"]["additionalcoststoitems"];
@@ -227,29 +227,29 @@ class Helper
     {
         if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
-            $aCartinfo = array(
+            $aCartinfo = [
                 'numberofitems' => count($_SESSION["cart"]),
                 'cartsums' => $aCartsums,
                 'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
                 'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
-            );
+            ];
             unset($aCartsums);
             foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                $aCartinfo["cartitems"][$sKey] = array(
+                $aCartinfo["cartitems"][$sKey] = [
                     'cartkey' => $sKey,
                     'name' => $aValue["name"],
                     'amount' => $aValue["amount"],
                     'img' => $aValue["img"],
                     'price' => $aValue["price"],
-                );
+                ];
             }
         } else {
-            $aCartinfo = array(
+            $aCartinfo = [
                 'numberofitems' => 0,
-                'cartsums' => array(),
+                'cartsums' => [],
                 'cartsumnetto' => 0,
                 'cartsumbrutto' => 0,
-            );
+            ];
         }
 
         return $aCartinfo;
@@ -280,8 +280,8 @@ class Helper
             }
         }
         unset($aSuggestionsToLoad, $aItemsNotInCategory);
-        $aSuggestions = array();
-        $aAdditionalSuggestions = array();
+        $aSuggestions = [];
+        $aAdditionalSuggestions = [];
         foreach ($aPossibleSuggestions as $aPossibleSuggestionsKey => $aPossibleSuggestionsValue) { // iterate through all possible suggestions
             if (in_array($aPossibleSuggestionsKey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
                 $aSuggestions[$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;

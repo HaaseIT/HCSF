@@ -139,7 +139,7 @@ class Myorders extends Base
                 if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_yes"));
                 else $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_no"));
 
-                $aData[] = array(
+                $aData[] = [
                     'o_id' => $aRow["o_id"],
                     'o_order_status' => $sStatus,
                     'o_ordertime' => date($this->C['locale_format_date_time'], $aRow["o_ordertimestamp"]),
@@ -147,7 +147,7 @@ class Myorders extends Base
                     'o_paymentcompleted' => $sPaymentstatus,
                     'o_shipping_service' => $aRow["o_shipping_service"],
                     'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
-                );
+                ];
             }
             $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
             //HaaseIT\Tools::debug($aData);
