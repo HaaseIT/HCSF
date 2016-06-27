@@ -198,13 +198,11 @@ class Items
     public function calcPrice($aData)
     {
         $aPrice = [];
-        $sMwstart = $aData['itm_vatid'];
-        if ($sMwstart != 'reduced') {
-            $sMwstart = 'full';
+        if ($aData['itm_vatid'] != 'reduced') {
+            $aData['itm_vatid'] = 'full';
         }
 
-        // todo: change this to check for a positive number
-        if(\trim($aData['itm_price']) != '' && \trim($aData['itm_price']) != '0') {
+        if(is_numeric($aData['itm_price']) && $aData['itm_price'] > 0) {
             $aPrice["netto_list"] = $aData['itm_price'];
             if (
                 isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
@@ -236,7 +234,7 @@ class Items
             $aPrice["netto_use"] = $aPrice["netto_sale"];
         }
 
-        $aPrice["brutto_use"] = ($aPrice["netto_use"] * $this->C['vat'][$sMwstart] / 100) + $aPrice["netto_use"];
+        $aPrice["brutto_use"] = ($aPrice["netto_use"] * $this->C['vat'][$aData['itm_vatid']] / 100) + $aPrice["netto_use"];
 
         return $aPrice;
     }
