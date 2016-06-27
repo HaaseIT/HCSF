@@ -40,7 +40,7 @@ class Login extends Base
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail_emailnotverified") . '<br><br>';
                 $this->P->oPayload->cl_html .= '<a href="/_misc/resendverificationmail.html?email='
-                    . $mLogin["data"][DB_CUSTOMERFIELD_EMAIL] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
+                    . $mLogin["data"]['cust_email'] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail_accountinactive") . '<br>';
@@ -59,48 +59,43 @@ class Login extends Base
     private function getLogin()
     {
         $bTryEmail = false;
-        if (DB_CUSTOMERFIELD_USER != DB_CUSTOMERFIELD_EMAIL) $bTryEmail = true;
-        //$sEnc = crypt($_POST["password"], $this->C["blowfish_salt"]);
+        if ('cust_no' != 'cust_email') $bTryEmail = true;
 
         $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
         $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
-        $sQ = 'SELECT '.DB_CUSTOMERFIELD_USER.', '.DB_CUSTOMERFIELD_EMAIL.', '.DB_CUSTOMERFIELD_PASSWORD.', ';
-        $sQ .= DB_CUSTOMERFIELD_ACTIVE.', '.DB_CUSTOMERFIELD_EMAILVERIFIED.', '.DB_CUSTOMERFIELD_TOSACCEPTED;
-        $sQ .= ' FROM '.DB_CUSTOMERTABLE.' WHERE ';
+        $sQ = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
+            . ' FROM customer WHERE ';
         if ($bTryEmail) $sQ .= "(";
-        $sQ .= DB_CUSTOMERFIELD_USER." = :user";
-        if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." = :email) ";
+        $sQ .= 'cust_no = :user';
+        if ($bTryEmail) $sQ .= ' OR cust_email = :email) ';
         $sQ .= " AND ";
         if ($bTryEmail) $sQ .= "(";
-        $sQ .= DB_CUSTOMERFIELD_USER." != ''";
+        $sQ .= 'cust_no != \'\'';
 
-        if ($bTryEmail) $sQ .= " OR ".DB_CUSTOMERFIELD_EMAIL." != '')";
-        //$sQ .= " AND ".DB_CUSTOMERFIELD_PASSWORD." = :pwd ";
+        if ($bTryEmail) $sQ .= ' OR cust_email != \'\')';
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
         }
-        //$hResult->bindValue(':pwd', $sEnc, \PDO::PARAM_STR);
         $hResult->execute();
 
         $iRows = $hResult->rowCount();
         if($iRows == 1) {
             $aRow = $hResult->fetch();
 
-            if (password_verify($_POST["password"], $aRow[DB_CUSTOMERFIELD_PASSWORD])) {
-                //HaaseIT\Tools::debug($aRow);
-                if ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'y' && $aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'y' && $aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'y') {
+            if (password_verify($_POST["password"], $aRow['cust_password'])) {
+                if ($aRow['cust_active'] == 'y' && $aRow['cust_emailverified'] == 'y' && $aRow['cust_tosaccepted'] == 'y') {
                     $_SESSION["user"] = $aRow;
                     $mGet["status"] = 'success';
-                } elseif ($aRow[DB_CUSTOMERFIELD_TOSACCEPTED] == 'n') {
+                } elseif ($aRow['cust_tosaccepted'] == 'n') {
                     $mGet["status"] = 'tosnotaccepted';
-                } elseif ($aRow[DB_CUSTOMERFIELD_EMAILVERIFIED] == 'n') {
+                } elseif ($aRow['cust_emailverified'] == 'n') {
                     $mGet["status"] = 'emailnotverified';
                     $mGet["data"] = $aRow;
-                } elseif ($aRow[DB_CUSTOMERFIELD_ACTIVE] == 'n') {
+                } elseif ($aRow['cust_active'] == 'n') {
                     $mGet["status"] = 'accountinactive';
                 } else {
                     $mGet = false;

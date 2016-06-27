@@ -47,7 +47,7 @@ class Forgotpassword extends Base
         if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
             $aErr[] = 'emailinvalid';
         } else {
-            $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email";
+            $sQ = 'SELECT * FROM customer WHERE cust_email = :email';
 
             $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
@@ -59,21 +59,21 @@ class Forgotpassword extends Base
             } else {
                 $aResult = $hResult->fetch();
                 $iTimestamp = time();
-                if ($iTimestamp - HOUR < $aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP]) { // 1 hour delay between requests
+                if ($iTimestamp - HOUR < $aResult['cust_pwresettimestamp']) { // 1 hour delay between requests
                     $aErr[] = 'pwresetstilllocked';
                 } else {
-                    $sResetCode = md5($aResult[DB_CUSTOMERFIELD_EMAIL].$iTimestamp);
-                    $aData = array(
-                        DB_CUSTOMERFIELD_PWRESETCODE => $sResetCode,
-                        DB_CUSTOMERFIELD_PWRESETTIMESTAMP => $iTimestamp,
-                        DB_CUSTOMERTABLE_PKEY => $aResult[DB_CUSTOMERTABLE_PKEY],
-                    );
-                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                    $sResetCode = md5($aResult['cust_email'].$iTimestamp);
+                    $aData = [
+                        'cust_pwresetcode' => $sResetCode,
+                        'cust_pwresettimestamp' => $iTimestamp,
+                        'cust_id' => $aResult['cust_id'],
+                    ];
+                    $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                     $hResult = $this->DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
 
-                    $sTargetAddress = $aResult[DB_CUSTOMERFIELD_EMAIL];
+                    $sTargetAddress = $aResult['cust_email'];
                     $sSubject = \HaaseIT\Textcat::T("forgotpw_mail_subject");
                     $sMessage = \HaaseIT\Textcat::T("forgotpw_mail_text1");
                     $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';

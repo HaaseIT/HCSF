@@ -114,7 +114,7 @@ class Shoppingcart extends Base
                                 'o_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'o_group' => trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP)),
+                                'o_group' => trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')),
                                 'o_remarks' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_tos' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
                                 'o_cancellationdisclaimer' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
@@ -209,7 +209,7 @@ class Shoppingcart extends Base
                                         'oi_price_brutto_rebated' => isset($aV["price"]["brutto_rebated"]) ? $aV["price"]["brutto_rebated"] : '',
                                         'oi_vat' => $C["vat"][$aV["vat"]],
                                         'oi_rg' => $aV["rg"],
-                                        'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))]) ? $C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData(DB_CUSTOMERFIELD_GROUP))] : '',
+                                        'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))]) ? $C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))] : '',
                                         'oi_itemname' => $aV["name"],
                                         'oi_img' => $base64Img,
                                     ];

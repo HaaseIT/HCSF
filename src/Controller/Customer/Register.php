@@ -35,8 +35,7 @@ class Register extends Base
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
                 $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr);
                 if (count($aErr) == 0) {
-                    $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . " FROM " . DB_CUSTOMERTABLE;
-                    $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email";
+                    $sQ = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
                     $hResult = $DB->prepare($sQ);
@@ -47,27 +46,25 @@ class Register extends Base
                     if ($iRows == 0) {
                         $sEmailVerificationcode = md5($_POST["email"] . time());
                         $aData = array(
-                            DB_CUSTOMERFIELD_EMAIL => $sEmail,
-                            DB_CUSTOMERFIELD_CORP => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_NAME => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_STREET => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_ZIP => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_TOWN => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_PHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_CELLPHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_FAX => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_COUNTRY => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            DB_CUSTOMERFIELD_PASSWORD => password_hash($_POST["pwd"], PASSWORD_DEFAULT),
-                            DB_CUSTOMERFIELD_TOSACCEPTED => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
-                            DB_CUSTOMERFIELD_CANCELLATIONDISCLAIMERACCEPTED => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
-                            DB_CUSTOMERFIELD_EMAILVERIFIED => 'n',
-                            DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE => $sEmailVerificationcode,
-                            DB_CUSTOMERFIELD_ACTIVE => (($C["register_require_manual_activation"]) ? 'n' : 'y'),
-                            DB_CUSTOMERFIELD_REGISTRATIONTIMESTAMP => time(),
+                            'cust_email' => $sEmail,
+                            'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_street' => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_zip' => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_town' => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_phone' => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            'cust_password' => password_hash($_POST["pwd"], PASSWORD_DEFAULT),
+                            'cust_tosaccepted' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
+                            'cust_cancellationdisclaimeraccepted' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
+                            'cust_emailverified' => 'n',
+                            'cust_emailverificationcode' => $sEmailVerificationcode,
+                            'cust_active' => (($C["register_require_manual_activation"]) ? 'n' : 'y'),
+                            'cust_registrationtimestamp' => time(),
                         );
-                        //debug( $aData );
-                        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_CUSTOMERTABLE);
-                        //debug( $sQ );
+                        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
 
                         $hResult = $DB->prepare($sQ);
                         foreach ($aData as $sKey => $sValue) {

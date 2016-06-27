@@ -28,14 +28,14 @@ class Customeradmin extends Base
     {
         parent::__construct($C, $DB, $sLang);
         $CUA = [
-            ['title' => HardcodedText::get('customeradmin_list_no'), 'key' => DB_CUSTOMERFIELD_NUMBER, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_company'), 'key' => DB_CUSTOMERFIELD_CORP, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_name'), 'key' => DB_CUSTOMERFIELD_NAME, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_town'), 'key' => DB_CUSTOMERFIELD_TOWN, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_active'), 'key' => DB_CUSTOMERFIELD_ACTIVE, 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_no'), 'key' => 'cust_no', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_company'), 'key' => 'cust_corp', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_name'), 'key' => 'cust_name', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_town'), 'key' => 'cust_town', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => HardcodedText::get('customeradmin_list_active'), 'key' => 'cust_active', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             [
                 'title' => HardcodedText::get('customeradmin_list_edit'),
-                'key' => DB_CUSTOMERTABLE_PKEY,
+                'key' => 'cust_id',
                 'width' => '16%',
                 'linked' => true,
                 'ltarget' => '/_admin/customeradmin.html',
@@ -61,13 +61,13 @@ class Customeradmin extends Base
         }
         $sH = '';
         if (!isset($_GET["action"])) {
-            $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
+            $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
             if ($sType == 'active') {
-                $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'y'";
+                $sQ .= ' WHERE cust_active = \'y\'';
             } elseif ($sType == 'inactive') {
-                $sQ .= " WHERE " . DB_CUSTOMERFIELD_ACTIVE . " = 'n'";
+                $sQ .= ' WHERE cust_active = \'n\'';
             }
-            $sQ .= " ORDER BY " . DB_CUSTOMERFIELD_NUMBER . " ASC";
+            $sQ .= ' ORDER BY cust_no ASC';
             $hResult = $this->DB->query($sQ);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
@@ -84,9 +84,7 @@ class Customeradmin extends Base
                     $aErr["custnoinvalid"] = true;
                 } else {
 
-                    $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
-                    $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
-                    $sQ .= " AND " . DB_CUSTOMERFIELD_NUMBER . " = :custno";
+                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
                     $hResult = $this->DB->prepare($sQ);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':custno', $sCustno);
@@ -95,9 +93,7 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["custnoalreadytaken"] = true;
                     }
-                    $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
-                    $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
-                    $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
+                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
                     $hResult = $this->DB->prepare($sQ);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
@@ -109,27 +105,27 @@ class Customeradmin extends Base
                     $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
-                            DB_CUSTOMERFIELD_NUMBER => $sCustno,
-                            DB_CUSTOMERFIELD_EMAIL => \trim(\filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
-                            DB_CUSTOMERFIELD_CORP => \trim(\filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_NAME => \trim(\filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_STREET => \trim(\filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_ZIP => \trim(\filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_TOWN => \trim(\filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_PHONE => \trim(\filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_CELLPHONE => \trim(\filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_FAX => \trim(\filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_COUNTRY => \trim(\filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_GROUP => \trim(\filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            DB_CUSTOMERFIELD_EMAILVERIFIED => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
-                            DB_CUSTOMERFIELD_ACTIVE => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
-                            DB_CUSTOMERTABLE_PKEY => $iId,
+                            'cust_no' => $sCustno,
+                            'cust_email' => \trim(\filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
+                            'cust_corp' => \trim(\filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_name' => \trim(\filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_street' => \trim(\filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_zip' => \trim(\filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_town' => \trim(\filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_phone' => \trim(\filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_cellphone' => \trim(\filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_fax' => \trim(\filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_country' => \trim(\filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_group' => \trim(\filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_emailverified' => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
+                            'cust_active' => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
+                            'cust_id' => $iId,
                         ];
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData[DB_CUSTOMERFIELD_PASSWORD] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
+                            $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aInfo["passwordchanged"] = true;
                         }
-                        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                         $hResult = $this->DB->prepare($sQ);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();
@@ -137,8 +133,7 @@ class Customeradmin extends Base
                     }
                 }
             }
-            $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
-            $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " = :id";
+            $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
             $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();

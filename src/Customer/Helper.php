@@ -79,55 +79,55 @@ class Helper
         if ($sPurpose == 'shoppingcart' && self::getUserData()) $aData["readonly"] = true;
 
         // fv = field_value, fr = field_required
-        $sDefaultCustno = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_NUMBER, "custno", $aUserData);
+        $sDefaultCustno = self::getCustomerFormDefaultValue('cust_no', "custno", $aUserData);
         $aData["fv_custno"] = \HaaseIT\Tools::getFormField('custno', $sDefaultCustno, true);
 
-        $sDefaultEmail = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_EMAIL, "email", $aUserData);
+        $sDefaultEmail = self::getCustomerFormDefaultValue('cust_email', "email", $aUserData);
         $aData["fv_email"] = \HaaseIT\Tools::getFormField('email', $sDefaultEmail, true);
 
-        $sDefaultCorpname = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_CORP, "corpname", $aUserData);
+        $sDefaultCorpname = self::getCustomerFormDefaultValue('cust_corp', "corpname", $aUserData);
         $aData["fv_corpname"] = \HaaseIT\Tools::getFormField('corpname', $sDefaultCorpname, true);
         $aData["fr_corpname"] = $C["validate_corpname"];
 
-        $sDefaultName = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_NAME, "name", $aUserData);
+        $sDefaultName = self::getCustomerFormDefaultValue('cust_name', "name", $aUserData);
         $aData["fv_name"] = \HaaseIT\Tools::getFormField('name', $sDefaultName, true);
         $aData["fr_name"] = $C["validate_name"];
 
-        $sDefaultStreet = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_STREET, "street", $aUserData);
+        $sDefaultStreet = self::getCustomerFormDefaultValue('cust_street', "street", $aUserData);
         $aData["fv_street"] = \HaaseIT\Tools::getFormField('street', $sDefaultStreet, true);
         $aData["fr_street"] = $C["validate_street"];
 
-        $sDefaultZip = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_ZIP, "zip", $aUserData);
+        $sDefaultZip = self::getCustomerFormDefaultValue('cust_zip', "zip", $aUserData);
         $aData["fv_zip"] = \HaaseIT\Tools::getFormField('zip', $sDefaultZip, true);
         $aData["fr_zip"] = $C["validate_zip"];
 
-        $sDefaultTown = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_TOWN, "town", $aUserData);
+        $sDefaultTown = self::getCustomerFormDefaultValue('cust_town', "town", $aUserData);
         $aData["fv_town"] = \HaaseIT\Tools::getFormField('town', $sDefaultTown, true);
         $aData["fr_town"] = $C["validate_town"];
 
-        $sDefaultPhone = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_PHONE, "phone", $aUserData);
+        $sDefaultPhone = self::getCustomerFormDefaultValue('cust_phone', "phone", $aUserData);
         $aData["fv_phone"] = \HaaseIT\Tools::getFormField('phone', $sDefaultPhone, true);
         $aData["fr_phone"] = $C["validate_phone"];
 
-        $sDefaultCellphone = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_CELLPHONE, "cellphone", $aUserData);
+        $sDefaultCellphone = self::getCustomerFormDefaultValue('cust_cellphone', "cellphone", $aUserData);
         $aData["fv_cellphone"] = \HaaseIT\Tools::getFormField('cellphone', $sDefaultCellphone, true);
         $aData["fr_cellphone"] = $C["validate_cellphone"];
 
-        $sDefaultFax = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_FAX, "fax", $aUserData);
+        $sDefaultFax = self::getCustomerFormDefaultValue('cust_fax', "fax", $aUserData);
         $aData["fv_fax"] = \HaaseIT\Tools::getFormField('fax', $sDefaultFax, true);
         $aData["fr_fax"] = $C["validate_fax"];
 
         $sDefaultCountryByConfig = self::getDefaultCountryByConfig($C, $sLang);
-        $sDefaultCountry = self::getCustomerFormDefaultValue(DB_CUSTOMERFIELD_COUNTRY, "country", $aUserData);
+        $sDefaultCountry = self::getCustomerFormDefaultValue('cust_country', "country", $aUserData);
         $aData["fv_country"] = \HaaseIT\Tools::getFormField('country', ($sDefaultCountry ? $sDefaultCountry : $sDefaultCountryByConfig), true);
         $aData["fr_country"] = $C["validate_country"];
 
         if ($sPurpose == 'admin') {
             $aData["fv_custgroups"] = $C["customer_groups"];
-            $aData["fv_custgroup_selected"] = \HaaseIT\Tools::getFormField('custgroup', self::getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData), true);
+            $aData["fv_custgroup_selected"] = \HaaseIT\Tools::getFormField('custgroup', self::getUserData('cust_group', $aUserData), true);
         } elseif ($sPurpose == 'shopadmin') {
-            if (isset($C["customer_groups"][self::getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData)])) {
-                $aData["fv_custgroup"] = $C["customer_groups"][self::getUserData(DB_CUSTOMERFIELD_GROUP, $aUserData)];
+            if (isset($C["customer_groups"][self::getUserData('cust_group', $aUserData)])) {
+                $aData["fv_custgroup"] = $C["customer_groups"][self::getUserData('cust_group', $aUserData)];
             } else {
                 $aData["fv_custgroup"] = '';
             }
@@ -159,8 +159,8 @@ class Helper
         }
 
         if ($sPurpose == 'admin') {
-            $aData["fv_active"] = ((self::getUserData(DB_CUSTOMERFIELD_ACTIVE, $aUserData) == 'y') ? true : false);
-            $aData["fv_emailverified"] = ((self::getUserData(DB_CUSTOMERFIELD_EMAILVERIFIED, $aUserData) == 'y') ? true : false);
+            $aData["fv_active"] = ((self::getUserData('cust_active', $aUserData) == 'y') ? true : false);
+            $aData["fv_emailverified"] = ((self::getUserData('cust_emailverified', $aUserData) == 'y') ? true : false);
         }
         return $aData;
     }

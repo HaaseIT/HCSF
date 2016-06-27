@@ -40,14 +40,12 @@ class Userhome extends Base
                 $sErr = '';
 
                 if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
-                    $sQ = "SELECT " . DB_ADDRESSFIELDS . " FROM " . DB_CUSTOMERTABLE;
-                    $sQ .= " WHERE " . DB_CUSTOMERTABLE_PKEY . " != :id";
-                    $sQ .= " AND " . DB_CUSTOMERFIELD_EMAIL . " = :email";
+                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
                     $hResult = $DB->prepare($sQ);
-                    $hResult->bindValue(':id', $_SESSION["user"][DB_CUSTOMERTABLE_PKEY], \PDO::PARAM_INT);
+                    $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     //debug($sQ);
@@ -57,28 +55,28 @@ class Userhome extends Base
 
                     if ($sErr == '') {
                         if ($C["allow_edituserprofile"]) {
-                            $aData = array(
-                                //DB_CUSTOMERFIELD_EMAIL => $sEmail, // disabled until renwewd email verification implemented
-                                DB_CUSTOMERFIELD_CORP => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_NAME => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_STREET => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_ZIP => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_TOWN => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_PHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_CELLPHONE => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_FAX => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                DB_CUSTOMERFIELD_COUNTRY => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            );
+                            $aData = [
+                                //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
+                                'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_street' => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_zip' => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_town' => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_phone' => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                            ];
                         }
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData[DB_CUSTOMERFIELD_PASSWORD] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
+                            $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aPData["infopasswordchanged"] = true;
                         }
                         //debug($aData);
-                        $aData[DB_CUSTOMERTABLE_PKEY] = $_SESSION["user"][DB_CUSTOMERTABLE_PKEY];
+                        $aData['cust_id'] = $_SESSION["user"]['cust_id'];
 
                         if (count($aData) > 1) {
-                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                             //debug($sQ);
                             $hResult = $DB->prepare($sQ);
                             foreach ($aData as $sKey => $sValue) {

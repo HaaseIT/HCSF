@@ -199,18 +199,18 @@ class Shopadmin extends Base
                 $aItems = $hResult->fetchAll();
 
                 $aUserdata = [
-                    DB_CUSTOMERFIELD_NUMBER => $aSData["orderdata"]["o_custno"],
-                    DB_CUSTOMERFIELD_EMAIL => $aSData["orderdata"]["o_email"],
-                    DB_CUSTOMERFIELD_CORP => $aSData["orderdata"]["o_corpname"],
-                    DB_CUSTOMERFIELD_NAME => $aSData["orderdata"]["o_name"],
-                    DB_CUSTOMERFIELD_STREET => $aSData["orderdata"]["o_street"],
-                    DB_CUSTOMERFIELD_ZIP => $aSData["orderdata"]["o_zip"],
-                    DB_CUSTOMERFIELD_TOWN => $aSData["orderdata"]["o_town"],
-                    DB_CUSTOMERFIELD_PHONE => $aSData["orderdata"]["o_phone"],
-                    DB_CUSTOMERFIELD_CELLPHONE => $aSData["orderdata"]["o_cellphone"],
-                    DB_CUSTOMERFIELD_FAX => $aSData["orderdata"]["o_fax"],
-                    DB_CUSTOMERFIELD_COUNTRY => $aSData["orderdata"]["o_country"],
-                    DB_CUSTOMERFIELD_GROUP => $aSData["orderdata"]["o_group"],
+                    'cust_no' => $aSData["orderdata"]["o_custno"],
+                    'cust_email' => $aSData["orderdata"]["o_email"],
+                    'cust_corp' => $aSData["orderdata"]["o_corpname"],
+                    'cust_name' => $aSData["orderdata"]["o_name"],
+                    'cust_street' => $aSData["orderdata"]["o_street"],
+                    'cust_zip' => $aSData["orderdata"]["o_zip"],
+                    'cust_town' => $aSData["orderdata"]["o_town"],
+                    'cust_phone' => $aSData["orderdata"]["o_phone"],
+                    'cust_cellphone' => $aSData["orderdata"]["o_cellphone"],
+                    'cust_fax' => $aSData["orderdata"]["o_fax"],
+                    'cust_country' => $aSData["orderdata"]["o_country"],
+                    'cust_group' => $aSData["orderdata"]["o_group"],
                 ];
                 $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'shopadmin', '', $aUserdata);
 

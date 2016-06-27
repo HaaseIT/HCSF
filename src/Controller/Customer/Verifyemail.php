@@ -29,19 +29,17 @@ class Verifyemail extends Base
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = "SELECT " . DB_CUSTOMERFIELD_EMAIL . ", " . DB_CUSTOMERTABLE_PKEY . " FROM " . DB_CUSTOMERTABLE;
-            $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " = :key AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
-            //debug( $sQ );
+            $sQ = 'SELECT cust_email, cust_id FROM customer '
+                . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
-            //debug( $iRows );
 
             if ($iRows == 1) {
                 $aRow = $hResult->fetch();
-                $aData = array(DB_CUSTOMERFIELD_EMAILVERIFIED => 'y', DB_CUSTOMERTABLE_PKEY => $aRow[DB_CUSTOMERTABLE_PKEY]);
-                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
+                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                 $hResult = $DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);

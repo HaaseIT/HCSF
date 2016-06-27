@@ -29,18 +29,17 @@ class Resendverificationmail extends Base
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = "SELECT " . DB_ADDRESSFIELDS . ", " . DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE . " FROM " . DB_CUSTOMERTABLE;
-            $sQ .= " WHERE " . DB_CUSTOMERFIELD_EMAIL . " = :email";
-            $sQ .= " AND " . DB_CUSTOMERFIELD_EMAILVERIFIED . " = 'n'";
+            $sQ = 'SELECT '.DB_ADDRESSFIELDS.', cust_emailverificationcode FROM customer';
+            $sQ .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
             if ($iRows == 1) {
                 $aRow = $hResult->fetch();
-                $sEmailVerificationcode = $aRow[DB_CUSTOMERFIELD_EMAILVERIFICATIONCODE];
+                $sEmailVerificationcode = $aRow['cust_emailverificationcode'];
 
-                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow[DB_CUSTOMERFIELD_EMAIL], $C, $twig, true);
+                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $C, $twig, true);
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("register_verificationmailresent");
             }

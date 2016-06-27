@@ -32,7 +32,7 @@ class Resetpassword extends Base
             if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
             } else {
-                $sQ = "SELECT * FROM ".DB_CUSTOMERTABLE." WHERE ".DB_CUSTOMERFIELD_EMAIL." = :email AND ".DB_CUSTOMERFIELD_PWRESETCODE." = :pwresetcode AND ".DB_CUSTOMERFIELD_PWRESETCODE." != ''";
+                $sQ = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
 
                 $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
@@ -43,16 +43,16 @@ class Resetpassword extends Base
                 if ($hResult->rowCount() != 1) {
                     $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
                 } else {
-                    $aErr = array();
+                    $aErr = [];
                     $aResult = $hResult->fetch();
                     $iTimestamp = time();
-                    if ($aResult[DB_CUSTOMERFIELD_PWRESETTIMESTAMP] < $iTimestamp - DAY) {
+                    if ($aResult['cust_pwresettimestamp'] < $iTimestamp - DAY) {
                         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
                         $this->P->cb_customdata["pwreset"]["minpwlength"] = $C["minimum_length_password"];
                         if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                            $aErr = $this->handlePasswordReset($aErr, $aResult[DB_CUSTOMERTABLE_PKEY]);
+                            $aErr = $this->handlePasswordReset($aErr, $aResult['cust_id']);
                             if (count($aErr) == 0) {
                                 $this->P->cb_customdata["pwreset"]["showsuccessmessage"] = true;
                             } else {
@@ -72,11 +72,11 @@ class Resetpassword extends Base
             if (count($aErr) == 0) {
                 $sEnc = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                 $aData = [
-                    DB_CUSTOMERFIELD_PASSWORD => $sEnc,
-                    DB_CUSTOMERFIELD_PWRESETCODE => '',
-                    DB_CUSTOMERTABLE_PKEY => $iID,
+                    'cust_password' => $sEnc,
+                    'cust_pwresetcode' => '',
+                    'cust_id' => $iID,
                 ];
-                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_CUSTOMERTABLE, DB_CUSTOMERTABLE_PKEY);
+                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                 $hResult = $this->DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
