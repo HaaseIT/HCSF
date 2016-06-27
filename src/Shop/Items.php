@@ -228,22 +228,16 @@ class Items
         }
 
         $aPrice["netto_use"] = $aPrice["netto_list"];
-        $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_list"], $sMwstart) + $aPrice["netto_list"];
 
         if (isset($aPrice["netto_rebated"]) && $aPrice["netto_rebated"] < $aPrice["netto_use"]) {
             $aPrice["netto_use"] = $aPrice["netto_rebated"];
-            $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_rebated"], $sMwstart) + $aPrice["netto_rebated"];
         }
         if (isset($aPrice["netto_sale"]) && $aPrice["netto_sale"] < $aPrice["netto_use"]) {
             $aPrice["netto_use"] = $aPrice["netto_sale"];
-            $aPrice["brutto_use"] = $this->getVAT($aPrice["netto_sale"], $sMwstart) + $aPrice["netto_sale"];
         }
 
-        return $aPrice;
-    }
+        $aPrice["brutto_use"] = ($aPrice["netto_use"] * $this->C['vat'][$sMwstart] / 100) + $aPrice["netto_use"];
 
-    public function getVAT($fNetto, $sMwstart)
-    {
-        return $fNetto * $this->C["vat"][$sMwstart] / 100;
+        return $aPrice;
     }
 }

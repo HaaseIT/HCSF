@@ -3,41 +3,6 @@ use PHPUnit\Framework\TestCase;
 
 class ItemsTest extends TestCase
 {
-    public function testGetVAT()
-    {
-        // vat disabled
-        $C = [
-            'vat' => [
-                'full' => 0,
-                'reduced' => 0,
-            ],
-        ];
-        $DB = null;
-        $sLang = 'de';
-
-        $items = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
-
-        $this->assertEquals(0, $items->getVAT(11.11, 'full'));
-
-        // regular vat
-        $C = [
-            'vat' => [
-                'full' => 19,
-                'reduced' => 7,
-            ],
-            'rebate_groups' => [
-                '01' => [
-                    'grosskunde' => 7,
-                ],
-            ],
-        ];
-        $items = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
-
-        $this->assertEquals(0.7777, $items->getVAT(11.11, 'reduced'));
-        $this->assertEquals(2.1109, $items->getVAT(11.11, 'full'));
-
-    }
-
     public function testCalcPrice()
     {
         $C = [
