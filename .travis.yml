@@ -4,4 +4,4 @@ php:
   - '7.0'
   - hhvm
 install:
-  - composer install --no-dev
+  - composer install
