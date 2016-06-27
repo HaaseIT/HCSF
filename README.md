@@ -1,7 +1,7 @@
+[![Build Status](https://travis-ci.org/HaaseIT/HCSF.svg?branch=master)](https://travis-ci.org/HaaseIT/HCSF) [![Latest Stable Version](https://poser.pugx.org/haaseit/hcsf/version)](https://packagist.org/packages/haaseit/hcsf) [![License](https://poser.pugx.org/haaseit/hcsf/license)](https://packagist.org/packages/haaseit/hcsf) [![composer.lock available](https://poser.pugx.org/haaseit/hcsf/composerlock)](https://packagist.org/packages/haaseit/hcsf)
+
 HCSF - A multilingual CMS and Shopsystem
 Copyright (C) 2014-2015  Marcus Haase - mail@marcus.haase.name
-
-Build Status: [![Build Status](https://travis-ci.org/HaaseIT/HCSF.svg?branch=master)](https://travis-ci.org/HaaseIT/HCSF)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
