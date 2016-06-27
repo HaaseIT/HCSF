@@ -381,7 +381,7 @@ class Helper
             $aP["pagetype"] = 'itemoverview';
             if (count($aP["items"]["item"])) {
                 foreach ($aP["items"]["item"] as $sKey => $aValue) {
-                    if ($aValue[DB_ITEMFIELD_NUMBER] == $P->cb_pageconfig->itemno) {
+                    if ($aValue['itm_no'] == $P->cb_pageconfig->itemno) {
                         $aP["pagetype"] = 'itemdetail';
                         $aP["item"]["data"] = $aValue;
                         $aP["item"]["key"] = $sKey;
@@ -404,7 +404,7 @@ class Helper
                                 $C["itemdetail_suggestions"],
                                 $oItem,
                                 $aP["items"]["item"],
-                                (!empty($aValue[DB_ITEMFIELD_DATA]["suggestions"]) ? $aValue[DB_ITEMFIELD_DATA]["suggestions"] : ''),
+                                (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
                                 $sKey,
                                 (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
                                 (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])

@@ -46,7 +46,7 @@ class Updatecart extends Base
                     $this->replyToCartUpdate($twig, 'itemnotfound');
                 } else {
                     // build the key for this item for the shoppingcart
-                    $sItemno = $aData["item"][$_REQUEST["itemno"]][DB_ITEMFIELD_NUMBER];
+                    $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
                     $sCartKey = $sItemno;
 
                     if (isset($C["custom_order_fields"])) {
@@ -76,10 +76,10 @@ class Updatecart extends Base
                     $aItem = array(
                         'amount' => $iAmount,
                         'price' => $oItem->calcPrice($aData["item"][$sItemno]),
-                        'rg' => $aData["item"][$sItemno][DB_ITEMFIELD_RG],
-                        'vat' => $aData["item"][$sItemno][DB_ITEMFIELD_VAT],
-                        'name' => $aData["item"][$sItemno][DB_ITEMFIELD_NAME],
-                        'img' => $aData["item"][$sItemno][DB_ITEMFIELD_IMG],
+                        'rg' => $aData["item"][$sItemno]['itm_rg'],
+                        'vat' => $aData["item"][$sItemno]['itm_vatid'],
+                        'name' => $aData["item"][$sItemno]['itm_name'],
+                        'img' => $aData["item"][$sItemno]['itm_img'],
                     );
                     //debug($aItem);
                     if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount

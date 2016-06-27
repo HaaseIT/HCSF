@@ -29,8 +29,7 @@ class Paypalnotify extends Base
         $sLogData = '';
 
         $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
-        $sQ = "SELECT * FROM " . DB_ORDERTABLE;
-        $sQ .= " WHERE " . DB_ORDERTABLE_PKEY . " = '" . $iId . "' AND " . DB_ORDERFIELD_PAYMENTMETHOD . " = 'paypal' AND o_paymentcompleted = 'n'";
+        $sQ = 'SELECT * FROM orders WHERE o_id = '.$iId.' AND o_paymentmethod'." = 'paypal' AND o_paymentcompleted = 'n'";
 
         $hResult = $DB->query($sQ);
 
@@ -72,7 +71,7 @@ class Paypalnotify extends Base
                     $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true)."\n\n";
 
                     // Check if the transaction id has been used before
-                    $sTxn_idQ = "SELECT o_paypal_tx FROM " . DB_ORDERTABLE . " WHERE o_paypal_tx = :txn_id";
+                    $sTxn_idQ = 'SELECT o_paypal_tx FROM orders WHERE o_paypal_tx = :txn_id';
                     $hTxn_idResult = $DB->prepare($sTxn_idQ);
                     $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
                     $hTxn_idResult->execute();
@@ -80,7 +79,7 @@ class Paypalnotify extends Base
                     if ($hTxn_idResult->rowCount() == 0) {
                         if (
                             $_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '')
-                            && $_REQUEST["custom"] == $aOrder[DB_ORDERTABLE_PKEY]
+                            && $_REQUEST["custom"] == $aOrder['o_id']
                             && $_REQUEST["payment_status"] == "Completed"
                             && $_REQUEST["mc_currency"] == $C["paypal"]["currency_id"]
                             && $_REQUEST["business"] == $C["paypal"]["business"]
@@ -88,9 +87,9 @@ class Paypalnotify extends Base
                             $aTxnUpdateData = array(
                                 'o_paypal_tx' => $_REQUEST["txn_id"],
                                 'o_paymentcompleted' => 'y',
-                                DB_ORDERTABLE_PKEY => $iId,
+                                'o_id' => $iId,
                             );
-                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, DB_ORDERTABLE, DB_ORDERTABLE_PKEY);
+                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
                             $hResult = $DB->prepare($sQ);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
@@ -101,7 +100,7 @@ class Paypalnotify extends Base
                         } else {
                             $sLogData .= "-- In my country we have problem; Problem is evaluation. Throw the data down the log!\n";
                             $sLogData .= "mc_gross: ".$_REQUEST["mc_gross"].' - number_format($fGesamtbrutto, 2, \'.\', \'\'): '.number_format($fGesamtbrutto, 2, '.', '')."\n";
-                            $sLogData .= "custom: ".$_REQUEST["custom"].' - $aOrder[DB_ORDERTABLE_PKEY]: '.$aOrder[DB_ORDERTABLE_PKEY]."\n";
+                            $sLogData .= "custom: ".$_REQUEST["custom"].' - $aOrder[\'o_id\']: '.$aOrder['o_id']."\n";
                             $sLogData .= "payment_status: ".$_REQUEST["payment_status"]."\n";
                             $sLogData .= "mc_currency: ".$_REQUEST["mc_currency"].' - $C["paypal"]["currency_id"]: '.$C["paypal"]["currency_id"]."\n";
                             $sLogData .= "business: ".$_REQUEST["receiver_email"].' - $C["paypal"]["business"]: '.$C["paypal"]["business"]."\n\n";

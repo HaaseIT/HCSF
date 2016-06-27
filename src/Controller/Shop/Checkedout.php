@@ -32,8 +32,7 @@ class Checkedout extends Base
             $this->P->cb_customcontenttemplate = 'shop/checkedout';
 
             $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-            $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
-            $sQ .= "WHERE o_id = :id AND o_paymentcompleted = 'n'";
+            $sQ = 'SELECT * FROM orders WHERE o_id = :id AND o_paymentcompleted = \'n\'';
 
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);

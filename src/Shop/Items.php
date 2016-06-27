@@ -70,16 +70,12 @@ class Items
         return $itemindexpathtree;
     }
 
-    function queryItem($mItemIndex = '', $mItemno = '', $sOrderby = '')
+    public function queryItem($mItemIndex = '', $mItemno = '', $sOrderby = '')
     {
-        $sQ = "SELECT ";
-        $sQ .= DB_ITEMFIELDS." FROM ".DB_ITEMTABLE_BASE;
-        $sQ .= " LEFT OUTER JOIN ".DB_ITEMTABLE_TEXT." ON ";
-        $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMTABLE_BASE_PKEY." = ";
-        $sQ .= DB_ITEMTABLE_TEXT.".".DB_ITEMTABLE_TEXT_PARENTPKEY;
-        $sQ .= " AND ".DB_ITEMFIELD_LANGUAGE." = :lang";
+        $sQ = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
+        $sQ .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
         $sQ .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sQ .= " ORDER BY ".(($sOrderby == '') ? DB_ITEMFIELD_ORDER.", ".DB_ITEMFIELD_NUMBER : $sOrderby)." ".$this->C["items_orderdirection_default"];
+        $sQ .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->C["items_orderdirection_default"];
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
@@ -105,45 +101,39 @@ class Items
         return $hResult;
     }
 
-    function queryItemWhereClause($mItemIndex = '', $mItemno = '')
+    public function queryItemWhereClause($mItemIndex = '', $mItemno = '')
     {
         $sQ = " WHERE ";
         if ($mItemno != '') {
             if (\is_array($mItemno)) {
                 $sItemno = "'".\implode("','", \filter_var_array($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." IN (".$sItemno.")";
+                $sQ .= 'item_base.itm_no IN ('.$sItemno.')';
             } else {
-                $sQ .= DB_ITEMTABLE_BASE.".".DB_ITEMFIELD_NUMBER." = :itemno";
+                $sQ .= 'item_base.itm_no = :itemno';
             }
         } elseif (isset($_REQUEST["searchtext"]) && \strlen($_REQUEST["searchtext"]) > 2) {
-            if (isset($_REQUEST["artnoexact"])) $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." = :searchtext";
+            if (isset($_REQUEST["artnoexact"])) $sQ .= 'item_base.itm_no = :searchtext';
             else {
-                $sQ .= "(";
-                $sQ .= DB_ITEMTABLE_BASE.'.'.DB_ITEMFIELD_NUMBER." LIKE :searchtextwild1";
-                $sQ .= " OR ".DB_ITEMFIELD_NAME." LIKE :searchtextwild2";
-                $sQ .= " OR ".DB_ITEMFIELD_NAME_OVERRIDE." LIKE :searchtextwild3";
-                $sQ .= " OR ".DB_ITEMFIELD_TEXT1." LIKE :searchtextwild4";
-                $sQ .= " OR ".DB_ITEMFIELD_TEXT2." LIKE :searchtextwild5";
-                $sQ .= ")";
+                $sQ .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';
+                $sQ .= ' OR itml_name_override LIKE :searchtextwild3 OR itml_text1 LIKE :searchtextwild4';
+                $sQ .= ' OR itml_text2 LIKE :searchtextwild5)';
             }
         } else {
             if (\is_array($mItemIndex)) {
                 $sQ .= "(";
-                foreach ($mItemIndex as $sAIndex) $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
+                foreach ($mItemIndex as $sAIndex) $sQ .= "itm_index LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
                 $sQ = \HaaseIT\Tools::cutStringend($sQ, 4);
                 $sQ .= ")";
             } else {
-                $sQ .= DB_ITEMFIELD_INDEX." LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
+                $sQ .= "itm_index LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
         }
-        $sQ .= " AND ".DB_ITEMFIELD_INDEX;
-        $sQ .= " NOT LIKE '%!%' AND ".DB_ITEMFIELD_INDEX." NOT LIKE '%AL%'";
-        //HaaseIT\Tools::debug($sQ, '$sQ');
+        $sQ .= ' AND itm_index NOT LIKE \'%!%\' AND itm_index NOT LIKE \'%AL%\'';
 
         return $sQ;
     }
 
-    function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
+    public function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
     {
         if ($mItemno != '') {
             if (\is_array($mItemno)) {
@@ -160,20 +150,20 @@ class Items
         $hResult = $this->queryItem($mItemIndex, $mItemno);
 
         while ($aRow = $hResult->fetch()) {
-            if (isset($aRow[DB_ITEMFIELD_DATA])) {
-                $aRow[DB_ITEMFIELD_DATA] = \json_decode($aRow[DB_ITEMFIELD_DATA], true);
+            if (isset($aRow['itm_data'])) {
+                $aRow['itm_data'] = \json_decode($aRow['itm_data'], true);
             }
             $aRow["pricedata"] = $this->calcPrice($aRow);
 
-            if (\trim($aRow[DB_ITEMFIELD_GROUP]) == 0 || !$bEnableItemGroups) {
-                $aAssembly["item"][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+            if (\trim($aRow['itm_group']) == 0 || !$bEnableItemGroups) {
+                $aAssembly["item"][$aRow['itm_no']] = $aRow;
             } else {
-                if (isset($aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]])) {
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+                if (isset($aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']])) {
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']][$aRow['itm_no']] = $aRow;
                 } else {
-                    $aAssembly["item"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]]["group"] = "ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP];
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]]["ITEMGROUP-DATA"] = $this->getGroupdata($aRow[DB_ITEMFIELD_GROUP]);
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow[DB_ITEMFIELD_GROUP]][$aRow[DB_ITEMFIELD_NUMBER]] = $aRow;
+                    $aAssembly["item"]["ITEMGROUP-".$aRow['itm_group']]["group"] = "ITEMGROUP-".$aRow['itm_group'];
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']]["ITEMGROUP-DATA"] = $this->getGroupdata($aRow['itm_group']);
+                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']][$aRow['itm_no']] = $aRow;
                 }
             }
         }
@@ -188,34 +178,29 @@ class Items
         }
     }
 
-    function getGroupdata($sGroup)
+    public function getGroupdata($sGroup)
     {
-        $sQ = "SELECT ".DB_ITEMGROUPFIELDS;
-        $sQ .= " FROM ".DB_ITEMGROUPTABLE_BASE;
-        $sQ .= " LEFT OUTER JOIN ".DB_ITEMGROUPTABLE_TEXT." ON ";
-        $sQ .= DB_ITEMGROUPTABLE_BASE.".".DB_ITEMGROUPTABLE_BASE_PKEY." = ";
-        $sQ .= DB_ITEMGROUPTABLE_TEXT.".".DB_ITEMGROUPTABLE_TEXT_PARENTPKEY;
-        $sQ .= " AND ".DB_ITEMGROUPFIELD_LANGUAGE." = :lang";
-        $sQ .= " WHERE ".DB_ITEMGROUPTABLE_BASE_PKEY." = :group";
-        //HaaseIT\Tools::debug($sQ);
+        $sQ = 'SELECT '.DB_ITEMGROUPFIELDS.' FROM itemgroups_base'
+            . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
+            . ' AND itmgt_lang = :lang'
+            . ' WHERE itmg_id = :group';
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();
-        // HaaseIT\Tools::debug($DB->error());
 
         $aRow = $hResult->fetch();
         $aRow["type"] = 'itemgroupdata';
         return $aRow;
     }
 
-    function calcPrice($aData)
+    public function calcPrice($aData)
     {
-        $aPrice = array();
-        $fPrice = $aData[DB_ITEMFIELD_PRICE];
-        $sRG = $aData[DB_ITEMFIELD_RG];
-        $sMwstart = $aData[DB_ITEMFIELD_VAT];
+        $aPrice = [];
+        $fPrice = $aData['itm_price'];
+        $sRG = $aData['itm_rg'];
+        $sMwstart = $aData['itm_vatid'];
         if ($sMwstart != 'reduced') {
             $sMwstart = 'full';
         }

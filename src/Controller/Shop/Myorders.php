@@ -38,7 +38,7 @@ class Myorders extends Base
             if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
                 $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
-                $sQ = "SELECT * FROM " . DB_ORDERTABLE . " WHERE o_id = :id AND o_custno = '" . $_SESSION["user"]["cust_no"] . "' AND o_ordercompleted != 'd'";
+                $sQ = "SELECT * FROM " . 'orders WHERE o_id = :id AND o_custno = \'' . $_SESSION['user']['cust_no'] . '\' AND o_ordercompleted != \'d\'';
                 $hResult = $DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
@@ -54,11 +54,10 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder["o_shipping_service"];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
-                    $sQ = "SELECT * FROM " . DB_ORDERTABLE_ITEMS . " WHERE oi_o_id = :id";
+                    $sQ = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
                     $hResult = $DB->prepare($sQ);
                     $hResult->bindValue(':id', $iId);
                     $hResult->execute();
-                    //debug($DB->numRows($hResult));
 
                     $aItems = $hResult->fetchAll();
 
@@ -121,9 +120,7 @@ class Myorders extends Base
     private function showMyOrders($COList)
     {
         $sH = '';
-        $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
-        $sQ .= "o_custno = :custno ";
-        $sQ .= "ORDER BY o_ordertimestamp DESC";
+        $sQ = 'SELECT * FROM orders WHERE o_custno = :custno ORDER BY o_ordertimestamp DESC';
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':custno', \HaaseIT\HCSF\Customer\Helper::getUserData('cust_no'));

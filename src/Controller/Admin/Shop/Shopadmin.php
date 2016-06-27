@@ -42,8 +42,7 @@ class Shopadmin extends Base
                 'o_id' => $iID,
             );
 
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ORDERTABLE, 'o_id');
-            //HaaseIT\Tools::debug($sQ);
+            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
             $hResult = $DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
@@ -100,7 +99,7 @@ class Shopadmin extends Base
         $aData = [];
         if (!isset($_GET["action"])) {
             $bIgnoreStorno = false;
-            $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE ";
+            $sQ = 'SELECT * FROM orders WHERE ';
 
             if (!isset($_REQUEST["type"]) OR $_REQUEST["type"] == 'openinwork') $sQ .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
             elseif ($_REQUEST["type"] == 'closed') $sQ .= "o_ordercompleted = 'y' ";
@@ -186,14 +185,14 @@ class Shopadmin extends Base
             }
         } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
             $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-            $sQ = "SELECT * FROM ".DB_ORDERTABLE." WHERE o_id = :id";
+            $sQ = 'SELECT * FROM orders WHERE o_id = :id';
 
             $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aSData["orderdata"] = $hResult->fetch();
-                $sQ = "SELECT * FROM ".DB_ORDERTABLE_ITEMS." WHERE oi_o_id = :id";
+                $sQ = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
                 $hResult = $this->DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();

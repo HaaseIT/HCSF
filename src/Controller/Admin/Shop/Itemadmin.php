@@ -33,22 +33,18 @@ class Itemadmin extends Base
             $aItemdata = $this->admin_getItem();
 
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
-                $aData = array(
-                    DB_ITEMTABLE_TEXT_PARENTPKEY => $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY],
-                    DB_ITEMFIELD_LANGUAGE => $sLang,
-                );
-                //HaaseIT\Tools::debug($aData);
+                $aData = [
+                    'itml_pid' => $aItemdata["base"]['itm_id'],
+                    'itml_lang' => $sLang,
+                ];
 
-                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_TEXT);
-                //HaaseIT\Tools::debug($sQ);
+                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
                 $DB->exec($sQ);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
                 die();
             }
-            //HaaseIT\Tools::debug($aItemdata);
         }
-        //HaaseIT\Tools::debug($_GET);
         $this->P->cb_customdata["searchform"] = $this->admin_prepareItemlistsearchform();
 
         if (isset($_REQUEST["action"])) {
@@ -56,7 +52,7 @@ class Itemadmin extends Base
                 $this->P->cb_customdata["searchresult"] = true;
                 if ($aItemlist = $this->admin_getItemlist()) {
                     if (count($aItemlist["data"]) == 1) {
-                        $aItemdata = $this->admin_getItem($aItemlist["data"][0][DB_ITEMFIELD_NUMBER]);
+                        $aItemdata = $this->admin_getItem($aItemlist["data"][0]['itm_no']);
                         $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
                     } else {
                         $this->P->cb_customdata["itemlist"] = $this->admin_prepareItemlist($aItemlist, $twig);
@@ -72,26 +68,25 @@ class Itemadmin extends Base
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
             } elseif ($_GET["action"] == 'additem') {
-                $aErr = array();
+                $aErr = [];
                 if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {
                     if (strlen($_POST["itemno"]) < 4) $aErr["itemnotooshort"] = true;
                     else {
-                        $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = '";
+                        $sQ = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sQ .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
                         $hResult = $DB->query($sQ);
                         $iRows = $hResult->rowCount();
                         if ($iRows > 0) {
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
-                            $aData = array(DB_ITEMFIELD_NUMBER => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),);
-                            $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, DB_ITEMTABLE_BASE);
-                            //HaaseIT\Tools::debug($sQ);
-                            $hResult = $DB->exec($sQ);
+                            $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
+                            $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
+                            $DB->exec($sQ);
                             $iInsertID = $DB->lastInsertId();
-                            $sQ = "SELECT ".DB_ITEMFIELD_NUMBER." FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMTABLE_BASE_PKEY." = '".$iInsertID."'";
+                            $sQ = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
                             $hResult = $DB->query($sQ);
                             $aRow = $hResult->fetch();
-                            header('Location: /_admin/itemadmin.html?itemno='.$aRow[DB_ITEMFIELD_NUMBER].'&action=showitem');
+                            header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
                             die();
                         }
                     }
@@ -132,30 +127,24 @@ class Itemadmin extends Base
         $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
         $sSearchstring = str_replace('*', '%', $sSearchstring);
 
-        $sQ = "SELECT " . DB_ITEMFIELD_NUMBER . ", " . DB_ITEMFIELD_NAME;
-        $sQ .= " FROM " . DB_ITEMTABLE_BASE;
-        $sQ .= " LEFT OUTER JOIN " . DB_ITEMTABLE_TEXT . " ON ";
-        $sQ .= DB_ITEMTABLE_BASE . "." . DB_ITEMTABLE_BASE_PKEY . " = " . DB_ITEMTABLE_TEXT . "." . DB_ITEMTABLE_TEXT_PARENTPKEY;
-        $sQ .= " AND " . DB_ITEMTABLE_TEXT . "." . DB_ITEMFIELD_LANGUAGE . " = :lang";
-        $sQ .= " WHERE ";
+        $sQ = 'SELECT itm_no, itm_name FROM item_base'
+            . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
+            . ' WHERE ';
         if ($_REQUEST["searchcat"] == 'name') {
-            $sQ .= DB_ITEMFIELD_NAME . " LIKE :searchstring ";
+            $sQ .= 'itm_name LIKE :searchstring ';
         } elseif ($_REQUEST["searchcat"] == 'nummer') {
-            $sQ .= DB_ITEMFIELD_NUMBER . " LIKE :searchstring ";
+            $sQ .= 'itm_no LIKE :searchstring ';
         } elseif ($_REQUEST["searchcat"] == 'index') {
-            $sQ .= DB_ITEMFIELD_INDEX . " LIKE :searchstring ";
+            $sQ .= 'itm_index LIKE :searchstring ';
         } else exit;
 
-        if ($_REQUEST["orderby"] == 'name') $sQ .= "ORDER BY " . DB_ITEMFIELD_NAME;
-        elseif ($_REQUEST["orderby"] == 'nummer') $sQ .= " ORDER BY " . DB_ITEMFIELD_NUMBER;
-        //HaaseIT\Tools::debug($sQ);
+        if ($_REQUEST["orderby"] == 'name') $sQ .= 'ORDER BY itm_name';
+        elseif ($_REQUEST["orderby"] == 'nummer') $sQ .= ' ORDER BY itm_no';
 
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':searchstring', $sSearchstring);
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
-
-        //HaaseIT\Tools::debug($DB->error());
 
         $aItemlist["numrows"] = $hResult->rowCount();
 
@@ -174,8 +163,8 @@ class Itemadmin extends Base
         ];
         foreach ($aItemlist["data"] as $aValue) {
             $aData[] = [
-                'itemno' => $aValue[DB_ITEMFIELD_NUMBER],
-                'name' => $aValue[DB_ITEMFIELD_NAME],
+                'itemno' => $aValue['itm_no'],
+                'name' => $aValue['itm_name'],
             ];
         }
         $aLData = [
@@ -191,46 +180,41 @@ class Itemadmin extends Base
         if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = filter_var($_REQUEST["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         elseif ($sItemno == '') return false;
 
-        $sItemno = \filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
+        $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $sQ = "SELECT * FROM ".DB_ITEMTABLE_BASE." WHERE ".DB_ITEMFIELD_NUMBER." = :itemno";
+        $sQ = 'SELECT * FROM item_base WHERE itm_no = :itemno';
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':itemno', $sItemno);
         $hResult->execute();
-        //HaaseIT\Tools::debug($sQ);
-        //HaaseIT\Tools::debug($DB->error());
+
         $aItemdata["base"] = $hResult->fetch();
 
-        $sQ = "SELECT * FROM " . DB_ITEMTABLE_TEXT;
-        $sQ .= " WHERE " . DB_ITEMTABLE_TEXT_PARENTPKEY . " = :parentpkey";
-        $sQ .= " AND " . DB_ITEMFIELD_LANGUAGE . " = :lang";
+        $sQ = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
         $hResult = $this->DB->prepare($sQ);
-        $hResult->bindValue(':parentpkey', $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY]);
+        $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
-        //HaaseIT\Tools::debug($sQ);
         if ($hResult->rowCount() != 0) $aItemdata["text"] = $hResult->fetch();
 
-        //HaaseIT\Tools::debug($aItemdata);
         return $aItemdata;
     }
 
     private function admin_prepareItem($aItemdata)
     {
         $aData = [
-            'form' => ['action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', ['action' => 'showitem', 'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER]]),],
-            'id' => $aItemdata["base"][DB_ITEMTABLE_BASE_PKEY],
-            'itemno' => $aItemdata["base"][DB_ITEMFIELD_NUMBER],
-            'name' => $aItemdata["base"][DB_ITEMFIELD_NAME],
-            'img' => $aItemdata["base"][DB_ITEMFIELD_IMG],
-            'price' => $aItemdata["base"][DB_ITEMFIELD_PRICE],
-            'vatid' => $aItemdata["base"][DB_ITEMFIELD_VAT],
-            'rg' => $aItemdata["base"][DB_ITEMFIELD_RG],
-            'index' => $aItemdata["base"][DB_ITEMFIELD_INDEX],
-            'prio' => $aItemdata["base"][DB_ITEMFIELD_ORDER],
-            'group' => $aItemdata["base"][DB_ITEMFIELD_GROUP],
-            'data' => $aItemdata["base"][DB_ITEMFIELD_DATA],
-            'weight' => $aItemdata["base"][DB_ITEMFIELD_WEIGHT],
+            'form' => ['action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', ['action' => 'showitem', 'itemno' => $aItemdata["base"]['itm_no']]),],
+            'id' => $aItemdata["base"]['itm_id'],
+            'itemno' => $aItemdata["base"]['itm_no'],
+            'name' => $aItemdata["base"]['itm_name'],
+            'img' => $aItemdata["base"]['itm_img'],
+            'price' => $aItemdata["base"]['itm_price'],
+            'vatid' => $aItemdata["base"]['itm_vatid'],
+            'rg' => $aItemdata["base"]['itm_rg'],
+            'index' => $aItemdata["base"]['itm_index'],
+            'prio' => $aItemdata["base"]['itm_order'],
+            'group' => $aItemdata["base"]['itm_group'],
+            'data' => $aItemdata["base"]['itm_data'],
+            'weight' => $aItemdata["base"]['itm_weight'],
         ];
 
         if (!$this->C["vat_disable"]) {
@@ -244,16 +228,16 @@ class Itemadmin extends Base
 
         $aGroups = $this->admin_getItemgroups('');
         $aData["groupoptions"][] = '';
-        foreach ($aGroups as $aValue) $aData["groupoptions"][] = $aValue[DB_ITEMGROUPTABLE_BASE_PKEY] . '|' . $aValue[DB_ITEMGROUPFIELD_NUMBER] . ' - ' . $aValue[DB_ITEMGROUPFIELD_NAME];
+        foreach ($aGroups as $aValue) $aData["groupoptions"][] = $aValue['itmg_id'] . '|' . $aValue['itmg_no'] . ' - ' . $aValue['itmg_name'];
         unset($aGroups);
 
         if (isset($aItemdata["text"])) {
-            $aData["lang"] = array(
-                'textid' => $aItemdata["text"][DB_ITEMTABLE_TEXT_PKEY],
-                'nameoverride' => $aItemdata["text"][DB_ITEMFIELD_NAME_OVERRIDE],
-                'text1' => $aItemdata["text"][DB_ITEMFIELD_TEXT1],
-                'text2' => $aItemdata["text"][DB_ITEMFIELD_TEXT2],
-            );
+            $aData["lang"] = [
+                'textid' => $aItemdata["text"]['itml_id'],
+                'nameoverride' => $aItemdata["text"]['itml_name_override'],
+                'text1' => $aItemdata["text"]['itml_text1'],
+                'text2' => $aItemdata["text"]['itml_text2'],
+            ];
         }
 
         return $aData;
@@ -262,34 +246,31 @@ class Itemadmin extends Base
     private function admin_updateItem($purifier)
     {
         $aData = [
-            DB_ITEMFIELD_NAME => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMFIELD_GROUP => filter_var($_REQUEST["group"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMFIELD_IMG => filter_var($_REQUEST["bild"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMFIELD_INDEX => filter_var($_REQUEST["index"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMFIELD_ORDER => filter_var($_REQUEST["prio"], FILTER_SANITIZE_NUMBER_INT),
-            DB_ITEMFIELD_PRICE => filter_var($_REQUEST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
-            DB_ITEMFIELD_RG => filter_var($_REQUEST["rg"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMFIELD_DATA => filter_var($_REQUEST["data"], FILTER_UNSAFE_RAW),
-            DB_ITEMFIELD_WEIGHT => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
-            DB_ITEMTABLE_BASE_PKEY => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_name' => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_group' => filter_var($_REQUEST["group"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_img' => filter_var($_REQUEST["bild"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_index' => filter_var($_REQUEST["index"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_order' => filter_var($_REQUEST["prio"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_price' => filter_var($_REQUEST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
+            'itm_rg' => filter_var($_REQUEST["rg"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_data' => filter_var($_REQUEST["data"], FILTER_UNSAFE_RAW),
+            'itm_weight' => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_id' => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!$this->C["vat_disable"]) $aData[DB_ITEMFIELD_VAT] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        else $aData[DB_ITEMFIELD_VAT] = 'full';
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_BASE, DB_ITEMTABLE_BASE_PKEY);
-        //echo $sQ."\n";
+        if (!$this->C["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        else $aData['itm_vatid'] = 'full';
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
         if (isset($_REQUEST["textid"])) {
-            $aData = array(
-                DB_ITEMFIELD_TEXT1 => $purifier->purify($_REQUEST["text1"]),
-                DB_ITEMFIELD_TEXT2 => $purifier->purify($_REQUEST["text2"]),
-                DB_ITEMFIELD_NAME_OVERRIDE => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
-                DB_ITEMTABLE_TEXT_PKEY => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
-            );
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMTABLE_TEXT, DB_ITEMTABLE_TEXT_PKEY);
-            //echo $sQ."\n";
-            //HaaseIT\Tools::debug($DB->error());
+            $aData = [
+                'itml_text1' => $purifier->purify($_REQUEST["text1"]),
+                'itml_text2' => $purifier->purify($_REQUEST["text2"]),
+                'itml_name_override' => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
+                'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
+            ];
+            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
             $hResult = $this->DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
@@ -300,20 +281,17 @@ class Itemadmin extends Base
 
     private function admin_getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
     {
-        $sQ = "SELECT * FROM " . DB_ITEMGROUPTABLE_BASE;
-        $sQ .= " LEFT OUTER JOIN " . DB_ITEMGROUPTABLE_TEXT . " ON ";
-        $sQ .= DB_ITEMGROUPTABLE_BASE . "." . DB_ITEMGROUPTABLE_BASE_PKEY . " = " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPTABLE_TEXT_PARENTPKEY;
-        $sQ .= " AND " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
-        if ($iGID != '') $sQ .= " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " = :gid";
-        $sQ .= " ORDER BY " . DB_ITEMGROUPFIELD_NUMBER;
-        //HaaseIT\Tools::debug($sQ);
+        $sQ = 'SELECT * FROM itemgroups_base'
+            . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
+            . ' AND itemgroups_text.itmgt_lang = :lang';
+        if ($iGID != '') $sQ .= ' WHERE itmg_id = :gid';
+        $sQ .= ' ORDER BY itmg_no';
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
 
         $aGroups = $hResult->fetchAll();
-        //HaaseIT\Tools::debug($aGroups);
 
         return $aGroups;
     }

@@ -29,40 +29,32 @@ class Itemgroupadmin extends Base
 
         $sH = '';
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-            $sQ = "SELECT ".DB_ITEMGROUPTABLE_BASE_PKEY." FROM ".DB_ITEMGROUPTABLE_BASE." WHERE ".DB_ITEMGROUPTABLE_BASE_PKEY." = :gid";
+            $sQ = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->execute();
             $iNumRowsBasis = $hResult->rowCount();
 
-            $sQ = "SELECT ".DB_ITEMGROUPTABLE_TEXT_PKEY." FROM ".DB_ITEMGROUPTABLE_TEXT;
-            $sQ .= " WHERE ".DB_ITEMGROUPTABLE_TEXT_PARENTPKEY." = :gid";
-            $sQ .= " AND ".DB_ITEMGROUPFIELD_LANGUAGE." = :lang";
+            $sQ = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
             $hResult = $DB->prepare($sQ);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->bindValue(':lang', $sLang);
             $hResult->execute();
-            //HaaseIT\Tools::debug($sQ);
             $iNumRowsLang = $hResult->rowCount();
-
-            //HaaseIT\Tools::debug($iNumRowsBasis.' / '.$iNumRowsLang);
 
             if ($iNumRowsBasis == 1 && $iNumRowsLang == 0) {
                 $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
                 $aData = [
-                    DB_ITEMGROUPTABLE_TEXT_PARENTPKEY => $iGID,
-                    DB_ITEMGROUPFIELD_LANGUAGE => $sLang,
+                    'itmgt_pid' => $iGID,
+                    'itmgt_lang' => $sLang,
                 ];
-                //HaaseIT\Tools::debug($aData);
-                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_TEXT);
-                //HaaseIT\Tools::debug($sQ);
+                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
                 $hResult = $DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
                 header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
                 die();
             }
-            //HaaseIT\Tools::debug($aItemdata);
         }
 
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
@@ -87,8 +79,7 @@ class Itemgroupadmin extends Base
                 if (strlen($sName) < 3) $aErr["nametooshort"] = true;
                 if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
                 if (count($aErr) == 0) {
-                    $sQ = "SELECT ".DB_ITEMGROUPFIELD_NUMBER." FROM ".DB_ITEMGROUPTABLE_BASE;
-                    $sQ .= " WHERE ".DB_ITEMGROUPFIELD_NUMBER." = :no";
+                    $sQ = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
                     $hResult = $DB->prepare($sQ);
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
@@ -96,11 +87,11 @@ class Itemgroupadmin extends Base
                 }
                 if (count($aErr) == 0) {
                     $aData = [
-                        DB_ITEMGROUPFIELD_NAME => $sName,
-                        DB_ITEMGROUPFIELD_NUMBER => $sGNo,
-                        DB_ITEMGROUPFIELD_IMG => $sImg,
+                        'itmg_name' => $sName,
+                        'itmg_no' => $sGNo,
+                        'itmg_img' => $sImg,
                     ];
-                    $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, DB_ITEMGROUPTABLE_BASE);
+                    $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
                     $hResult = $DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
@@ -126,8 +117,7 @@ class Itemgroupadmin extends Base
 
     private function admin_updateGroup($purifier)
     {
-        $sQ = "SELECT * FROM " . DB_ITEMGROUPTABLE_BASE . " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " != :id AND ";
-        $sQ .= DB_ITEMGROUPFIELD_NUMBER . " = :gno";
+        $sQ = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
         $hResult = $this->DB->prepare($sQ);
         $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
         $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
@@ -139,22 +129,20 @@ class Itemgroupadmin extends Base
         if ($iNumRows > 0) return 'duplicateno';
 
         $aData = [
-            DB_ITEMGROUPFIELD_NAME => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMGROUPFIELD_NUMBER => $sGNo,
-            DB_ITEMGROUPFIELD_IMG => filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            DB_ITEMGROUPTABLE_BASE_PKEY => $iGID,
+            'itmg_name' => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itmg_no' => $sGNo,
+            'itmg_img' => filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itmg_id'=> $iGID,
         ];
 
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_BASE, DB_ITEMGROUPTABLE_BASE_PKEY);
+        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
         $hResult = $this->DB->prepare($sQ);
         foreach ($aData as $sKey => $sValue) {
             $hResult->bindValue(':' . $sKey, $sValue);
         }
         $hResult->execute();
 
-        $sQ = "SELECT " . DB_ITEMGROUPTABLE_TEXT_PKEY . " FROM " . DB_ITEMGROUPTABLE_TEXT;
-        $sQ .= " WHERE " . DB_ITEMGROUPTABLE_TEXT_PARENTPKEY . " = :gid";
-        $sQ .= " AND " . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
+        $sQ = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':gid', $iGID);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
@@ -165,11 +153,11 @@ class Itemgroupadmin extends Base
         if ($iNumRows == 1) {
             $aRow = $hResult->fetch();
             $aData = [
-                DB_ITEMGROUPFIELD_SHORTTEXT => $purifier->purify($_REQUEST["shorttext"]),
-                DB_ITEMGROUPFIELD_DETAILS => $purifier->purify($_REQUEST["details"]),
-                DB_ITEMGROUPTABLE_TEXT_PKEY => $aRow[DB_ITEMGROUPTABLE_TEXT_PKEY],
+                'itmgt_shorttext' => $purifier->purify($_REQUEST["shorttext"]),
+                'itmgt_details' => $purifier->purify($_REQUEST["details"]),
+                'itmgt_id' => $aRow['itmgt_id'],
             ];
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, DB_ITEMGROUPTABLE_TEXT, DB_ITEMGROUPTABLE_TEXT_PKEY);
+            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
             $hResult = $this->DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
@@ -182,17 +170,17 @@ class Itemgroupadmin extends Base
     {
         $aGData = [
             'formaction' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
-            'id' => isset($aData[DB_ITEMGROUPTABLE_BASE_PKEY]) ? $aData[DB_ITEMGROUPTABLE_BASE_PKEY] : '',
-            'name' => isset($aData[DB_ITEMGROUPFIELD_NAME]) ? $aData[DB_ITEMGROUPFIELD_NAME] : '',
-            'no' => isset($aData[DB_ITEMGROUPFIELD_NUMBER]) ? $aData[DB_ITEMGROUPFIELD_NUMBER] : '',
-            'img' => isset($aData[DB_ITEMGROUPFIELD_IMG]) ? $aData[DB_ITEMGROUPFIELD_IMG] : '',
+            'id' => isset($aData['itmg_id']) ? $aData['itmg_id'] : '',
+            'name' => isset($aData['itmg_name']) ? $aData['itmg_name'] : '',
+            'no' => isset($aData['itmg_no']) ? $aData['itmg_no'] : '',
+            'img' => isset($aData['itmg_img']) ? $aData['itmg_img'] : '',
         ];
 
         if ($sPurpose == 'edit') {
-            if ($aData[DB_ITEMGROUPTABLE_TEXT_PKEY] != '') {
+            if ($aData['itmgt_id'] != '') {
                 $aGData["lang"] = [
-                    'shorttext' => isset($aData[DB_ITEMGROUPFIELD_SHORTTEXT]) ? $aData[DB_ITEMGROUPFIELD_SHORTTEXT] : '',
-                    'details' => isset($aData[DB_ITEMGROUPFIELD_DETAILS]) ? $aData[DB_ITEMGROUPFIELD_DETAILS] : '',
+                    'shorttext' => isset($aData['itmgt_shorttext']) ? $aData['itmgt_shorttext'] : '',
+                    'details' => isset($aData['itmgt_details']) ? $aData['itmgt_details'] : '',
                 ];
             }
         }
@@ -202,12 +190,11 @@ class Itemgroupadmin extends Base
 
     private function admin_getItemgroups($iGID = '')
     {
-        $sQ = "SELECT * FROM " . DB_ITEMGROUPTABLE_BASE;
-        $sQ .= " LEFT OUTER JOIN " . DB_ITEMGROUPTABLE_TEXT . " ON ";
-        $sQ .= DB_ITEMGROUPTABLE_BASE . "." . DB_ITEMGROUPTABLE_BASE_PKEY . " = " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPTABLE_TEXT_PARENTPKEY;
-        $sQ .= " AND " . DB_ITEMGROUPTABLE_TEXT . "." . DB_ITEMGROUPFIELD_LANGUAGE . " = :lang";
-        if ($iGID != '') $sQ .= " WHERE " . DB_ITEMGROUPTABLE_BASE_PKEY . " = :gid";
-        $sQ .= " ORDER BY " . DB_ITEMGROUPFIELD_NUMBER;
+        $sQ = 'SELECT * FROM itemgroups_base '
+            . 'LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
+            . ' AND itemgroups_text.itmgt_lang = :lang';
+        if ($iGID != '') $sQ .= ' WHERE itmg_id = :gid';
+        $sQ .= ' ORDER BY itmg_no';
         $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':lang', $this->sLang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
@@ -228,9 +215,9 @@ class Itemgroupadmin extends Base
         if (count($aGroups) > 0) {
             foreach ($aGroups as $aValue) {
                 $aData[] = [
-                    'gid' => $aValue[DB_ITEMGROUPTABLE_BASE_PKEY],
-                    'gno' => $aValue[DB_ITEMGROUPFIELD_NUMBER],
-                    'gname' => $aValue[DB_ITEMGROUPFIELD_NAME],
+                    'gid' => $aValue['itmg_id'],
+                    'gno' => $aValue['itmg_no'],
+                    'gname' => $aValue['itmg_name'],
                 ];
             }
             return \HaaseIT\Tools::makeListTable($aList, $aData, $twig);

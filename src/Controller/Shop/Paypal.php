@@ -27,7 +27,7 @@ class Paypal extends Base
         parent::__construct($C, $DB, $sLang);
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-        $sQ = "SELECT * FROM " . DB_ORDERTABLE . " ";
+        $sQ = 'SELECT * FROM orders ';
         $sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
         $hResult = $DB->prepare($sQ);

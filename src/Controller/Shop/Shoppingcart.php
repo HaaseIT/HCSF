@@ -139,7 +139,7 @@ class Shoppingcart extends Base
                                 'o_vatfull' => $C["vat"]["full"],
                                 'o_vatreduced' => $C["vat"]["reduced"],
                             );
-                            $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, DB_ORDERTABLE);
+                            $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, 'orders');
                             //die($sQ);
                             $hResult = $DB->prepare($sQ);
                             foreach ($aDataOrder as $sKey => $sValue) {
@@ -217,7 +217,7 @@ class Shoppingcart extends Base
                                 }
                             }
                             foreach ($aDataOrderItems as $aV) {
-                                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aV, DB_ORDERTABLE_ITEMS);
+                                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aV, 'orders_items');
                                 $hResult = $DB->prepare($sQ);
                                 foreach ($aV as $sKey => $sValue) {
                                     $hResult->bindValue(':' . $sKey, $sValue);
