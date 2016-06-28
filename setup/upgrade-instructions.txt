@@ -3,6 +3,7 @@ ALTER TABLE `orders_items`
   DROP `oi_price_brutto_list`,
   DROP `oi_price_brutto_sale`,
   DROP `oi_price_brutto_rebated`;
+ALTER TABLE `item_base` CHANGE `itm_price` `itm_price` VARCHAR(12) NOT NULL;
 
 V2.3.0
 New config value: purifier_doctype

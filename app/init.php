@@ -32,6 +32,9 @@ if (ini_get('session.auto_start') == 1) {
     die('Please disable session.autostart for this to work.');
 }
 
+// set scale for bcmath
+bcscale(6);
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 $AuraLoader = new \Aura\Autoload\Loader;

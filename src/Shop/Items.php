@@ -48,7 +48,6 @@ class Items
                 'pageconfig' => json_decode($aRow["cb_pageconfig"]),
             ];
         }
-        //HaaseIT\Tools::debug($aItemoverviewpages, '$aItemoverviewpages');
         foreach ($aItemoverviewpages as $aValue) {
             if (isset($aValue["pageconfig"]->itemindex)) {
                 if (is_array($aValue["pageconfig"]->itemindex)) {
@@ -64,8 +63,6 @@ class Items
                 }
             }
         }
-        //HaaseIT\Tools::debug($itemindexpathtree, '$itemindexpathtree');
-        //HaaseIT\Tools::debug($aP["pageconfig"]->itemindex, '$aP["pageconfig"]->itemindex');
 
         return $itemindexpathtree;
     }
@@ -96,7 +93,6 @@ class Items
             $hResult->bindValue(':searchtextwild5', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
-        //HaaseIT\Tools::debug($hResult->errorinfo());
 
         return $hResult;
     }
@@ -202,7 +198,7 @@ class Items
             $aData['itm_vatid'] = 'full';
         }
 
-        if(is_numeric($aData['itm_price']) && $aData['itm_price'] > 0) {
+        if(is_numeric($aData['itm_price']) && (float) $aData['itm_price'] > 0) {
             $aPrice["netto_list"] = $aData['itm_price'];
             if (
                 isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
@@ -218,8 +214,16 @@ class Items
                 && isset($this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
             ) {
                 $aPrice["netto_rebated"] =
-                    $aData['itm_price'] * (100 - $this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
-                    / 100;
+                    bcmul(
+                        $aData['itm_price'],
+                        bcdiv(
+                            bcsub(
+                                '100',
+                                (string)$this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]
+                            ),
+                            '100'
+                        )
+                    );
             }
         } else {
             return false;
@@ -234,7 +238,17 @@ class Items
             $aPrice["netto_use"] = $aPrice["netto_sale"];
         }
 
-        $aPrice["brutto_use"] = ($aPrice["netto_use"] * $this->C['vat'][$aData['itm_vatid']] / 100) + $aPrice["netto_use"];
+        $aPrice["brutto_use"] =
+            bcadd(
+                bcdiv(
+                    bcmul(
+                        $aPrice["netto_use"],
+                        (string)$this->C['vat'][$aData['itm_vatid']]
+                    ),
+                    '100'
+                ),
+                $aPrice["netto_use"]
+            );
 
         return $aPrice;
     }
