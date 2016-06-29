@@ -22,13 +22,23 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class DBStatus extends Base
 {
+
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $this->P->cb_customcontenttemplate = 'DBStatus';
 
-        if (isset($_GET['clearorphanedtextcats'])) $DB->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
-        $hResult = $DB->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        if (isset($_GET['clearorphanedtextcats'])) $this->DB->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        $hResult = $this->DB->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang'] > 0) {
             $aListSetting = [
@@ -41,12 +51,12 @@ class DBStatus extends Base
             $this->P->cb_customdata['rows_textcat_lang_list'] = \HaaseIT\Tools::makeListtable(
                 $aListSetting,
                 $aData,
-                $twig
+                $this->twig
             );
         }
 
-        if (isset($_GET['clearorphanedtextcatsarchive'])) $DB->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
-        $hResult = $DB->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        if (isset($_GET['clearorphanedtextcatsarchive'])) $this->DB->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        $hResult = $this->DB->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang_archive'] > 0) {
             $aListSetting = [
@@ -59,11 +69,11 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_textcat_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $twig);
+                $aData, $this->twig);
         }
 
-        if (isset($_GET['clearorphanedcontent'])) $DB->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
-        $hResult = $DB->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        if (isset($_GET['clearorphanedcontent'])) $this->DB->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        $hResult = $this->DB->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang'] > 0) {
             $aListSetting = [
@@ -77,11 +87,11 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $twig);
+                $aData, $this->twig);
         }
 
-        if (isset($_GET['clearorphanedcontentarchive'])) $DB->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
-        $hResult = $DB->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        if (isset($_GET['clearorphanedcontentarchive'])) $this->DB->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        $hResult = $this->DB->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang_archive'] > 0) {
             $aListSetting = [
@@ -97,13 +107,13 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $twig);
+                $aData, $this->twig);
         }
-        if ($C['enable_module_shop']) {
+        if ($this->C['enable_module_shop']) {
             if (isset($_GET['clearorphaneditems'])) {
-                $DB->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+                $this->DB->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
             }
-            $hResult = $DB->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+            $hResult = $this->DB->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
             $this->P->cb_customdata['rows_item_lang'] = $hResult->rowCount();
             if ($this->P->cb_customdata['rows_item_lang'] > 0) {
                 $aListSetting = [
@@ -134,13 +144,13 @@ class DBStatus extends Base
                 ];
                 $aData = $hResult->fetchAll();
                 $this->P->cb_customdata['rows_item_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                    $aData, $twig);
+                    $aData, $this->twig);
             }
 
             if (isset($_GET['clearorphaneditemgroups'])) {
-                $DB->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+                $this->DB->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
             }
-            $hResult = $DB->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+            $hResult = $this->DB->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
             $this->P->cb_customdata['rows_itemgroups_text'] = $hResult->rowCount();
             if ($this->P->cb_customdata['rows_itemgroups_text'] > 0) {
                 $aListSetting = [
@@ -164,16 +174,16 @@ class DBStatus extends Base
                 ];
                 $aData = $hResult->fetchAll();
                 $this->P->cb_customdata['rows_itemgroups_text_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                    $aData, $twig);
+                    $aData, $this->twig);
             }
 
             if (isset($_GET['clearorphanedorderitems'])) {
-                $DB->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+                $this->DB->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
             }
-            $hResult = $DB->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+            $hResult = $this->DB->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
             $this->P->cb_customdata['rows_orders_items'] = $hResult->rowCount();
             if ($this->P->cb_customdata['rows_orders_items'] > 0) {
-                if ($C['vat_disable']) {
+                if ($this->C['vat_disable']) {
                     $aListSetting = [
                         ['title' => 'oi_id', 'key' => 'oi_id', 'width' => '8%', 'linked' => false,],
                         ['title' => 'oi_o_id', 'key' => 'oi_o_id', 'width' => '9%', 'linked' => false,],
@@ -246,7 +256,7 @@ class DBStatus extends Base
                 }
                 $aData = $hResult->fetchAll();
                 $this->P->cb_customdata['rows_orders_items_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                    $aData, $twig);
+                    $aData, $this->twig);
             }
         }
     }

@@ -23,7 +23,7 @@ namespace HaaseIT\HCSF\Controller;
 
 class Base
 {
-    protected $P, $C, $sLang, $DB;
+    protected $P, $C, $sLang, $DB, $twig, $requireAdminAuth = false, $requireAdminAuthAdminHome = false;
 
     public function __construct($C, $DB, $sLang)
     {
@@ -34,6 +34,45 @@ class Base
 
     public function getPage()
     {
+        if ($this->requireAdminAuth) {
+            $this->requireAdminAuth();
+        }
+        $this->preparePage();
         return $this->P;
+    }
+
+    public function preparePage()
+    {
+
+    }
+
+    private function requireAdminAuth() {
+        if ((empty($this->C['admin_users']) || !count($this->C['admin_users'])) && $this->requireAdminAuthAdminHome) {
+            return true;
+        } elseif (count($this->C['admin_users'])) {
+
+            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
+                list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
+            }
+
+            if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+                $user = $_SERVER['PHP_AUTH_USER'];
+                $pass = $_SERVER['PHP_AUTH_PW'];
+
+                $validated = !empty($this->C['admin_users'][$user]) && password_verify($pass, $this->C['admin_users'][$user]);
+            } else {
+                $validated = false;
+            }
+
+            if (!$validated) {
+                header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+                header('HTTP/1.0 401 Unauthorized');
+                die("Not authorized");
+            }
+        } else {
+            header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+            header('HTTP/1.0 401 Unauthorized');
+            die('Not authorized');
+        }
     }
 }

@@ -23,10 +23,9 @@ namespace HaaseIT\HCSF\Controller;
 
 class Maintenance extends Base
 {
-    public function __construct($C, $DB, $sLang)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
-        $this->P = new \HaaseIT\HCSF\CorePage($C, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
         $this->P->cb_pagetype = 'content';
 
         $this->P->oPayload->cl_html = \HaaseIT\HCSF\HardcodedText::get('site_currently_in_maintenance_mode');

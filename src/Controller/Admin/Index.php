@@ -24,8 +24,16 @@ class Index extends Base
 {
     public function __construct($C, $DB, $sLang)
     {
-        $this->bAdminhome = true;
         parent::__construct($C, $DB, $sLang);
+        $this->requireAdminAuthAdminHome = true;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $this->P->cb_customcontenttemplate = 'adminhome';
         $this->P->cb_customdata = [
             'filter_enabled' => extension_loaded('filter'),
@@ -35,7 +43,7 @@ class Index extends Base
             'path_purifiercache' => realpath(PATH_PURIFIERCACHE),
             'path_purifiercache_exists' => file_exists(PATH_PURIFIERCACHE),
             'path_purifiercache_writable' => is_writable(PATH_PURIFIERCACHE),
-            'enable_module_shop' => $C["enable_module_shop"],
+            'enable_module_shop' => $this->C["enable_module_shop"],
             'path_logs' => realpath(PATH_LOGS),
             'path_logs_exists' => file_exists(PATH_LOGS),
             'path_logs_writable' => is_writable(PATH_LOGS),
@@ -50,5 +58,4 @@ class Index extends Base
             $this->P->cb_customdata['encrypted_string'] = password_hash($_POST["string"], PASSWORD_DEFAULT);
         }
     }
-
 }

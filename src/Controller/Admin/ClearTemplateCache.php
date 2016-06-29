@@ -22,9 +22,12 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class ClearTemplateCache extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $this->P->oPayload->cl_html = 'The template cache has been cleared.';
 
         $adapter = new \League\Flysystem\Adapter\Local(PATH_CACHE);

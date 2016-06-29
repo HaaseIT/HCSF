@@ -22,9 +22,12 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Phpinfo extends Base
 {
-    public function __construct($C, $DB, $sLang)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         ob_start();
         phpinfo();
         preg_match ('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);

@@ -23,10 +23,17 @@ namespace HaaseIT\HCSF\Controller;
 
 class Glide extends Base
 {
+    private $aPath;
+
     public function __construct($C, $DB, $sLang, $twig, $oItem, $aPath)
     {
         parent::__construct($C, $DB, $sLang);
-        $sPath = implode('/', $aPath);
+        $this->aPath = $aPath;
+    }
+
+    public function preparePage()
+    {
+        $sPath = implode('/', $this->aPath);
         $sImageroot = PATH_BASEDIR . $this->C['directory_glide_master'];
 
         if (
@@ -53,6 +60,7 @@ class Glide extends Base
         } else {
             $this->P = 404;
         }
-    }
 
+        return $this->P;
+    }
 }
