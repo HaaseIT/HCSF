@@ -26,6 +26,15 @@ class Shopadmin extends Base
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $this->P->cb_customcontenttemplate = 'shop/shopadmin';
 
         if (isset($_POST["change"])) {
@@ -43,7 +52,7 @@ class Shopadmin extends Base
             ];
 
             $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
             header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
@@ -88,12 +97,12 @@ class Shopadmin extends Base
             ],
         ];
 
-        $aShopadmin = $this->handleShopAdmin($CSA, $twig);
+        $aShopadmin = $this->handleShopAdmin($CSA);
 
         $this->P->cb_customdata = array_merge($aPData, $aShopadmin);
     }
 
-    private function handleShopAdmin($CSA, $twig)
+    private function handleShopAdmin($CSA)
     {
         $aSData = [];
         $aData = [];
@@ -175,7 +184,7 @@ class Shopadmin extends Base
                     } else $k++;
                     $i++;
                 }
-                $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $twig);
+                $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $this->twig);
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;
                 $aSData['listtable_k'] = $k;
@@ -227,7 +236,7 @@ class Shopadmin extends Base
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
 
-                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $C["vat"][$aValue["oi_vat_id"]], '', true);
+                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->C["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,

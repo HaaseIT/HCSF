@@ -25,20 +25,29 @@ class Itemgroupadmin extends Base
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $this->P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
         $sH = '';
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             $sQ = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->execute();
             $iNumRowsBasis = $hResult->rowCount();
 
             $sQ = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
-            $hResult->bindValue(':lang', $sLang);
+            $hResult->bindValue(':lang', $this->sLang);
             $hResult->execute();
             $iNumRowsLang = $hResult->rowCount();
 
@@ -46,10 +55,10 @@ class Itemgroupadmin extends Base
                 $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
                 $aData = [
                     'itmgt_pid' => $iGID,
-                    'itmgt_lang' => $sLang,
+                    'itmgt_lang' => $this->sLang,
                 ];
                 $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
-                $hResult = $DB->prepare($sQ);
+                $hResult = $this->DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
                 header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
@@ -59,7 +68,7 @@ class Itemgroupadmin extends Base
 
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier($C, 'itemgroup'));
+                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier($this->C, 'itemgroup'));
             }
 
             $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
@@ -80,7 +89,7 @@ class Itemgroupadmin extends Base
                 if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
                 if (count($aErr) == 0) {
                     $sQ = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
-                    $hResult = $DB->prepare($sQ);
+                    $hResult = $this->DB->prepare($sQ);
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
                     if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
@@ -92,10 +101,10 @@ class Itemgroupadmin extends Base
                         'itmg_img' => $sImg,
                     ];
                     $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
-                    $hResult = $DB->prepare($sQ);
+                    $hResult = $this->DB->prepare($sQ);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
-                    $iLastInsertID = $DB->lastInsertId();
+                    $iLastInsertID = $this->DB->lastInsertId();
                     header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
                     die();
                 } else {
@@ -108,7 +117,7 @@ class Itemgroupadmin extends Base
                 $this->P->cb_customdata["group"] = $this->admin_prepareGroup('add');
             }
         } else {
-            if (!$sH .= $this->admin_showItemgroups($this->admin_getItemgroups(''), $twig)) {
+            if (!$sH .= $this->admin_showItemgroups($this->admin_getItemgroups(''))) {
                 $this->P->cb_customdata["err"]["nogroupsavaliable"] = true;
             }
         }
@@ -205,7 +214,7 @@ class Itemgroupadmin extends Base
         return $aGroups;
     }
 
-    private function admin_showItemgroups($aGroups, $twig)
+    private function admin_showItemgroups($aGroups)
     {
         $aList = [
             ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
@@ -220,7 +229,7 @@ class Itemgroupadmin extends Base
                     'gname' => $aValue['itmg_name'],
                 ];
             }
-            return \HaaseIT\Tools::makeListTable($aList, $aData, $twig);
+            return \HaaseIT\Tools::makeListTable($aList, $aData, $this->twig);
         } else {
             return false;
         }

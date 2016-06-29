@@ -26,6 +26,14 @@ class Itemadmin extends Base
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
 
         $this->P->cb_customcontenttemplate = 'shop/itemadmin';
 
@@ -35,11 +43,11 @@ class Itemadmin extends Base
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
                 $aData = [
                     'itml_pid' => $aItemdata["base"]['itm_id'],
-                    'itml_lang' => $sLang,
+                    'itml_lang' => $this->sLang,
                 ];
 
                 $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
-                $DB->exec($sQ);
+                $this->DB->exec($sQ);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
                 die();
@@ -55,11 +63,11 @@ class Itemadmin extends Base
                         $aItemdata = $this->admin_getItem($aItemlist["data"][0]['itm_no']);
                         $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
                     } else {
-                        $this->P->cb_customdata["itemlist"] = $this->admin_prepareItemlist($aItemlist, $twig);
+                        $this->P->cb_customdata["itemlist"] = $this->admin_prepareItemlist($aItemlist);
                     }
                 }
             } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($C, 'item'));
+                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($this->C, 'item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();
@@ -74,17 +82,17 @@ class Itemadmin extends Base
                     else {
                         $sQ = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sQ .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                        $hResult = $DB->query($sQ);
+                        $hResult = $this->DB->query($sQ);
                         $iRows = $hResult->rowCount();
                         if ($iRows > 0) {
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
                             $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
                             $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
-                            $DB->exec($sQ);
-                            $iInsertID = $DB->lastInsertId();
+                            $this->DB->exec($sQ);
+                            $iInsertID = $this->DB->lastInsertId();
                             $sQ = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
-                            $hResult = $DB->query($sQ);
+                            $hResult = $this->DB->query($sQ);
                             $aRow = $hResult->fetch();
                             header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
                             die();
@@ -154,7 +162,7 @@ class Itemadmin extends Base
         } else return false;
     }
 
-    private function admin_prepareItemlist($aItemlist, $twig)
+    private function admin_prepareItemlist($aItemlist)
     {
         $aList = [
             ['title' => HardcodedText::get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
@@ -169,7 +177,7 @@ class Itemadmin extends Base
         }
         $aLData = [
             'numrows' => $aItemlist["numrows"],
-            'listtable' => \HaaseIT\Tools::makeListTable($aList, $aData, $twig),
+            'listtable' => \HaaseIT\Tools::makeListTable($aList, $aData, $this->twig),
         ];
 
         return $aLData;

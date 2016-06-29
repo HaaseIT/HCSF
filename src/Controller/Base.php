@@ -26,7 +26,8 @@ class Base
     protected $P, $C, $sLang, $DB, $twig,
         $requireAdminAuth = false,
         $requireAdminAuthAdminHome = false,
-        $requireModuleCustomer = false;
+        $requireModuleCustomer = false,
+        $requireModuleShop = false;
 
     public function __construct($C, $DB, $sLang)
     {
@@ -41,6 +42,9 @@ class Base
             $this->requireAdminAuth();
         }
         if ($this->requireModuleCustomer && (empty($this->C["enable_module_customer"]) || !$this->C["enable_module_customer"])) {
+            throw new \Exception(404);
+        }
+        if ($this->requireModuleShop && (empty($this->C["enable_module_shop"]) || !$this->C["enable_module_shop"])) {
             throw new \Exception(404);
         }
         $this->preparePage();
