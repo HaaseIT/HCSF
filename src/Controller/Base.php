@@ -23,7 +23,10 @@ namespace HaaseIT\HCSF\Controller;
 
 class Base
 {
-    protected $P, $C, $sLang, $DB, $twig, $requireAdminAuth = false, $requireAdminAuthAdminHome = false;
+    protected $P, $C, $sLang, $DB, $twig,
+        $requireAdminAuth = false,
+        $requireAdminAuthAdminHome = false,
+        $requireModuleCustomer = false;
 
     public function __construct($C, $DB, $sLang)
     {
@@ -36,6 +39,9 @@ class Base
     {
         if ($this->requireAdminAuth) {
             $this->requireAdminAuth();
+        }
+        if ($this->requireModuleCustomer && (empty($this->C["enable_module_customer"]) || !$this->C["enable_module_customer"])) {
+            throw new \Exception(404);
         }
         $this->preparePage();
         return $this->P;

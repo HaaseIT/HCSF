@@ -23,10 +23,18 @@ use \HaaseIT\HCSF\HardcodedText;
 
 class Customeradmin extends Base
 {
-
     public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
         $CUA = [
             ['title' => HardcodedText::get('customeradmin_list_no'), 'key' => 'cust_no', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             ['title' => HardcodedText::get('customeradmin_list_company'), 'key' => 'cust_corp', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
@@ -43,7 +51,7 @@ class Customeradmin extends Base
                 'lgetvars' => ['action' => 'edit',],
             ],
         ];
-        $aPData = $this->handleCustomerAdmin($CUA, $twig);
+        $aPData = $this->handleCustomerAdmin($CUA, $this->twig);
         $this->P->cb_customcontenttemplate = 'customer/customeradmin';
         $this->P->oPayload->cl_html = $aPData["customeradmin"]["text"];
         $this->P->cb_customdata = $aPData;
