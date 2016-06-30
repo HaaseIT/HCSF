@@ -22,17 +22,17 @@
     "ext-gd": "*",
     "ext-filter": "*",
     "twig/twig": "^1.24.0",
-    "phpmailer/phpmailer": "5.2.*",
-    "symfony/yaml": "@stable",
+    "phpmailer/phpmailer": "^5.2.16",
+    "symfony/yaml": "^3.1.1",
     "haaseit/toolbox": "^1.2.7",
-    "aura/autoload": "2.0.*",
-    "ezyang/htmlpurifier": "4.7.*",
+    "aura/autoload": "^2.0.3",
+    "ezyang/htmlpurifier": "^4.7.0",
     "league/oauth2-google": "^1.0.1",
     "league/oauth2-client": "^1.1.0",
-    "zendframework/zend-diactoros": "1.1.x",
+    "zendframework/zend-diactoros": "^1.1.4",
     "league/glide": "^1.0.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "5.4.*"
+    "phpunit/phpunit": "^5.4.6"
   }
 }
