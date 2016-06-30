@@ -23,7 +23,7 @@ namespace HaaseIT\HCSF\Controller;
 
 class Base
 {
-    protected $P, $C, $sLang, $DB, $twig,
+    protected $P, $C, $sLang, $DB, $twig, $oItem,
         $requireAdminAuth = false,
         $requireAdminAuthAdminHome = false,
         $requireModuleCustomer = false,

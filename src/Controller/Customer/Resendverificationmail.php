@@ -22,16 +22,23 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Resendverificationmail extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = 'SELECT '.DB_ADDRESSFIELDS.', cust_emailverificationcode FROM customer';
+            $sQ = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
             $sQ .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -39,7 +46,8 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow['cust_emailverificationcode'];
 
-                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $C, $twig, true);
+                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->C,
+                    $this->twig, true);
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("register_verificationmailresent");
             }

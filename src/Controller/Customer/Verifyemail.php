@@ -22,16 +22,17 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Verifyemail extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $sQ = 'SELECT cust_email, cust_id FROM customer '
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -40,7 +41,7 @@ class Verifyemail extends Base
                 $aRow = $hResult->fetch();
                 $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
                 $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $DB->prepare($sQ);
+                $hResult = $this->DB->prepare($sQ);
                 foreach ($aData as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }

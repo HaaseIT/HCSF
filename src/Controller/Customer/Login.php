@@ -25,11 +25,18 @@ class Login extends Base
     public function __construct($C, $DB, $sLang, $twig, $oItem)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->oItem = $oItem;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
-            $mLogin = $this->getLogin($C, $DB);
+            $mLogin = $this->getLogin($this->C, $this->DB);
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
@@ -51,8 +58,8 @@ class Login extends Base
             }
         }
 
-        if ($C["enable_module_shop"]) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($C, $oItem);
+        if ($this->C["enable_module_shop"]) {
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->C, $this->oItem);
         }
     }
 

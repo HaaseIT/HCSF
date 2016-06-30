@@ -25,10 +25,17 @@ class Logout extends Base
     public function __construct($C, $DB, $sLang, $twig, $oItem)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->oItem = $oItem;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         unset($_SESSION["user"]);
-        if ($C["enable_module_shop"] && isset($_SESSION["cart"])) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($C, $oItem);
+        if ($this->C["enable_module_shop"] && isset($_SESSION["cart"])) {
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->C, $this->oItem);
         }
         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("logout_message");
     }

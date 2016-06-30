@@ -22,9 +22,10 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Resetpassword extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
@@ -36,7 +37,7 @@ class Resetpassword extends Base
 
                 $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                $hResult = $DB->prepare($sQ);
+                $hResult = $this->DB->prepare($sQ);
                 $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                 $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
@@ -50,7 +51,7 @@ class Resetpassword extends Base
                         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
-                        $this->P->cb_customdata["pwreset"]["minpwlength"] = $C["minimum_length_password"];
+                        $this->P->cb_customdata["pwreset"]["minpwlength"] = $this->C["minimum_length_password"];
                         if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
                             $aErr = $this->handlePasswordReset($aErr, $aResult['cust_id']);
                             if (count($aErr) == 0) {
@@ -67,7 +68,7 @@ class Resetpassword extends Base
 
     private function handlePasswordReset($aErr, $iID) {
         if (isset($_POST["pwd"]) && trim($_POST["pwd"]) != '') {
-            if (strlen($_POST["pwd"]) < $this->C["minimum_length_password"] || strlen($_POST["pwd"]) > $C["maximum_length_password"]) $aErr[] = 'pwlength';
+            if (strlen($_POST["pwd"]) < $this->C["minimum_length_password"] || strlen($_POST["pwd"]) > $this->C["maximum_length_password"]) $aErr[] = 'pwlength';
             if ($_POST["pwd"] != $_POST["pwdc"]) $aErr[] = 'pwmatch';
             if (count($aErr) == 0) {
                 $sEnc = password_hash($_POST["pwd"], PASSWORD_DEFAULT);

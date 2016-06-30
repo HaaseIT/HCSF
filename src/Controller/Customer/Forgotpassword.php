@@ -22,9 +22,10 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Forgotpassword extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
@@ -33,7 +34,7 @@ class Forgotpassword extends Base
 
             $aErr = [];
             if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                $aErr = $this->handleForgotPassword($DB, $C, $aErr);
+                $aErr = $this->handleForgotPassword($this->DB, $this->C, $aErr);
                 if (count($aErr) == 0) {
                     $this->P->cb_customdata["forgotpw"]["showsuccessmessage"] = true;
                 } else {
