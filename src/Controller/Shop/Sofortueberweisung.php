@@ -22,15 +22,16 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Sofortueberweisung extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sQ = 'SELECT * FROM orders '
             . "WHERE o_id = :id AND o_paymentmethod = 'sofortueberweisung' AND o_paymentcompleted = 'n'";
 
-        $hResult = $DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
         $hResult->execute();
@@ -39,20 +40,20 @@ class Sofortueberweisung extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $C["sofortueberweisung"]["user_id"];
-            $sPURL .= '&amp;project_id=' . $C["sofortueberweisung"]["project_id"] . '&amp;amount='.number_format($fGesamtbrutto, 2, '.', '');
-            $sPURL .= '&amp;currency_id=' . $C["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
-            $sPURL .= urlencode(\HaaseIT\Textcat::T("misc_paysofortueberweisung_ueberweisungsbetreff").' ').$iId;
-            if (isset($C["interactive_paymentmethods_redirect_immediately"]) && $C["interactive_paymentmethods_redirect_immediately"]) {
-                header('Location: '.$sPURL);
+            $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $this->C["sofortueberweisung"]["user_id"];
+            $sPURL .= '&amp;project_id=' . $this->C["sofortueberweisung"]["project_id"] . '&amp;amount=' . number_format($fGesamtbrutto,
+                    2, '.', '');
+            $sPURL .= '&amp;currency_id=' . $this->C["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
+            $sPURL .= urlencode(\HaaseIT\Textcat::T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ') . $iId;
+            if (isset($this->C["interactive_paymentmethods_redirect_immediately"]) && $this->C["interactive_paymentmethods_redirect_immediately"]) {
+                header('Location: ' . $sPURL);
                 die();
             }
 
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paysofortueberweisung_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="'.$sPURL.'">' . \HaaseIT\Textcat::T("misc_paysofortueberweisung").'</a>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . \HaaseIT\Textcat::T("misc_paysofortueberweisung") . '</a>';
         } else {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paysofortueberweisung_paymentnotavailable");
         }
     }
-
 }

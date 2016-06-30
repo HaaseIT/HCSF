@@ -25,8 +25,16 @@ class Updatecart extends Base
     public function __construct($C, $DB, $sLang, $twig, $oItem)
     {
         parent::__construct($C, $DB, $sLang);
+        $this->oItem = $oItem;
+        $this->twig = $twig;
+    }
 
-        if (($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
+
+        if (($this->C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $iAmount = '';
@@ -35,22 +43,21 @@ class Updatecart extends Base
             }
 
             if (!isset($_REQUEST["itemno"]) || $_REQUEST["itemno"] == '' || !is_numeric($iAmount)) {
-                $this->replyToCartUpdate($twig, 'noitemnooramount');
+                $this->replyToCartUpdate('noitemnooramount');
             } else {
                 $iAmount = floor($iAmount);
-                //die($_REQUEST["itemno"]);
 
                 // Check if this item exists
-                $aData = $oItem->sortItems('', $_REQUEST["itemno"]);
+                $aData = $this->oItem->sortItems('', $_REQUEST["itemno"]);
                 if (!isset($aData)) {
-                    $this->replyToCartUpdate($twig, 'itemnotfound');
+                    $this->replyToCartUpdate('itemnotfound');
                 } else {
                     // build the key for this item for the shoppingcart
                     $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
                     $sCartKey = $sItemno;
 
-                    if (isset($C["custom_order_fields"])) {
-                        foreach ($C["custom_order_fields"] as $sValue) {
+                    if (isset($this->C["custom_order_fields"])) {
+                        foreach ($this->C["custom_order_fields"] as $sValue) {
                             if (isset($aData["item"][$sItemno]["itm_data"][$sValue])) {
                                 $aOptions = [];
                                 $TMP = explode('|', $aData["item"][$sItemno]["itm_data"][$sValue]);
@@ -64,46 +71,45 @@ class Updatecart extends Base
                                 if (isset($_REQUEST[$sValue]) && in_array($_REQUEST[$sValue], $aOptions)) {
                                     $sCartKey .= '|' . $sValue . ':' . $_REQUEST[$sValue];
                                 } else {
-                                    $this->replyToCartUpdate($twig, 'requiredfieldmissing');
+                                    $this->replyToCartUpdate('requiredfieldmissing');
                                 }
                             }
                         }
                     }
                     // if this Items is not in cart and amount is 0, no need to do anything, return to referer
                     if (!isset($_SESSION["cart"][$sCartKey]) && $iAmount == 0) {
-                        $this->replyToCartUpdate($twig, 'noactiontaken');
+                        $this->replyToCartUpdate('noactiontaken');
                     }
                     $aItem = [
                         'amount' => $iAmount,
-                        'price' => $oItem->calcPrice($aData["item"][$sItemno]),
+                        'price' => $this->oItem->calcPrice($aData["item"][$sItemno]),
                         'rg' => $aData["item"][$sItemno]['itm_rg'],
                         'vat' => $aData["item"][$sItemno]['itm_vatid'],
                         'name' => $aData["item"][$sItemno]['itm_name'],
                         'img' => $aData["item"][$sItemno]['itm_img'],
                     ];
-                    //debug($aItem);
                     if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
                         if ($iAmount == 0) { // new amount == 0 -> remove from cart
                             unset($_SESSION["cart"][$sCartKey]);
                             if (count($_SESSION["cart"]) == 0) { // once the last cart item is unset, we no longer need cartpricesums
                                 unset($_SESSION["cartpricesums"]);
                             }
-                            $this->replyToCartUpdate($twig, 'removed', ['cartkey' => $sCartKey]);
+                            $this->replyToCartUpdate('removed', ['cartkey' => $sCartKey]);
                         } else { // update amount
                             $_SESSION["cart"][$sCartKey]["amount"] = $iAmount;
-                            $this->replyToCartUpdate($twig, 'updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
+                            $this->replyToCartUpdate('updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                         }
                     } else { // if this item is not in the cart yet, add it
                         $_SESSION["cart"][$sCartKey] = $aItem;
                     }
-                    $this->replyToCartUpdate($twig, 'added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
+                    $this->replyToCartUpdate('added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
             }
             die();
         }
     }
 
-    private function replyToCartUpdate($twig, $sReply, $aMore = []) {
+    private function replyToCartUpdate($sReply, $aMore = []) {
         if (isset($_REQUEST["ajax"])) {
             $aAR = [
                 'cart' => $_SESSION["cart"],
@@ -115,7 +121,7 @@ class Updatecart extends Base
                 'numberformat_thousands_seperator' => $this->C['numberformat_thousands_seperator'],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);
-            echo $twig->render('shop/update-cart.twig', $aAR);
+            echo $this->twig->render('shop/update-cart.twig', $aAR);
         } else {
             $aMSG["msg"] =  $sReply;
             if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);

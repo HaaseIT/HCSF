@@ -22,19 +22,20 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Shoppingcart extends Base
 {
-    private $twig;
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
         $this->twig = $twig;
+    }
 
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
         $this->P->cb_pagetype = 'contentnosubnav';
 
-        if ($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
-            //require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
-
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
             $this->P->oPayload->cl_html = '';
 
@@ -48,9 +49,8 @@ class Shoppingcart extends Base
                     && isset($_GET["cartkey"])
                 ) {
                     $this->P->oPayload->cl_html .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
-                    if (isset($C["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
+                    if (isset($this->C["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                         $mCartkeys = explode('|', $_GET["cartkey"]);
-                        //debug($mCartkeys);
                         foreach ($mCartkeys as $sKey => $sValue) {
                             if ($sKey == 0) {
                                 $this->P->oPayload->cl_html .= $sValue . ', ';
@@ -78,18 +78,18 @@ class Shoppingcart extends Base
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                 $aErr = [];
                 if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
-                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($C, $sLang, $aErr, true);
+                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr, true);
                     if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }
                     if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["cancellationdisclaimer"]) || $_POST["cancellationdisclaimer"] != 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
-                    if (!isset($_POST["paymentmethod"]) || array_search($_POST["paymentmethod"], $C["paymentmethods"]) === false) {
+                    if (!isset($_POST["paymentmethod"]) || array_search($_POST["paymentmethod"], $this->C["paymentmethods"]) === false) {
                         $aErr["paymentmethod"] = true;
                     }
                 }
-                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $sLang, $C, false, '', $aErr);
+                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->sLang, $this->C, false, '', $aErr);
             }
 
             // ----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ class Shoppingcart extends Base
                 if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
                     if (count($aErr) == 0) {
                         try {
-                            $DB->beginTransaction();
+                            $this->DB->beginTransaction();
                             $aDataOrder = [
                                 'o_custno' => filter_var(trim(\HaaseIT\Tools::getFormfield("custno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                                 'o_email' => filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL),
@@ -126,7 +126,7 @@ class Shoppingcart extends Base
                                 'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
                                 'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
                                 'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-                                'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($C, $sLang),
+                                'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($this->C, $this->sLang),
                                 'o_orderdate' => date("Y-m-d"),
                                 'o_ordertimestamp' => time(),
                                 'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
@@ -136,28 +136,26 @@ class Shoppingcart extends Base
                                 'o_ordercompleted' => 'n',
                                 'o_paymentcompleted' => 'n',
                                 'o_srv_hostname' => $_SERVER["HTTP_HOST"],
-                                'o_vatfull' => $C["vat"]["full"],
-                                'o_vatreduced' => $C["vat"]["reduced"],
+                                'o_vatfull' => $this->C["vat"]["full"],
+                                'o_vatreduced' => $this->C["vat"]["reduced"],
                             ];
                             $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, 'orders');
-                            //die($sQ);
-                            $hResult = $DB->prepare($sQ);
+                            $hResult = $this->DB->prepare($sQ);
                             foreach ($aDataOrder as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
                             $hResult->execute();
-                            $iInsertID = $DB->lastInsertId();
+                            $iInsertID = $this->DB->lastInsertId();
 
                             $aDataOrderItems = [];
                             $aImagesToSend = [];
                             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                                 foreach ($_SESSION["cart"] as $sK => $aV) {
                                     // base64 encode img and prepare for db
-                                    //echo $aV["img"];
                                     // image/png image/jpeg image/gif
                                     // data:{mimetype};base64,XXXX
-                                    if ($C['email_orderconfirmation_embed_itemimages_method'] == 'glide') {
-                                        $sPathToImage = '/'.$C['directory_images'].'/'.$C['directory_images_items'].'/';
+                                    if ($this->C['email_orderconfirmation_embed_itemimages_method'] == 'glide') {
+                                        $sPathToImage = '/'.$this->C['directory_images'].'/'.$this->C['directory_images_items'].'/';
                                         $sImageroot = PATH_BASEDIR . $this->C['directory_glide_master'];
 
                                         if (
@@ -170,7 +168,7 @@ class Shoppingcart extends Base
                                                 'max_image_size' => $this->C['glide_max_imagesize'],
                                             ]);
                                             $glideserver->setBaseUrl('/' . $this->C['directory_images'] . '/');
-                                            $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV["img"], $C['email_orderconfirmation_embed_itemimages_glideparams']);
+                                            $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV["img"], $this->C['email_orderconfirmation_embed_itemimages_glideparams']);
                                             $TMP = explode(',', $base64Img);
                                             $binImg = base64_decode($TMP[1]);
                                             unset($TMP);
@@ -179,7 +177,7 @@ class Shoppingcart extends Base
                                             $binImg = false;
                                         }
                                     } else {
-                                        $sPathToImage = PATH_DOCROOT.$C['directory_images'].'/'.$C['directory_images_items'].'/'.$C['directory_images_items_email'].'/';
+                                        $sPathToImage = PATH_DOCROOT.$this->C['directory_images'].'/'.$this->C['directory_images_items'].'/'.$this->C['directory_images_items_email'].'/';
                                         if ($aImgInfo = getimagesize($sPathToImage.$aV["img"])) {
                                             $binImg = file_get_contents($sPathToImage.$aV["img"]);
                                             $base64Img = 'data:' . $aImgInfo["mime"] . ';base64,';
@@ -189,11 +187,10 @@ class Shoppingcart extends Base
                                             $binImg = false;
                                         }
                                     }
-                                    if (isset($C["email_orderconfirmation_embed_itemimages"]) && $C["email_orderconfirmation_embed_itemimages"]) {
+                                    if (isset($this->C["email_orderconfirmation_embed_itemimages"]) && $this->C["email_orderconfirmation_embed_itemimages"]) {
                                         $aImagesToSend[$aV["img"]] = $binImg;
                                     }
                                     unset($binImg, $aImgInfo);
-                                    //echo $base64Img;
 
                                     $aDataOrderItems[] = [
                                         'oi_o_id' => $iInsertID,
@@ -204,9 +201,9 @@ class Shoppingcart extends Base
                                         'oi_price_brutto_use' => $aV["price"]["brutto_use"],
                                         'oi_price_netto_sale' => isset($aV["price"]["netto_sale"]) ? $aV["price"]["netto_sale"] : '',
                                         'oi_price_netto_rebated' => isset($aV["price"]["netto_rebated"]) ? $aV["price"]["netto_rebated"] : '',
-                                        'oi_vat' => $C["vat"][$aV["vat"]],
+                                        'oi_vat' => $this->C["vat"][$aV["vat"]],
                                         'oi_rg' => $aV["rg"],
-                                        'oi_rg_rebate' => isset($C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))]) ? $C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))] : '',
+                                        'oi_rg_rebate' => isset($this->C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))]) ? $this->C["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))] : '',
                                         'oi_itemname' => $aV["name"],
                                         'oi_img' => $base64Img,
                                     ];
@@ -215,21 +212,20 @@ class Shoppingcart extends Base
                             }
                             foreach ($aDataOrderItems as $aV) {
                                 $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aV, 'orders_items');
-                                $hResult = $DB->prepare($sQ);
+                                $hResult = $this->DB->prepare($sQ);
                                 foreach ($aV as $sKey => $sValue) {
                                     $hResult->bindValue(':' . $sKey, $sValue);
                                 }
                                 $hResult->execute();
                             }
-                            $DB->commit();
+                            $this->DB->commit();
                         } catch (Exception $e) {
                             // If something raised an exception in our transaction block of statements,
                             // roll back any work performed in the transaction
                             print '<p>Unable to complete transaction!</p>';
                             print $e;
-                            $DB->rollBack();
+                            $this->DB->rollBack();
                         }
-                        //die(debug($aDataOrderClean, true).debug($aDataOrderItemsClean, true));
                         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
                         $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
 
@@ -239,21 +235,21 @@ class Shoppingcart extends Base
                         fwrite($fp, $sMailbody_us . "\n\n-------------------------------------------------------------------------\n\n");
                         fclose($fp);
 
-                        if (isset($C["email_orderconfirmation_attachment_cancellationform_" . $sLang]) && file_exists(PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang])) {
-                            $aFilesToSend[] = PATH_DOCROOT.$C['directory_emailattachments'].'/'.$C["email_orderconfirmation_attachment_cancellationform_".$sLang];
+                        if (isset($this->C["email_orderconfirmation_attachment_cancellationform_" . $this->sLang]) && file_exists(PATH_DOCROOT.$this->C['directory_emailattachments'].'/'.$this->C["email_orderconfirmation_attachment_cancellationform_".$this->sLang])) {
+                            $aFilesToSend[] = PATH_DOCROOT.$this->C['directory_emailattachments'].'/'.$this->C["email_orderconfirmation_attachment_cancellationform_".$this->sLang];
                         } else $aFilesToSend = [];
 
                         // Send Mails
-                        \HaaseIT\HCSF\Helper::mailWrapper($C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
-                        \HaaseIT\HCSF\Helper::mailWrapper($C, $C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
+                        \HaaseIT\HCSF\Helper::mailWrapper($this->C, $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+                        \HaaseIT\HCSF\Helper::mailWrapper($this->C, $this->C["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
 
                         if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
                         if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);
                         if (isset($_SESSION["sondercart"])) unset($_SESSION["sondercart"]);
 
-                        if (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' && array_search('paypal', $C["paymentmethods"]) !== false && isset($C["paypal_interactive"]) && $C["paypal_interactive"]) {
+                        if (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' && array_search('paypal', $this->C["paymentmethods"]) !== false && isset($this->C["paypal_interactive"]) && $this->C["paypal_interactive"]) {
                             header('Location: /_misc/paypal.html?id=' . $iInsertID);
-                        } elseif (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $C["paymentmethods"]) !== false) {
+                        } elseif (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $this->C["paymentmethods"]) !== false) {
                             header('Location: /_misc/sofortueberweisung.html?id=' . $iInsertID);
                         } else {
                             header('Location: /_misc/checkedout.html?id=' . $iInsertID);

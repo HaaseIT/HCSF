@@ -22,11 +22,16 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Myorders extends Base
 {
-    private $twig;
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function __construct($C, $DB, $sLang, $twig)
     {
         parent::__construct($C, $DB, $sLang);
         $this->twig = $twig;
+    }
+
+    public function preparePage()
+    {
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
@@ -39,14 +44,14 @@ class Myorders extends Base
                 $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
                 $sQ = "SELECT * FROM " . 'orders WHERE o_id = :id AND o_custno = \'' . $_SESSION['user']['cust_no'] . '\' AND o_ordercompleted != \'d\'';
-                $hResult = $DB->prepare($sQ);
+                $hResult = $this->DB->prepare($sQ);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
 
                 if ($hResult->rowCount() == 1) {
                     $aOrder = $hResult->fetch();
 
-                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($C["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
+                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($this->C["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open"));
@@ -55,7 +60,7 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
                     $sQ = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                    $hResult = $DB->prepare($sQ);
+                    $hResult = $this->DB->prepare($sQ);
                     $hResult->bindValue(':id', $iId);
                     $hResult->execute();
 
@@ -78,8 +83,8 @@ class Myorders extends Base
 
                     $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
-                        $sLang,
-                        $C,
+                        $this->sLang,
+                        $this->C,
                         true,
                         '',
                         '',
@@ -108,7 +113,7 @@ class Myorders extends Base
                     ],
                 ];
 
-                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $twig, $DB);
+                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $this->twig, $this->DB);
             }
 
             if (isset($aShoppingcart)) {
@@ -150,7 +155,6 @@ class Myorders extends Base
                 ];
             }
             $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
-            //HaaseIT\Tools::debug($aData);
         } else $sH .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
 
         return $sH;

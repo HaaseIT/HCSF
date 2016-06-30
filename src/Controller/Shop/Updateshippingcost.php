@@ -22,21 +22,34 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Updateshippingcost extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $sLang, $C);
+        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->sLang, $this->C);
 
         header("Content-Type: text/html; charset=UTF-8");
         $sH = '<div>';
-        $sH .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
-        $sH .= '<div id="vatfull_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
-        $sH .= '<div id="totalbrutto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
-        $sH .= '<div id="shippingcostnetto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostennetto"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
-        $sH .= '<div id="vatreduced_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuererm"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
-        $sH .= '<div id="totalnetto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtnetto"], 2), $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"],
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="vatfull_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2),
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="totalbrutto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2),
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="shippingcostnetto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostennetto"],
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="vatreduced_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuererm"], 2),
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
+        $sH .= '<div id="totalnetto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtnetto"], 2),
+                $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'],
+                $this->C['numberformat_thousands_seperator']) . '</div>';
         $sH .= '</div>';
         die($sH);
     }

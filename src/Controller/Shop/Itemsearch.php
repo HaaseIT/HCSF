@@ -22,9 +22,9 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Itemsearch extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
         $this->P->cb_pagetype = 'itemoverview';
     }
 }

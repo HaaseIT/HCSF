@@ -22,11 +22,12 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Checkedout extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
-        if ($C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'shop/checkedout';
@@ -34,7 +35,7 @@ class Checkedout extends Base
             $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $sQ = 'SELECT * FROM orders WHERE o_id = :id AND o_paymentcompleted = \'n\'';
 
-            $hResult = $DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sQ);
             $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
             $hResult->execute();

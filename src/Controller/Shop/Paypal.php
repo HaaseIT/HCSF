@@ -22,29 +22,30 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Paypal extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function preparePage()
     {
-        parent::__construct($C, $DB, $sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P->cb_pagetype = 'content';
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sQ = 'SELECT * FROM orders ';
         $sQ .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sQ);
         $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
         $hResult->execute();
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            //\HaaseIT\Tools::debug($aOrder);
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPaypalURL = $C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $C["paypal"]["business"];
+            $sPaypalURL = $this->C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->C["paypal"]["business"];
             $sPaypalURL .= '&notify_url=http://' . $_SERVER["HTTP_HOST"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
-            $sPaypalURL .= '&currency_code=' . $C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
-            if (isset($C["interactive_paymentmethods_redirect_immediately"]) && $C["interactive_paymentmethods_redirect_immediately"]) {
-                header('Location: '.$sPaypalURL);
+            $sPaypalURL .= '&currency_code=' . $this->C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
+                    number_format($fGesamtbrutto, 2, '.', ''));
+            if (isset($this->C["interactive_paymentmethods_redirect_immediately"]) && $this->C["interactive_paymentmethods_redirect_immediately"]) {
+                header('Location: ' . $sPaypalURL);
                 die();
             }
 
@@ -54,5 +55,4 @@ class Paypal extends Base
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paypaypal_paymentnotavailable");
         }
     }
-
 }
