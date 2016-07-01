@@ -67,9 +67,9 @@ class Helper
         $mail->Body = $message;
 
         if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
-            foreach ($aImagesToEmbed as $sKey => $binValue) {
-                $imginfo = getimagesizefromstring($binValue);
-                $mail->AddStringEmbeddedImage($binValue, $sKey, $sKey, 'base64', $imginfo['mime']);
+            foreach ($aImagesToEmbed as $sKey => $imgdata) {
+                $imginfo = getimagesizefromstring($imgdata['binimg']);
+                $mail->AddStringEmbeddedImage($imgdata['binimg'], $sKey, $sKey, 'base64', $imginfo['mime']);
             }
         }
 
