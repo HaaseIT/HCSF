@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e0dbed50349fa321bac15c4cabea4af8",
-    "content-hash": "1e52d65fa8c478147c5031c44b92c2ac",
+    "hash": "a323ae4a14d4bfa4ab6a04da7643a765",
+    "content-hash": "ff849cecfa569931c236d8814a3e42dc",
     "packages": [
         {
             "name": "aura/autoload",
@@ -276,16 +276,16 @@
         },
         {
             "name": "haaseit/toolbox",
-            "version": "1.2.7",
+            "version": "1.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/HaaseIT/Toolbox.git",
-                "reference": "8bfa1386f60a4b69ef797cee5f490c15d599e782"
+                "reference": "264893b56ec021207591e38c2d82ad217978c842"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/HaaseIT/Toolbox/zipball/8bfa1386f60a4b69ef797cee5f490c15d599e782",
-                "reference": "8bfa1386f60a4b69ef797cee5f490c15d599e782",
+                "url": "https://api.github.com/repos/HaaseIT/Toolbox/zipball/264893b56ec021207591e38c2d82ad217978c842",
+                "reference": "264893b56ec021207591e38c2d82ad217978c842",
                 "shasum": ""
             },
             "require": {
@@ -314,7 +314,7 @@
             "keywords": [
                 "tools"
             ],
-            "time": "2016-03-25 14:12:27"
+            "time": "2016-07-06 16:50:51"
         },
         {
             "name": "intervention/image",
@@ -841,16 +841,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.1.1",
+            "version": "v3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "c5a7e7fc273c758b92b85dcb9c46149ccda89623"
+                "reference": "2884c26ce4c1d61aebf423a8b912950fe7c764de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/c5a7e7fc273c758b92b85dcb9c46149ccda89623",
-                "reference": "c5a7e7fc273c758b92b85dcb9c46149ccda89623",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/2884c26ce4c1d61aebf423a8b912950fe7c764de",
+                "reference": "2884c26ce4c1d61aebf423a8b912950fe7c764de",
                 "shasum": ""
             },
             "require": {
@@ -886,7 +886,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-06-14 11:18:07"
+            "time": "2016-06-29 05:41:56"
         },
         {
             "name": "twig/twig",
