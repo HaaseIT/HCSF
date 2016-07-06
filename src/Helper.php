@@ -221,7 +221,7 @@ class Helper
     {
         if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is_array($C["lang_by_domain"])) { // domain based language detection
             foreach ($C["lang_by_domain"] as $sKey => $sValue) {
-                if ($_SERVER["HTTP_HOST"] == $sValue || $_SERVER["HTTP_HOST"] == 'www.'.$sValue) {
+                if ($_SERVER["SERVER_NAME"] == $sValue || $_SERVER["SERVER_NAME"] == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }

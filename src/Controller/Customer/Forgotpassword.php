@@ -78,9 +78,9 @@ class Forgotpassword extends Base
                     $sSubject = \HaaseIT\Textcat::T("forgotpw_mail_subject");
                     $sMessage = \HaaseIT\Textcat::T("forgotpw_mail_text1");
                     $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
-                    $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
+                    $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
                     $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
-                    $sMessage .= $_SERVER["HTTP_HOST"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
+                    $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                     $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("forgotpw_mail_text2");
 
                     \HaaseIT\HCSF\Helper::mailWrapper($this->C, $sTargetAddress, $sSubject, $sMessage);

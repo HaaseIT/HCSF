@@ -41,7 +41,7 @@ class Paypal extends Base
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $sPaypalURL = $this->C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->C["paypal"]["business"];
-            $sPaypalURL .= '&notify_url=http://' . $_SERVER["HTTP_HOST"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
+            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
             $sPaypalURL .= '&currency_code=' . $this->C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
                     number_format($fGesamtbrutto, 2, '.', ''));
             if (isset($this->C["interactive_paymentmethods_redirect_immediately"]) && $this->C["interactive_paymentmethods_redirect_immediately"]) {

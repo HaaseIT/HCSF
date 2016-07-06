@@ -171,7 +171,7 @@ class Helper
             $sSubject = \HaaseIT\Textcat::T("register_mail_emailverification_subject");
 
             $aP['link'] = 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
-            $aP['link'] .= $_SERVER["HTTP_HOST"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
+            $aP['link'] .= $_SERVER["SERVER_NAME"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
 
             $sMessage = $twig->render('customer/sendverificationmail.twig', $aP);
         }
