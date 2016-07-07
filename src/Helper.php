@@ -90,7 +90,7 @@ class Helper
         return $string;
     }
 
-    public static function generatePage($C, $P, $sLang, $oItem, $requesturi)
+    public static function generatePage($container, $P, $sLang, $oItem, $requesturi)
     {
         $aP = [
             'language' => $sLang,
@@ -99,23 +99,23 @@ class Helper
             'subnavkey' => $P->cb_subnav,
             'requesturi' => $requesturi,
             'requesturiarray' => parse_url($requesturi),
-            'locale_format_date' => $C['locale_format_date'],
-            'locale_format_date_time' => $C['locale_format_date_time'],
-            'maintenancemode' => $C['maintenancemode'],
-            'numberformat_decimals' => $C['numberformat_decimals'],
-            'numberformat_decimal_point' => $C['numberformat_decimal_point'],
-            'numberformat_thousands_seperator' => $C['numberformat_thousands_seperator'],
+            'locale_format_date' => $container['conf']['locale_format_date'],
+            'locale_format_date_time' => $container['conf']['locale_format_date_time'],
+            'maintenancemode' => $container['conf']['maintenancemode'],
+            'numberformat_decimals' => $container['conf']['numberformat_decimals'],
+            'numberformat_decimal_point' => $container['conf']['numberformat_decimal_point'],
+            'numberformat_thousands_seperator' => $container['conf']['numberformat_thousands_seperator'],
         ];
-        if ($C["enable_module_customer"]) {
+        if ($container['conf']["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP["enable_module_customer"] = true;
         }
-        if ($C["enable_module_shop"]) {
-            $aP["currency"] = $C["waehrungssymbol"];
-            $aP["orderamounts"] = $C["orderamounts"];
-            if (isset($C["vat"]["full"])) $aP["vatfull"] = $C["vat"]["full"];
-            if (isset($C["vat"]["reduced"])) $aP["vatreduced"] = $C["vat"]["reduced"];
-            if (isset($C["custom_order_fields"])) $aP["custom_order_fields"] = $C["custom_order_fields"];
+        if ($container['conf']["enable_module_shop"]) {
+            $aP["currency"] = $container['conf']["waehrungssymbol"];
+            $aP["orderamounts"] = $container['conf']["orderamounts"];
+            if (isset($container['conf']["vat"]["full"])) $aP["vatfull"] = $container['conf']["vat"]["full"];
+            if (isset($container['conf']["vat"]["reduced"])) $aP["vatreduced"] = $container['conf']["vat"]["reduced"];
+            if (isset($container['conf']["custom_order_fields"])) $aP["custom_order_fields"] = $container['conf']["custom_order_fields"];
             $aP["enable_module_shop"] = true;
         }
         if (isset($P->cb_key)) $aP["path"] = pathinfo($P->cb_key);
@@ -124,15 +124,13 @@ class Helper
         if ($P->cb_customdata != NULL) $aP["customdata"] = $P->cb_customdata;
         if (isset($_SERVER["HTTP_REFERER"])) $aP["referer"] = $_SERVER["HTTP_REFERER"];
 
-        reset($C["lang_available"]);
-
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
-        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $C["subnav_default"] != '') {
-            $aP["subnavkey"] = $C["subnav_default"];
-            $P->cb_subnav = $C["subnav_default"];
+        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $container['conf']["subnav_default"] != '') {
+            $aP["subnavkey"] = $container['conf']["subnav_default"];
+            $P->cb_subnav = $container['conf']["subnav_default"];
         }
-        if ($P->cb_subnav != NULL && isset($C["navstruct"][$P->cb_subnav])) $aP["subnav"] = $C["navstruct"][$P->cb_subnav];
+        if ($P->cb_subnav != NULL && isset($container['navstruct'][$P->cb_subnav])) $aP["subnav"] = $container['navstruct'][$P->cb_subnav];
 
         // Get page title, meta-keywords, meta-description
         $aP["pagetitle"] = $P->oPayload->getTitle();
@@ -144,29 +142,29 @@ class Helper
 
         // Language selector
         // TODO: move content of langselector out of php script
-        if (count($C["lang_available"]) > 1) {
-            $aP["langselector"] = self::getLangSelector($C, $sLang);
+        if (count($container['conf']["lang_available"]) > 1) {
+            $aP["langselector"] = self::getLangSelector($container['conf'], $sLang);
         }
 
         // Shopping cart infos
-        if ($C["enable_module_shop"]) {
-            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($C);
+        if ($container['conf']["enable_module_shop"]) {
+            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container['conf']);
         }
 
         $aP["countrylist"][] = ' | ';
-        foreach ($C["countries_".$sLang] as $sKey => $sValue) {
+        foreach ($container['conf']["countries_".$sLang] as $sKey => $sValue) {
             $aP["countrylist"][] = $sKey.'|'.$sValue;
         }
 
-        if ($C["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
-            $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($C, $oItem, $P, $aP);
+        if ($container['conf']["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
+            $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($container['conf'], $oItem, $P, $aP);
         }
 
         $aP["content"] = $P->oPayload->cl_html;
 
         $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
 
-        if ($C['debug']) {
+        if ($container['conf']['debug']) {
             self::getDebug($aP, $P);
         }
 
@@ -175,7 +173,7 @@ class Helper
         return $aP;
     }
 
-    private function getDebug($aP, $P)
+    private static function getDebug($aP, $P)
     {
         if (!empty($_POST)) {
             \HaaseIT\Tools::debug($_POST, '$_POST');

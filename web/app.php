@@ -20,18 +20,11 @@
 
 require __DIR__.'/../app/init.php';
 
-//HaaseIT\Tools::debug($P);
-//HaaseIT\Tools::debug($aURL);
-//HaaseIT\Tools::debug($_SERVER);
-//HaaseIT\Tools::debug($_REQUEST);
-//HaaseIT\Tools::debug($aPath);
-//HaaseIT\Tools::debug('Path: '.$sPath);
-
-$aP = \HaaseIT\HCSF\Helper::generatePage($C, $P, $sLang, $oItem, $requesturi);
+$aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $container['lang'], $container['oItem'], $requesturi);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
-$response->getBody()->write($twig->render($C["template_base"], $aP));
+$response->getBody()->write($container['twig']->render($container['conf']["template_base"], $aP));
 
 $emitter = new \Zend\Diactoros\Response\SapiEmitter();
 $emitter->emit($response);

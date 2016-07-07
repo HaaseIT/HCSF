@@ -18,36 +18,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$TMP = [
-    'navstruct' => [
-        'root' => [
-            \HaaseIT\Textcat::T("sidenav_root_agb") => '/agb.html',
-            \HaaseIT\Textcat::T("sidenav_root_widerruf") => '/widerruf.html',
-            \HaaseIT\Textcat::T("sidenav_root_impressum") => '/impressum.html',
-            \HaaseIT\Textcat::T("sidenav_root_datenschutz") => '/datenschutz.html',
-        ],
-        'category1' => [
-            \HaaseIT\Textcat::T("sidenav_category1_01") => '/kategorie1/seite1/',
-            \HaaseIT\Textcat::T("sidenav_category1_02") => '/kategorie1/seite2/',
-        ],
-        'category2' => [
-            \HaaseIT\Textcat::T("sidenav_category2_01") => '/kategorie2/seite1/',
-            \HaaseIT\Textcat::T("sidenav_category2_02") => '/kategorie2/seite2/',
-        ],
-        'category3' => [
-            \HaaseIT\Textcat::T("sidenav_category3_01") => '/kategorie3/seite1/',
-            \HaaseIT\Textcat::T("sidenav_category3_02") => '/kategorie3/seite2/',
-        ],
-        'category4' => [
-            \HaaseIT\Textcat::T("sidenav_category4_01") => '/kategorie4/seite1/',
-            \HaaseIT\Textcat::T("sidenav_category4_02") => '/kategorie4/seite2/',
-        ],
-        'category5' => [
-            \HaaseIT\Textcat::T("sidenav_category5_01") => '/kategorie5/seite1/',
-            \HaaseIT\Textcat::T("sidenav_category5_02") => '/kategorie5/seite2/',
-        ],
+return [
+    'root' => [
+        \HaaseIT\Textcat::T("sidenav_root_agb") => '/agb.html',
+        \HaaseIT\Textcat::T("sidenav_root_widerruf") => '/widerruf.html',
+        \HaaseIT\Textcat::T("sidenav_root_impressum") => '/impressum.html',
+        \HaaseIT\Textcat::T("sidenav_root_datenschutz") => '/datenschutz.html',
+    ],
+    'category1' => [
+        \HaaseIT\Textcat::T("sidenav_category1_01") => '/kategorie1/seite1/',
+        \HaaseIT\Textcat::T("sidenav_category1_02") => '/kategorie1/seite2/',
+    ],
+    'category2' => [
+        \HaaseIT\Textcat::T("sidenav_category2_01") => '/kategorie2/seite1/',
+        \HaaseIT\Textcat::T("sidenav_category2_02") => '/kategorie2/seite2/',
+    ],
+    'category3' => [
+        \HaaseIT\Textcat::T("sidenav_category3_01") => '/kategorie3/seite1/',
+        \HaaseIT\Textcat::T("sidenav_category3_02") => '/kategorie3/seite2/',
+    ],
+    'category4' => [
+        \HaaseIT\Textcat::T("sidenav_category4_01") => '/kategorie4/seite1/',
+        \HaaseIT\Textcat::T("sidenav_category4_02") => '/kategorie4/seite2/',
+    ],
+    'category5' => [
+        \HaaseIT\Textcat::T("sidenav_category5_01") => '/kategorie5/seite1/',
+        \HaaseIT\Textcat::T("sidenav_category5_02") => '/kategorie5/seite2/',
     ],
 ];
-
-$C = array_merge($C, $TMP);
-unset($TMP);

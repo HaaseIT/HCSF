@@ -37,42 +37,69 @@ bcscale(6);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+$container = new Pimple\Container();
+
 $AuraLoader = new \Aura\Autoload\Loader;
 $AuraLoader->register();
 $AuraLoader->addPrefix('\HaaseIT\HCSF', __DIR__.'/../src');
 
 // PSR-7 Stuff
 // Init request object
-$request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$container['request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
 // cleanup request
-$requesturi = urldecode($request->getRequestTarget());
+$requesturi = urldecode($container['request']->getRequestTarget());
 $parsedrequesturi = \substr($requesturi, \strlen(\dirname($_SERVER['PHP_SELF'])));
 if (substr($parsedrequesturi, 1, 1) != '/') {
     $parsedrequesturi = '/'.$parsedrequesturi;
 }
-$request = $request->withRequestTarget($parsedrequesturi);
+$container['request'] = $container['request']->withRequestTarget($parsedrequesturi);
 
 use Symfony\Component\Yaml\Yaml;
-$C = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
-if (is_file(__DIR__.'/config/config.core.yml')) $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
-$C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
-$C['directory_images'] = trim($C['directory_images'], " \t\n\r\0\x0B/"); // trim this
-if (!empty($C['maintenancemode']) && $C['maintenancemode']) {
-    $C["enable_module_customer"] = false;
-    $C["enable_module_shop"] = false;
-    $C["templatecache_enable"] = false;
-    $C["debug"] = false;
-    $C['textcatsverbose'] = false;
-} else {
-    $C['maintenancemode'] = false;
-}
+$container['conf'] = function ($c) {
+    $conf = Yaml::parse(file_get_contents(__DIR__.'/config/config.core.dist.yml'));
+    if (is_file(__DIR__.'/config/config.core.yml')) $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.core.yml')));
+    $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.countries.yml')));
+    $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.scrts.yml')));
+    $conf['directory_images'] = trim($conf['directory_images'], " \t\n\r\0\x0B/"); // trim this
 
-if (isset($C["debug"]) && $C["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+    if (!empty($conf['maintenancemode']) && $conf['maintenancemode']) {
+        $conf["enable_module_customer"] = false;
+        $conf["enable_module_shop"] = false;
+        $conf["templatecache_enable"] = false;
+        $conf["debug"] = false;
+        $conf['textcatsverbose'] = false;
+    } else {
+        $conf['maintenancemode'] = false;
+    }
+
+    if ($conf["enable_module_shop"]) $conf["enable_module_customer"] = true;
+
+    if ($conf["enable_module_customer"]) {
+        $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.dist.yml')));
+        if (is_file(__DIR__.'/config/config.customer.yml')) {
+            $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
+        }
+    }
+
+    if ($conf["enable_module_shop"]) {
+        $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.dist.yml')));
+        if (is_file(__DIR__.'/config/config.shop.yml')) {
+            $conf = array_merge($conf, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
+        }
+        if (isset($conf["vat_disable"]) && $conf["vat_disable"]) {
+            $conf["vat"] = ["full" => 0, "reduced" => 0];
+        }
+    }
+
+    return $conf;
+};
+
 require_once __DIR__.'/config/constants.fixed.php';
 
-if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+if (isset($container['conf']["debug"]) && $container['conf']["debug"]) HaaseIT\Tools::$bEnableDebug = true;
+
+if ($container['conf']["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
     ini_set('session.use_only_cookies', 0); // TODO find another way to pass session when language detection == domain
@@ -103,64 +130,48 @@ if ($C["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKI
     }
 }
 
-if ($C["enable_module_shop"]) $C["enable_module_customer"] = true;
-
-if ($C["enable_module_customer"]) {
-    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.dist.yml')));
-    if (is_file(__DIR__.'/config/config.customer.yml')) {
-        $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.customer.yml')));
-    }
-}
-define("PATH_LOGS", __DIR__.'/../hcsflogs/');
-if ($C["enable_module_shop"]) {
-    define("FILE_PAYPALLOG", 'ipnlog.txt');
-    $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.dist.yml')));
-    if (is_file(__DIR__.'/config/config.shop.yml')) {
-        $C = array_merge($C, Yaml::parse(file_get_contents(__DIR__.'/config/config.shop.yml')));
-    }
-    if (isset($C["vat_disable"]) && $C["vat_disable"]) {
-        $C["vat"] = ["full" => 0, "reduced" => 0];
-    }
-}
-
-date_default_timezone_set($C["defaulttimezone"]);
+date_default_timezone_set($container['conf']["defaulttimezone"]);
 
 // ----------------------------------------------------------------------------
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
-$twig_options = [
-    'autoescape' => false,
-    'debug' => (isset($C["debug"]) && $C["debug"] ? true : false)
-];
-if (isset($C["templatecache_enable"]) && $C["templatecache_enable"] &&
-    is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
-    $twig_options["cache"] = PATH_TEMPLATECACHE;
-}
-$twig = new Twig_Environment($loader, $twig_options);
+$container['twig'] = function ($c) {
+    $loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
+    $twig_options = [
+        'autoescape' => false,
+        'debug' => (isset($c['conf']["debug"]) && $c['conf']["debug"] ? true : false)
+    ];
+    if (isset($c['conf']["templatecache_enable"]) && $c['conf']["templatecache_enable"] &&
+        is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
+        $twig_options["cache"] = PATH_TEMPLATECACHE;
+    }
+    $twig = new Twig_Environment($loader, $twig_options);
 
-if ($C['allow_parsing_of_page_content']) {
-    $twig->addExtension(new Twig_Extension_StringLoader());
-} else { // make sure, template_from_string is callable
-    $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
-}
+    if ($c['conf']['allow_parsing_of_page_content']) {
+        $twig->addExtension(new Twig_Extension_StringLoader());
+    } else { // make sure, template_from_string is callable
+        $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
+    }
 
-if (isset($C["debug"]) && $C["debug"]) {
-    //$twig->addExtension(new Twig_Extension_Debug());
-}
-$twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
-$twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
-$twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
-$twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
+    if (isset($c['conf']["debug"]) && $c['conf']["debug"]) {
+        //$twig->addExtension(new Twig_Extension_Debug());
+    }
+    $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
+    $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
+    $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
+    $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
 
-$sLang = \HaaseIT\HCSF\Helper::getLanguage($C);
+    return $twig;
+};
 
-if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
-    $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php';
+$container['lang'] = \HaaseIT\HCSF\Helper::getLanguage($container['conf']);
+
+if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')) {
+    $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php';
 } else {
-    if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php')) {
-        $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.key($C["lang_available"]).'.php';
+    if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key($container['conf']["lang_available"]).'.php')) {
+        $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.key($container['conf']["lang_available"]).'.php';
     } else {
         $HT = require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
     }
@@ -168,73 +179,87 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$sLang.'.php')) {
 use \HaaseIT\HCSF\HardcodedText;
 HardcodedText::init($HT);
 
-if (!$C['maintenancemode']) {
+if (!$container['conf']['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
 
-    $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $C['debug']);
+    $container['entitymanager'] = function ($c)
+    {
+        $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $c['conf']['debug']);
 
-    $connectionParams = array(
-        'url' => $C["db_type"].'://'.$C["db_user"].':'.$C["db_password"].'@'.$C["db_server"].'/'.$C["db_name"],
-        'charset' => 'UTF8',
-        'driverOptions' => [
-            \PDO::ATTR_EMULATE_PREPARES => false,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-        ],
-    );
+        $connectionParams = array(
+            'url' => $c['conf']["db_type"].'://'.$c['conf']["db_user"].':'.$c['conf']["db_password"].'@'.$c['conf']["db_server"].'/'.$c['conf']["db_name"],
+            'charset' => 'UTF8',
+            'driverOptions' => [
+                \PDO::ATTR_EMULATE_PREPARES => false,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            ],
+        );
 
-    $entityManager = Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
-    $DB = $entityManager->getConnection()->getWrappedConnection();
+        return Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
+    };
 
-    /*
-    $DB = new \PDO($C["db_type"] . ':host=' . $C["db_server"] . ';dbname=' . $C["db_name"], $C["db_user"], $C["db_password"], [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',]);
-    $DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-    $DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-    $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
-    */
+    $container['db'] = function ($c)
+    {
+        return $c['entitymanager']->getConnection()->getWrappedConnection();
+    };
 
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    \HaaseIT\Textcat::init($DB, $sLang, key($C["lang_available"]), ($C['textcatsverbose']), PATH_LOGS);
+    $langavailable = $container['conf']["lang_available"];
+    \HaaseIT\Textcat::init($container['db'], $container['lang'], key($langavailable), $container['conf']['textcatsverbose'], PATH_LOGS);
 
-    require_once __DIR__.'/config/config.navi.php';
-    if (isset($C["navstruct"]["admin"])) {
-        unset($C["navstruct"]["admin"]);
-    }
+    $container['navstruct'] = function ($c)
+    {
+        $navstruct = include __DIR__.'/config/config.navi.php';
+
+        if (isset($navstruct["admin"])) {
+            unset($navstruct["admin"]);
+        }
+
+        $navstruct["admin"][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
+
+        if ($c['conf']["enable_module_shop"]) {
+            $navstruct["admin"][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
+            $navstruct["admin"][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
+            $navstruct["admin"][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
+        }
+
+        if ($c['conf']["enable_module_customer"]) {
+            $navstruct["admin"][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
+        }
+
+        $navstruct["admin"][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
+        $navstruct["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
+        $navstruct["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
+        $navstruct["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+        $navstruct["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
+        $navstruct["admin"][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
+
+        return $navstruct;
+    };
 } else {
-    $c['navstruct'] = [];
-    $DB = null;
+    $container['navstruct'] = [];
+    $container['db'] = null;
+    $container['entitymanager'] = null;
 }
 
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
 
-if ($C["enable_module_shop"]) {
-    $oItem = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
-
-    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
-    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
-    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
+if ($container['conf']["enable_module_shop"]) {
+    $container['oItem'] = function ($c)
+    {
+        return new \HaaseIT\HCSF\Shop\Items($c);
+    };
 } else {
-    $oItem = '';
+    $container['oItem'] = '';
 }
-
-if ($C["enable_module_customer"]) {
-    $C["navstruct"]["admin"][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
-}
-
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
-$C["navstruct"]["admin"][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
 
 // ----------------------------------------------------------------------------
 // Begin routing
 // ----------------------------------------------------------------------------
 
-$router = new \HaaseIT\HCSF\Router($C, $DB, $sLang, $request, $twig, $oItem);
+$router = new \HaaseIT\HCSF\Router($container['conf'], $container['db'], $container['lang'], $container['request'], $container['twig'], $container['oItem']);
 $P = $router->getPage();

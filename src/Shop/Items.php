@@ -22,18 +22,14 @@ namespace HaaseIT\HCSF\Shop;
 
 class Items
 {
-    private $C;
-    //private $P;
-    private $DB, $sLang, $itemindexpathtree;
+    private $container;
     // make method getItemPathByIndex()
     // if itemindexpathtree not set, load from db
 
     // Initialize Class
-    public function __construct($C, $DB, $sLang)
+    public function __construct($container)
     {
-        $this->C = $C;
-        $this->DB = $DB;
-        $this->sLang = $sLang;
+        $this->container = $container;
     }
 
     public function getItemPathTree()
@@ -41,7 +37,7 @@ class Items
         $itemindexpathtree = [];
         $aItemoverviewpages = [];
         $sql = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
-        $oQuery = $this->DB->query($sql);
+        $oQuery = $this->container['db']->query($sql);
         while ($aRow = $oQuery->fetch()) {
             $aItemoverviewpages[] = [
                 'path' => $aRow['cb_key'],
@@ -72,10 +68,10 @@ class Items
         $sql = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
         $sql .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
         $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->C["items_orderdirection_default"];
+        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->container['conf']["items_orderdirection_default"];
 
-        $hResult = $this->DB->prepare($sql);
-        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
+        $hResult = $this->container['db']->prepare($sql);
+        $hResult->bindValue(':lang', $this->container['lang'], \PDO::PARAM_STR);
         if ($mItemno != '') {
             if (!is_array($mItemno)) {
                 $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
@@ -181,8 +177,8 @@ class Items
             . ' AND itmgt_lang = :lang'
             . ' WHERE itmg_id = :group';
 
-        $hResult = $this->DB->prepare($sql);
-        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
+        $hResult = $this->container['db']->prepare($sql);
+        $hResult->bindValue(':lang', $this->container['lang'], \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();
 
@@ -211,7 +207,7 @@ class Items
             }
             if (
                 $aData['itm_rg'] != ''
-                && isset($this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
+                && isset($this->container['conf']["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
             ) {
                 $aPrice["netto_rebated"] =
                     bcmul(
@@ -219,7 +215,7 @@ class Items
                         bcdiv(
                             bcsub(
                                 '100',
-                                (string)$this->C["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]
+                                (string)$this->container['conf']["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]
                             ),
                             '100'
                         )
@@ -243,7 +239,7 @@ class Items
                 bcdiv(
                     bcmul(
                         $aPrice["netto_use"],
-                        (string)$this->C['vat'][$aData['itm_vatid']]
+                        (string)$this->container['conf']['vat'][$aData['itm_vatid']]
                     ),
                     '100'
                 ),

@@ -37,4 +37,7 @@ define("PATH_PURIFIERCACHE", PATH_CACHE.'htmlpurifier/');
 define("DIRNAME_GLIDECACHE", 'glide');
 define("PATH_GLIDECACHE", PATH_CACHE.DIRNAME_GLIDECACHE);
 
-define("GLIDE_SIGNATURE_KEY", $C['glide_signkey']);
+define("GLIDE_SIGNATURE_KEY", $container['conf']['glide_signkey']);
+
+define("PATH_LOGS", __DIR__.'/../../hcsflogs/');
+define("FILE_PAYPALLOG", 'ipnlog.txt');
