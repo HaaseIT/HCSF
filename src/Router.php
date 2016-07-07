@@ -11,24 +11,19 @@ namespace HaaseIT\HCSF;
 
 class Router
 {
-    private $P, $C, $DB, $sLang, $twig, $oItem, $request, $sPath;
+    private $P, $sPath, $container;
 
-    public function __construct($C, $DB, $sLang, $request, $twig, $oItem)
+    public function __construct($container)
     {
-        $this->C = $C;
-        $this->DB = $DB;
-        $this->sLang = $sLang;
-        $this->request = $request;
-        $this->twig = $twig;
-        $this->oItem = $oItem;
+        $this->container = $container;
     }
 
     public function getPage()
     {
-        if ($this->C['maintenancemode']) {
+        if ($this->container['conf']['maintenancemode']) {
             $class = '\\HaaseIT\\HCSF\\Controller\\Maintenance';
             try {
-                $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem);
+                $controller = new $class($this->container['conf'], $this->container['db'], $this->container['lang'], $this->container['twig'], $this->container['oItem']);
                 $this->P = $controller->getPage();
             } catch (\Exception $e) {
                 $this->P = $e->getMessage();
@@ -67,21 +62,21 @@ class Router
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
             $this->P = 404;
-            $aURL = parse_url($this->request->getRequestTarget());
+            $aURL = parse_url($this->container['request']->getRequestTarget());
             $this->sPath = $aURL["path"];
 
             $aPath = explode('/', $this->sPath);
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
             } else {
-                if ($aPath[1] == $this->C['directory_images']) {
+                if ($aPath[1] == $this->container['conf']['directory_images']) {
                     $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
                 }
             }
 
             if (!empty($class)) {
                 try {
-                    $controller = new $class($this->C, $this->DB, $this->sLang, $this->twig, $this->oItem, $aPath);
+                    $controller = new $class($this->container['conf'], $this->container['db'], $this->container['lang'], $this->container['twig'], $this->container['oItem'], $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = 500;
@@ -90,11 +85,11 @@ class Router
 
                 }
             } else {
-                if ($this->C["enable_module_shop"]) {
+                if ($this->container['conf']["enable_module_shop"]) {
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
-                $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
+                $this->P = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $this->sPath);
 
                 // go and look if the page can be loaded yet
                 if ($this->P->cb_id == NULL) {
@@ -106,7 +101,7 @@ class Router
 
                     if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
-                    $this->P = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $this->sPath);
+                    $this->P = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $this->sPath);
                 }
 
                 if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
@@ -126,14 +121,14 @@ class Router
             }
 
             if (!is_object($this->P) && $this->P == 404) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+                $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             } elseif (!is_object($this->P) && $this->P == 500) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+                $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
@@ -150,7 +145,7 @@ class Router
                     $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
                     header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
                 }
-            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->sLang) { // if the page is available but not in the current language, display info
+            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->container['lang']) { // if the page is available but not in the current language, display info
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
             }
         }

@@ -47,7 +47,8 @@ class UserPagePayload extends PagePayload
                 // if the current language data is not available, lets see if we can get the default languages data
                 $hResult = $this->DB->prepare($sql);
                 $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-                $hResult->bindValue(':lang', key($this->C["lang_available"]), \PDO::PARAM_STR);
+                $lang_available = $this->C["lang_available"];
+                $hResult->bindValue(':lang', key($lang_available), \PDO::PARAM_STR);
                 $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
                 $hResult->execute();
 

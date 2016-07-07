@@ -179,6 +179,9 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')
 use \HaaseIT\HCSF\HardcodedText;
 HardcodedText::init($HT);
 
+$container['navstruct'] = [];
+$container['db'] = null;
+$container['entitymanager'] = null;
 if (!$container['conf']['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
@@ -241,25 +244,19 @@ if (!$container['conf']['maintenancemode']) {
 
         return $navstruct;
     };
-} else {
-    $container['navstruct'] = [];
-    $container['db'] = null;
-    $container['entitymanager'] = null;
 }
 
-
+$container['oItem'] = '';
 if ($container['conf']["enable_module_shop"]) {
     $container['oItem'] = function ($c)
     {
         return new \HaaseIT\HCSF\Shop\Items($c);
     };
-} else {
-    $container['oItem'] = '';
 }
 
 // ----------------------------------------------------------------------------
 // Begin routing
 // ----------------------------------------------------------------------------
 
-$router = new \HaaseIT\HCSF\Router($container['conf'], $container['db'], $container['lang'], $container['request'], $container['twig'], $container['oItem']);
+$router = new \HaaseIT\HCSF\Router($container);
 $P = $router->getPage();
