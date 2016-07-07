@@ -25,20 +25,19 @@ class Helper
 {
     public static function showOrderStatusText($sStatusShort)
     {
-        $sStatus = '';
         if ($sStatusShort == 'y') {
-            $sStatus = \HaaseIT\Textcat::T("order_status_completed");
+            return \HaaseIT\Textcat::T("order_status_completed");
         } elseif ($sStatusShort == 'n') {
-            $sStatus = \HaaseIT\Textcat::T("order_status_open");
+            return \HaaseIT\Textcat::T("order_status_open");
         } elseif ($sStatusShort == 'i') {
-            $sStatus = \HaaseIT\Textcat::T("order_status_inwork");
+            return \HaaseIT\Textcat::T("order_status_inwork");
         } elseif ($sStatusShort == 's') {
-            $sStatus = \HaaseIT\Textcat::T("order_status_canceled");
+            return \HaaseIT\Textcat::T("order_status_canceled");
         } elseif ($sStatusShort == 'd') {
-            $sStatus = \HaaseIT\Textcat::T("order_status_deleted");
+            return \HaaseIT\Textcat::T("order_status_deleted");
         }
 
-        return $sStatus;
+        return '';
     }
 
     public static function calculateTotalFromDB($aOrder)
@@ -183,7 +182,6 @@ class Helper
                     unset($TMP);
                 }
                 $aData = $oItem->sortItems('', $sItemkey);
-                //HaaseIT\Tools::debug($aData);
                 $_SESSION["cart"][$sKey]["price"] = $aData["item"][$sItemkey]["pricedata"];
             }
         }
@@ -224,6 +222,12 @@ class Helper
 
     public static function getShoppingcartData($C)
     {
+        $aCartinfo = [
+            'numberofitems' => 0,
+            'cartsums' => [],
+            'cartsumnetto' => 0,
+            'cartsumbrutto' => 0,
+        ];
         if ((!$C["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($C, $_SESSION["cart"]);
             $aCartinfo = [
@@ -242,13 +246,6 @@ class Helper
                     'price' => $aValue["price"],
                 ];
             }
-        } else {
-            $aCartinfo = [
-                'numberofitems' => 0,
-                'cartsums' => [],
-                'cartsumnetto' => 0,
-                'cartsumbrutto' => 0,
-            ];
         }
 
         return $aCartinfo;
@@ -355,10 +352,9 @@ class Helper
 
     static function handleItemPage($C, $oItem, $P, $aP)
     {
+        $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
             $mItemIndex = $P->cb_pageconfig->itemindex;
-        } else {
-            $mItemIndex = '';
         }
         $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
         if ($aP["pagetype"] == 'itemdetail') {
@@ -387,16 +383,17 @@ class Helper
 
                         $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
                         $aP["item"]["currentitem"] = $iPositionInItems + 1;
+
+                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
                         if ($iPositionInItems == 0) {
                             $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
-                        } else {
-                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
                         }
+
+                        $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
                         if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
                             $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
-                        } else {
-                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
                         }
+                        
                         // build item suggestions if needed
                         if ($C["itemdetail_suggestions"] > 0) {
                             $aP["item"]["suggestions"] = self::getItemSuggestions(
