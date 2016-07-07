@@ -45,7 +45,6 @@ class Helper
     {
         $fGesamtnetto = $aOrder["o_sumnettoall"];
         $fVoll = $aOrder["o_sumvoll"];
-        $fSteuervoll = $aOrder["o_taxvoll"];
         $fGesamtbrutto = $aOrder["o_sumbruttoall"];
         $fSteuererm = $aOrder["o_taxerm"];
 
