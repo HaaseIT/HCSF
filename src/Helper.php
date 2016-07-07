@@ -23,14 +23,14 @@ namespace HaaseIT\HCSF;
 
 class Helper
 {
-    public static function getSignedGlideURL($file, $w = 0, $h =0)
+    public static function getSignedGlideURL($file, $width = 0, $height =0)
     {
         $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
 
-        if ($w == 0 && $h == 0) return false;
-        if ($w != 0) $param['w'] = $w;
-        if ($h != 0) $param['h'] = $h;
-        if ($w != 0 && $h != 0) $param['fit'] = 'stretch';
+        if ($width == 0 && $height == 0) return false;
+        if ($width != 0) $param['w'] = $width;
+        if ($height != 0) $param['h'] = $height;
+        if ($width != 0 && $height != 0) $param['fit'] = 'stretch';
 
         return $urlBuilder->getUrl($file, $param);
     }
@@ -38,6 +38,8 @@ class Helper
     public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
         $mail = new \PHPMailer;
         $mail->CharSet = 'UTF-8';
+
+        $mail->isMail();
         if ($C['mail_method'] == 'sendmail') {
             $mail->isSendmail();
         } elseif ($C['mail_method'] == 'smtp') {
@@ -49,16 +51,14 @@ class Helper
                 $mail->Username = $C['mail_smtp_auth_user'];
                 $mail->Password = $C['mail_smtp_auth_pwd'];
                 if ($C['mail_smtp_secure']) {
+                    $mail->SMTPSecure = 'tls';
                     if ($C['mail_smtp_secure_method'] == 'ssl') {
                         $mail->SMTPSecure = 'ssl';
-                    } else {
-                        $mail->SMTPSecure = 'tls';
                     }
                 }
             }
-        } else {
-            $mail->isMail();
         }
+
         $mail->From = $C["email_sender"];
         $mail->FromName = $C["email_sendername"];
         $mail->addAddress($to);
@@ -136,7 +136,6 @@ class Helper
 
         // Get page title, meta-keywords, meta-description
         $aP["pagetitle"] = $P->oPayload->getTitle();
-
         $aP["keywords"] = $P->oPayload->cl_keywords;
         $aP["description"] = $P->oPayload->cl_description;
 
@@ -166,34 +165,31 @@ class Helper
         $aP["content"] = $P->oPayload->cl_html;
 
         $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
-        $aP["content"] = str_replace("[quote]", "'", $aP["content"]);
 
-        // TODO!!!
-        /*
-        if (!isset($P["keep_placeholders"]) || !$P["keep_placeholders"]) {
-            $aP["content"] = stripslashes(str_replace('[sp]', '&nbsp;', $aP["content"]));
-        } else {
-            $aP["content"] .= stripslashes($aP["content"]);
+        if ($C['debug']) {
+            self::getDebug($aP, $P);
         }
-        */
-
-        if (isset($_POST) && count($_POST)) {
-            \HaaseIT\Tools::debug($_POST, '$_POST');
-        } elseif (isset($_REQUEST) && count($_REQUEST)) {
-            \HaaseIT\Tools::debug($_REQUEST, '$_REQUEST');
-        }
-        if (isset($_SESSION) && count($_SESSION)) {
-            \HaaseIT\Tools::debug($_SESSION, '$_SESSION');
-        }
-        \HaaseIT\Tools::debug($aP, '$aP');
-        \HaaseIT\Tools::debug($P, '$P');
 
         $aP["debugdata"] = \HaaseIT\Tools::$sDebug;
 
         return $aP;
     }
 
-    public static function getLangSelector($C, $sLang)
+    private function getDebug($aP, $P)
+    {
+        if (!empty($_POST)) {
+            \HaaseIT\Tools::debug($_POST, '$_POST');
+        } elseif (!empty($_REQUEST)) {
+            \HaaseIT\Tools::debug($_REQUEST, '$_REQUEST');
+        }
+        if (!empty($_SESSION)) {
+            \HaaseIT\Tools::debug($_SESSION, '$_SESSION');
+        }
+        \HaaseIT\Tools::debug($aP, '$aP');
+        \HaaseIT\Tools::debug($P, '$P');
+    }
+
+    private static function getLangSelector($C, $sLang)
     {
         $sLangselector = '';
         if ($C["lang_detection_method"] == 'domain') {
@@ -227,6 +223,7 @@ class Helper
                 }
             }
         } elseif ($C["lang_detection_method"] == 'legacy') { // legacy language detection
+            $sLang = key($C["lang_available"]);
             if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
                 $sLang = strtolower($_GET["language"]);
                 setcookie('language', strtolower($_GET["language"]), 0, '/');
@@ -234,8 +231,6 @@ class Helper
                 $sLang = strtolower($_COOKIE["language"]);
             } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
                 $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
-            } else {
-                $sLang = key($C["lang_available"]);
             }
         }
         if (!isset($sLang)) {
