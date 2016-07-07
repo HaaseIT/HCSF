@@ -223,77 +223,21 @@ class DBStatus extends Base
         $hResult = $this->DB->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         $this->P->cb_customdata['rows_orders_items'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_orders_items'] > 0) {
-            if ($this->C['vat_disable']) {
-                $aListSetting = [
-                    ['title' => 'oi_id', 'key' => 'oi_id', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_o_id', 'key' => 'oi_o_id', 'width' => '9%', 'linked' => false,],
-                    ['title' => 'oi_cartkey', 'key' => 'oi_cartkey', 'width' => '10%', 'linked' => false,],
-                    ['title' => 'oi_amount', 'key' => 'oi_amount', 'width' => '9%', 'linked' => false,],
-                    ['title' => 'oi_vat', 'key' => 'oi_vat', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_rg', 'key' => 'oi_rg', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_rg_rebate', 'key' => 'oi_rg_rebate', 'width' => '9%', 'linked' => false,],
-                    [
-                        'title' => 'oi_price_netto_list',
-                        'key' => 'oi_price_netto_list',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_netto_sale',
-                        'key' => 'oi_price_netto_sale',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_netto_rebated',
-                        'key' => 'oi_price_netto_rebated',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_brutto_use',
-                        'key' => 'oi_price_brutto_use',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    //['title' => 'oi_img', 'key' => 'oi_img', 'width' => '41%', 'linked' => false, 'escapehtmlspecialchars' => true,],
-                ];
-            } else {
-                $aListSetting = [
-                    ['title' => 'oi_id', 'key' => 'oi_id', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_o_id', 'key' => 'oi_o_id', 'width' => '9%', 'linked' => false,],
-                    ['title' => 'oi_cartkey', 'key' => 'oi_cartkey', 'width' => '13%', 'linked' => false,],
-                    ['title' => 'oi_amount', 'key' => 'oi_amount', 'width' => '9%', 'linked' => false,],
-                    ['title' => 'oi_vat', 'key' => 'oi_vat', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_rg', 'key' => 'oi_rg', 'width' => '8%', 'linked' => false,],
-                    ['title' => 'oi_rg_rebate', 'key' => 'oi_rg_rebate', 'width' => '9%', 'linked' => false,],
-                    [
-                        'title' => 'oi_price_netto_list',
-                        'key' => 'oi_price_netto_list',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_netto_sale',
-                        'key' => 'oi_price_netto_sale',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_netto_rebated',
-                        'key' => 'oi_price_netto_rebated',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    [
-                        'title' => 'oi_price_netto_use',
-                        'key' => 'oi_price_netto_use',
-                        'width' => '9%',
-                        'linked' => false,
-                    ],
-                    //['title' => 'oi_img', 'key' => 'oi_img', 'width' => '41%', 'linked' => false, 'escapehtmlspecialchars' => true,],
-                ];
-            }
+            $aListSetting = [
+                ['title' => 'oi_id', 'key' => 'oi_id', 'width' => '8%', 'linked' => false,],
+                ['title' => 'oi_o_id', 'key' => 'oi_o_id', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_cartkey', 'key' => 'oi_cartkey', 'width' => '13%', 'linked' => false,],
+                ['title' => 'oi_amount', 'key' => 'oi_amount', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_vat', 'key' => 'oi_vat', 'width' => '8%', 'linked' => false,],
+                ['title' => 'oi_rg', 'key' => 'oi_rg', 'width' => '8%', 'linked' => false,],
+                ['title' => 'oi_rg_rebate', 'key' => 'oi_rg_rebate', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_price_netto_list',  'key' => 'oi_price_netto_list', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_price_netto_sale', 'key' => 'oi_price_netto_sale', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_price_netto_rebated', 'key' => 'oi_price_netto_rebated', 'width' => '9%', 'linked' => false,],
+                ['title' => 'oi_price_brutto_use', 'key' => 'oi_price_brutto_use', 'width' => '9%', 'linked' => false,],
+                //['title' => 'oi_img', 'key' => 'oi_img', 'width' => '41%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+
+            ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_orders_items_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
                 $aData, $this->twig);
