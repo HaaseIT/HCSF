@@ -7,16 +7,16 @@ class ItemsTest extends TestCase
     {
         bcscale(6);
 
-        $C = [
+        $container['conf'] = [
             'vat' => [
                 'full' => 0,
                 'reduced' => 0,
             ],
         ];
-        $DB = null;
-        $sLang = 'de';
+        $container['db'] = null;
+        $container['lang'] = 'de';
 
-        $items = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
+        $items = new \HaaseIT\HCSF\Shop\Items($container);
 
         // regular price, no rebate, vat disabled
         $aData = [
@@ -34,7 +34,7 @@ class ItemsTest extends TestCase
         $this->assertArrayNotHasKey('netto_rebated', $aPrice);
 
         // set vat to normal values
-        $C = [
+        $container['conf'] = [
             'vat' => [
                 'full' => 19,
                 'reduced' => 7,
@@ -45,7 +45,7 @@ class ItemsTest extends TestCase
                 ],
             ],
         ];
-        $items = new \HaaseIT\HCSF\Shop\Items($C, $DB, $sLang);
+        $items = new \HaaseIT\HCSF\Shop\Items($container);
 
         // regular price, no rebate, reduced vat
         $aData = [
