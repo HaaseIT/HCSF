@@ -266,7 +266,7 @@ class Shoppingcart extends Base
         fclose($fp);
     }
 
-    private static function getPostValue($field)
+    private function getPostValue($field)
     {
         return (isset($_POST[$field]) && trim($_POST[$field]) != '' ? $_POST[$field] : '');
     }
@@ -280,20 +280,22 @@ class Shoppingcart extends Base
             //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
             'datetime' => date("d.m.Y - H:i"),
             'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $this->C["minimum_length_custno"] ? $_POST["custno"] : ''),
-            'corpname' => self::getPostValue('corpname'),
-            'name' => self::getPostValue('name'),
-            'street' => self::getPostValue('street'),
-            'zip' => self::getPostValue('zip'),
-            'town' => self::getPostValue('town'),
-            'phone' => self::getPostValue('phone'),
-            'cellphone' => self::getPostValue('cellphone'),
-            'fax' => self::getPostValue('fax'),
-            'email' => self::getPostValue('email'),
-            'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ? (isset($this->C["countries_".$this->sLang][$_POST["country"]]) ? $this->C["countries_".$this->sLang][$_POST["country"]] : $_POST["country"]) : ''),
-            'remarks' => self::getPostValue('remarks'),
-            'tos' => self::getPostValue('tos'),
-            'cancellationdisclaimer' => (isset($_POST["cancellationdisclaimer"]) && trim($_POST["cancellationdisclaimer"]) != '' ? $_POST["cancellationdisclaimer"] : ''),
-            'paymentmethod' => self::getPostValue('paymentmethod'),
+            'corpname' => $this->getPostValue('corpname'),
+            'name' => $this->getPostValue('name'),
+            'street' => $this->getPostValue('street'),
+            'zip' => $this->getPostValue('zip'),
+            'town' => $this->getPostValue('town'),
+            'phone' => $this->getPostValue('phone'),
+            'cellphone' => $this->getPostValue('cellphone'),
+            'fax' => $this->getPostValue('fax'),
+            'email' => $this->getPostValue('email'),
+            'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ?
+                (isset($this->C["countries_".$this->sLang][$_POST["country"]]) ? $this->C["countries_".$this->sLang][$_POST["country"]] : $_POST["country"]) : ''
+            ),
+            'remarks' => $this->getPostValue('remarks'),
+            'tos' => $this->getPostValue('tos'),
+            'cancellationdisclaimer' => $this->getPostValue('cancellationdisclaimer'),
+            'paymentmethod' => $this->getPostValue('paymentmethod'),
             'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
             'paypallink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
             'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
