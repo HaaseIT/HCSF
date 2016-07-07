@@ -72,7 +72,7 @@ class Pageadmin extends Base
                         $Ptoedit->cb_pageconfig = $_POST['page_config'];
                         $Ptoedit->cb_subnav = $_POST['page_subnav'];
                         $Ptoedit->purifier = $purifier;
-                        $bBaseupdated = $Ptoedit->write();
+                        $Ptoedit->write();
 
                         if ($Ptoedit->oPayload->cl_id != NULL) {
                             $Ptoedit->oPayload->cl_html = $_POST['page_html'];
@@ -80,7 +80,7 @@ class Pageadmin extends Base
                             $Ptoedit->oPayload->cl_description = $_POST['page_description'];
                             $Ptoedit->oPayload->cl_keywords = $_POST['page_keywords'];
                             $Ptoedit->oPayload->purifier = $purifier;
-                            $bPayloadupdated = $Ptoedit->oPayload->write();
+                            $Ptoedit->oPayload->write();
                         }
 
                         $Ptoedit = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $_REQUEST["page_key"], true);
@@ -153,41 +153,31 @@ class Pageadmin extends Base
     }
 
     private function showPageselect() {
-        $sql = "SELECT * FROM content_base ORDER BY cb_key";
-        $hResult = $this->DB->query($sql);
+        $hResult = $this->DB->query('SELECT * FROM content_base ORDER BY cb_key');
 
-        $aGroupkeys = [];
+        $aGroups = [];
         foreach ($this->C["admin_page_groups"] as $sValue) {
             $TMP = explode('|', $sValue);
-            $aGroupkeys[] = $TMP[0];
+            $aGroups[$TMP[0]] = $TMP[1];
         }
-        unset($TMP);
 
         while ($aResult = $hResult->fetch()) {
-            $bGrouped = false;
-            foreach ($aGroupkeys as $sValue) {
-                if ($aResult["cb_group"] == $sValue) {
-                    $aTree[$sValue][] = $aResult;
-                    $bGrouped = true;
-                }
-            }
-            if (!$bGrouped) $aTree["_"][] = $aResult;
-        }
-
-        foreach ($this->C["admin_page_groups"] as $sValue) {
-            $TMP = explode('|', $sValue);
-            if (isset ($aTree[$TMP[0]]) && count($aTree[$TMP[0]]) >= 1) {
-                $aOptions_g[] = $TMP[0].'|'.$TMP[1];
+            if (isset($aGroups[$aResult["cb_group"]])) {
+                $aTree[$aResult["cb_group"]][] = $aResult;
+            } else {
+                $aTree["_"][] = $aResult;
             }
         }
-        unset($TMP);
 
-        $aSData = [
+        foreach ($aGroups as $sKey => $sValue) {
+            if (isset($aTree[$sKey])) {
+                $aOptions_g[] = $sKey.'|'.$sValue;
+            }
+        }
+
+        return [
             'options_groups' => isset($aOptions_g) ? $aOptions_g : [],
             'tree' => isset($aTree) ? $aTree : [],
         ];
-
-        return $aSData;
     }
-
 }
