@@ -32,10 +32,12 @@ class PagePayload
 
     function getTitle()
     {
-        if (isset($this->cl_title) && trim($this->cl_title) != '') $sH = $this->cl_title;
-        else $sH = $this->C["default_pagetitle"];
+        if (isset($this->cl_title) && trim($this->cl_title) != '') {
+            return $this->cl_title;
+        } else {
+            return $this->C["default_pagetitle"];
+        }
 
-        return $sH;
     }
 
 }

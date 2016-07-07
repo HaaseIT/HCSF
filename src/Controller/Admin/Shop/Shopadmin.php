@@ -226,7 +226,7 @@ class Shopadmin extends Base
                 $aSData["orderdata"]["options_shippingservices"] = [''];
                 foreach ($this->C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
 
-                $aItemsforShoppingcarttable = [];
+                $aItemsCarttable = [];
                 foreach ($aItems as $aValue) {
                     $aPrice = [
                         'netto_list' => $aValue["oi_price_netto_list"],
@@ -237,7 +237,7 @@ class Shopadmin extends Base
                     ];
 
                     //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->C["vat"][$aValue["oi_vat_id"]], '', true);
-                    $aItemsforShoppingcarttable[$aValue["oi_cartkey"]] = [
+                    $aItemsCarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,
                         'vat' => $aValue["oi_vat"],
@@ -250,7 +250,7 @@ class Shopadmin extends Base
 
                 $aSData = array_merge(
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
-                        $aItemsforShoppingcarttable,
+                        $aItemsCarttable,
                         $this->sLang,
                         $this->C,
                         true,

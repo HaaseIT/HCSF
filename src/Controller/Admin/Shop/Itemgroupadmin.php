@@ -36,7 +36,7 @@ class Itemgroupadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
-        $sH = '';
+        $return = '';
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
             $hResult = $this->DB->prepare($sql);
@@ -117,11 +117,11 @@ class Itemgroupadmin extends Base
                 $this->P->cb_customdata["group"] = $this->admin_prepareGroup('add');
             }
         } else {
-            if (!$sH .= $this->admin_showItemgroups($this->admin_getItemgroups(''))) {
+            if (!$return .= $this->admin_showItemgroups($this->admin_getItemgroups(''))) {
                 $this->P->cb_customdata["err"]["nogroupsavaliable"] = true;
             }
         }
-        $this->P->oPayload->cl_html = $sH;
+        $this->P->oPayload->cl_html = $return;
     }
 
     private function admin_updateGroup($purifier)

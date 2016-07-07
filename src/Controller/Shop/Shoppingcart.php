@@ -289,45 +289,44 @@ class Shoppingcart extends Base
         if (isset($this->C["custom_order_fields"])) $aM["custom_order_fields"] = $this->C["custom_order_fields"];
         $aM["customdata"]["mail"] = $aData;
 
-        $sH = $this->twig->render('shop/mail-order-html.twig', $aM);
+        return $this->twig->render('shop/mail-order-html.twig', $aM);
 
-        return $sH;
     }
 
     private function getNotification()
     {
-        $sH = '';
+        $return = '';
         if (isset($_GET["msg"]) && trim($_GET["msg"]) != '') {
             if (
                 ($_GET["msg"] == 'updated' && isset($_GET["cartkey"]) && isset($_GET["amount"]))
                 || ($_GET["msg"] == 'removed')
                 && isset($_GET["cartkey"])
             ) {
-                $sH .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
+                $return .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
                 if (isset($this->C["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                     $mCartkeys = explode('|', $_GET["cartkey"]);
                     foreach ($mCartkeys as $sKey => $sValue) {
                         if ($sKey == 0) {
-                            $sH .= $sValue . ', ';
+                            $return .= $sValue . ', ';
                         } else {
                             $TMP = explode(':', $sValue);
-                            $sH .= \HaaseIT\Textcat::T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
+                            $return .= \HaaseIT\Textcat::T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
                             unset($TMP);
                         }
                     }
-                    $sH = \HaaseIT\Tools::cutStringend($this->P->oPayload->cl_html, 2);
+                    $return = \HaaseIT\Tools::cutStringend($this->P->oPayload->cl_html, 2);
                 } else {
-                    $sH .= $_GET["cartkey"];
+                    $return .= $_GET["cartkey"];
                 }
-                $sH.= ' ' . \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_2");
+                $return.= ' ' . \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_2");
                 if ($_GET["msg"] == 'updated') {
-                    $sH .= ' ' . $_GET["amount"];
+                    $return .= ' ' . $_GET["amount"];
                 }
-                $sH .= '<br><br>';
+                $return .= '<br><br>';
             }
         }
 
-        return $sH;
+        return $return;
     }
 
 }

@@ -124,7 +124,7 @@ class Myorders extends Base
 
     private function showMyOrders($COList)
     {
-        $sH = '';
+        $return = '';
         $sql = 'SELECT * FROM orders WHERE o_custno = :custno ORDER BY o_ordertimestamp DESC';
 
         $hResult = $this->DB->prepare($sql);
@@ -154,10 +154,10 @@ class Myorders extends Base
                     'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
                 ];
             }
-            $sH .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
-        } else $sH .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
+            $return .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
+        } else $return .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
 
-        return $sH;
+        return $return;
     }
 
 }

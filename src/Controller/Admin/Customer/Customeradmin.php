@@ -67,7 +67,7 @@ class Customeradmin extends Base
                 $sType = 'inactive';
             }
         }
-        $sH = '';
+        $return = '';
         if (!isset($_GET["action"])) {
             $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
             if ($sType == 'active') {
@@ -79,7 +79,7 @@ class Customeradmin extends Base
             $hResult = $this->DB->query($sql);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
-                $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
+                $return .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
             } else {
                 $aInfo["nodatafound"] = true;
             }
@@ -152,7 +152,7 @@ class Customeradmin extends Base
                 $aInfo["nosuchuserfound"] = true;
             }
         }
-        $aPData["customeradmin"]["text"] = $sH;
+        $aPData["customeradmin"]["text"] = $return;
         $aPData["customeradmin"]["type"] = $sType;
         if (isset($aInfo)) $aPData["customeradmin"]["info"] = $aInfo;
         return $aPData;

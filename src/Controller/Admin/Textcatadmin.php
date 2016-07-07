@@ -36,7 +36,7 @@ class Textcatadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'textcatadmin';
 
-        $sH = '';
+        $return = '';
 
         if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
             $aData = \HaaseIT\Textcat::getCompleteTextcatForCurrentLang();
@@ -56,7 +56,7 @@ class Textcatadmin extends Base
                     ],
                 ],
             ];
-            $sH .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->twig);
+            $return .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->twig);
         } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 \HaaseIT\Textcat::deleteText($_GET["id"]);
@@ -111,6 +111,6 @@ class Textcatadmin extends Base
             }
         }
 
-        $this->P->oPayload->cl_html = $sH;
+        $this->P->oPayload->cl_html = $return;
     }
 }
