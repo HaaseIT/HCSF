@@ -40,11 +40,11 @@ class Userhome extends Base
                 $sErr = '';
 
                 if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
-                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
+                    $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                    $hResult = $this->DB->prepare($sQ);
+                    $hResult = $this->DB->prepare($sql);
                     $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
@@ -74,8 +74,8 @@ class Userhome extends Base
                         $aData['cust_id'] = $_SESSION["user"]['cust_id'];
 
                         if (count($aData) > 1) {
-                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                            $hResult = $this->DB->prepare($sQ);
+                            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                            $hResult = $this->DB->prepare($sql);
                             foreach ($aData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }

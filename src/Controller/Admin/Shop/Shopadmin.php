@@ -51,8 +51,8 @@ class Shopadmin extends Base
                 'o_id' => $iID,
             ];
 
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
-            $hResult = $this->DB->prepare($sQ);
+            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
+            $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
             header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
@@ -108,16 +108,16 @@ class Shopadmin extends Base
         $aData = [];
         if (!isset($_GET["action"])) {
             $bIgnoreStorno = false;
-            $sQ = 'SELECT * FROM orders WHERE ';
+            $sql = 'SELECT * FROM orders WHERE ';
 
-            if (!isset($_REQUEST["type"]) OR $_REQUEST["type"] == 'openinwork') $sQ .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
-            elseif ($_REQUEST["type"] == 'closed') $sQ .= "o_ordercompleted = 'y' ";
-            elseif ($_REQUEST["type"] == 'open') $sQ .= "o_ordercompleted = 'n' ";
-            elseif ($_REQUEST["type"] == 'inwork') $sQ .= "o_ordercompleted = 'i' ";
-            elseif ($_REQUEST["type"] == 'storno') $sQ .= "o_ordercompleted = 's' ";
-            elseif ($_REQUEST["type"] == 'deleted') $sQ .= "o_ordercompleted = 'd' ";
+            if (!isset($_REQUEST["type"]) OR $_REQUEST["type"] == 'openinwork') $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
+            elseif ($_REQUEST["type"] == 'closed') $sql .= "o_ordercompleted = 'y' ";
+            elseif ($_REQUEST["type"] == 'open') $sql .= "o_ordercompleted = 'n' ";
+            elseif ($_REQUEST["type"] == 'inwork') $sql .= "o_ordercompleted = 'i' ";
+            elseif ($_REQUEST["type"] == 'storno') $sql .= "o_ordercompleted = 's' ";
+            elseif ($_REQUEST["type"] == 'deleted') $sql .= "o_ordercompleted = 'd' ";
             elseif ($_REQUEST["type"] == 'all') {
-                $sQ .= "o_ordercompleted != 'd' ";
+                $sql .= "o_ordercompleted != 'd' ";
                 $bIgnoreStorno = true;
             } else {
                 die(HardcodedText::get('shopadmin_error_invalidrequest'));
@@ -126,18 +126,18 @@ class Shopadmin extends Base
             $sFrom = null;
             $sTo = null;
             if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
-                $sQ .= "AND ";
+                $sql .= "AND ";
                 $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
                 $sFrom .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
                 $sTo = \filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
                 $sTo .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
-                $sQ .= "o_orderdate >= :from ";
-                $sQ .= "AND o_orderdate <= :to ";
+                $sql .= "o_orderdate >= :from ";
+                $sql .= "AND o_orderdate <= :to ";
                 $bFromTo = true;
             }
-            $sQ .= "ORDER BY o_ordertimestamp DESC";
+            $sql .= "ORDER BY o_ordertimestamp DESC";
 
-            $hResult = $this->DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sql);
             if ($bFromTo) {
                 $hResult->bindValue(':from', $sFrom);
                 $hResult->bindValue(':to', $sTo);
@@ -194,15 +194,15 @@ class Shopadmin extends Base
             }
         } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
             $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-            $sQ = 'SELECT * FROM orders WHERE o_id = :id';
+            $sql = 'SELECT * FROM orders WHERE o_id = :id';
 
-            $hResult = $this->DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aSData["orderdata"] = $hResult->fetch();
-                $sQ = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                $hResult = $this->DB->prepare($sQ);
+                $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
+                $hResult = $this->DB->prepare($sql);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
                 $aItems = $hResult->fetchAll();

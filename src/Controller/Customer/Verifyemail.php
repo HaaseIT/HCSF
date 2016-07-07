@@ -30,9 +30,9 @@ class Verifyemail extends Base
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = 'SELECT cust_email, cust_id FROM customer '
+            $sql = 'SELECT cust_email, cust_id FROM customer '
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
-            $hResult = $this->DB->prepare($sQ);
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -40,8 +40,8 @@ class Verifyemail extends Base
             if ($iRows == 1) {
                 $aRow = $hResult->fetch();
                 $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
-                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $this->DB->prepare($sQ);
+                $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                $hResult = $this->DB->prepare($sql);
                 foreach ($aData as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }

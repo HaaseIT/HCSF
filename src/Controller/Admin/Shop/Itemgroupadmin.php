@@ -38,14 +38,14 @@ class Itemgroupadmin extends Base
 
         $sH = '';
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-            $sQ = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
-            $hResult = $this->DB->prepare($sQ);
+            $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->execute();
             $iNumRowsBasis = $hResult->rowCount();
 
-            $sQ = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-            $hResult = $this->DB->prepare($sQ);
+            $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->bindValue(':lang', $this->sLang);
             $hResult->execute();
@@ -57,8 +57,8 @@ class Itemgroupadmin extends Base
                     'itmgt_pid' => $iGID,
                     'itmgt_lang' => $this->sLang,
                 ];
-                $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
-                $hResult = $this->DB->prepare($sQ);
+                $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
+                $hResult = $this->DB->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
                 header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
@@ -88,8 +88,8 @@ class Itemgroupadmin extends Base
                 if (strlen($sName) < 3) $aErr["nametooshort"] = true;
                 if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
                 if (count($aErr) == 0) {
-                    $sQ = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
-                    $hResult = $this->DB->prepare($sQ);
+                    $sql = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
+                    $hResult = $this->DB->prepare($sql);
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
                     if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
@@ -100,8 +100,8 @@ class Itemgroupadmin extends Base
                         'itmg_no' => $sGNo,
                         'itmg_img' => $sImg,
                     ];
-                    $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
-                    $hResult = $this->DB->prepare($sQ);
+                    $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
+                    $hResult = $this->DB->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
                     $iLastInsertID = $this->DB->lastInsertId();
@@ -126,8 +126,8 @@ class Itemgroupadmin extends Base
 
     private function admin_updateGroup($purifier)
     {
-        $sQ = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
-        $hResult = $this->DB->prepare($sQ);
+        $sql = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
+        $hResult = $this->DB->prepare($sql);
         $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
         $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $hResult->bindValue(':id', $iGID);
@@ -144,15 +144,15 @@ class Itemgroupadmin extends Base
             'itmg_id'=> $iGID,
         ];
 
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
-        $hResult = $this->DB->prepare($sQ);
+        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
+        $hResult = $this->DB->prepare($sql);
         foreach ($aData as $sKey => $sValue) {
             $hResult->bindValue(':' . $sKey, $sValue);
         }
         $hResult->execute();
 
-        $sQ = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-        $hResult = $this->DB->prepare($sQ);
+        $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':gid', $iGID);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         $hResult->execute();
@@ -166,8 +166,8 @@ class Itemgroupadmin extends Base
                 'itmgt_details' => $purifier->purify($_REQUEST["details"]),
                 'itmgt_id' => $aRow['itmgt_id'],
             ];
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
-            $hResult = $this->DB->prepare($sQ);
+            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
+            $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
         }
@@ -199,12 +199,12 @@ class Itemgroupadmin extends Base
 
     private function admin_getItemgroups($iGID = '')
     {
-        $sQ = 'SELECT * FROM itemgroups_base '
+        $sql = 'SELECT * FROM itemgroups_base '
             . 'LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
             . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') $sQ .= ' WHERE itmg_id = :gid';
-        $sQ .= ' ORDER BY itmg_no';
-        $hResult = $this->DB->prepare($sQ);
+        if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
+        $sql .= ' ORDER BY itmg_no';
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':lang', $this->sLang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();

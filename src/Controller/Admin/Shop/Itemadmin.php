@@ -46,8 +46,8 @@ class Itemadmin extends Base
                     'itml_lang' => $this->sLang,
                 ];
 
-                $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
-                $this->DB->exec($sQ);
+                $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
+                $this->DB->exec($sql);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
                 die();
@@ -80,19 +80,19 @@ class Itemadmin extends Base
                 if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {
                     if (strlen($_POST["itemno"]) < 4) $aErr["itemnotooshort"] = true;
                     else {
-                        $sQ = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
-                        $sQ .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                        $hResult = $this->DB->query($sQ);
+                        $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
+                        $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
+                        $hResult = $this->DB->query($sql);
                         $iRows = $hResult->rowCount();
                         if ($iRows > 0) {
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
                             $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
-                            $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
-                            $this->DB->exec($sQ);
+                            $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
+                            $this->DB->exec($sql);
                             $iInsertID = $this->DB->lastInsertId();
-                            $sQ = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
-                            $hResult = $this->DB->query($sQ);
+                            $sql = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
+                            $hResult = $this->DB->query($sql);
                             $aRow = $hResult->fetch();
                             header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
                             die();
@@ -135,21 +135,21 @@ class Itemadmin extends Base
         $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
         $sSearchstring = str_replace('*', '%', $sSearchstring);
 
-        $sQ = 'SELECT itm_no, itm_name FROM item_base'
+        $sql = 'SELECT itm_no, itm_name FROM item_base'
             . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
             . ' WHERE ';
         if ($_REQUEST["searchcat"] == 'name') {
-            $sQ .= 'itm_name LIKE :searchstring ';
+            $sql .= 'itm_name LIKE :searchstring ';
         } elseif ($_REQUEST["searchcat"] == 'nummer') {
-            $sQ .= 'itm_no LIKE :searchstring ';
+            $sql .= 'itm_no LIKE :searchstring ';
         } elseif ($_REQUEST["searchcat"] == 'index') {
-            $sQ .= 'itm_index LIKE :searchstring ';
+            $sql .= 'itm_index LIKE :searchstring ';
         } else exit;
 
-        if ($_REQUEST["orderby"] == 'name') $sQ .= 'ORDER BY itm_name';
-        elseif ($_REQUEST["orderby"] == 'nummer') $sQ .= ' ORDER BY itm_no';
+        if ($_REQUEST["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
+        elseif ($_REQUEST["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
 
-        $hResult = $this->DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
@@ -190,15 +190,15 @@ class Itemadmin extends Base
 
         $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $sQ = 'SELECT * FROM item_base WHERE itm_no = :itemno';
-        $hResult = $this->DB->prepare($sQ);
+        $sql = 'SELECT * FROM item_base WHERE itm_no = :itemno';
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':itemno', $sItemno);
         $hResult->execute();
 
         $aItemdata["base"] = $hResult->fetch();
 
-        $sQ = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
-        $hResult = $this->DB->prepare($sQ);
+        $sql = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
@@ -267,8 +267,8 @@ class Itemadmin extends Base
         ];
         if (!$this->C["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
-        $hResult = $this->DB->prepare($sQ);
+        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
+        $hResult = $this->DB->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
         if (isset($_REQUEST["textid"])) {
@@ -278,8 +278,8 @@ class Itemadmin extends Base
                 'itml_name_override' => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
                 'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
             ];
-            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
-            $hResult = $this->DB->prepare($sQ);
+            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
+            $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
         }
@@ -289,12 +289,12 @@ class Itemadmin extends Base
 
     private function admin_getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
     {
-        $sQ = 'SELECT * FROM itemgroups_base'
+        $sql = 'SELECT * FROM itemgroups_base'
             . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
             . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') $sQ .= ' WHERE itmg_id = :gid';
-        $sQ .= ' ORDER BY itmg_no';
-        $hResult = $this->DB->prepare($sQ);
+        if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
+        $sql .= ' ORDER BY itmg_no';
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':lang', $this->sLang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();

@@ -36,9 +36,9 @@ class Resendverificationmail extends Base
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
-            $sQ = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
-            $sQ .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
-            $hResult = $this->DB->prepare($sQ);
+            $sql = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
+            $sql .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();

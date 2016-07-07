@@ -30,9 +30,9 @@ class Paypalnotify extends Base
         $sLogData = '';
 
         $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
-        $sQ = 'SELECT * FROM orders WHERE o_id = ' . $iId . ' AND o_paymentmethod' . " = 'paypal' AND o_paymentcompleted = 'n'";
+        $sql = 'SELECT * FROM orders WHERE o_id = ' . $iId . ' AND o_paymentmethod' . " = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->DB->query($sQ);
+        $hResult = $this->DB->query($sql);
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
@@ -92,8 +92,8 @@ class Paypalnotify extends Base
                                 'o_paymentcompleted' => 'y',
                                 'o_id' => $iId,
                             ];
-                            $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
-                            $hResult = $this->DB->prepare($sQ);
+                            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
+                            $hResult = $this->DB->prepare($sql);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }

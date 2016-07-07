@@ -41,9 +41,9 @@ class UserPage extends Page
             $this->cb_pageconfig = (object) [];
         } else {
             // first get base data
-            $sQ = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
-            $sQ .= "FROM content_base WHERE cb_key = :key ";
-            $hResult = $this->DB->prepare($sQ);
+            $sql = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
+            $sql .= "FROM content_base WHERE cb_key = :key ";
+            $hResult = $this->DB->prepare($sql);
 
             $hResult->bindValue(':key', $sPagekey, \PDO::PARAM_STR);
             $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
@@ -72,9 +72,9 @@ class UserPage extends Page
             'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_key' => $this->cb_key,
         ];
-        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
+        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
 
-        $hResult = $this->DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         return $hResult->execute();
     }
@@ -83,8 +83,8 @@ class UserPage extends Page
         $aData = [
             'cb_key' => $sPagekeytoadd,
         ];
-        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
-        return $hResult = $this->DB->exec($sQ);
+        $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
+        return $hResult = $this->DB->exec($sql);
     }
 
     public function remove() {
@@ -92,8 +92,8 @@ class UserPage extends Page
         $this->oPayload->remove($this->cb_id);
 
         // then delete base row
-        $sQ = "DELETE FROM content_base WHERE cb_id = '".$this->cb_id."'";
-        return $this->DB->exec($sQ);
+        $sql = "DELETE FROM content_base WHERE cb_id = '".$this->cb_id."'";
+        return $this->DB->exec($sql);
     }
 
 }

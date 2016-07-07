@@ -40,8 +40,8 @@ class Items
     {
         $itemindexpathtree = [];
         $aItemoverviewpages = [];
-        $sQ = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
-        $oQuery = $this->DB->query($sQ);
+        $sql = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
+        $oQuery = $this->DB->query($sql);
         while ($aRow = $oQuery->fetch()) {
             $aItemoverviewpages[] = [
                 'path' => $aRow['cb_key'],
@@ -69,12 +69,12 @@ class Items
 
     public function queryItem($mItemIndex = '', $mItemno = '', $sOrderby = '')
     {
-        $sQ = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
-        $sQ .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
-        $sQ .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sQ .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->C["items_orderdirection_default"];
+        $sql = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
+        $sql .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
+        $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
+        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->C["items_orderdirection_default"];
 
-        $hResult = $this->DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         if ($mItemno != '') {
             if (!is_array($mItemno)) {
@@ -99,34 +99,34 @@ class Items
 
     public function queryItemWhereClause($mItemIndex = '', $mItemno = '')
     {
-        $sQ = " WHERE ";
+        $sql = " WHERE ";
         if ($mItemno != '') {
             if (\is_array($mItemno)) {
                 $sItemno = "'".\implode("','", \filter_var_array($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                $sQ .= 'item_base.itm_no IN ('.$sItemno.')';
+                $sql .= 'item_base.itm_no IN ('.$sItemno.')';
             } else {
-                $sQ .= 'item_base.itm_no = :itemno';
+                $sql .= 'item_base.itm_no = :itemno';
             }
         } elseif (isset($_REQUEST["searchtext"]) && \strlen($_REQUEST["searchtext"]) > 2) {
-            if (isset($_REQUEST["artnoexact"])) $sQ .= 'item_base.itm_no = :searchtext';
+            if (isset($_REQUEST["artnoexact"])) $sql .= 'item_base.itm_no = :searchtext';
             else {
-                $sQ .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';
-                $sQ .= ' OR itml_name_override LIKE :searchtextwild3 OR itml_text1 LIKE :searchtextwild4';
-                $sQ .= ' OR itml_text2 LIKE :searchtextwild5)';
+                $sql .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';
+                $sql .= ' OR itml_name_override LIKE :searchtextwild3 OR itml_text1 LIKE :searchtextwild4';
+                $sql .= ' OR itml_text2 LIKE :searchtextwild5)';
             }
         } else {
             if (\is_array($mItemIndex)) {
-                $sQ .= "(";
-                foreach ($mItemIndex as $sAIndex) $sQ .= "itm_index LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
-                $sQ = \HaaseIT\Tools::cutStringend($sQ, 4);
-                $sQ .= ")";
+                $sql .= "(";
+                foreach ($mItemIndex as $sAIndex) $sql .= "itm_index LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
+                $sql = \HaaseIT\Tools::cutStringend($sql, 4);
+                $sql .= ")";
             } else {
-                $sQ .= "itm_index LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
+                $sql .= "itm_index LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
         }
-        $sQ .= ' AND itm_index NOT LIKE \'%!%\' AND itm_index NOT LIKE \'%AL%\'';
+        $sql .= ' AND itm_index NOT LIKE \'%!%\' AND itm_index NOT LIKE \'%AL%\'';
 
-        return $sQ;
+        return $sql;
     }
 
     public function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
@@ -176,12 +176,12 @@ class Items
 
     public function getGroupdata($sGroup)
     {
-        $sQ = 'SELECT '.DB_ITEMGROUPFIELDS.' FROM itemgroups_base'
+        $sql = 'SELECT '.DB_ITEMGROUPFIELDS.' FROM itemgroups_base'
             . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
             . ' AND itmgt_lang = :lang'
             . ' WHERE itmg_id = :group';
 
-        $hResult = $this->DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();

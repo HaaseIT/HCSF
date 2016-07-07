@@ -69,14 +69,14 @@ class Customeradmin extends Base
         }
         $sH = '';
         if (!isset($_GET["action"])) {
-            $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
+            $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
             if ($sType == 'active') {
-                $sQ .= ' WHERE cust_active = \'y\'';
+                $sql .= ' WHERE cust_active = \'y\'';
             } elseif ($sType == 'inactive') {
-                $sQ .= ' WHERE cust_active = \'n\'';
+                $sql .= ' WHERE cust_active = \'n\'';
             }
-            $sQ .= ' ORDER BY cust_no ASC';
-            $hResult = $this->DB->query($sQ);
+            $sql .= ' ORDER BY cust_no ASC';
+            $hResult = $this->DB->query($sql);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
                 $sH .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
@@ -92,8 +92,8 @@ class Customeradmin extends Base
                     $aErr["custnoinvalid"] = true;
                 } else {
 
-                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
-                    $hResult = $this->DB->prepare($sQ);
+                    $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
+                    $hResult = $this->DB->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':custno', $sCustno);
                     $hResult->execute();
@@ -101,8 +101,8 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["custnoalreadytaken"] = true;
                     }
-                    $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
-                    $hResult = $this->DB->prepare($sQ);
+                    $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
+                    $hResult = $this->DB->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                     $hResult->execute();
@@ -133,16 +133,16 @@ class Customeradmin extends Base
                             $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aInfo["passwordchanged"] = true;
                         }
-                        $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                        $hResult = $this->DB->prepare($sQ);
+                        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                        $hResult = $this->DB->prepare($sql);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();
                         $aInfo["changeswritten"] = true;
                     }
                 }
             }
-            $sQ = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
-            $hResult = $this->DB->prepare($sQ);
+            $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {

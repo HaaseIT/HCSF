@@ -153,8 +153,8 @@ class Pageadmin extends Base
     }
 
     private function showPageselect() {
-        $sQ = "SELECT * FROM content_base ORDER BY cb_key";
-        $hResult = $this->DB->query($sQ);
+        $sql = "SELECT * FROM content_base ORDER BY cb_key";
+        $hResult = $this->DB->query($sql);
 
         $aGroupkeys = [];
         foreach ($this->C["admin_page_groups"] as $sValue) {

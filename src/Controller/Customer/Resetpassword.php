@@ -33,11 +33,11 @@ class Resetpassword extends Base
             if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
             } else {
-                $sQ = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
+                $sql = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
 
                 $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                $hResult = $this->DB->prepare($sQ);
+                $hResult = $this->DB->prepare($sql);
                 $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                 $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
@@ -77,8 +77,8 @@ class Resetpassword extends Base
                     'cust_pwresetcode' => '',
                     'cust_id' => $iID,
                 ];
-                $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $this->DB->prepare($sQ);
+                $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                $hResult = $this->DB->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
             }

@@ -42,10 +42,10 @@ class Register extends Base
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
                 $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr);
                 if (count($aErr) == 0) {
-                    $sQ = 'SELECT cust_email FROM customer WHERE cust_email = :email';
+                    $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
-                    $hResult = $this->DB->prepare($sQ);
+                    $hResult = $this->DB->prepare($sql);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
@@ -80,9 +80,9 @@ class Register extends Base
                             'cust_active' => (($this->C["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
                         ];
-                        $sQ = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
+                        $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
 
-                        $hResult = $this->DB->prepare($sQ);
+                        $hResult = $this->DB->prepare($sql);
                         foreach ($aData as $sKey => $sValue) {
                             $hResult->bindValue(':' . $sKey, $sValue, \PDO::PARAM_STR);
                         }

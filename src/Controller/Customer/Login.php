@@ -71,18 +71,18 @@ class Login extends Base
         $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
         $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
-        $sQ = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
+        $sql = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
             . ' FROM customer WHERE ';
-        if ($bTryEmail) $sQ .= "(";
-        $sQ .= 'cust_no = :user';
-        if ($bTryEmail) $sQ .= ' OR cust_email = :email) ';
-        $sQ .= " AND ";
-        if ($bTryEmail) $sQ .= "(";
-        $sQ .= 'cust_no != \'\'';
+        if ($bTryEmail) $sql .= "(";
+        $sql .= 'cust_no = :user';
+        if ($bTryEmail) $sql .= ' OR cust_email = :email) ';
+        $sql .= " AND ";
+        if ($bTryEmail) $sql .= "(";
+        $sql .= 'cust_no != \'\'';
 
-        if ($bTryEmail) $sQ .= ' OR cust_email != \'\')';
+        if ($bTryEmail) $sql .= ' OR cust_email != \'\')';
 
-        $hResult = $this->DB->prepare($sQ);
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
