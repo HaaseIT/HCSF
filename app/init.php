@@ -172,10 +172,28 @@ if (!$C['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
+
+    $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $C['debug']);
+
+    $connectionParams = array(
+        'url' => $C["db_type"].'://'.$C["db_user"].':'.$C["db_password"].'@'.$C["db_server"].'/'.$C["db_name"],
+        'charset' => 'UTF8',
+        'driverOptions' => [
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+        ],
+    );
+
+    $entityManager = Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
+    $DB = $entityManager->getConnection()->getWrappedConnection();
+
+    /*
     $DB = new \PDO($C["db_type"] . ':host=' . $C["db_server"] . ';dbname=' . $C["db_name"], $C["db_user"], $C["db_password"], [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',]);
     $DB->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
     $DB->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
     $DB->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); // ERRMODE_SILENT / ERRMODE_WARNING / ERRMODE_EXCEPTION
+    */
 
     // ----------------------------------------------------------------------------
     // more init stuff
