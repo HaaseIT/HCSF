@@ -22,15 +22,15 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Index extends Base
 {
-    public function __construct($C, $DB, $sLang)
+    public function __construct($container)
     {
-        parent::__construct($C, $DB, $sLang);
+        parent::__construct($container);
         $this->requireAdminAuthAdminHome = true;
     }
 
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -43,7 +43,7 @@ class Index extends Base
             'path_purifiercache' => realpath(PATH_PURIFIERCACHE),
             'path_purifiercache_exists' => file_exists(PATH_PURIFIERCACHE),
             'path_purifiercache_writable' => is_writable(PATH_PURIFIERCACHE),
-            'enable_module_shop' => $this->C["enable_module_shop"],
+            'enable_module_shop' => $this->container['conf']["enable_module_shop"],
             'path_logs' => realpath(PATH_LOGS),
             'path_logs_exists' => file_exists(PATH_LOGS),
             'path_logs_writable' => is_writable(PATH_LOGS),

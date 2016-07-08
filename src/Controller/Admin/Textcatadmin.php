@@ -22,15 +22,9 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Textcatadmin extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -56,7 +50,7 @@ class Textcatadmin extends Base
                     ],
                 ],
             ];
-            $return .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->twig);
+            $return .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->container['twig']);
         } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 \HaaseIT\Textcat::deleteText($_GET["id"]);
@@ -68,7 +62,7 @@ class Textcatadmin extends Base
 
                 // if post:edit is set, update
                 if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-                    \HaaseIT\Textcat::$purifier = \HaaseIT\HCSF\Helper::getPurifier($this->C, 'textcat');
+                    \HaaseIT\Textcat::$purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'textcat');
                     \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
                     $this->P->cb_customdata["updated"] = true;
                 }
@@ -83,8 +77,8 @@ class Textcatadmin extends Base
                 ];
 
                 // show archived versions of this textcat
-                $hResult = $this->DB->query(
-                    'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".$this->sLang."' ORDER BY tcla_timestamp DESC"
+                $hResult = $this->container['db']->query(
+                    'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".$this->container['lang']."' ORDER BY tcla_timestamp DESC"
                 );
                 $iArchivedRows = $hResult->rowCount();
                 if ($iArchivedRows > 0) {
@@ -94,7 +88,7 @@ class Textcatadmin extends Base
                     ];
                     $aData = $hResult->fetchAll();
                     $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                        $aData, $this->twig);
+                        $aData, $this->container['twig']);
                 }
             }
         } elseif ($_GET["action"] == 'add') {

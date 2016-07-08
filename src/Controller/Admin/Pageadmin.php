@@ -22,15 +22,9 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 class Pageadmin extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -38,7 +32,7 @@ class Pageadmin extends Base
 
         // adding language to page here
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-            $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $_REQUEST["page_key"], true);
+            $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true);
 
             if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
                 $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
@@ -54,7 +48,7 @@ class Pageadmin extends Base
         } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 // delete and put message in customdata
-                $Ptodelete = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $_GET["page_key"], true);
+                $Ptodelete = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_GET["page_key"], true);
                 if ($Ptodelete->cb_id != NULL) {
                     $Ptodelete->remove();
                 } else {
@@ -62,10 +56,10 @@ class Pageadmin extends Base
                 }
                 $this->P->cb_customdata["deleted"] = true;
             } else { // edit or update page
-                if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $_REQUEST["page_key"], true)) {
+                if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
-                        $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->C, 'page');
+                        $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
 
                         $Ptoedit->cb_pagetype = $_POST['page_type'];
                         $Ptoedit->cb_group = $_POST['page_group'];
@@ -83,14 +77,14 @@ class Pageadmin extends Base
                             $Ptoedit->oPayload->write();
                         }
 
-                        $Ptoedit = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $_REQUEST["page_key"], true);
+                        $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true);
                         $this->P->cb_customdata["updated"] = true;
                     }
                     $this->P->cb_customdata["page"] = $Ptoedit;
-                    $this->P->cb_customdata["admin_page_types"] = $this->C["admin_page_types"];
-                    $this->P->cb_customdata["admin_page_groups"] = $this->C["admin_page_groups"];
+                    $this->P->cb_customdata["admin_page_types"] = $this->container['conf']["admin_page_types"];
+                    $this->P->cb_customdata["admin_page_groups"] = $this->container['conf']["admin_page_groups"];
                     $aOptions = [''];
-                    foreach ($this->C["navstruct"] as $sKey => $aValue) {
+                    foreach ($this->container['conf']["navstruct"] as $sKey => $aValue) {
                         if ($sKey == 'admin') {
                             continue;
                         }
@@ -101,8 +95,8 @@ class Pageadmin extends Base
 
                     // show archived versions of this page
                     if ($Ptoedit->oPayload->cl_id != NULL) {
-                        $hResult = $this->DB->query(
-                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".$this->sLang."' ORDER BY cla_timestamp DESC"
+                        $hResult = $this->container['db']->query(
+                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".$this->container['lang']."' ORDER BY cla_timestamp DESC"
                         );
                         $iArchivedRows = $hResult->rowCount();
                         if ($iArchivedRows > 0) {
@@ -115,7 +109,7 @@ class Pageadmin extends Base
                             ];
                             $aData = $hResult->fetchAll();
                             $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                                $aData, $this->twig);
+                                $aData, $this->container['twig']);
                         }
                     }
 
@@ -133,7 +127,7 @@ class Pageadmin extends Base
                 } elseif (strlen($sPagekeytoadd) < 4) {
                     $aErr["keytooshort"] = true;
                 } else {
-                    $Ptoadd = new \HaaseIT\HCSF\UserPage($this->C, $this->sLang, $this->DB, $sPagekeytoadd, true);
+                    $Ptoadd = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $sPagekeytoadd, true);
                     if ($Ptoadd->cb_id == NULL) {
                         if ($Ptoadd->insert($sPagekeytoadd)) {
                             header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
@@ -153,10 +147,10 @@ class Pageadmin extends Base
     }
 
     private function showPageselect() {
-        $hResult = $this->DB->query('SELECT * FROM content_base ORDER BY cb_key');
+        $hResult = $this->container['db']->query('SELECT * FROM content_base ORDER BY cb_key');
 
         $aGroups = [];
-        foreach ($this->C["admin_page_groups"] as $sValue) {
+        foreach ($this->container['conf']["admin_page_groups"] as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }

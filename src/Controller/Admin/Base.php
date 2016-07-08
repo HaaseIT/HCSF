@@ -24,9 +24,9 @@ namespace HaaseIT\HCSF\Controller\Admin;
 class Base extends \HaaseIT\HCSF\Controller\Base
 {
     protected $bAdminhome = false;
-    public function __construct($C, $DB, $sLang)
+    public function __construct($container)
     {
-        parent::__construct($C, $DB, $sLang);
+        parent::__construct($container);
         $this->requireAdminAuth = true;
     }
 }

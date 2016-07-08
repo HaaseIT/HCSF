@@ -23,15 +23,9 @@ namespace HaaseIT\HCSF\Controller\Admin;
 class DBStatus extends Base
 {
 
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -42,7 +36,7 @@ class DBStatus extends Base
         $this->handleContent();
         $this->handleContentArchive();
 
-        if ($this->C['enable_module_shop']) {
+        if ($this->container['conf']['enable_module_shop']) {
             $this->handleItems();
             $this->handleItemGroups();
             $this->handleOrderItems();
@@ -52,9 +46,9 @@ class DBStatus extends Base
     private function handleTextcats()
     {
         if (isset($_GET['clearorphanedtextcats'])) {
-            $this->DB->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+            $this->container['db']->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang'] > 0) {
             $aListSetting = [
@@ -67,7 +61,7 @@ class DBStatus extends Base
             $this->P->cb_customdata['rows_textcat_lang_list'] = \HaaseIT\Tools::makeListtable(
                 $aListSetting,
                 $aData,
-                $this->twig
+                $this->container['twig']
             );
         }
     }
@@ -75,9 +69,9 @@ class DBStatus extends Base
     private function handleTextcatArchive()
     {
         if (isset($_GET['clearorphanedtextcatsarchive'])) {
-            $this->DB->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+            $this->container['db']->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang_archive'] > 0) {
             $aListSetting = [
@@ -90,16 +84,16 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_textcat_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 
     private function handleContent()
     {
         if (isset($_GET['clearorphanedcontent'])) {
-            $this->DB->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+            $this->container['db']->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang'] > 0) {
             $aListSetting = [
@@ -113,16 +107,16 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 
     private function handleContentArchive()
     {
         if (isset($_GET['clearorphanedcontentarchive'])) {
-            $this->DB->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+            $this->container['db']->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang_archive'] > 0) {
             $aListSetting = [
@@ -138,16 +132,16 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 
     private function handleItems()
     {
         if (isset($_GET['clearorphaneditems'])) {
-            $this->DB->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+            $this->container['db']->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
         $this->P->cb_customdata['rows_item_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_item_lang'] > 0) {
             $aListSetting = [
@@ -178,16 +172,16 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_item_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 
     private function handleItemGroups()
     {
         if (isset($_GET['clearorphaneditemgroups'])) {
-            $this->DB->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+            $this->container['db']->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
         }
-        $hResult = $this->DB->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+        $hResult = $this->container['db']->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
         $this->P->cb_customdata['rows_itemgroups_text'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_itemgroups_text'] > 0) {
             $aListSetting = [
@@ -211,16 +205,16 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_itemgroups_text_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 
     private function handleOrderItems()
     {
         if (isset($_GET['clearorphanedorderitems'])) {
-            $this->DB->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+            $this->container['db']->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         }
-        $hResult = $this->DB->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+        $hResult = $this->container['db']->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         $this->P->cb_customdata['rows_orders_items'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_orders_items'] > 0) {
             $aListSetting = [
@@ -240,7 +234,7 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_orders_items_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
-                $aData, $this->twig);
+                $aData, $this->container['twig']);
         }
     }
 }
