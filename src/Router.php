@@ -23,7 +23,7 @@ class Router
         if ($this->container['conf']['maintenancemode']) {
             $class = '\\HaaseIT\\HCSF\\Controller\\Maintenance';
             try {
-                $controller = new $class($this->container['conf'], $this->container['db'], $this->container['lang'], $this->container['twig'], $this->container['oItem']);
+                $controller = new $class($this->container);
                 $this->P = $controller->getPage();
             } catch (\Exception $e) {
                 $this->P = $e->getMessage();
@@ -76,7 +76,7 @@ class Router
 
             if (!empty($class)) {
                 try {
-                    $controller = new $class($this->container['conf'], $this->container['db'], $this->container['lang'], $this->container['twig'], $this->container['oItem'], $aPath);
+                    $controller = new $class($this->container, $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = 500;
@@ -89,7 +89,7 @@ class Router
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
-                $this->P = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $this->sPath);
+                $this->P = new \HaaseIT\HCSF\UserPage($this->container, $this->sPath);
 
                 // go and look if the page can be loaded yet
                 if ($this->P->cb_id == NULL) {
@@ -101,7 +101,7 @@ class Router
 
                     if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
-                    $this->P = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $this->sPath);
+                    $this->P = new \HaaseIT\HCSF\UserPage($this->container, $this->sPath);
                 }
 
                 if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
@@ -121,14 +121,14 @@ class Router
             }
 
             if (!is_object($this->P) && $this->P == 404) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
+                $this->P = new \HaaseIT\HCSF\CorePage($this->container);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             } elseif (!is_object($this->P) && $this->P == 500) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
+                $this->P = new \HaaseIT\HCSF\CorePage($this->container);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 

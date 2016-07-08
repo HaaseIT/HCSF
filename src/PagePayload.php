@@ -37,7 +37,5 @@ class PagePayload
         } else {
             return $this->container['conf']['default_pagetitle'];
         }
-
     }
-
 }
