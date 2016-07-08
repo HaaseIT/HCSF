@@ -24,7 +24,7 @@ class Pageadmin extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -32,7 +32,7 @@ class Pageadmin extends Base
 
         // adding language to page here
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-            $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true);
+            $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true);
 
             if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
                 $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
@@ -48,7 +48,7 @@ class Pageadmin extends Base
         } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 // delete and put message in customdata
-                $Ptodelete = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_GET["page_key"], true);
+                $Ptodelete = new \HaaseIT\HCSF\UserPage($this->container, $_GET["page_key"], true);
                 if ($Ptodelete->cb_id != NULL) {
                     $Ptodelete->remove();
                 } else {
@@ -56,7 +56,7 @@ class Pageadmin extends Base
                 }
                 $this->P->cb_customdata["deleted"] = true;
             } else { // edit or update page
-                if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true)) {
+                if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
                         $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
@@ -77,7 +77,7 @@ class Pageadmin extends Base
                             $Ptoedit->oPayload->write();
                         }
 
-                        $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $_REQUEST["page_key"], true);
+                        $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true);
                         $this->P->cb_customdata["updated"] = true;
                     }
                     $this->P->cb_customdata["page"] = $Ptoedit;
@@ -127,7 +127,7 @@ class Pageadmin extends Base
                 } elseif (strlen($sPagekeytoadd) < 4) {
                     $aErr["keytooshort"] = true;
                 } else {
-                    $Ptoadd = new \HaaseIT\HCSF\UserPage($this->container['conf'], $this->container['lang'], $this->container['db'], $sPagekeytoadd, true);
+                    $Ptoadd = new \HaaseIT\HCSF\UserPage($this->container, $sPagekeytoadd, true);
                     if ($Ptoadd->cb_id == NULL) {
                         if ($Ptoadd->insert($sPagekeytoadd)) {
                             header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
