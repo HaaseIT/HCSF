@@ -25,7 +25,7 @@ class Maintenance extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         $this->P->oPayload->cl_html = \HaaseIT\HCSF\HardcodedText::get('site_currently_in_maintenance_mode');

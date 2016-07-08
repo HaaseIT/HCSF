@@ -23,17 +23,15 @@ namespace HaaseIT\HCSF\Controller;
 
 class Base
 {
-    protected $P, $C, $sLang, $DB, $twig, $oItem,
+    protected $P, $container,
         $requireAdminAuth = false,
         $requireAdminAuthAdminHome = false,
         $requireModuleCustomer = false,
         $requireModuleShop = false;
 
-    public function __construct($C, $DB, $sLang)
+    public function __construct($container)
     {
-        $this->C = $C;
-        $this->DB = $DB;
-        $this->sLang = $sLang;
+        $this->container = $container;
     }
 
     public function getPage()
@@ -41,10 +39,10 @@ class Base
         if ($this->requireAdminAuth) {
             $this->requireAdminAuth();
         }
-        if ($this->requireModuleCustomer && (empty($this->C["enable_module_customer"]) || !$this->C["enable_module_customer"])) {
+        if ($this->requireModuleCustomer && (empty($this->container['conf']["enable_module_customer"]) || !$this->container['conf']["enable_module_customer"])) {
             throw new \Exception(404);
         }
-        if ($this->requireModuleShop && (empty($this->C["enable_module_shop"]) || !$this->C["enable_module_shop"])) {
+        if ($this->requireModuleShop && (empty($this->container['conf']["enable_module_shop"]) || !$this->container['conf']["enable_module_shop"])) {
             throw new \Exception(404);
         }
         $this->preparePage();
@@ -57,9 +55,9 @@ class Base
     }
 
     private function requireAdminAuth() {
-        if ((empty($this->C['admin_users']) || !count($this->C['admin_users'])) && $this->requireAdminAuthAdminHome) {
+        if ((empty($this->container['conf']['admin_users']) || !count($this->container['conf']['admin_users'])) && $this->requireAdminAuthAdminHome) {
             return true;
-        } elseif (count($this->C['admin_users'])) {
+        } elseif (count($this->container['conf']['admin_users'])) {
 
             if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
                 list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
@@ -69,18 +67,18 @@ class Base
                 $user = $_SERVER['PHP_AUTH_USER'];
                 $pass = $_SERVER['PHP_AUTH_PW'];
 
-                $validated = !empty($this->C['admin_users'][$user]) && password_verify($pass, $this->C['admin_users'][$user]);
+                $validated = !empty($this->container['conf']['admin_users'][$user]) && password_verify($pass, $this->container['conf']['admin_users'][$user]);
             } else {
                 $validated = false;
             }
 
             if (!$validated) {
-                header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+                header('WWW-Authenticate: Basic realm="' . $this->container['conf']['admin_authrealm'] . '"');
                 header('HTTP/1.0 401 Unauthorized');
                 die("Not authorized");
             }
         } else {
-            header('WWW-Authenticate: Basic realm="' . $this->C['admin_authrealm'] . '"');
+            header('WWW-Authenticate: Basic realm="' . $this->container['conf']['admin_authrealm'] . '"');
             header('HTTP/1.0 401 Unauthorized');
             die('Not authorized');
         }
