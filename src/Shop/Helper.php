@@ -384,14 +384,16 @@ class Helper
                         $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
                         $aP["item"]["currentitem"] = $iPositionInItems + 1;
 
-                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
                         if ($iPositionInItems == 0) {
                             $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                        } else {
+                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
                         }
 
-                        $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
                         if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
                             $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
+                        } else {
+                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
                         }
                         
                         // build item suggestions if needed
