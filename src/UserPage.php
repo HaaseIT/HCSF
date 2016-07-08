@@ -27,7 +27,8 @@ class UserPage extends Page
     public $cb_id, $cb_key, $cb_group, $purifier;
 
     public function __construct($container, $sPagekey, $bReturnRaw = false) {
-        if (!$bReturnRaw) $this->container = $container;
+        //if (!$bReturnRaw) $this->container = $container;
+        $this->container = $container;
         $this->iStatus = 200;
         $this->bReturnRaw = $bReturnRaw;
 
