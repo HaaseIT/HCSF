@@ -22,11 +22,6 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Myorders extends Base
 {
-    public function __construct($container)
-    {
-        parent::__construct($container);
-    }
-
     public function preparePage()
     {
         $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
