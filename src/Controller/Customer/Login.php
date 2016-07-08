@@ -24,7 +24,7 @@ class Login extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'content';
 
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
