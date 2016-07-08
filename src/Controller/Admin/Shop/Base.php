@@ -23,9 +23,9 @@ namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 class Base extends \HaaseIT\HCSF\Controller\Admin\Base
 {
-    public function __construct($C, $DB, $sLang)
+    public function __construct($container)
     {
-        parent::__construct($C, $DB, $sLang);
+        parent::__construct($container);
         $this->requireModuleShop = true;
     }
 }

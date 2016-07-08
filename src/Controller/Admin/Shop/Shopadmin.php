@@ -23,15 +23,9 @@ use \HaaseIT\HCSF\HardcodedText;
 
 class Shopadmin extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -52,7 +46,7 @@ class Shopadmin extends Base
             ];
 
             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
             header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
@@ -137,7 +131,7 @@ class Shopadmin extends Base
             }
             $sql .= "ORDER BY o_ordertimestamp DESC";
 
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             if ($bFromTo) {
                 $hResult->bindValue(':from', $sFrom);
                 $hResult->bindValue(':to', $sTo);
@@ -173,9 +167,9 @@ class Shopadmin extends Base
                         'o_email' => $aRow["o_email"],
                         'o_cust' => $sName.'<br>'.$aRow["o_zip"].' '.$aRow["o_town"],
                         'o_authed' => $aRow["o_authed"],
-                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']).' '.$this->C["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], $this->C['numberformat_decimals'], $this->C['numberformat_decimal_point'], $this->C['numberformat_thousands_seperator']).' '.$this->C["waehrungssymbol"] : ''),
+                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], $this->container['conf']['numberformat_decimals'], $this->container['conf']['numberformat_decimal_point'], $this->container['conf']['numberformat_thousands_seperator']).' '.$this->container['conf']["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], $this->container['conf']['numberformat_decimals'], $this->container['conf']['numberformat_decimal_point'], $this->container['conf']['numberformat_thousands_seperator']).' '.$this->container['conf']["waehrungssymbol"] : ''),
                         'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
-                        'o_ordertime_number' => date($this->C['locale_format_date_time'], $aRow["o_ordertimestamp"]).((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
+                        'o_ordertime_number' => date($this->container['conf']['locale_format_date_time'], $aRow["o_ordertimestamp"]).((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
                         'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow["o_srv_hostname"],
                     ];
                     if (!($aRow["o_ordercompleted"] == 's' && $bIgnoreStorno)) {
@@ -184,7 +178,7 @@ class Shopadmin extends Base
                     } else $k++;
                     $i++;
                 }
-                $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $this->twig);
+                $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $this->container['twig']);
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;
                 $aSData['listtable_k'] = $k;
@@ -196,13 +190,13 @@ class Shopadmin extends Base
             $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $sql = 'SELECT * FROM orders WHERE o_id = :id';
 
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aSData["orderdata"] = $hResult->fetch();
                 $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                $hResult = $this->DB->prepare($sql);
+                $hResult = $this->container['db']->prepare($sql);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
                 $aItems = $hResult->fetchAll();
@@ -221,10 +215,10 @@ class Shopadmin extends Base
                     'cust_country' => $aSData["orderdata"]["o_country"],
                     'cust_group' => $aSData["orderdata"]["o_group"],
                 ];
-                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'shopadmin', '', $aUserdata);
+                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'shopadmin', '', $aUserdata);
 
                 $aSData["orderdata"]["options_shippingservices"] = [''];
-                foreach ($this->C["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
+                foreach ($this->container['conf']["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
 
                 $aItemsCarttable = [];
                 foreach ($aItems as $aValue) {
@@ -236,7 +230,7 @@ class Shopadmin extends Base
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
 
-                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->C["vat"][$aValue["oi_vat_id"]], '', true);
+                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->container['conf']["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsCarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,
@@ -251,8 +245,8 @@ class Shopadmin extends Base
                 $aSData = array_merge(
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsCarttable,
-                        $this->sLang,
-                        $this->C,
+                        $this->container['lang'],
+                        $this->container['conf'],
                         true,
                         $aSData["orderdata"]["o_group"],
                         '',

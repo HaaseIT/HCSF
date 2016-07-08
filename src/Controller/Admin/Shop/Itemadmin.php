@@ -23,15 +23,9 @@ use \HaaseIT\HCSF\HardcodedText;
 
 class Itemadmin extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -43,11 +37,11 @@ class Itemadmin extends Base
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
                 $aData = [
                     'itml_pid' => $aItemdata["base"]['itm_id'],
-                    'itml_lang' => $this->sLang,
+                    'itml_lang' => $this->container['lang'],
                 ];
 
                 $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
-                $this->DB->exec($sql);
+                $this->container['db']->exec($sql);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
                 die();
@@ -67,7 +61,7 @@ class Itemadmin extends Base
                     }
                 }
             } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($this->C, 'item'));
+                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();
@@ -82,17 +76,17 @@ class Itemadmin extends Base
                     else {
                         $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                        $hResult = $this->DB->query($sql);
+                        $hResult = $this->container['db']->query($sql);
                         $iRows = $hResult->rowCount();
                         if ($iRows > 0) {
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
                             $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
                             $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
-                            $this->DB->exec($sql);
-                            $iInsertID = $this->DB->lastInsertId();
+                            $this->container['db']->exec($sql);
+                            $iInsertID = $this->container['db']->lastInsertId();
                             $sql = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
-                            $hResult = $this->DB->query($sql);
+                            $hResult = $this->container['db']->query($sql);
                             $aRow = $hResult->fetch();
                             header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
                             die();
@@ -149,9 +143,9 @@ class Itemadmin extends Base
         if ($_REQUEST["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
         elseif ($_REQUEST["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
 
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
-        $hResult->bindValue(':lang', $this->sLang);
+        $hResult->bindValue(':lang', $this->container['lang']);
         $hResult->execute();
 
         $aItemlist["numrows"] = $hResult->rowCount();
@@ -177,7 +171,7 @@ class Itemadmin extends Base
         }
         $aLData = [
             'numrows' => $aItemlist["numrows"],
-            'listtable' => \HaaseIT\Tools::makeListTable($aList, $aData, $this->twig),
+            'listtable' => \HaaseIT\Tools::makeListTable($aList, $aData, $this->container['twig']),
         ];
 
         return $aLData;
@@ -191,16 +185,16 @@ class Itemadmin extends Base
         $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
         $sql = 'SELECT * FROM item_base WHERE itm_no = :itemno';
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':itemno', $sItemno);
         $hResult->execute();
 
         $aItemdata["base"] = $hResult->fetch();
 
         $sql = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
-        $hResult->bindValue(':lang', $this->sLang);
+        $hResult->bindValue(':lang', $this->container['lang']);
         $hResult->execute();
         if ($hResult->rowCount() != 0) $aItemdata["text"] = $hResult->fetch();
 
@@ -225,14 +219,14 @@ class Itemadmin extends Base
             'weight' => $aItemdata["base"]['itm_weight'],
         ];
 
-        if (!$this->C["vat_disable"]) {
+        if (!$this->container['conf']["vat_disable"]) {
             $aOptions[] = '|';
-            foreach ($this->C["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
+            foreach ($this->container['conf']["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
             $aData["vatoptions"] = $aOptions;
             unset($aOptions);
         }
         $aData["rgoptions"][] = '';
-        foreach ($this->C["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
+        foreach ($this->container['conf']["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
 
         $aGroups = $this->admin_getItemgroups('');
         $aData["groupoptions"][] = '';
@@ -265,10 +259,10 @@ class Itemadmin extends Base
             'itm_weight' => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
             'itm_id' => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!$this->C["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!$this->container['conf']["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
         if (isset($_REQUEST["textid"])) {
@@ -279,7 +273,7 @@ class Itemadmin extends Base
                 'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
             ];
             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
         }
@@ -294,8 +288,8 @@ class Itemadmin extends Base
             . ' AND itemgroups_text.itmgt_lang = :lang';
         if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
         $sql .= ' ORDER BY itmg_no';
-        $hResult = $this->DB->prepare($sql);
-        $hResult->bindValue(':lang', $this->sLang);
+        $hResult = $this->container['db']->prepare($sql);
+        $hResult->bindValue(':lang', $this->container['lang']);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
 
