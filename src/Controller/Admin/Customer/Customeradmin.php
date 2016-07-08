@@ -23,15 +23,9 @@ use \HaaseIT\HCSF\HardcodedText;
 
 class Customeradmin extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -51,7 +45,7 @@ class Customeradmin extends Base
                 'lgetvars' => ['action' => 'edit',],
             ],
         ];
-        $aPData = $this->handleCustomerAdmin($CUA, $this->twig);
+        $aPData = $this->handleCustomerAdmin($CUA, $this->container['twig']);
         $this->P->cb_customcontenttemplate = 'customer/customeradmin';
         $this->P->oPayload->cl_html = $aPData["customeradmin"]["text"];
         $this->P->cb_customdata = $aPData;
@@ -76,7 +70,7 @@ class Customeradmin extends Base
                 $sql .= ' WHERE cust_active = \'n\'';
             }
             $sql .= ' ORDER BY cust_no ASC';
-            $hResult = $this->DB->query($sql);
+            $hResult = $this->container['db']->query($sql);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
                 $return .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
@@ -88,12 +82,12 @@ class Customeradmin extends Base
             $aErr = [];
             if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
                 $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                if (strlen($sCustno) < $this->C["minimum_length_custno"]) {
+                if (strlen($sCustno) < $this->container['conf']["minimum_length_custno"]) {
                     $aErr["custnoinvalid"] = true;
                 } else {
 
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':custno', $sCustno);
                     $hResult->execute();
@@ -102,7 +96,7 @@ class Customeradmin extends Base
                         $aErr["custnoalreadytaken"] = true;
                     }
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                     $hResult->execute();
@@ -110,7 +104,7 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
                     }
-                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr, true);
+                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
                             'cust_no' => $sCustno,
@@ -134,7 +128,7 @@ class Customeradmin extends Base
                             $aInfo["passwordchanged"] = true;
                         }
                         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                        $hResult = $this->DB->prepare($sql);
+                        $hResult = $this->container['db']->prepare($sql);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();
                         $aInfo["changeswritten"] = true;
@@ -142,12 +136,12 @@ class Customeradmin extends Base
                 }
             }
             $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
-                $aPData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'admin', $aErr, $aUser);
+                $aPData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'admin', $aErr, $aUser);
             } else {
                 $aInfo["nosuchuserfound"] = true;
             }
