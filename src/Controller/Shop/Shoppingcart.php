@@ -43,15 +43,15 @@ class Shoppingcart extends Base
             // ----------------------------------------------------------------------------
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                 $aErr = [];
-                if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
+                if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
                     $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr, true);
-                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) {
+                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($this->container['request']->parsedBody["tos"]) || $this->container['request']->parsedBody["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }
-                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($_POST["cancellationdisclaimer"]) || $_POST["cancellationdisclaimer"] != 'y')) {
+                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($this->container['request']->parsedBody["cancellationdisclaimer"]) || $this->container['request']->parsedBody["cancellationdisclaimer"] != 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
-                    if (!isset($_POST["paymentmethod"]) || array_search($_POST["paymentmethod"], $this->container['conf']["paymentmethods"]) === false) {
+                    if (!isset($this->container['request']->parsedBody["paymentmethod"]) || array_search($this->container['request']->parsedBody["paymentmethod"], $this->container['conf']["paymentmethods"]) === false) {
                         $aErr["paymentmethod"] = true;
                     }
                 }
@@ -64,11 +64,11 @@ class Shoppingcart extends Base
             if (!isset($aShoppingcart)) {
                 $this->P->oPayload->cl_html .= \HaaseIT\Textcat::T("shoppingcart_empty");
             } else {
-                if (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes') {
+                if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
                     if (count($aErr) == 0) {
                         $this->doCheckout();
                     }
-                } // endif $_POST["doCheckout"] == 'yes'
+                } // endif $this->container['request']->parsedBody["doCheckout"] == 'yes'
             }
 
             if (isset($aShoppingcart)) {
@@ -139,8 +139,8 @@ class Shoppingcart extends Base
             'o_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_group' => trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')),
             'o_remarks' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_tos' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
-            'o_cancellationdisclaimer' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
+            'o_tos' => ((isset($this->container['request']->parsedBody["tos"]) && $this->container['request']->parsedBody["tos"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
+            'o_cancellationdisclaimer' => ((isset($this->container['request']->parsedBody["cancellationdisclaimer"]) && $this->container['request']->parsedBody["cancellationdisclaimer"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
             'o_paymentmethod' => filter_var(trim(\HaaseIT\Tools::getFormfield("paymentmethod")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_sumvoll' => $_SESSION["cartpricesums"]["sumvoll"],
             'o_sumerm' => $_SESSION["cartpricesums"]["sumerm"],
@@ -154,7 +154,7 @@ class Shoppingcart extends Base
             'o_ordertimestamp' => time(),
             'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
             'o_sessiondata' => serialize($_SESSION),
-            'o_postdata' => serialize($_POST),
+            'o_postdata' => serialize($this->container['request']->parsedBody),
             'o_remote_address' => $_SERVER["REMOTE_ADDR"],
             'o_ordercompleted' => 'n',
             'o_paymentcompleted' => 'n',
@@ -232,9 +232,9 @@ class Shoppingcart extends Base
         if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);
         if (isset($_SESSION["sondercart"])) unset($_SESSION["sondercart"]);
 
-        if (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' && array_search('paypal', $this->container['conf']["paymentmethods"]) !== false && isset($this->container['conf']["paypal_interactive"]) && $this->container['conf']["paypal_interactive"]) {
+        if (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'paypal' && array_search('paypal', $this->container['conf']["paymentmethods"]) !== false && isset($this->container['conf']["paypal_interactive"]) && $this->container['conf']["paypal_interactive"]) {
             header('Location: /_misc/paypal.html?id=' . $iInsertID);
-        } elseif (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $this->container['conf']["paymentmethods"]) !== false) {
+        } elseif (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'sofortueberweisung' && array_search('sofortueberweisung', $this->container['conf']["paymentmethods"]) !== false) {
             header('Location: /_misc/sofortueberweisung.html?id=' . $iInsertID);
         } else {
             header('Location: /_misc/checkedout.html?id=' . $iInsertID);
@@ -248,7 +248,7 @@ class Shoppingcart extends Base
             $aFilesToSend[] = PATH_DOCROOT.$this->container['conf']['directory_emailattachments'].'/'.$this->container['conf']["email_orderconfirmation_attachment_cancellationform_".$this->container['lang']];
         } else $aFilesToSend = [];
 
-        \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $_POST["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+        \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $this->container['request']->parsedBody["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
         \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $this->container['conf']["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
     }
 
@@ -262,7 +262,7 @@ class Shoppingcart extends Base
 
     private function getPostValue($field)
     {
-        return (isset($_POST[$field]) && trim($_POST[$field]) != '' ? $_POST[$field] : '');
+        return (isset($this->container['request']->parsedBody[$field]) && trim($this->container['request']->parsedBody[$field]) != '' ? $this->container['request']->parsedBody[$field] : '');
     }
 
     private function buildOrderMailBody($bCust = true, $iId = 0)
@@ -273,7 +273,7 @@ class Shoppingcart extends Base
             'customerversion' => $bCust,
             //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
             'datetime' => date("d.m.Y - H:i"),
-            'custno' => (isset($_POST["custno"]) && strlen(trim($_POST["custno"])) >= $this->container['conf']["minimum_length_custno"] ? $_POST["custno"] : ''),
+            'custno' => (isset($this->container['request']->parsedBody["custno"]) && strlen(trim($this->container['request']->parsedBody["custno"])) >= $this->container['conf']["minimum_length_custno"] ? $this->container['request']->parsedBody["custno"] : ''),
             'corpname' => $this->getPostValue('corpname'),
             'name' => $this->getPostValue('name'),
             'street' => $this->getPostValue('street'),
@@ -283,18 +283,18 @@ class Shoppingcart extends Base
             'cellphone' => $this->getPostValue('cellphone'),
             'fax' => $this->getPostValue('fax'),
             'email' => $this->getPostValue('email'),
-            'country' => (isset($_POST["country"]) && trim($_POST["country"]) != '' ?
-                (isset($this->container['conf']["countries_".$this->container['lang']][$_POST["country"]]) ? $this->container['conf']["countries_".$this->container['lang']][$_POST["country"]] : $_POST["country"]) : ''
+            'country' => (isset($this->container['request']->parsedBody["country"]) && trim($this->container['request']->parsedBody["country"]) != '' ?
+                (isset($this->container['conf']["countries_".$this->container['lang']][$this->container['request']->parsedBody["country"]]) ? $this->container['conf']["countries_".$this->container['lang']][$this->container['request']->parsedBody["country"]] : $this->container['request']->parsedBody["country"]) : ''
             ),
             'remarks' => $this->getPostValue('remarks'),
             'tos' => $this->getPostValue('tos'),
             'cancellationdisclaimer' => $this->getPostValue('cancellationdisclaimer'),
             'paymentmethod' => $this->getPostValue('paymentmethod'),
             'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
-            'paypallink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
-            'sofortueberweisunglink' => (isset($_POST["paymentmethod"]) && $_POST["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
+            'paypallink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
+            'sofortueberweisunglink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
             'SESSION' => (!$bCust ? \HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
-            'POST' => (!$bCust ? \HaaseIT\Tools::debug($_POST, '$_POST', true, true) : ''),
+            'POST' => (!$bCust ? \HaaseIT\Tools::debug($this->container['request']->parsedBody, '$this->container[\'request\'][\'parsedBody\']', true, true) : ''),
             'orderid' => $iId,
         ];
 
