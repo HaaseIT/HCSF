@@ -23,15 +23,14 @@ namespace HaaseIT\HCSF;
 
 class CorePage extends Page
 {
-    public function __construct($C, $sLang)
+    public function __construct($container)
     {
         $this->iStatus = 200;
-        $this->C = $C;
-        $this->sLang = $sLang;
+        $this->container = $container;
         $this->getPayload();
     }
 
     protected function getPayload() {
-        $this->oPayload = new PagePayload($this->C);
+        $this->oPayload = new PagePayload($this->container);
     }
 }

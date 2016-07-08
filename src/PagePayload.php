@@ -23,11 +23,11 @@ namespace HaaseIT\HCSF;
 
 class PagePayload
 {
-    protected $C;
+    protected $container;
     public $cl_lang, $cl_html, $cl_keywords, $cl_description, $cl_title;
 
-    public function __construct($C) {
-        $this->C = $C;
+    public function __construct($container) {
+        $this->container = $container;
     }
 
     function getTitle()
@@ -35,7 +35,7 @@ class PagePayload
         if (isset($this->cl_title) && trim($this->cl_title) != '') {
             return $this->cl_title;
         } else {
-            return $this->C["default_pagetitle"];
+            return $this->container['conf']['default_pagetitle'];
         }
 
     }
