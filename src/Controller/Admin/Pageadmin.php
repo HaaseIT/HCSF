@@ -84,7 +84,7 @@ class Pageadmin extends Base
                     $this->P->cb_customdata["admin_page_types"] = $this->container['conf']["admin_page_types"];
                     $this->P->cb_customdata["admin_page_groups"] = $this->container['conf']["admin_page_groups"];
                     $aOptions = [''];
-                    foreach ($this->container['conf']["navstruct"] as $sKey => $aValue) {
+                    foreach ($this->container["navstruct"] as $sKey => $aValue) {
                         if ($sKey == 'admin') {
                             continue;
                         }
