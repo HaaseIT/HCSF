@@ -196,6 +196,7 @@ class Items
 
         if(is_numeric($aData['itm_price']) && (float) $aData['itm_price'] > 0) {
             $aPrice["netto_list"] = $aData['itm_price'];
+            $aPrice['brutto_list'] = $this->addVat($aPrice['netto_list'], $this->container['conf']['vat'][$aData['itm_vatid']]);
             if (
                 isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
                 && isset($aData["itm_data"]["sale"]["price"])
@@ -203,6 +204,7 @@ class Items
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
+                    $aPrice['brutto_sale'] = $this->addVat($aPrice['netto_sale'], $this->container['conf']['vat'][$aData['itm_vatid']]);
                 }
             }
             if (
@@ -220,6 +222,7 @@ class Items
                             '100'
                         )
                     );
+                $aPrice['brutto_rebated'] = $this->addVat($aPrice['netto_rebated'], $this->container['conf']['vat'][$aData['itm_vatid']]);
             }
         } else {
             return false;
@@ -234,18 +237,24 @@ class Items
             $aPrice["netto_use"] = $aPrice["netto_sale"];
         }
 
-        $aPrice["brutto_use"] =
+        $aPrice["brutto_use"] = $this->addVat($aPrice["netto_use"], $this->container['conf']['vat'][$aData['itm_vatid']]);
+
+        return $aPrice;
+    }
+
+    private function addVat($price, $vat)
+    {
+        return
             bcadd(
                 bcdiv(
                     bcmul(
-                        $aPrice["netto_use"],
-                        (string)$this->container['conf']['vat'][$aData['itm_vatid']]
+                        $price,
+                        (string)$vat
                     ),
                     '100'
                 ),
-                $aPrice["netto_use"]
+                $price
             );
 
-        return $aPrice;
     }
 }
