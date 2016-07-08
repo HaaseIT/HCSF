@@ -22,15 +22,14 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Myorders extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
+    public function __construct($container)
     {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
+        parent::__construct($container);
     }
 
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
@@ -44,14 +43,14 @@ class Myorders extends Base
                 $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
                 $sql = "SELECT * FROM " . 'orders WHERE o_id = :id AND o_custno = \'' . $_SESSION['user']['cust_no'] . '\' AND o_ordercompleted != \'d\'';
-                $hResult = $this->DB->prepare($sql);
+                $hResult = $this->container['db']->prepare($sql);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
 
                 if ($hResult->rowCount() == 1) {
                     $aOrder = $hResult->fetch();
 
-                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($this->C["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
+                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($this->container['conf']["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open"));
@@ -60,7 +59,7 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
                     $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->execute();
 
@@ -83,8 +82,8 @@ class Myorders extends Base
 
                     $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
-                        $this->sLang,
-                        $this->C,
+                        $this->container['lang'],
+                        $this->container['conf'],
                         true,
                         '',
                         '',
@@ -113,7 +112,7 @@ class Myorders extends Base
                     ],
                 ];
 
-                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $this->twig, $this->DB);
+                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $this->container['twig'], $this->container['db']);
             }
 
             if (isset($aShoppingcart)) {
@@ -127,7 +126,7 @@ class Myorders extends Base
         $return = '';
         $sql = 'SELECT * FROM orders WHERE o_custno = :custno ORDER BY o_ordertimestamp DESC';
 
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':custno', \HaaseIT\HCSF\Customer\Helper::getUserData('cust_no'));
         $hResult->execute();
 
@@ -147,14 +146,14 @@ class Myorders extends Base
                 $aData[] = [
                     'o_id' => $aRow["o_id"],
                     'o_order_status' => $sStatus,
-                    'o_ordertime' => date($this->C['locale_format_date_time'], $aRow["o_ordertimestamp"]),
+                    'o_ordertime' => date($this->container['conf']['locale_format_date_time'], $aRow["o_ordertimestamp"]),
                     'o_paymentmethod' => $sPaymentmethod,
                     'o_paymentcompleted' => $sPaymentstatus,
                     'o_shipping_service' => $aRow["o_shipping_service"],
                     'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
                 ];
             }
-            $return .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->twig);
+            $return .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->container['twig']);
         } else $return .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
 
         return $return;

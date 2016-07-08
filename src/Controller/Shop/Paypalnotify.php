@@ -24,7 +24,7 @@ class Paypalnotify extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         $sLogData = '';
@@ -32,7 +32,7 @@ class Paypalnotify extends Base
         $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders WHERE o_id = ' . $iId . ' AND o_paymentmethod' . " = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->DB->query($sql);
+        $hResult = $this->container['db']->query($sql);
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
@@ -44,7 +44,7 @@ class Paypalnotify extends Base
                 $postdata .= $i . '=' . urlencode($v) . '&';
             }
             $postdata .= 'cmd=_notify-validate';
-            $web = parse_url($this->C["paypal"]["url"]);
+            $web = parse_url($this->container['conf']["paypal"]["url"]);
 
             if ($web['scheme'] == 'https') {
                 $web['port'] = 443;
@@ -69,13 +69,13 @@ class Paypalnotify extends Base
                 $info = implode(',', $info);
                 if (!(strpos($info, 'VERIFIED') === false)) {
 
-                    $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\n";
+                    $sLogData .= "-- new entry - " . date($this->container['conf']['locale_format_date_time']) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
                     $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
                     // Check if the transaction id has been used before
                     $sTxn_idQ = 'SELECT o_paypal_tx FROM orders WHERE o_paypal_tx = :txn_id';
-                    $hTxn_idResult = $this->DB->prepare($sTxn_idQ);
+                    $hTxn_idResult = $this->container['db']->prepare($sTxn_idQ);
                     $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
                     $hTxn_idResult->execute();
 
@@ -84,8 +84,8 @@ class Paypalnotify extends Base
                             $_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '')
                             && $_REQUEST["custom"] == $aOrder['o_id']
                             && $_REQUEST["payment_status"] == "Completed"
-                            && $_REQUEST["mc_currency"] == $this->C["paypal"]["currency_id"]
-                            && $_REQUEST["business"] == $this->C["paypal"]["business"]
+                            && $_REQUEST["mc_currency"] == $this->container['conf']["paypal"]["currency_id"]
+                            && $_REQUEST["business"] == $this->container['conf']["paypal"]["business"]
                         ) {
                             $aTxnUpdateData = [
                                 'o_paypal_tx' => $_REQUEST["txn_id"],
@@ -93,7 +93,7 @@ class Paypalnotify extends Base
                                 'o_id' => $iId,
                             ];
                             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
-                            $hResult = $this->DB->prepare($sql);
+                            $hResult = $this->container['db']->prepare($sql);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
@@ -106,17 +106,17 @@ class Paypalnotify extends Base
                                     2, '.', '') . "\n";
                             $sLogData .= "custom: " . $_REQUEST["custom"] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
                             $sLogData .= "payment_status: " . $_REQUEST["payment_status"] . "\n";
-                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - $this->C["paypal"]["currency_id"]: ' . $this->C["paypal"]["currency_id"] . "\n";
-                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - $this->C["paypal"]["business"]: ' . $this->C["paypal"]["business"] . "\n\n";
+                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - $this->container[\'conf\']["paypal"]["currency_id"]: ' . $this->container['conf']["paypal"]["currency_id"] . "\n";
+                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - $this->container[\'conf\']["paypal"]["business"]: ' . $this->container['conf']["paypal"]["business"] . "\n\n";
                         }
                     } else {
                         // INVALID LOGGING ERROR
-                        $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\nPHAIL\n\n";
+                        $sLogData .= "-- new entry - " . date($this->container['conf']['locale_format_date_time']) . " --\n\nPHAIL\n\n";
                         $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: " . $_REQUEST["txn_id"] . " !!!\n\n";
                         $sLogData .= "!!! INVALID !!!\n\n";
                     }
                 } else {
-                    $sLogData .= "-- new entry - " . date($this->C['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
+                    $sLogData .= "-- new entry - " . date($this->container['conf']['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
                 }
                 $bNufile = false;
                 if (!file_exists(PATH_LOGS . FILE_PAYPALLOG)) {

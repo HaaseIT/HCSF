@@ -22,19 +22,17 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 class Updatecart extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
+    public function __construct($container)
     {
-        parent::__construct($C, $DB, $sLang);
-        $this->oItem = $oItem;
-        $this->twig = $twig;
+        parent::__construct($container);
     }
 
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
-        if (($this->C["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
+        if (($this->container['conf']["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
             $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
         } else {
             $iAmount = '';
@@ -48,7 +46,7 @@ class Updatecart extends Base
                 $iAmount = floor($iAmount);
 
                 // Check if this item exists
-                $aData = $this->oItem->sortItems('', $_REQUEST["itemno"]);
+                $aData = $this->container['oItem']->sortItems('', $_REQUEST["itemno"]);
                 if (!isset($aData)) {
                     $this->replyToCartUpdate('itemnotfound');
                 } else {
@@ -56,8 +54,8 @@ class Updatecart extends Base
                     $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
                     $sCartKey = $sItemno;
 
-                    if (isset($this->C["custom_order_fields"])) {
-                        foreach ($this->C["custom_order_fields"] as $sValue) {
+                    if (isset($this->container['conf']["custom_order_fields"])) {
+                        foreach ($this->container['conf']["custom_order_fields"] as $sValue) {
                             if (isset($aData["item"][$sItemno]["itm_data"][$sValue])) {
                                 $aOptions = [];
                                 $TMP = explode('|', $aData["item"][$sItemno]["itm_data"][$sValue]);
@@ -82,7 +80,7 @@ class Updatecart extends Base
                     }
                     $aItem = [
                         'amount' => $iAmount,
-                        'price' => $this->oItem->calcPrice($aData["item"][$sItemno]),
+                        'price' => $this->container['oItem']->calcPrice($aData["item"][$sItemno]),
                         'rg' => $aData["item"][$sItemno]['itm_rg'],
                         'vat' => $aData["item"][$sItemno]['itm_vatid'],
                         'name' => $aData["item"][$sItemno]['itm_name'],
@@ -114,14 +112,14 @@ class Updatecart extends Base
             $aAR = [
                 'cart' => $_SESSION["cart"],
                 'reply' => $sReply,
-                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->C, $_SESSION["cart"]),
-                'currency' => $this->C["waehrungssymbol"],
-                'numberformat_decimals' => $this->C['numberformat_decimals'],
-                'numberformat_decimal_point' => $this->C['numberformat_decimal_point'],
-                'numberformat_thousands_seperator' => $this->C['numberformat_thousands_seperator'],
+                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->container['conf'], $_SESSION["cart"]),
+                'currency' => $this->container['conf']["waehrungssymbol"],
+                'numberformat_decimals' => $this->container['conf']['numberformat_decimals'],
+                'numberformat_decimal_point' => $this->container['conf']['numberformat_decimal_point'],
+                'numberformat_thousands_seperator' => $this->container['conf']['numberformat_thousands_seperator'],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);
-            echo $this->twig->render('shop/update-cart.twig', $aAR);
+            echo $this->container['twig']->render('shop/update-cart.twig', $aAR);
         } else {
             $aMSG["msg"] =  $sReply;
             if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);

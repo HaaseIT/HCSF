@@ -24,14 +24,14 @@ class Sofortueberweisung extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders '
             . "WHERE o_id = :id AND o_paymentmethod = 'sofortueberweisung' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
         $hResult->execute();
@@ -40,12 +40,12 @@ class Sofortueberweisung extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $this->C["sofortueberweisung"]["user_id"];
-            $sPURL .= '&amp;project_id=' . $this->C["sofortueberweisung"]["project_id"] . '&amp;amount=' . number_format($fGesamtbrutto,
+            $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $this->container['conf']["sofortueberweisung"]["user_id"];
+            $sPURL .= '&amp;project_id=' . $this->container['conf']["sofortueberweisung"]["project_id"] . '&amp;amount=' . number_format($fGesamtbrutto,
                     2, '.', '');
-            $sPURL .= '&amp;currency_id=' . $this->C["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
+            $sPURL .= '&amp;currency_id=' . $this->container['conf']["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
             $sPURL .= urlencode(\HaaseIT\Textcat::T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ') . $iId;
-            if (isset($this->C["interactive_paymentmethods_redirect_immediately"]) && $this->C["interactive_paymentmethods_redirect_immediately"]) {
+            if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPURL);
                 die();
             }

@@ -24,14 +24,14 @@ class Paypal extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders ';
         $sql .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
         $hResult->execute();
@@ -40,11 +40,11 @@ class Paypal extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPaypalURL = $this->C["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->C["paypal"]["business"];
+            $sPaypalURL = $this->container['conf']["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->container['conf']["paypal"]["business"];
             $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
-            $sPaypalURL .= '&currency_code=' . $this->C["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
+            $sPaypalURL .= '&currency_code=' . $this->container['conf']["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
                     number_format($fGesamtbrutto, 2, '.', ''));
-            if (isset($this->C["interactive_paymentmethods_redirect_immediately"]) && $this->C["interactive_paymentmethods_redirect_immediately"]) {
+            if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPaypalURL);
                 die();
             }
