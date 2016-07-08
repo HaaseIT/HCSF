@@ -107,7 +107,7 @@ class Updatecart extends Base
             $aAR = [
                 'cart' => $_SESSION["cart"],
                 'reply' => $sReply,
-                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->container['conf'], $_SESSION["cart"]),
+                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->container, $_SESSION["cart"]),
                 'currency' => $this->container['conf']["waehrungssymbol"],
                 'numberformat_decimals' => $this->container['conf']['numberformat_decimals'],
                 'numberformat_decimal_point' => $this->container['conf']['numberformat_decimal_point'],

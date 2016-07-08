@@ -77,8 +77,7 @@ class Myorders extends Base
 
                     $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
-                        $this->container['lang'],
-                        $this->container['conf'],
+                        $this->container,
                         true,
                         '',
                         '',

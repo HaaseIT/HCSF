@@ -20,7 +20,7 @@
 
 require __DIR__.'/../app/init.php';
 
-$aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $container['lang'], $container['oItem'], $requesturi);
+$aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $requesturi);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);

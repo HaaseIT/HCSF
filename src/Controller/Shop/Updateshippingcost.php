@@ -28,7 +28,7 @@ class Updateshippingcost extends Base
         $this->P->cb_pagetype = 'content';
 
         $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container['lang'], $this->container['conf']);
+        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container);
 
         header("Content-Type: text/html; charset=UTF-8");
         $return = '<div>';

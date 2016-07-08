@@ -165,7 +165,7 @@ $container['twig'] = function ($c) {
     return $twig;
 };
 
-$container['lang'] = \HaaseIT\HCSF\Helper::getLanguage($container['conf']);
+$container['lang'] = \HaaseIT\HCSF\Helper::getLanguage($container);
 
 if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')) {
     $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php';

@@ -245,8 +245,7 @@ class Shopadmin extends Base
                 $aSData = array_merge(
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsCarttable,
-                        $this->container['lang'],
-                        $this->container['conf'],
+                        $this->container,
                         true,
                         $aSData["orderdata"]["o_group"],
                         '',

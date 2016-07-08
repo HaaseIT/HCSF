@@ -90,10 +90,10 @@ class Helper
         return $string;
     }
 
-    public static function generatePage($container, $P, $sLang, $oItem, $requesturi)
+    public static function generatePage($container, $P, $requesturi)
     {
         $aP = [
-            'language' => $sLang,
+            'language' => $container['lang'],
             'pageconfig' => $P->cb_pageconfig,
             'pagetype' => $P->cb_pagetype,
             'subnavkey' => $P->cb_subnav,
@@ -143,21 +143,21 @@ class Helper
         // Language selector
         // TODO: move content of langselector out of php script
         if (count($container['conf']["lang_available"]) > 1) {
-            $aP["langselector"] = self::getLangSelector($container['conf'], $sLang);
+            $aP["langselector"] = self::getLangSelector($container);
         }
 
         // Shopping cart infos
         if ($container['conf']["enable_module_shop"]) {
-            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container['conf']);
+            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container);
         }
 
         $aP["countrylist"][] = ' | ';
-        foreach ($container['conf']["countries_".$sLang] as $sKey => $sValue) {
+        foreach ($container['conf']["countries_".$container['lang']] as $sKey => $sValue) {
             $aP["countrylist"][] = $sKey.'|'.$sValue;
         }
 
         if ($container['conf']["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
-            $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($container['conf'], $oItem, $P, $aP);
+            $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($container, $P, $aP);
         }
 
         $aP["content"] = $P->oPayload->cl_html;
@@ -187,20 +187,20 @@ class Helper
         \HaaseIT\Tools::debug($P, '$P');
     }
 
-    private static function getLangSelector($C, $sLang)
+    private static function getLangSelector($container)
     {
         $sLangselector = '';
-        if ($C["lang_detection_method"] == 'domain') {
+        if ($container['conf']["lang_detection_method"] == 'domain') {
             $aSessionGetVarsForLangSelector = [];
             if (session_status() == PHP_SESSION_ACTIVE) {
                 $aSessionGetVarsForLangSelector[session_name()] = session_id();
             }
             $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
         }
-        foreach ($C["lang_available"] as $sKey => $sValue) {
-            if ($sLang != $sKey) {
-                if ($C["lang_detection_method"] == 'domain') {
-                    $sLangselector .= '<a href="//www.' . $C["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+        foreach ($container['conf']["lang_available"] as $sKey => $sValue) {
+            if ($container['lang'] != $sKey) {
+                if ($container['conf']["lang_detection_method"] == 'domain') {
+                    $sLangselector .= '<a href="//www.' . $container['conf']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
                 } else {
                     $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
                 }
@@ -211,28 +211,29 @@ class Helper
         return $sLangselector;
     }
 
-    public static function getLanguage($C)
+    public static function getLanguage($container)
     {
-        if ($C["lang_detection_method"] == 'domain' && isset($C["lang_by_domain"]) && is_array($C["lang_by_domain"])) { // domain based language detection
-            foreach ($C["lang_by_domain"] as $sKey => $sValue) {
+        $langavailable = $container['conf']["lang_available"];
+        if ($container['conf']["lang_detection_method"] == 'domain' && isset($container['conf']["lang_by_domain"]) && is_array($container['conf']["lang_by_domain"])) { // domain based language detection
+            foreach ($container['conf']["lang_by_domain"] as $sKey => $sValue) {
                 if ($_SERVER["SERVER_NAME"] == $sValue || $_SERVER["SERVER_NAME"] == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }
             }
-        } elseif ($C["lang_detection_method"] == 'legacy') { // legacy language detection
-            $sLang = key($C["lang_available"]);
-            if (isset($_GET["language"]) && array_key_exists($_GET["language"], $C["lang_available"])) {
+        } elseif ($container['conf']["lang_detection_method"] == 'legacy') { // legacy language detection
+            $sLang = key($langavailable);
+            if (isset($_GET["language"]) && array_key_exists($_GET["language"], $langavailable)) {
                 $sLang = strtolower($_GET["language"]);
                 setcookie('language', strtolower($_GET["language"]), 0, '/');
-            } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $C["lang_available"])) {
+            } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $langavailable)) {
                 $sLang = strtolower($_COOKIE["language"]);
-            } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $C["lang_available"])) {
+            } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $langavailable)) {
                 $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
             }
         }
         if (!isset($sLang)) {
-            $sLang = key($C["lang_available"]);
+            $sLang = key($langavailable);
         }
 
         return $sLang;

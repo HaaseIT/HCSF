@@ -55,7 +55,7 @@ class Shoppingcart extends Base
                         $aErr["paymentmethod"] = true;
                     }
                 }
-                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container['lang'], $this->container['conf'], false, '', $aErr);
+                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container, false, '', $aErr);
             }
 
             // ----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ class Shoppingcart extends Base
             'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
             'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
             'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-            'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($this->container['conf'], $this->container['lang']),
+            'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($this->container),
             'o_orderdate' => date("Y-m-d"),
             'o_ordertimestamp' => time(),
             'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
@@ -267,7 +267,7 @@ class Shoppingcart extends Base
 
     private function buildOrderMailBody($bCust = true, $iId = 0)
     {
-        $aSHC = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container['lang'], $this->container['conf'], true);
+        $aSHC = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container, true);
 
         $aData = [
             'customerversion' => $bCust,
