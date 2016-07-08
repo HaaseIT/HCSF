@@ -22,21 +22,15 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Login extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->oItem = $oItem;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
-            $mLogin = $this->getLogin($this->C, $this->DB);
+            $mLogin = $this->getLogin($this->container['conf'], $this->container['db']);
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
                 $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
@@ -58,8 +52,8 @@ class Login extends Base
             }
         }
 
-        if ($this->C["enable_module_shop"]) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->C, $this->oItem);
+        if ($this->container['conf']["enable_module_shop"]) {
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container['conf'], $this->container['oItem']);
         }
     }
 
@@ -82,7 +76,7 @@ class Login extends Base
 
         if ($bTryEmail) $sql .= ' OR cust_email != \'\')';
 
-        $hResult = $this->DB->prepare($sql);
+        $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);

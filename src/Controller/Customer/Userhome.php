@@ -24,7 +24,7 @@ class Userhome extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
@@ -44,16 +44,16 @@ class Userhome extends Base
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse") . '<br>';
-                    $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $sErr, true);
+                    $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
 
                     if ($sErr == '') {
-                        if ($this->C["allow_edituserprofile"]) {
+                        if ($this->container['conf']["allow_edituserprofile"]) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
                                 'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -75,7 +75,7 @@ class Userhome extends Base
 
                         if (count($aData) > 1) {
                             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                            $hResult = $this->DB->prepare($sql);
+                            $hResult = $this->container['db']->prepare($sql);
                             foreach ($aData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
@@ -86,10 +86,10 @@ class Userhome extends Base
                         }
                     }
                 }
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'editprofile', $sErr);
-                //if ($this->C["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'editprofile', $sErr);
+                //if ($this->container['conf']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang, 'userhome');
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'userhome');
             }
             $aPData["showprofilelinks"] = false;
             if (!isset($_GET["editprofile"])) {

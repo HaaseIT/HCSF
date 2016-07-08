@@ -22,20 +22,14 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Logout extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig, $oItem)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->oItem = $oItem;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         unset($_SESSION["user"]);
-        if ($this->C["enable_module_shop"] && isset($_SESSION["cart"])) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->C, $this->oItem);
+        if ($this->container['conf']["enable_module_shop"] && isset($_SESSION["cart"])) {
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container['conf'], $this->container['oItem']);
         }
         $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("logout_message");
     }

@@ -24,7 +24,7 @@ class Forgotpassword extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
@@ -34,7 +34,7 @@ class Forgotpassword extends Base
 
             $aErr = [];
             if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                $aErr = $this->handleForgotPassword($this->DB, $this->C, $aErr);
+                $aErr = $this->handleForgotPassword($this->container['db'], $this->container['conf'], $aErr);
                 if (count($aErr) == 0) {
                     $this->P->cb_customdata["forgotpw"]["showsuccessmessage"] = true;
                 } else {
@@ -52,7 +52,7 @@ class Forgotpassword extends Base
 
             $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
             $hResult->execute();
             if ($hResult->rowCount() != 1) {
@@ -70,7 +70,7 @@ class Forgotpassword extends Base
                         'cust_id' => $aResult['cust_id'],
                     ];
                     $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
 
@@ -83,7 +83,7 @@ class Forgotpassword extends Base
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                     $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("forgotpw_mail_text2");
 
-                    \HaaseIT\HCSF\Helper::mailWrapper($this->C, $sTargetAddress, $sSubject, $sMessage);
+                    \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $sTargetAddress, $sSubject, $sMessage);
                 }
             }
         }

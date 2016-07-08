@@ -24,7 +24,7 @@ class Verifyemail extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
@@ -32,7 +32,7 @@ class Verifyemail extends Base
         } else {
             $sql = 'SELECT cust_email, cust_id FROM customer '
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
-            $hResult = $this->DB->prepare($sql);
+            $hResult = $this->container['db']->prepare($sql);
             $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -41,7 +41,7 @@ class Verifyemail extends Base
                 $aRow = $hResult->fetch();
                 $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
                 $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $this->DB->prepare($sql);
+                $hResult = $this->container['db']->prepare($sql);
                 foreach ($aData as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }

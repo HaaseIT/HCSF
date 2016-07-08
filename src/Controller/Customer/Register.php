@@ -22,15 +22,9 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 class Register extends Base
 {
-    public function __construct($C, $DB, $sLang, $twig)
-    {
-        parent::__construct($C, $DB, $sLang);
-        $this->twig = $twig;
-    }
-
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->C, $this->sLang);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container['conf'], $this->container['lang']);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
@@ -40,12 +34,12 @@ class Register extends Base
 
             $aErr = [];
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
-                $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->C, $this->sLang, $aErr);
+                $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr);
                 if (count($aErr) == 0) {
                     $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
                     $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
-                    $hResult = $this->DB->prepare($sql);
+                    $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
@@ -77,33 +71,33 @@ class Register extends Base
                             'cust_cancellationdisclaimeraccepted' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
                             'cust_emailverified' => 'n',
                             'cust_emailverificationcode' => $sEmailVerificationcode,
-                            'cust_active' => (($this->C["register_require_manual_activation"]) ? 'n' : 'y'),
+                            'cust_active' => (($this->container['conf']["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
                         ];
                         $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
 
-                        $hResult = $this->DB->prepare($sql);
+                        $hResult = $this->container['db']->prepare($sql);
                         foreach ($aData as $sKey => $sValue) {
                             $hResult->bindValue(':' . $sKey, $sValue, \PDO::PARAM_STR);
                         }
                         $hResult->execute();
 
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->C,
-                            $this->twig);
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->C, $this->twig,
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container['conf'],
+                            $this->container['twig']);
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container['conf'], $this->container['twig'],
                             true);
                         $aPData["showsuccessmessage"] = true;
                     } else {
                         $aErr["emailalreadytaken"] = true;
-                        $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C,
-                            $this->sLang, 'register', $aErr);
+                        $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'],
+                            $this->container['lang'], 'register', $aErr);
                     }
                 } else {
-                    $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C,
-                        $this->sLang, 'register', $aErr);
+                    $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'],
+                        $this->container['lang'], 'register', $aErr);
                 }
             } else {
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->C, $this->sLang,
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'],
                     'register');
             }
             if (isset($aPData) && count($aPData)) {
