@@ -41,3 +41,5 @@ define("GLIDE_SIGNATURE_KEY", $container['conf']['glide_signkey']);
 
 define("PATH_LOGS", __DIR__.'/../../hcsflogs/');
 define("FILE_PAYPALLOG", 'ipnlog.txt');
+
+const ENTITY_CUSTOMER = 'HaaseIT\HCSF\Entities\Customer\Customer';
