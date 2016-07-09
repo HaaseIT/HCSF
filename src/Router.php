@@ -61,6 +61,9 @@ class Router
                 '/_misc/paypal.html' => 'Shop\\Paypal',
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
+            if ($this->container['conf']['enable_sandbox']) {
+                $map['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
+            }
             $this->P = 404;
             $aURL = parse_url($this->container['request']->getRequestTarget());
             $this->sPath = $aURL["path"];
