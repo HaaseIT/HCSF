@@ -5,6 +5,14 @@ ALTER TABLE `orders_items`
   DROP `oi_price_brutto_rebated`;
 ALTER TABLE `item_base` CHANGE `itm_price` `itm_price` VARCHAR(12) NOT NULL;
 
+ALTER TABLE `customer`
+	CHANGE COLUMN `cust_active` `cust_active` VARCHAR(1) NOT NULL DEFAULT 'n' AFTER `cust_password`,
+	CHANGE COLUMN `cust_emailverified` `cust_emailverified` VARCHAR(1) NOT NULL DEFAULT 'n' AFTER `cust_active`,
+	CHANGE COLUMN `cust_tosaccepted` `cust_tosaccepted` VARCHAR(1) NOT NULL DEFAULT 'n' AFTER `cust_emailverificationcode`,
+	CHANGE COLUMN `cust_cancellationdisclaimeraccepted` `cust_cancellationdisclaimeraccepted` VARCHAR(1) NOT NULL DEFAULT 'n' AFTER `cust_tosaccepted`;
+
+
+
 V2.3.0
 New config value: purifier_doctype
 Delete files: functions.template.php
