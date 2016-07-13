@@ -28,7 +28,7 @@ class Register extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 

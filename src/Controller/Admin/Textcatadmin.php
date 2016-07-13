@@ -33,7 +33,7 @@ class Textcatadmin extends Base
         $return = '';
 
         if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
-            $aData = \HaaseIT\Textcat::getCompleteTextcatForCurrentLang();
+            $aData = $this->container['textcats']->getCompleteTextcatForCurrentLang();
 
             $aListSetting = [
                 ['title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
@@ -53,21 +53,21 @@ class Textcatadmin extends Base
             $return .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->container['twig']);
         } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
-                \HaaseIT\Textcat::deleteText($_GET["id"]);
+                $this->container['textcats']->deleteText($_GET["id"]);
                 $this->P->cb_customdata["deleted"] = true;
             } else {
                 $this->P->cb_customdata["edit"] = true;
 
-                \HaaseIT\Textcat::initTextIfVoid($_GET["id"]);
+                $this->container['textcats']->initTextIfVoid($_GET["id"]);
 
                 // if post:edit is set, update
                 if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-                    \HaaseIT\Textcat::$purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'textcat');
-                    \HaaseIT\Textcat::saveText($_POST["lid"], $_POST["text"]);
+                    $this->container['textcats']->$purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'textcat');
+                    $this->container['textcats']->saveText($_POST["lid"], $_POST["text"]);
                     $this->P->cb_customdata["updated"] = true;
                 }
 
-                $aData = \HaaseIT\Textcat::getSingleTextByID($_GET["id"]);
+                $aData = $this->container['textcats']->getSingleTextByID($_GET["id"]);
                 $this->P->cb_customdata["editform"] = [
                     'id' => $aData["tc_id"],
                     'lid' => $aData["tcl_id"],
@@ -94,12 +94,12 @@ class Textcatadmin extends Base
         } elseif ($_GET["action"] == 'add') {
             $this->P->cb_customdata["add"] = true;
             if (isset($_POST["add"]) && $_POST["add"] == 'do') {
-                $this->P->cb_customdata["err"] = \HaaseIT\Textcat::verifyAddTextKey($_POST["key"]);
+                $this->P->cb_customdata["err"] = $this->container['textcats']->verifyAddTextKey($_POST["key"]);
 
                 if (count($this->P->cb_customdata["err"]) == 0) {
                     $this->P->cb_customdata["addform"] = [
                         'key' => $_POST["key"],
-                        'id' => \HaaseIT\Textcat::addTextKey($_POST["key"]),
+                        'id' => $this->container['textcats']->addTextKey($_POST["key"]),
                     ];
                 }
             }

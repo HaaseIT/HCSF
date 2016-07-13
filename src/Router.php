@@ -128,14 +128,14 @@ class Router
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_found");
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             } elseif (!is_object($this->P) && $this->P == 500) {
                 $this->P = new \HaaseIT\HCSF\CorePage($this->container);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_server_error");
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_server_error");
                 header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
@@ -145,11 +145,11 @@ class Router
                     || $this->P->cb_pagetype == 'itemdetail'
                 )
                 ) { // no payload is fine if page is one of these
-                    $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_content_not_found");
+                    $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_content_not_found");
                     header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
                 }
             } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->container['lang']) { // if the page is available but not in the current language, display info
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
             }
         }
         return $this->P;

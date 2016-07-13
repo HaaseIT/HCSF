@@ -32,22 +32,22 @@ class Login extends Base
         } else {
             $mLogin = $this->getLogin($this->container['conf'], $this->container['db']);
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_success") . '<br>';
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
                 die();
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'tosnotaccepted') {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail_tosnotaccepted") . '<br>';
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_tosnotaccepted") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail_emailnotverified") . '<br><br>';
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_emailnotverified") . '<br><br>';
                 $this->P->oPayload->cl_html .= '<a href="/_misc/resendverificationmail.html?email='
-                    . $mLogin["data"]['cust_email'] . '">' . \HaaseIT\Textcat::T("login_fail_emailnotverifiedresend") . '</a>';
+                    . $mLogin["data"]['cust_email'] . '">' . $this->container['textcats']->T("login_fail_emailnotverifiedresend") . '</a>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail_accountinactive") . '<br>';
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_accountinactive") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } else {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("login_fail");
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail");
                 $this->P->cb_customcontenttemplate = 'customer/login';
             }
         }

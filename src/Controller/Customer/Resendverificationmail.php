@@ -28,7 +28,7 @@ class Resendverificationmail extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             $sql = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
             $sql .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
@@ -43,7 +43,7 @@ class Resendverificationmail extends Base
                 \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->container['conf'],
                     $this->container['twig'], true);
 
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("register_verificationmailresent");
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("register_verificationmailresent");
             }
         }
     }

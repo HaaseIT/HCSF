@@ -28,7 +28,7 @@ class Myorders extends Base
         $this->P->cb_pagetype = 'content';
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
 
@@ -47,9 +47,9 @@ class Myorders extends Base
 
                     $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($this->container['conf']["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
-                    $this->P->cb_customdata['orderdata']['paymentmethod'] = \HaaseIT\Textcat::T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
-                    $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? \HaaseIT\Textcat::T("myorders_paymentstatus_completed") : \HaaseIT\Textcat::T("myorders_paymentstatus_open"));
-                    $this->P->cb_customdata['orderdata']['orderstatus'] = \HaaseIT\HCSF\Shop\Helper::showOrderStatusText($aOrder["o_ordercompleted"]);
+                    $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->container['textcats']->T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
+                    $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? $this->container['textcats']->T("myorders_paymentstatus_completed") : $this->container['textcats']->T("myorders_paymentstatus_open"));
+                    $this->P->cb_customdata['orderdata']['orderstatus'] = \HaaseIT\HCSF\Shop\Helper::showOrderStatusText($this->container['textcats'], $aOrder["o_ordercompleted"]);
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder["o_shipping_service"];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
@@ -89,14 +89,14 @@ class Myorders extends Base
                 }
             } else {
                 $COList = [
-                    ['title' => \HaaseIT\Textcat::T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,],
-                    ['title' => \HaaseIT\Textcat::T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,],
-                    ['title' => \HaaseIT\Textcat::T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,],
-                    ['title' => \HaaseIT\Textcat::T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
-                    ['title' => \HaaseIT\Textcat::T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,],
-                    ['title' => \HaaseIT\Textcat::T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_orderdate"), 'key' => 'o_ordertime', 'width' => 110, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_paymenthethod"), 'key' => 'o_paymentmethod', 'width' => 125, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_paid"), 'key' => 'o_paymentcompleted', 'width' => 60, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_status"), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_shipping_service"), 'key' => 'o_shipping_service', 'width' => 90, 'linked' => false,],
+                    ['title' => $this->container['textcats']->T("order_head_shipping_trackingno"), 'key' => 'o_shipping_trackingno', 'width' => 130, 'linked' => false,],
                     [
-                        'title' => \HaaseIT\Textcat::T("order_show"),
+                        'title' => $this->container['textcats']->T("order_show"),
                         'key' => 'o_id',
                         'width' => 120,
                         'linked' => true,
@@ -128,14 +128,14 @@ class Myorders extends Base
             while ($aRow = $hResult->fetch()) {
                 $sStatus = self::showOrderStatusText($aRow["o_ordercompleted"]);
 
-                if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_prepay");
-                elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_paypal");
-                elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_debit");
-                elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = \HaaseIT\Textcat::T("order_paymentmethod_invoice");
+                if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = $this->container['textcats']->T("order_paymentmethod_prepay");
+                elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = $this->container['textcats']->T("order_paymentmethod_paypal");
+                elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = $this->container['textcats']->T("order_paymentmethod_debit");
+                elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = $this->container['textcats']->T("order_paymentmethod_invoice");
                 else $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);
 
-                if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_yes"));
-                else $sPaymentstatus = ucwords(\HaaseIT\Textcat::T("misc_no"));
+                if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords($this->container['textcats']->T("misc_yes"));
+                else $sPaymentstatus = ucwords($this->container['textcats']->T("misc_no"));
 
                 $aData[] = [
                     'o_id' => $aRow["o_id"],
@@ -148,7 +148,7 @@ class Myorders extends Base
                 ];
             }
             $return .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->container['twig']);
-        } else $return .= \HaaseIT\Textcat::T("myorders_no_orders_to_display");
+        } else $return .= $this->container['textcats']->T("myorders_no_orders_to_display");
 
         return $return;
     }

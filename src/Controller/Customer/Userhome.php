@@ -28,7 +28,7 @@ class Userhome extends Base
         $this->P->cb_pagetype = 'content';
 
         if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
 
@@ -49,7 +49,7 @@ class Userhome extends Base
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
-                    if ($iRows == 1) $sErr .= \HaaseIT\Textcat::T("userprofile_emailalreadyinuse") . '<br>';
+                    if ($iRows == 1) $sErr .= $this->container['textcats']->T("userprofile_emailalreadyinuse") . '<br>';
                     $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
 
                     if ($sErr == '') {
@@ -87,7 +87,7 @@ class Userhome extends Base
                     }
                 }
                 $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'editprofile', $sErr);
-                //if ($this->container['conf']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.\HaaseIT\Textcat::T("userprofile_infoeditemail"); // Future implementation
+                //if ($this->container['conf']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
             } else {
                 $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'userhome');
             }

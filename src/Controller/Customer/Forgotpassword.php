@@ -28,7 +28,7 @@ class Forgotpassword extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
 
@@ -75,13 +75,13 @@ class Forgotpassword extends Base
                     $hResult->execute();
 
                     $sTargetAddress = $aResult['cust_email'];
-                    $sSubject = \HaaseIT\Textcat::T("forgotpw_mail_subject");
-                    $sMessage = \HaaseIT\Textcat::T("forgotpw_mail_text1");
+                    $sSubject = $this->container['textcats']->T("forgotpw_mail_subject");
+                    $sMessage = $this->container['textcats']->T("forgotpw_mail_text1");
                     $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
                     $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
-                    $sMessage .= '<br><br>'.\HaaseIT\Textcat::T("forgotpw_mail_text2");
+                    $sMessage .= '<br><br>'.$this->container['textcats']->T("forgotpw_mail_text2");
 
                     \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $sTargetAddress, $sSubject, $sMessage);
                 }

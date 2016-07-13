@@ -28,10 +28,10 @@ class Resetpassword extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
-                $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+                $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
             } else {
                 $sql = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
 
@@ -42,13 +42,13 @@ class Resetpassword extends Base
                 $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
                 if ($hResult->rowCount() != 1) {
-                    $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+                    $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
                 } else {
                     $aErr = [];
                     $aResult = $hResult->fetch();
                     $iTimestamp = time();
                     if ($aResult['cust_pwresettimestamp'] < $iTimestamp - DAY) {
-                        $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("pwreset_error_expired");
+                        $this->P->oPayload->cl_html = $this->container['textcats']->T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
                         $this->P->cb_customdata["pwreset"]["minpwlength"] = $this->container['conf']["minimum_length_password"];

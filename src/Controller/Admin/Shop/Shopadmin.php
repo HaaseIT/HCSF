@@ -153,7 +153,7 @@ class Shopadmin extends Base
 
                     if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
                     else $sZahlungsmethode = '<span style="color: red;">';
-                    $mZahlungsmethode = \HaaseIT\Textcat::T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
+                    $mZahlungsmethode = $this->container['textcats']->T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
                     if ($mZahlungsmethode ) $sZahlungsmethode .= $mZahlungsmethode;
                     else $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
                     $sZahlungsmethode .= '</span>';
