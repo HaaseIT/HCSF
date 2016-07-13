@@ -44,16 +44,16 @@ class Sofortueberweisung extends Base
             $sPURL .= '&amp;project_id=' . $this->container['conf']["sofortueberweisung"]["project_id"] . '&amp;amount=' . number_format($fGesamtbrutto,
                     2, '.', '');
             $sPURL .= '&amp;currency_id=' . $this->container['conf']["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
-            $sPURL .= urlencode(\HaaseIT\Textcat::T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ') . $iId;
+            $sPURL .= urlencode($this->container['textcats']->T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ') . $iId;
             if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPURL);
                 die();
             }
 
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paysofortueberweisung_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . \HaaseIT\Textcat::T("misc_paysofortueberweisung") . '</a>';
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paysofortueberweisung_greeting") . '<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . $this->container['textcats']->T("misc_paysofortueberweisung") . '</a>';
         } else {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paysofortueberweisung_paymentnotavailable");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paysofortueberweisung_paymentnotavailable");
         }
     }
 }

@@ -179,11 +179,6 @@ if (!$container['conf']['maintenancemode']) {
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    /*
-    $langavailable = $container['conf']["lang_available"];
-    \HaaseIT\Textcat::init($container['db'], $container['lang'], key($langavailable), $container['conf']['textcatsverbose'], PATH_LOGS);
-    */
-
     $container['textcats'] = function ($c)
     {
         $langavailable = $c['conf']["lang_available"];

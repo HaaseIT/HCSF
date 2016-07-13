@@ -40,8 +40,7 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow['cust_emailverificationcode'];
 
-                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->container['conf'],
-                    $this->container['twig'], true);
+                \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->container, true);
 
                 $this->P->oPayload->cl_html = $this->container['textcats']->T("register_verificationmailresent");
             }

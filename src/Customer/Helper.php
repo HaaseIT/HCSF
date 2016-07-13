@@ -187,21 +187,21 @@ class Helper
         return $aData;
     }
 
-    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $C, $twig, $bCust = false)
+    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $container, $bCust = false)
     {
         if ($bCust) {
-            $sSubject = \HaaseIT\Textcat::T("register_mail_emailverification_subject");
+            $sSubject = $container['textcats']->T("register_mail_emailverification_subject");
 
             $aP['link'] = 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
             $aP['link'] .= $_SERVER["SERVER_NAME"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
 
-            $sMessage = $twig->render('customer/sendverificationmail.twig', $aP);
+            $sMessage = $container['twig']->render('customer/sendverificationmail.twig', $aP);
         }
         else {
             $sSubject = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_subject');
             $sMessage = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text1').' ';
-            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text2').' '.date($C['locale_format_date_time']);
-            $sTargetAddress = $C["email_sender"];
+            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text2').' '.date($container['conf']['locale_format_date_time']);
+            $sTargetAddress = $container['conf']["email_sender"];
         }
 
         \HaaseIT\HCSF\Helper::mailWrapper($C, $sTargetAddress, $sSubject, $sMessage);

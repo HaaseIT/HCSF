@@ -82,9 +82,9 @@ class Register extends Base
                         }
                         $hResult->execute();
 
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container['conf'],
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
                             $this->container['twig']);
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container['conf'], $this->container['twig'],
+                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
                             true);
                         $aPData["showsuccessmessage"] = true;
                     } else {

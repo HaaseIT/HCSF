@@ -28,7 +28,7 @@ class Updatecart extends Base
         $this->P->cb_pagetype = 'content';
 
         if (($this->container['conf']["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) || !isset($_SERVER["HTTP_REFERER"])) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_default");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             $iAmount = '';
             if (isset($_REQUEST["amount"])) {

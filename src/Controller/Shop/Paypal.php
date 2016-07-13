@@ -41,7 +41,7 @@ class Paypal extends Base
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $sPaypalURL = $this->container['conf']["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->container['conf']["paypal"]["business"];
-            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . \HaaseIT\Textcat::T("misc_paypaypal_paypaltitle") . ' ' . $iId;
+            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . $this->container['textcats']->T("misc_paypaypal_paypaltitle") . ' ' . $iId;
             $sPaypalURL .= '&currency_code=' . $this->container['conf']["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
                     number_format($fGesamtbrutto, 2, '.', ''));
             if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
@@ -49,10 +49,10 @@ class Paypal extends Base
                 die();
             }
 
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paypaypal_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . \HaaseIT\Textcat::T("misc_paypaypal") . '</a>';
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paypaypal_greeting") . '<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . $this->container['textcats']->T("misc_paypaypal") . '</a>';
         } else {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("misc_paypaypal_paymentnotavailable");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paypaypal_paymentnotavailable");
         }
     }
 }

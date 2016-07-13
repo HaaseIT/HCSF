@@ -28,7 +28,7 @@ class Shoppingcart extends Base
         $this->P->cb_pagetype = 'contentnosubnav';
 
         if ($this->container['conf']["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = \HaaseIT\Textcat::T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
             $this->P->oPayload->cl_html = '';
@@ -62,7 +62,7 @@ class Shoppingcart extends Base
             // Checkout
             // ----------------------------------------------------------------------------
             if (!isset($aShoppingcart)) {
-                $this->P->oPayload->cl_html .= \HaaseIT\Textcat::T("shoppingcart_empty");
+                $this->P->oPayload->cl_html .= $this->container['textcats']->T("shoppingcart_empty");
             } else {
                 if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
                     if (count($aErr) == 0) {
@@ -248,7 +248,7 @@ class Shoppingcart extends Base
             $aFilesToSend[] = PATH_DOCROOT.$this->container['conf']['directory_emailattachments'].'/'.$this->container['conf']["email_orderconfirmation_attachment_cancellationform_".$this->container['lang']];
         } else $aFilesToSend = [];
 
-        \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $this->container['request']->parsedBody["email"], \HaaseIT\Textcat::T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
+        \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $this->container['request']->parsedBody["email"], $this->container['textcats']->T("shoppingcart_mail_subject") . ' ' . $iInsertID, $sMailbody_they, $aImagesToSend, $aFilesToSend);
         \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $this->container['conf']["email_sender"], 'Bestellung im Webshop Nr: ' . $iInsertID, $sMailbody_us, $aImagesToSend);
     }
 
@@ -316,7 +316,7 @@ class Shoppingcart extends Base
                 || ($_GET["msg"] == 'removed')
                 && isset($_GET["cartkey"])
             ) {
-                $return .= \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
+                $return .= $this->container['textcats']->T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
                 if (isset($this->container['conf']["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                     $mCartkeys = explode('|', $_GET["cartkey"]);
                     foreach ($mCartkeys as $sKey => $sValue) {
@@ -324,7 +324,7 @@ class Shoppingcart extends Base
                             $return .= $sValue . ', ';
                         } else {
                             $TMP = explode(':', $sValue);
-                            $return .= \HaaseIT\Textcat::T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
+                            $return .= $this->container['textcats']->T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
                             unset($TMP);
                         }
                     }
@@ -332,7 +332,7 @@ class Shoppingcart extends Base
                 } else {
                     $return .= $_GET["cartkey"];
                 }
-                $return.= ' ' . \HaaseIT\Textcat::T("shoppingcart_msg_" . $_GET["msg"] . "_2");
+                $return.= ' ' . $this->container['textcats']->T("shoppingcart_msg_" . $_GET["msg"] . "_2");
                 if ($_GET["msg"] == 'updated') {
                     $return .= ' ' . $_GET["amount"];
                 }
