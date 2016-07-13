@@ -23,18 +23,18 @@ namespace HaaseIT\HCSF\Shop;
 
 class Helper
 {
-    public static function showOrderStatusText($sStatusShort)
+    public static function showOrderStatusText($textcats, $sStatusShort)
     {
         if ($sStatusShort == 'y') {
-            return \HaaseIT\Textcat::T("order_status_completed");
+            return $textcats->T("order_status_completed");
         } elseif ($sStatusShort == 'n') {
-            return \HaaseIT\Textcat::T("order_status_open");
+            return $textcats->T("order_status_open");
         } elseif ($sStatusShort == 'i') {
-            return \HaaseIT\Textcat::T("order_status_inwork");
+            return $textcats->T("order_status_inwork");
         } elseif ($sStatusShort == 's') {
-            return \HaaseIT\Textcat::T("order_status_canceled");
+            return $textcats->T("order_status_canceled");
         } elseif ($sStatusShort == 'd') {
-            return \HaaseIT\Textcat::T("order_status_deleted");
+            return $textcats->T("order_status_deleted");
         }
 
         return '';

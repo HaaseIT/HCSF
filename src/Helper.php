@@ -200,9 +200,9 @@ class Helper
         foreach ($container['conf']["lang_available"] as $sKey => $sValue) {
             if ($container['lang'] != $sKey) {
                 if ($container['conf']["lang_detection_method"] == 'domain') {
-                    $sLangselector .= '<a href="//www.' . $container['conf']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                    $sLangselector .= '<a href="//www.' . $container['conf']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
                 } else {
-                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . \HaaseIT\Textcat::T("misc_language_" . $sKey) . '</a> ';
+                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
                 }
             }
         }

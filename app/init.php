@@ -132,39 +132,6 @@ if ($container['conf']["enable_module_customer"] && isset($_COOKIE["acceptscooki
 
 date_default_timezone_set($container['conf']["defaulttimezone"]);
 
-// ----------------------------------------------------------------------------
-// Begin Twig loading and init
-// ----------------------------------------------------------------------------
-
-$container['twig'] = function ($c) {
-    $loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
-    $twig_options = [
-        'autoescape' => false,
-        'debug' => (isset($c['conf']["debug"]) && $c['conf']["debug"] ? true : false)
-    ];
-    if (isset($c['conf']["templatecache_enable"]) && $c['conf']["templatecache_enable"] &&
-        is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
-        $twig_options["cache"] = PATH_TEMPLATECACHE;
-    }
-    $twig = new Twig_Environment($loader, $twig_options);
-
-    if ($c['conf']['allow_parsing_of_page_content']) {
-        $twig->addExtension(new Twig_Extension_StringLoader());
-    } else { // make sure, template_from_string is callable
-        $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
-    }
-
-    if (isset($c['conf']["debug"]) && $c['conf']["debug"]) {
-        //$twig->addExtension(new Twig_Extension_Debug());
-    }
-    $twig->addFunction('T', new Twig_Function_Function('\HaaseIT\Textcat::T'));
-    $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
-    $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
-    $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
-
-    return $twig;
-};
-
 $container['lang'] = \HaaseIT\HCSF\Helper::getLanguage($container);
 
 if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')) {
@@ -212,8 +179,19 @@ if (!$container['conf']['maintenancemode']) {
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
+    /*
     $langavailable = $container['conf']["lang_available"];
     \HaaseIT\Textcat::init($container['db'], $container['lang'], key($langavailable), $container['conf']['textcatsverbose'], PATH_LOGS);
+    */
+
+    $container['textcats'] = function ($c)
+    {
+        $langavailable = $c['conf']["lang_available"];
+        $textcats = new \HaaseIT\Textcat($c, key($langavailable), $c['conf']['textcatsverbose'], PATH_LOGS);
+        $textcats->loadTextcats();
+
+        return $textcats;
+    };
 
     $container['navstruct'] = function ($c)
     {
@@ -245,6 +223,41 @@ if (!$container['conf']['maintenancemode']) {
         return $navstruct;
     };
 }
+
+// ----------------------------------------------------------------------------
+// Begin Twig loading and init
+// ----------------------------------------------------------------------------
+
+$container['twig'] = function ($c) {
+    $loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
+    $twig_options = [
+        'autoescape' => false,
+        'debug' => (isset($c['conf']["debug"]) && $c['conf']["debug"] ? true : false)
+    ];
+    if (isset($c['conf']["templatecache_enable"]) && $c['conf']["templatecache_enable"] &&
+        is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
+        $twig_options["cache"] = PATH_TEMPLATECACHE;
+    }
+    $twig = new Twig_Environment($loader, $twig_options);
+
+    if ($c['conf']['allow_parsing_of_page_content']) {
+        $twig->addExtension(new Twig_Extension_StringLoader());
+    } else { // make sure, template_from_string is callable
+        $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
+    }
+
+    if (isset($c['conf']["debug"]) && $c['conf']["debug"]) {
+        //$twig->addExtension(new Twig_Extension_Debug());
+    }
+    //$twig->addFunction('T', new Twig_Function_Function('$c[\'textcats\']->T'));
+    $twig->addFunction(new Twig_SimpleFunction('T', [$c['textcats'], 'T']));
+
+    $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
+    $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
+    $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
+
+    return $twig;
+};
 
 $container['oItem'] = '';
 if ($container['conf']["enable_module_shop"]) {
