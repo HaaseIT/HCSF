@@ -90,26 +90,18 @@ class Login extends Base
             if (password_verify($_POST["password"], $aRow['cust_password'])) {
                 if ($aRow['cust_active'] == 'y' && $aRow['cust_emailverified'] == 'y' && $aRow['cust_tosaccepted'] == 'y') {
                     $_SESSION["user"] = $aRow;
-                    $mGet["status"] = 'success';
+                    return ['status' => 'success'];
                 } elseif ($aRow['cust_tosaccepted'] == 'n') {
-                    $mGet["status"] = 'tosnotaccepted';
+                    return ['status' => 'tosnotaccepted'];
                 } elseif ($aRow['cust_emailverified'] == 'n') {
-                    $mGet["status"] = 'emailnotverified';
-                    $mGet["data"] = $aRow;
+                    return ['status' => 'emailnotverified', 'data' => $aRow,];
                 } elseif ($aRow['cust_active'] == 'n') {
-                    $mGet["status"] = 'accountinactive';
-                } else {
-                    $mGet = false;
+                    return ['status' => 'accountinactive',];
                 }
-            } else {
-                $mGet = false;
             }
-
-        } else {
-            $mGet = false;
         }
 
-        return $mGet;
+        return false;
     }
 
 }
