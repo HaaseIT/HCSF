@@ -1,19 +1,23 @@
-DirectoryIndex app.php
+RewriteEngine On
 
-<IfModule mod_rewrite.c>
-    RewriteEngine On
+# If the requested filename exists, simply serve it.
+# We only want to let Apache serve files and not directories.
+#RewriteCond %{REQUEST_FILENAME} -s [OR]
+#RewriteCond %{REQUEST_FILENAME} -l [OR]
+#RewriteCond %{REQUEST_FILENAME} -d
+#RewriteRule ^.*$ - [L]
 
-    # If the requested filename exists, simply serve it.
-    # We only want to let Apache serve files and not directories.
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule .? - [L]
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .? - [L]
 
-    # Rewrite all other queries to the front controller.
-    RewriteRule .? ./app.php [L]
+# Rewrite all other queries to the front controller.
+#RewriteRule .? ./app.php [L]
+RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+RewriteRule ^(.*) - [E=BASE:%1]
+RewriteRule ^(.*)$ %{ENV:BASE}/app.php [L]
 
-    # For 1and1 the above won't work, use this instead:
-    # RewriteRule .? %{ENV:BASE}/app.php [L]
+# For 1and1 the above won't work, use this instead:
+# RewriteRule .? %{ENV:BASE}/app.php [L]
 
-    # workaround for php cgi mode
-    SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
-</IfModule>
+# workaround for php cgi mode
+SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
