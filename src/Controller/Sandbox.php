@@ -19,12 +19,69 @@
  */
 
 namespace HaaseIT\HCSF\Controller;
- 
+
 
 class Sandbox extends Base
 {
     public function preparePage()
     {
-        $this->P = 500;
+        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P->cb_pagetype = 'content';
+
+        $html = '<pre>';
+
+        /*
+        $this->container['entitymanager']->getConnection()
+            ->getConfiguration()
+            ->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger())
+        ;
+        */
+
+        //$customer = $this->container['entitymanager']->find(ENTITY_CUSTOMER, 1);
+
+        //$this->P->oPayload->cl_html = \HaaseIT\Tools::debug($customer->getName(), 'customername', true);
+
+
+        $dql = "SELECT l, b FROM ".ENTITY_USERPAGE_LANG." l JOIN l.basepage b WHERE l.language = ?1 AND b.key = ?2";
+        //$dql = "SELECT l FROM ".ENTITY_USERPAGE_LANG." l";
+        //die($dql);
+        try
+        {
+            $pages = $this->container['entitymanager']->createQuery($dql)
+                ->setParameter(1, 'de')
+                ->setParameter(2, '/index.html')
+                ->setMaxResults(10)
+                ->getResult();
+            foreach ($pages as $page) {
+                $html .= 'base id:'.$page->getBasepage()->getId().PHP_EOL;
+                $html .= 'base key:'.$page->getBasepage()->getKey().PHP_EOL;
+                $html .= 'base group:'.$page->getBasepage()->getGroup().PHP_EOL;
+                $html .= 'base pagetype:'.$page->getBasepage()->getPagetype().PHP_EOL;
+                $html .= 'base pageconfig:'.$page->getBasepage()->getPageconfig().PHP_EOL;
+                $html .= 'base subnav:'.$page->getBasepage()->getSubnav().PHP_EOL;
+
+                $html .= 'lang id:'.$page->getId().PHP_EOL;
+                $html .= 'lang language:'.$page->getLanguage().PHP_EOL;
+                $html .= 'lang html:'.$page->getHtml().PHP_EOL;
+                $html .= 'lang keywords:'.$page->getKeywords().PHP_EOL;
+                $html .= 'lang description:'.$page->getDescription().PHP_EOL;
+                $html .= 'lang title:'.$page->getTitle().PHP_EOL;
+
+                $page->getBasepage()->setGroup('testi');
+                $page->setKeywords('testi kel');
+
+                $this->container['entitymanager']->persist($page);
+                $this->container['entitymanager']->flush();
+
+
+            }
+        }
+        catch (\Exception $e)
+        {
+            $html .= \HaaseIT\Tools::debug($e, 'exception', true);
+        }
+
+        $this->P->oPayload->cl_html = $html.'</pre>';
+
     }
 }
