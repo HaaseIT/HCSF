@@ -43,3 +43,5 @@ define("PATH_LOGS", __DIR__.'/../../hcsflogs/');
 define("FILE_PAYPALLOG", 'ipnlog.txt');
 
 const ENTITY_CUSTOMER = 'HaaseIT\HCSF\Entities\Customer\Customer';
+const ENTITY_USERPAGE_LANG = 'HaaseIT\HCSF\Entities\UserpageLang';
+const ENTITY_USERPAGE_BASE = 'HaaseIT\HCSF\Entities\UserpageBase';
