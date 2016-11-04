@@ -60,7 +60,7 @@ class UserPagePayload extends PagePayload
 
     public function write() {
         $aData = [
-            'cl_html' => $this->purifier->purify($this->cl_html),
+            'cl_html' => (!empty($this->purifier) ? $this->purifier->purify($this->cl_html) : $this->cl_html),
             'cl_title' => filter_var($this->cl_title, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_description' => filter_var($this->cl_description, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_keywords' => filter_var($this->cl_keywords, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),

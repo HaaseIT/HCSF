@@ -59,7 +59,11 @@ class Pageadmin extends Base
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
-                        $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
+                        if ($this->container['conf']['pagetext_enable_purifier']) {
+                            $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
+                        } else {
+                            $purifier = false;
+                        }
 
                         $Ptoedit->cb_pagetype = $_POST['page_type'];
                         $Ptoedit->cb_group = $_POST['page_group'];
