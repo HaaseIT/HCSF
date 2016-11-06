@@ -1,4 +1,6 @@
 V2.4.0
+The config.navi.php format has changed, please migrate it!
+
 ALTER TABLE `orders_items`
   DROP `oi_price_brutto_list`,
   DROP `oi_price_brutto_sale`,
