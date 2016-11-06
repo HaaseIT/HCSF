@@ -67,7 +67,7 @@ class UserPage extends Page
         $aData = [
             'cb_pagetype' => filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_group' => filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'cb_pageconfig' => $this->purifier->purify($this->cb_pageconfig),
+            'cb_pageconfig' => $this->cb_pageconfig,
             'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_key' => $this->cb_key,
         ];
