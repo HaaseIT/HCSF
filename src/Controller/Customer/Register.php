@@ -71,7 +71,7 @@ class Register extends Base
                             'cust_cancellationdisclaimeraccepted' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
                             'cust_emailverified' => 'n',
                             'cust_emailverificationcode' => $sEmailVerificationcode,
-                            'cust_active' => (($this->container['conf']["register_require_manual_activation"]) ? 'n' : 'y'),
+                            'cust_active' => (($this->container['conf']['customer']["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
                         ];
                         $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');

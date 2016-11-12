@@ -14,20 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-maintenancemode: true
-textcatsverbose: false
-debug: false
+maintenancemode: false
+textcatsverbose: true
+debug: true
 enable_module_shop: true
 enable_module_customer: true
-enable_sandbox: false
+enable_sandbox: true
 defaulttimezone: Europe/Berlin
-default_pagetitle: Sitetitle
+default_pagetitle: 'HCSF by Haase IT'
 templatecache_enable: false
 template_base: base.twig
 subnav_default: root
-navigation_fetch_text_from_textcats: true
-email_sendername: 'Sitename Webshop'
-email_sender: mail@domain.tld
+email_sendername: 'HCSF Webshop'
+email_sender: mail@haase-it.com
 lang_available:
     de: German
     en: English
@@ -54,26 +53,14 @@ defaultcountrybylang:
     de: DE
     en: GB
     es: ES
-directory_images: _img
+directory_images: _img/
 directory_emailattachments: _assets
-pagetext_enable_purifier: true
 pagetext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
 pagetext_loose_filtering: false
-textcat_enable_purifier: true
 textcat_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
 textcat_loose_filtering: false
 purifier_doctype: 'HTML 4.01 Transitional' # valid values: 'HTML 4.01 Transitional', 'HTML 4.01 Strict', 'XHTML 1.0 Transitional', 'XHTML 1.0 Strict', 'XHTML 1.1'
 numberformat_decimals: 2
 numberformat_decimal_point: ','
 numberformat_thousands_seperator: '.'
-directory_glide_master: glideimgmaster
-glide_max_imagesize: 1000000 # the maximum allowed imagesize for glide operations in pixels total
 allow_parsing_of_page_content: false
-mail_method: mail # mail (uses the PHP mail() function) / sendmail (uses the systems sendmail) / smtp (use a smtp server, configure server details below)
-mail_smtp_server: localhost
-mail_smtp_port: 25
-mail_smtp_auth: true
-mail_smtp_auth_user: username
-mail_smtp_auth_pwd: password
-mail_smtp_secure: true
-mail_smtp_secure_method: tls # tls / ssl

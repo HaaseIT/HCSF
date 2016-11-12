@@ -219,14 +219,14 @@ class Itemadmin extends Base
             'weight' => $aItemdata["base"]['itm_weight'],
         ];
 
-        if (!$this->container['conf']["vat_disable"]) {
+        if (!$this->container['conf']['shop']["vat_disable"]) {
             $aOptions[] = '|';
-            foreach ($this->container['conf']["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
+            foreach ($this->container['conf']['shop']["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
             $aData["vatoptions"] = $aOptions;
             unset($aOptions);
         }
         $aData["rgoptions"][] = '';
-        foreach ($this->container['conf']["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
+        foreach ($this->container['conf']['shop']["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
 
         $aGroups = $this->admin_getItemgroups('');
         $aData["groupoptions"][] = '';
@@ -259,7 +259,7 @@ class Itemadmin extends Base
             'itm_weight' => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
             'itm_id' => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!$this->container['conf']["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!$this->container['conf']['shop']["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->container['db']->prepare($sql);

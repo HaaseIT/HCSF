@@ -7,7 +7,7 @@ class ItemsTest extends TestCase
     {
         bcscale(6);
 
-        $container['conf'] = [
+        $container['conf']['shop'] = [
             'vat' => [
                 'full' => 0,
                 'reduced' => 0,
@@ -34,7 +34,7 @@ class ItemsTest extends TestCase
         $this->assertArrayNotHasKey('netto_rebated', $aPrice);
 
         // set vat to normal values
-        $container['conf'] = [
+        $container['conf']['shop'] = [
             'vat' => [
                 'full' => 19,
                 'reduced' => 7,

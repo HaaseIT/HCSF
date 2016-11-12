@@ -40,11 +40,13 @@ class Paypal extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPaypalURL = $this->container['conf']["paypal"]["url"] . '?cmd=_xclick&rm=2&custom=' . $iId . '&business=' . $this->container['conf']["paypal"]["business"];
+            $sPaypalURL = $this->container['conf']['shop']["paypal"]["url"]
+                .'?cmd=_xclick&rm=2&custom='
+                .$iId . '&business='.$this->container['conf']['shop']["paypal"]["business"];
             $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . $this->container['textcats']->T("misc_paypaypal_paypaltitle") . ' ' . $iId;
-            $sPaypalURL .= '&currency_code=' . $this->container['conf']["paypal"]["currency_id"] . '&amount=' . str_replace(',', '.',
-                    number_format($fGesamtbrutto, 2, '.', ''));
-            if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
+            $sPaypalURL .= '&currency_code=' . $this->container['conf']['shop']["paypal"]["currency_id"]
+                .'&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
+            if ($this->container['conf']['shop']["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPaypalURL);
                 die();
             }

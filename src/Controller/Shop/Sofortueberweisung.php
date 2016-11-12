@@ -40,12 +40,14 @@ class Sofortueberweisung extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPURL = 'https://www.sofortueberweisung.de/payment/start?user_id=' . $this->container['conf']["sofortueberweisung"]["user_id"];
-            $sPURL .= '&amp;project_id=' . $this->container['conf']["sofortueberweisung"]["project_id"] . '&amp;amount=' . number_format($fGesamtbrutto,
-                    2, '.', '');
-            $sPURL .= '&amp;currency_id=' . $this->container['conf']["sofortueberweisung"]["currency_id"] . '&amp;reason_1=';
-            $sPURL .= urlencode($this->container['textcats']->T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ') . $iId;
-            if (isset($this->container['conf']["interactive_paymentmethods_redirect_immediately"]) && $this->container['conf']["interactive_paymentmethods_redirect_immediately"]) {
+            $sPURL =
+                'https://www.sofortueberweisung.de/payment/start?user_id='
+                .$this->container['conf']['shop']["sofortueberweisung"]["user_id"]
+                .'&amp;project_id='.$this->container['conf']['shop']["sofortueberweisung"]["project_id"].'&amp;amount='
+                .number_format($fGesamtbrutto, 2, '.', '')
+                .'&amp;currency_id='.$this->container['conf']['shop']["sofortueberweisung"]["currency_id"].'&amp;reason_1='
+                .urlencode($this->container['textcats']->T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ').$iId;
+            if ($this->container['conf']['shop']["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPURL);
                 die();
             }

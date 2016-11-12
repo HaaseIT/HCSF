@@ -20,17 +20,15 @@ Requirements:
 - Apache 2.x with mod_rewrite enabled, runs with mod_php and also php5-fpm/fastcgi. I'm pretty sure, it will run on other platforms as well.
 - PHP 5.5.x and up with gd (for image processing on the fly), filter and bcmath extension enabled
 
-Dependencies (will be installed with composer):
-- TWIG, see: http://twig.sensiolabs.org/ (install via composer)
-- PHPMailer, see: https://github.com/PHPMailer/PHPMailer (install via composer)
-- Symfony YAML Component (installed via composer)
-- Haase IT Toolbox (installed via composer)
+Dependencies will be installed with composer.
 
 In the setup directory you will find scripts for setting up the database.
 
-In the app/config directory you will find example config files.
-Save a copy of each and remove the dist in the filename
-like this: config.core.dist.yml -> config.core.yml
+In the config directory you will find the default config files.
+To override the default config, create a copy of the respective file and name it like this:
+-  secrets.yml -> secrets.local.yml
+
+You only need to add the values you want to override in these files.
 
 Put the required libraries into their configured paths.
 Run the db-scripts.sql on your configured database to init the database.
@@ -43,7 +41,8 @@ The following directories must be writable by the webserver:
 at http://www.yourhost.tld/_admin/ you will find an info if these directories exist
 and are writable
 
-Set your encrypted admin password in config.scrts.yml, first though set your blowfish salt.
+Set your encrypted admin password in secrets.local.yml.
+
 You will find a tool to encrypt it at /_admin/index.html - As long as there are no users set
 in config.scrts.yml, you can access this page (but not the other pages in the admin area)
 without authenticating.

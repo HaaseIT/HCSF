@@ -3,10 +3,9 @@ conf
 logs
 users
 vendor
-app/config/config.scrts.yml
-app/config/config.core.yml
-app/config/config.shop.yml
-app/config/config.navigation.yml
-app/config/config.customer.yml
 web/robots.txt
 web/favicon.ico
+config/core.local.yml
+config/customer.local.yml
+config/secrets.local.yml
+config/shop.local.yml

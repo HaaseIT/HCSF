@@ -82,7 +82,7 @@ class Customeradmin extends Base
             $aErr = [];
             if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
                 $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                if (strlen($sCustno) < $this->container['conf']["minimum_length_custno"]) {
+                if (strlen($sCustno) < $this->container['conf']['customer']["minimum_length_custno"]) {
                     $aErr["custnoinvalid"] = true;
                 } else {
 
@@ -104,7 +104,7 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
                     }
-                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr, true);
+                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf']['customer'], $this->container['lang'], $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
                             'cust_no' => $sCustno,

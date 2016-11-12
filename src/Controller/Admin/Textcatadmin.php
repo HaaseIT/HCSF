@@ -62,7 +62,7 @@ class Textcatadmin extends Base
 
                 // if post:edit is set, update
                 if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-                    if ($this->container['conf']['textcat_enable_purifier']) {
+                    if ($this->container['conf']['core']['textcat_enable_purifier']) {
                         $this->container['textcats']->purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'textcat');
                     } else {
                         $this->container['textcats']->purifier = false;

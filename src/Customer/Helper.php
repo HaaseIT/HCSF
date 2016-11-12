@@ -27,20 +27,23 @@ class Helper
     public static function validateCustomerForm($C, $sLang, $aErr = [], $bEdit = false)
     {
         if (!isset($_POST["email"]) || !\filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) $aErr["email"] = true;
-        if ($C["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;
-        if ($C["validate_name"] && (!isset($_POST["name"]) || strlen(trim($_POST["name"])) < 3)) $aErr["name"] = true;
-        if ($C["validate_street"] && (!isset($_POST["street"]) || strlen(trim($_POST["street"])) < 3)) $aErr["street"] = true;
-        if ($C["validate_zip"] && (!isset($_POST["zip"]) || strlen(trim($_POST["zip"])) < 4)) $aErr["zip"] = true;
-        if ($C["validate_town"] && (!isset($_POST["town"]) || strlen(trim($_POST["town"])) < 3)) $aErr["town"] = true;
-        if ($C["validate_phone"] && (!isset($_POST["phone"]) || strlen(trim($_POST["phone"])) < 6)) $aErr["phone"] = true;
-        if ($C["validate_cellphone"] && (!isset($_POST["cellphone"]) || strlen(trim($_POST["cellphone"])) < 11)) $aErr["cellphone"] = true;
-        if ($C["validate_fax"] && (!isset($_POST["fax"]) || strlen(trim($_POST["fax"]))) < 6) $aErr["fax"] = true;
-        if ($C["validate_country"] && (!isset($_POST["country"]) || !isset($C["countries_".$sLang][$_POST["country"]]))) $aErr["country"] = true;
+        if ($C['customer']["validate_corpname"] && (!isset($_POST["corpname"]) || strlen(trim($_POST["corpname"])) < 3)) $aErr["corpname"] = true;
+        if ($C['customer']["validate_name"] && (!isset($_POST["name"]) || strlen(trim($_POST["name"])) < 3)) $aErr["name"] = true;
+        if ($C['customer']["validate_street"] && (!isset($_POST["street"]) || strlen(trim($_POST["street"])) < 3)) $aErr["street"] = true;
+        if ($C['customer']["validate_zip"] && (!isset($_POST["zip"]) || strlen(trim($_POST["zip"])) < 4)) $aErr["zip"] = true;
+        if ($C['customer']["validate_town"] && (!isset($_POST["town"]) || strlen(trim($_POST["town"])) < 3)) $aErr["town"] = true;
+        if ($C['customer']["validate_phone"] && (!isset($_POST["phone"]) || strlen(trim($_POST["phone"])) < 6)) $aErr["phone"] = true;
+        if ($C['customer']["validate_cellphone"] && (!isset($_POST["cellphone"]) || strlen(trim($_POST["cellphone"])) < 11)) $aErr["cellphone"] = true;
+        if ($C['customer']["validate_fax"] && (!isset($_POST["fax"]) || strlen(trim($_POST["fax"]))) < 6) $aErr["fax"] = true;
+        if ($C['customer']["validate_country"] && (!isset($_POST["country"]) || !isset($C['countries']["countries_".$sLang][$_POST["country"]]))) $aErr["country"] = true;
         if (!$bEdit && (!isset($_POST["tos"]) || $_POST["tos"] != 'y')) $aErr["tos"] = true;
         if (!$bEdit && (!isset( $_POST["cancellationdisclaimer"] ) || $_POST["cancellationdisclaimer"] != 'y')) $aErr["cancellationdisclaimer"] = true;
 
         if (!$bEdit || (isset($_POST["pwd"]) && trim($_POST["pwd"]) != '')) {
-            if (strlen($_POST["pwd"]) < $C["minimum_length_password"] || strlen($_POST["pwd"]) > $C["maximum_length_password"]) $aErr["passwordlength"] = true;
+            if (
+                strlen($_POST["pwd"]) < $C['customer']["minimum_length_password"]
+                || strlen($_POST["pwd"]) > $C['customer']["maximum_length_password"]
+            ) $aErr["passwordlength"] = true;
             if ($_POST["pwd"] != $_POST["pwdc"]) $aErr["passwordmatch"] = true;
         }
 
@@ -48,8 +51,8 @@ class Helper
     }
 
     public static function getDefaultCountryByConfig($C, $sLang) {
-        if (isset($C["defaultcountrybylang"][$sLang])) {
-            return $C["defaultcountrybylang"][$sLang];
+        if (isset($C['core']["defaultcountrybylang"][$sLang])) {
+            return $C['core']["defaultcountrybylang"][$sLang];
         }
         return '';
     }
@@ -74,7 +77,7 @@ class Helper
             'readonly' => (
                 $sPurpose == 'shopadmin'
                 || $sPurpose == 'userhome'
-                || ($sPurpose == 'editprofile' && !$C["allow_edituserprofile"])
+                || ($sPurpose == 'editprofile' && !$C['customer']["allow_edituserprofile"])
                 || ($sPurpose == 'shoppingcart' && self::getUserData())
                     ? true
                     : false
@@ -94,64 +97,64 @@ class Helper
                 self::getCustomerFormDefaultValue('cust_corp', "corpname", $aUserData),
                 true
             ),
-            'fr_corpname' => $C["validate_corpname"],
+            'fr_corpname' => $C['customer']["validate_corpname"],
             'fv_name' => \HaaseIT\Tools::getFormField(
                 'name',
                 self::getCustomerFormDefaultValue('cust_name', "name", $aUserData),
                 true
             ),
-            'fr_name' => $C["validate_name"],
+            'fr_name' => $C['customer']["validate_name"],
             'fv_street' => \HaaseIT\Tools::getFormField(
                 'street',
                 self::getCustomerFormDefaultValue('cust_street', "street", $aUserData),
                 true
             ),
-            'fr_street' => $C["validate_street"],
+            'fr_street' => $C['customer']["validate_street"],
             'fv_zip' => \HaaseIT\Tools::getFormField(
                 'zip',
                 self::getCustomerFormDefaultValue('cust_zip', "zip", $aUserData),
                 true
             ),
-            'fr_zip' => $C["validate_zip"],
+            'fr_zip' => $C['customer']["validate_zip"],
             'fv_town' => \HaaseIT\Tools::getFormField(
                 'town',
                 self::getCustomerFormDefaultValue('cust_town', "town", $aUserData),
                 true
             ),
-            'fr_town' => $C["validate_town"],
+            'fr_town' => $C['customer']["validate_town"],
             'fv_phone' => \HaaseIT\Tools::getFormField(
                 'phone',
                 self::getCustomerFormDefaultValue('cust_phone', "phone", $aUserData),
                 true
             ),
-            'fr_phone' => $C["validate_phone"],
+            'fr_phone' => $C['customer']["validate_phone"],
             'fv_cellphone' => \HaaseIT\Tools::getFormField(
                 'cellphone',
                 self::getCustomerFormDefaultValue('cust_cellphone', "cellphone", $aUserData),
                 true
             ),
-            'fr_cellphone' => $C["validate_cellphone"],
+            'fr_cellphone' => $C['customer']["validate_cellphone"],
             'fv_fax' => \HaaseIT\Tools::getFormField(
                 'fax',
                 self::getCustomerFormDefaultValue('cust_fax', "fax", $aUserData),
                 true
             ),
-            'fr_fax' => $C["validate_fax"],
+            'fr_fax' => $C['customer']["validate_fax"],
             'fv_country' => \HaaseIT\Tools::getFormField(
                 'country',
                 ($sDefaultCountry ? $sDefaultCountry : self::getDefaultCountryByConfig($C, $sLang)),
                 true
             ),
-            'fr_country' => $C["validate_country"],
+            'fr_country' => $C['customer']["validate_country"],
         ];
 
         if ($sPurpose == 'admin') {
-            $aData["fv_custgroups"] = $C["customer_groups"];
+            $aData["fv_custgroups"] = $C['customer']["customer_groups"];
             $aData["fv_custgroup_selected"] = \HaaseIT\Tools::getFormField('custgroup', self::getUserData('cust_group', $aUserData), true);
         } elseif ($sPurpose == 'shopadmin') {
             $aData["fv_custgroup"] = '';
-            if (isset($C["customer_groups"][self::getUserData('cust_group', $aUserData)])) {
-                $aData["fv_custgroup"] = $C["customer_groups"][self::getUserData('cust_group', $aUserData)];
+            if (isset($C['customer']["customer_groups"][self::getUserData('cust_group', $aUserData)])) {
+                $aData["fv_custgroup"] = $C['customer']["customer_groups"][self::getUserData('cust_group', $aUserData)];
             }
         }
 
@@ -176,7 +179,7 @@ class Helper
         }
 
         if ($sPurpose == 'shoppingcart') {
-            $aData["fv_paymentmethods"] = $C["paymentmethods"];
+            $aData["fv_paymentmethods"] = $C['shop']["paymentmethods"];
             $aData["fv_paymentmethod"] = \HaaseIT\Tools::getFormField('paymentmethod', '');
         }
 
@@ -200,11 +203,13 @@ class Helper
         else {
             $sSubject = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_subject');
             $sMessage = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text1').' ';
-            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text2').' '.date($container['conf']['locale_format_date_time']);
-            $sTargetAddress = $container['conf']["email_sender"];
+            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get(
+                'newcustomerregistration_mail_text2').' '.date($container['conf']['core']['locale_format_date_time']
+                );
+            $sTargetAddress = $container['conf']['core']["email_sender"];
         }
 
-        \HaaseIT\HCSF\Helper::mailWrapper($C, $sTargetAddress, $sSubject, $sMessage);
+        \HaaseIT\HCSF\Helper::mailWrapper($container['conf'], $sTargetAddress, $sSubject, $sMessage);
     }
 
     public static function getUserData($sField = '', $aUserdata = false)

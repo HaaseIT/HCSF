@@ -34,18 +34,18 @@ class Glide extends Base
     public function preparePage()
     {
         $sPath = implode('/', $this->aPath);
-        $sImageroot = PATH_BASEDIR . $this->container['conf']['directory_glide_master'];
+        $sImageroot = PATH_BASEDIR . $this->container['conf']['core']['directory_glide_master'];
 
         if (
-            is_file($sImageroot.substr($sPath, strlen($this->container['conf']['directory_images']) + 1))
-            && getimagesize($sImageroot.substr($sPath, strlen($this->container['conf']['directory_images']) + 1))
+            is_file($sImageroot.substr($sPath, strlen($this->container['conf']['core']['directory_images']) + 1))
+            && getimagesize($sImageroot.substr($sPath, strlen($this->container['conf']['core']['directory_images']) + 1))
         ) {
             $glideserver = \League\Glide\ServerFactory::create([
                 'source' => $sImageroot,
                 'cache' => PATH_GLIDECACHE,
-                'max_image_size' => $this->container['conf']['glide_max_imagesize'],
+                'max_image_size' => $this->container['conf']['core']['glide_max_imagesize'],
             ]);
-            $glideserver->setBaseUrl('/' . $this->container['conf']['directory_images'] . '/');
+            $glideserver->setBaseUrl('/' . $this->container['conf']['core']['directory_images'] . '/');
             // Generate a URL
 
             try {

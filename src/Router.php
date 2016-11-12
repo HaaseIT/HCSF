@@ -20,7 +20,7 @@ class Router
 
     public function getPage()
     {
-        if ($this->container['conf']['maintenancemode']) {
+        if ($this->container['conf']['core']['maintenancemode']) {
             $class = '\\HaaseIT\\HCSF\\Controller\\Maintenance';
             try {
                 $controller = new $class($this->container);
@@ -61,7 +61,7 @@ class Router
                 '/_misc/paypal.html' => 'Shop\\Paypal',
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
-            if ($this->container['conf']['enable_sandbox']) {
+            if ($this->container['conf']['core']['enable_sandbox']) {
                 $map['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
             }
             $this->P = 404;
@@ -72,7 +72,7 @@ class Router
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
             } else {
-                if ($aPath[1] == $this->container['conf']['directory_images']) {
+                if ($aPath[1] == $this->container['conf']['core']['directory_images']) {
                     $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
                 }
             }
@@ -88,7 +88,7 @@ class Router
 
                 }
             } else {
-                if ($this->container['conf']["enable_module_shop"]) {
+                if ($this->container['conf']['core']["enable_module_shop"]) {
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 

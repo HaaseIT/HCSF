@@ -59,7 +59,7 @@ class Pageadmin extends Base
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
-                        if ($this->container['conf']['pagetext_enable_purifier']) {
+                        if ($this->container['conf']['core']['pagetext_enable_purifier']) {
                             $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
                         } else {
                             $purifier = false;
@@ -85,8 +85,8 @@ class Pageadmin extends Base
                         $this->P->cb_customdata["updated"] = true;
                     }
                     $this->P->cb_customdata["page"] = $Ptoedit;
-                    $this->P->cb_customdata["admin_page_types"] = $this->container['conf']["admin_page_types"];
-                    $this->P->cb_customdata["admin_page_groups"] = $this->container['conf']["admin_page_groups"];
+                    $this->P->cb_customdata["admin_page_types"] = $this->container['conf']['core']["admin_page_types"];
+                    $this->P->cb_customdata["admin_page_groups"] = $this->container['conf']['core']["admin_page_groups"];
                     $aOptions = [''];
                     foreach ($this->container["navstruct"] as $sKey => $aValue) {
                         if ($sKey == 'admin') {
@@ -154,7 +154,7 @@ class Pageadmin extends Base
         $hResult = $this->container['db']->query('SELECT * FROM content_base ORDER BY cb_key');
 
         $aGroups = [];
-        foreach ($this->container['conf']["admin_page_groups"] as $sValue) {
+        foreach ($this->container['conf']['core']["admin_page_groups"] as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }

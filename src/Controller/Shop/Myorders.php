@@ -45,7 +45,10 @@ class Myorders extends Base
                 if ($hResult->rowCount() == 1) {
                     $aOrder = $hResult->fetch();
 
-                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date($this->container['conf']["locale_format_date_time"], $aOrder["o_ordertimestamp"]);
+                    $this->P->cb_customdata['orderdata']['ordertimestamp'] = date(
+                        $this->container['conf']['core']["locale_format_date_time"],
+                        $aOrder["o_ordertimestamp"]
+                    );
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->container['textcats']->T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? $this->container['textcats']->T("myorders_paymentstatus_completed") : $this->container['textcats']->T("myorders_paymentstatus_open"));
@@ -140,7 +143,10 @@ class Myorders extends Base
                 $aData[] = [
                     'o_id' => $aRow["o_id"],
                     'o_order_status' => $sStatus,
-                    'o_ordertime' => date($this->container['conf']['locale_format_date_time'], $aRow["o_ordertimestamp"]),
+                    'o_ordertime' => date(
+                        $this->container['conf']['core']['locale_format_date_time'],
+                        $aRow["o_ordertimestamp"]
+                    ),
                     'o_paymentmethod' => $sPaymentmethod,
                     'o_paymentcompleted' => $sPaymentstatus,
                     'o_shipping_service' => $aRow["o_shipping_service"],

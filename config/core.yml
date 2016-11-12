@@ -1,0 +1,72 @@
+# HCSF - A multilingual CMS and Shopsystem
+# Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+maintenancemode: true
+textcatsverbose: false
+debug: false
+enable_module_shop: true
+enable_module_customer: true
+enable_sandbox: false
+defaulttimezone: Europe/Berlin
+default_pagetitle: Sitetitle
+templatecache_enable: false
+template_base: base.twig
+subnav_default: root
+navigation_fetch_text_from_textcats: true
+email_sendername: 'Sitename Webshop'
+email_sender: mail@domain.tld
+lang_available:
+    de: German
+    en: English
+    es: Español
+lang_detection_method: legacy
+lang_by_domain:
+    de: domain.de
+    en: domain.com
+    es: domain.es
+admin_page_groups:
+    - _|_Keine_
+    - admin|Administration
+    - verschiedenes|Verschiedenes
+    - obsolete|Obsolet
+admin_page_types:
+    - content
+    - contentnosubnav
+    - itemoverview
+    - itemoverviewgrpd
+    - shorturl
+locale_format_date: d.m.Y
+locale_format_date_time: 'd.m.Y H:i'
+defaultcountrybylang:
+    de: DE
+    en: GB
+    es: ES
+directory_images: _img
+directory_emailattachments: _assets
+pagetext_enable_purifier: true
+pagetext_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+pagetext_loose_filtering: false
+textcat_enable_purifier: true
+textcat_unsafe_html_whitelist: '' # example: 'td[attr],input[attr1|attr2],form'
+textcat_loose_filtering: false
+purifier_doctype: 'HTML 4.01 Transitional' # valid values: 'HTML 4.01 Transitional', 'HTML 4.01 Strict', 'XHTML 1.0 Transitional', 'XHTML 1.0 Strict', 'XHTML 1.1'
+numberformat_decimals: 2
+numberformat_decimal_point: ','
+numberformat_thousands_seperator: '.'
+directory_glide_master: glideimgmaster
+glide_max_imagesize: 1000000 # the maximum allowed imagesize for glide operations in pixels total
+allow_parsing_of_page_content: false
+mail_method: mail # mail (uses the PHP mail() function) / sendmail (uses the systems sendmail) / smtp (use a smtp server, configure server details below)

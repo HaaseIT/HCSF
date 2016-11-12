@@ -40,27 +40,27 @@ class Helper
         $mail->CharSet = 'UTF-8';
 
         $mail->isMail();
-        if ($C['mail_method'] == 'sendmail') {
+        if ($C['core']['mail_method'] == 'sendmail') {
             $mail->isSendmail();
-        } elseif ($C['mail_method'] == 'smtp') {
+        } elseif ($C['core']['mail_method'] == 'smtp') {
             $mail->isSMTP();
-            $mail->Host = $C['mail_smtp_server'];
-            $mail->Port = $C['mail_smtp_port'];
-            if ($C['mail_smtp_auth'] == true) {
+            $mail->Host = $C['secrets']['mail_smtp_server'];
+            $mail->Port = $C['secrets']['mail_smtp_port'];
+            if ($C['secrets']['mail_smtp_auth'] == true) {
                 $mail->SMTPAuth = true;
-                $mail->Username = $C['mail_smtp_auth_user'];
-                $mail->Password = $C['mail_smtp_auth_pwd'];
-                if ($C['mail_smtp_secure']) {
+                $mail->Username = $C['secrets']['mail_smtp_auth_user'];
+                $mail->Password = $C['secrets']['mail_smtp_auth_pwd'];
+                if ($C['secrets']['mail_smtp_secure']) {
                     $mail->SMTPSecure = 'tls';
-                    if ($C['mail_smtp_secure_method'] == 'ssl') {
+                    if ($C['secrets']['mail_smtp_secure_method'] == 'ssl') {
                         $mail->SMTPSecure = 'ssl';
                     }
                 }
             }
         }
 
-        $mail->From = $C["email_sender"];
-        $mail->FromName = $C["email_sendername"];
+        $mail->From = $C['core']["email_sender"];
+        $mail->FromName = $C['core']["email_sendername"];
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -99,23 +99,23 @@ class Helper
             'subnavkey' => $P->cb_subnav,
             'requesturi' => $requesturi,
             'requesturiarray' => parse_url($requesturi),
-            'locale_format_date' => $container['conf']['locale_format_date'],
-            'locale_format_date_time' => $container['conf']['locale_format_date_time'],
-            'maintenancemode' => $container['conf']['maintenancemode'],
-            'numberformat_decimals' => $container['conf']['numberformat_decimals'],
-            'numberformat_decimal_point' => $container['conf']['numberformat_decimal_point'],
-            'numberformat_thousands_seperator' => $container['conf']['numberformat_thousands_seperator'],
+            'locale_format_date' => $container['conf']['core']['locale_format_date'],
+            'locale_format_date_time' => $container['conf']['core']['locale_format_date_time'],
+            'maintenancemode' => $container['conf']['core']['maintenancemode'],
+            'numberformat_decimals' => $container['conf']['core']['numberformat_decimals'],
+            'numberformat_decimal_point' => $container['conf']['core']['numberformat_decimal_point'],
+            'numberformat_thousands_seperator' => $container['conf']['core']['numberformat_thousands_seperator'],
         ];
-        if ($container['conf']["enable_module_customer"]) {
+        if ($container['conf']['core']["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP["enable_module_customer"] = true;
         }
-        if ($container['conf']["enable_module_shop"]) {
-            $aP["currency"] = $container['conf']["waehrungssymbol"];
-            $aP["orderamounts"] = $container['conf']["orderamounts"];
-            if (isset($container['conf']["vat"]["full"])) $aP["vatfull"] = $container['conf']["vat"]["full"];
-            if (isset($container['conf']["vat"]["reduced"])) $aP["vatreduced"] = $container['conf']["vat"]["reduced"];
-            if (isset($container['conf']["custom_order_fields"])) $aP["custom_order_fields"] = $container['conf']["custom_order_fields"];
+        if ($container['conf']['core']["enable_module_shop"]) {
+            $aP["currency"] = $container['conf']['shop']["waehrungssymbol"];
+            $aP["orderamounts"] = $container['conf']['shop']["orderamounts"];
+            if (isset($container['conf']['shop']["vat"]["full"])) $aP["vatfull"] = $container['conf']['shop']["vat"]["full"];
+            if (isset($container['conf']['shop']["vat"]["reduced"])) $aP["vatreduced"] = $container['conf']['shop']["vat"]["reduced"];
+            if (isset($container['conf']['shop']["custom_order_fields"])) $aP["custom_order_fields"] = $container['conf']['shop']["custom_order_fields"];
             $aP["enable_module_shop"] = true;
         }
         if (isset($P->cb_key)) $aP["path"] = pathinfo($P->cb_key);
@@ -126,9 +126,9 @@ class Helper
 
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
-        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $container['conf']["subnav_default"] != '') {
-            $aP["subnavkey"] = $container['conf']["subnav_default"];
-            $P->cb_subnav = $container['conf']["subnav_default"];
+        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $container['conf']['core']["subnav_default"] != '') {
+            $aP["subnavkey"] = $container['conf']['core']["subnav_default"];
+            $P->cb_subnav = $container['conf']['core']["subnav_default"];
         }
         if ($P->cb_subnav != NULL && isset($container['navstruct'][$P->cb_subnav])) $aP["subnav"] = $container['navstruct'][$P->cb_subnav];
 
@@ -142,21 +142,28 @@ class Helper
 
         // Language selector
         // TODO: move content of langselector out of php script
-        if (count($container['conf']["lang_available"]) > 1) {
+        if (count($container['conf']['core']["lang_available"]) > 1) {
             $aP["langselector"] = self::getLangSelector($container);
         }
 
         // Shopping cart infos
-        if ($container['conf']["enable_module_shop"]) {
+        if ($container['conf']['core']["enable_module_shop"]) {
             $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container);
         }
 
         $aP["countrylist"][] = ' | ';
-        foreach ($container['conf']["countries_".$container['lang']] as $sKey => $sValue) {
+        foreach ($container['conf']['countries']["countries_".$container['lang']] as $sKey => $sValue) {
             $aP["countrylist"][] = $sKey.'|'.$sValue;
         }
 
-        if ($container['conf']["enable_module_shop"] && ($aP["pagetype"] == 'itemoverview' || $aP["pagetype"] == 'itemoverviewgrpd' || $aP["pagetype"] == 'itemdetail')) {
+        if (
+            $container['conf']['core']["enable_module_shop"]
+            && (
+                $aP["pagetype"] == 'itemoverview'
+                || $aP["pagetype"] == 'itemoverviewgrpd'
+                || $aP["pagetype"] == 'itemdetail'
+            )
+        ) {
             $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($container, $P, $aP);
         }
 
@@ -164,7 +171,7 @@ class Helper
 
         $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
 
-        if ($container['conf']['debug']) {
+        if ($container['conf']['core']['debug']) {
             self::getDebug($aP, $P);
         }
 
@@ -190,17 +197,17 @@ class Helper
     private static function getLangSelector($container)
     {
         $sLangselector = '';
-        if ($container['conf']["lang_detection_method"] == 'domain') {
+        if ($container['conf']['core']["lang_detection_method"] == 'domain') {
             $aSessionGetVarsForLangSelector = [];
             if (session_status() == PHP_SESSION_ACTIVE) {
                 $aSessionGetVarsForLangSelector[session_name()] = session_id();
             }
             $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
         }
-        foreach ($container['conf']["lang_available"] as $sKey => $sValue) {
+        foreach ($container['conf']['core']["lang_available"] as $sKey => $sValue) {
             if ($container['lang'] != $sKey) {
-                if ($container['conf']["lang_detection_method"] == 'domain') {
-                    $sLangselector .= '<a href="//www.' . $container['conf']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
+                if ($container['conf']['core']["lang_detection_method"] == 'domain') {
+                    $sLangselector .= '<a href="//www.' . $container['conf']['core']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
                 } else {
                     $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
                 }
@@ -213,15 +220,19 @@ class Helper
 
     public static function getLanguage($container)
     {
-        $langavailable = $container['conf']["lang_available"];
-        if ($container['conf']["lang_detection_method"] == 'domain' && isset($container['conf']["lang_by_domain"]) && is_array($container['conf']["lang_by_domain"])) { // domain based language detection
-            foreach ($container['conf']["lang_by_domain"] as $sKey => $sValue) {
+        $langavailable = $container['conf']['core']["lang_available"];
+        if (
+            $container['conf']['core']["lang_detection_method"] == 'domain'
+            && isset($container['conf']['core']["lang_by_domain"])
+            && is_array($container['conf']['core']["lang_by_domain"])
+        ) { // domain based language detection
+            foreach ($container['conf']['core']["lang_by_domain"] as $sKey => $sValue) {
                 if ($_SERVER["SERVER_NAME"] == $sValue || $_SERVER["SERVER_NAME"] == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }
             }
-        } elseif ($container['conf']["lang_detection_method"] == 'legacy') { // legacy language detection
+        } elseif ($container['conf']['core']["lang_detection_method"] == 'legacy') { // legacy language detection
             $sLang = key($langavailable);
             if (isset($_GET["language"]) && array_key_exists($_GET["language"], $langavailable)) {
                 $sLang = strtolower($_GET["language"]);
@@ -248,20 +259,27 @@ class Helper
 
         if ($purpose == 'textcat') {
             $configkey = 'textcat';
+            $configsection = 'core';
         } elseif ($purpose == 'page') {
             $configkey = 'pagetext';
+            $configsection = 'core';
         } elseif ($purpose == 'item') {
             $configkey = 'itemtext';
+            $configsection = 'shop';
         } elseif ($purpose == 'itemgroup') {
             $configkey = 'itemgrouptext';
+            $configsection = 'shop';
         } else {
             return false;
         }
 
-        if (isset($C[$configkey.'_unsafe_html_whitelist']) && trim($C[$configkey.'_unsafe_html_whitelist']) != '') {
-            $purifier_config->set('HTML.Allowed', $C[$configkey.'_unsafe_html_whitelist']);
+        if (
+            isset($C[$configsection][$configkey.'_unsafe_html_whitelist'])
+            && trim($C[$configsection][$configkey.'_unsafe_html_whitelist']) != ''
+        ) {
+            $purifier_config->set('HTML.Allowed', $C[$configsection][$configkey.'_unsafe_html_whitelist']);
         }
-        if (isset($C[$configkey.'_loose_filtering']) && $C[$configkey.'_loose_filtering']) {
+        if (isset($C[$configsection][$configkey.'_loose_filtering']) && $C[$configsection][$configkey.'_loose_filtering']) {
             $purifier_config->set('HTML.Trusted', true);
             $purifier_config->set('Attr.EnableID', true);
             $purifier_config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);

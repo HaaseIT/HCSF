@@ -36,7 +36,7 @@ class DBStatus extends Base
         $this->handleContent();
         $this->handleContentArchive();
 
-        if ($this->container['conf']['enable_module_shop']) {
+        if ($this->container['conf']['core']['enable_module_shop']) {
             $this->handleItems();
             $this->handleItemGroups();
             $this->handleOrderItems();

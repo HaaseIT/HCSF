@@ -30,7 +30,7 @@ class Login extends Base
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
-            $mLogin = $this->getLogin($this->container['conf'], $this->container['db']);
+            $mLogin = $this->getLogin();
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
                 $this->P->oPayload->cl_html = $this->container['textcats']->T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
@@ -52,7 +52,7 @@ class Login extends Base
             }
         }
 
-        if ($this->container['conf']["enable_module_shop"]) {
+        if ($this->container['conf']['core']["enable_module_shop"]) {
             \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container);
         }
     }

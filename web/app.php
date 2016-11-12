@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require __DIR__.'/../app/init.php';
+require __DIR__.'/../src/bootstrap.php';
 
 $aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $requesturi);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
-$response->getBody()->write($container['twig']->render($container['conf']["template_base"], $aP));
+$response->getBody()->write($container['twig']->render($container['conf']['core']["template_base"], $aP));
 
 $emitter = new \Zend\Diactoros\Response\SapiEmitter();
 $emitter->emit($response);

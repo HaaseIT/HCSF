@@ -34,7 +34,7 @@ class Forgotpassword extends Base
 
             $aErr = [];
             if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
-                $aErr = $this->handleForgotPassword($this->container['db'], $this->container['conf'], $aErr);
+                $aErr = $this->handleForgotPassword($aErr);
                 if (count($aErr) == 0) {
                     $this->P->cb_customdata["forgotpw"]["showsuccessmessage"] = true;
                 } else {

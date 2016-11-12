@@ -53,7 +53,7 @@ class Userhome extends Base
                     $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
 
                     if ($sErr == '') {
-                        if ($this->container['conf']["allow_edituserprofile"]) {
+                        if ($this->container['conf']['customer']["allow_edituserprofile"]) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
                                 'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -86,10 +86,19 @@ class Userhome extends Base
                         }
                     }
                 }
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'editprofile', $sErr);
-                //if ($this->container['conf']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                    $this->container['conf'],
+                    $this->container['lang'],
+                    'editprofile',
+                    $sErr
+                );
+                //if ($this->container['conf']['customer']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'userhome');
+                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                    $this->container['conf'],
+                    $this->container['lang'],
+                    'userhome'
+                );
             }
             $aPData["showprofilelinks"] = false;
             if (!isset($_GET["editprofile"])) {

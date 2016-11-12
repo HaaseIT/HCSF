@@ -1,5 +1,11 @@
-V2.4.0
+V3.0.0
 The config.navi.php has moved to config.navigation.yml, please migrate it!
+The configuration files have renamed and moved from app/config to config, the new naming scheme is:
+  config.core.dist.yml -> core.yml (default configuration)
+  config.core.yml -> core.local.yml (local configuration overrides)
+The app directory can be deleted now.
+
+All mail_smtp_* config keys have been moved from core.yml to secrets.yml, please migrate!
 
 ALTER TABLE `orders_items`
   DROP `oi_price_brutto_list`,

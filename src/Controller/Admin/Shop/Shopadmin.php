@@ -167,9 +167,27 @@ class Shopadmin extends Base
                         'o_email' => $aRow["o_email"],
                         'o_cust' => $sName.'<br>'.$aRow["o_zip"].' '.$aRow["o_town"],
                         'o_authed' => $aRow["o_authed"],
-                        'o_sumnettoall' => number_format($aRow["o_sumnettoall"], $this->container['conf']['numberformat_decimals'], $this->container['conf']['numberformat_decimal_point'], $this->container['conf']['numberformat_thousands_seperator']).' '.$this->container['conf']["waehrungssymbol"].(($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '') ? '<br>+'.number_format($aRow["o_mindermenge"], $this->container['conf']['numberformat_decimals'], $this->container['conf']['numberformat_decimal_point'], $this->container['conf']['numberformat_thousands_seperator']).' '.$this->container['conf']["waehrungssymbol"] : ''),
+                        'o_sumnettoall' => number_format(
+                            $aRow["o_sumnettoall"],
+                                $this->container['conf']['core']['numberformat_decimals'],
+                                $this->container['conf']['core']['numberformat_decimal_point'],
+                                $this->container['conf']['core']['numberformat_thousands_seperator']
+                            )
+                            .' '.$this->container['conf']['shop']["waehrungssymbol"]
+                            .(
+                                ($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '')
+                                    ? '<br>+'.number_format(
+                                        $aRow["o_mindermenge"],
+                                        $this->container['conf']['core']['numberformat_decimals'],
+                                        $this->container['conf']['core']['numberformat_decimal_point'],
+                                        $this->container['conf']['core']['numberformat_thousands_seperator']
+                                    ).' '.$this->container['conf']['shop']["waehrungssymbol"] : ''),
                         'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
-                        'o_ordertime_number' => date($this->container['conf']['locale_format_date_time'], $aRow["o_ordertimestamp"]).((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
+                        'o_ordertime_number' => date(
+                                $this->container['conf']['core']['locale_format_date_time'],
+                                $aRow["o_ordertimestamp"]
+                            )
+                            .((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
                         'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow["o_srv_hostname"],
                     ];
                     if (!($aRow["o_ordercompleted"] == 's' && $bIgnoreStorno)) {
@@ -215,10 +233,18 @@ class Shopadmin extends Base
                     'cust_country' => $aSData["orderdata"]["o_country"],
                     'cust_group' => $aSData["orderdata"]["o_group"],
                 ];
-                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'shopadmin', '', $aUserdata);
+                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                    $this->container['conf'],
+                    $this->container['lang'],
+                    'shopadmin',
+                    '',
+                    $aUserdata
+                );
 
                 $aSData["orderdata"]["options_shippingservices"] = [''];
-                foreach ($this->container['conf']["shipping_services"] as $sValue) $aSData["orderdata"]["options_shippingservices"][] = $sValue;
+                foreach ($this->container['conf']['shop']["shipping_services"] as $sValue) {
+                    $aSData["orderdata"]["options_shippingservices"][] = $sValue;
+                }
 
                 $aItemsCarttable = [];
                 foreach ($aItems as $aValue) {
@@ -230,7 +256,7 @@ class Shopadmin extends Base
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
 
-                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->container['conf']["vat"][$aValue["oi_vat_id"]], '', true);
+                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->container['conf']['shop']["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsCarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,
