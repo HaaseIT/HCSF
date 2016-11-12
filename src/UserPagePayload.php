@@ -76,7 +76,7 @@ class UserPagePayload extends PagePayload
     public function insert($iParentID) {
         $aData = [
             'cl_cb' => $iParentID,
-            'cl_lang' => $this->sLang,
+            'cl_lang' => $this->container['lang'],
         ];
         $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
         $this->container['db']->exec($sql);
