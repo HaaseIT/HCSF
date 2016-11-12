@@ -2,12 +2,11 @@
 conf
 logs
 users
-app/config/config.navi.php
-app/config/config.customer.yml
 vendor
-setup/important.txt
 app/config/config.scrts.yml
 app/config/config.core.yml
 app/config/config.shop.yml
+app/config/config.navigation.yml
+app/config/config.customer.yml
 web/robots.txt
 web/favicon.ico

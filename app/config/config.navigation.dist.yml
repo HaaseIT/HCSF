@@ -1,0 +1,36 @@
+# HCSF - A multilingual CMS and Shopsystem
+# Copyright (C) 2014  Marcus Haase - mail@marcus.haase.name
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+root:
+    sidenav_root_agb: /agb.html
+    sidenav_root_widerruf: /widerruf.html
+    sidenav_root_impressum: /impressum.html
+    sidenav_root_datenschutz: /datenschutz.html
+category1:
+    sidenav_category1_01: /kategorie1/seite1/
+    sidenav_category1_02: /kategorie1/seite2/
+category2:
+    sidenav_category2_01: /kategorie2/seite1/
+    sidenav_category2_02: /kategorie2/seite2/
+category3:
+    sidenav_category3_01: /kategorie3/seite1/
+    sidenav_category3_02: /kategorie3/seite2/
+category4:
+    sidenav_category4_01: /kategorie4/seite1/
+    sidenav_category4_02: /kategorie4/seite2/
+category5:
+    sidenav_category5_01: /kategorie5/seite1/
+    sidenav_category5_02: /kategorie5/seite2/

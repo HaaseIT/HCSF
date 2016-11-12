@@ -190,7 +190,25 @@ if (!$container['conf']['maintenancemode']) {
 
     $container['navstruct'] = function ($c)
     {
-        $navstruct = include __DIR__.'/config/config.navi.php';
+        if (is_file(__DIR__.'/config/config.navigation.yml')) {
+            $navstruct = Yaml::parse(file_get_contents(__DIR__.'/config/config.navigation.yml'));
+        } else {
+            $navstruct = Yaml::parse(file_get_contents(__DIR__.'/config/config.navigation.dist.yml'));
+        }
+
+        if (!empty($navstruct) && $c['conf']['navigation_fetch_text_from_textcats']) {
+            foreach ($navstruct as $key => $item) {
+                foreach ($item as $subkey => $subitem) {
+                    if (!empty($c['textcats']->T($subkey))) {
+                        $TMP[$key][$c['textcats']->T($subkey)] = $subitem;
+                    } else {
+                        $TMP[$key][$subkey] = $subitem;
+                    }
+                }
+            }
+            $navstruct = $TMP;
+            unset($TMP);
+        }
 
         if (isset($navstruct["admin"])) {
             unset($navstruct["admin"]);

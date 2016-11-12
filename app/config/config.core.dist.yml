@@ -25,6 +25,7 @@ default_pagetitle: Sitetitle
 templatecache_enable: false
 template_base: base.twig
 subnav_default: root
+navigation_fetch_text_from_textcats: true
 email_sendername: 'Sitename Webshop'
 email_sender: mail@domain.tld
 lang_available:
