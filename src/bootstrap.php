@@ -124,7 +124,7 @@ $container['conf'] = function ($c) {
     if ($conf['core']["enable_module_shop"]) {
         $conf['shop'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml'));
         if (is_file(PATH_BASEDIR.'config/shop.local.yml')) {
-            $conf = array_merge($conf['shop'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.local.yml')));
+            $conf['shop'] = array_merge($conf['shop'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.local.yml')));
         }
         if (isset($conf['shop']["vat_disable"]) && $conf['shop']["vat_disable"]) {
             $conf['shop']["vat"] = ["full" => 0, "reduced" => 0];
@@ -134,7 +134,7 @@ $container['conf'] = function ($c) {
     return $conf;
 };
 
-define("GLIDE_SIGNATURE_KEY", $container['conf']['core']['glide_signkey']);
+define("GLIDE_SIGNATURE_KEY", $container['conf']['secrets']['glide_signkey']);
 
 if (isset($container['conf']['core']["debug"]) && $container['conf']['core']["debug"]) HaaseIT\Tools::$bEnableDebug = true;
 
@@ -195,7 +195,7 @@ if (!$container['conf']['core']['maintenancemode']) {
 
     $container['entitymanager'] = function ($c)
     {
-        $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $c['conf']['debug']);
+        $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $c['conf']['core']['debug']);
 
         $connectionParams = array(
             'url' =>
@@ -234,10 +234,10 @@ if (!$container['conf']['core']['maintenancemode']) {
 
     $container['navstruct'] = function ($c)
     {
-        if (is_file(__DIR__.'/config/config.navigation.yml')) {
-            $navstruct = Yaml::parse(file_get_contents(__DIR__.'/config/config.navigation.yml'));
+        if (is_file(PATH_BASEDIR.'config/navigation.local.yml')) {
+            $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.local.yml'));
         } else {
-            $navstruct = Yaml::parse(file_get_contents(__DIR__.'/config/config.navigation.dist.yml'));
+            $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.yml'));
         }
 
         if (!empty($navstruct) && $c['conf']['core']['navigation_fetch_text_from_textcats']) {
