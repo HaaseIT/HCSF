@@ -201,7 +201,7 @@ class Helper
     {
         if ($iVATfull == '' && $iVATreduced == '') {
             $iVATfull = $container['conf']['shop']["vat"]["full"];
-            $iVATreduced = $container['conf']["vat"]['shop']["reduced"];
+            $iVATreduced = $container['conf']['shop']["vat"]["reduced"];
         }
         $aSumme = self::calculateCartItems($container, $aCart);
         $aData["shoppingcart"] = [
