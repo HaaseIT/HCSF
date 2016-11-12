@@ -1002,6 +1002,6 @@ INSERT INTO textcat_lang (tcl_id, tcl_tcid, tcl_lang, tcl_text) VALUES
   (697, 235, 'es', 'Protección de datos '),
   (698, 235, 'de', 'Datenschutz'),
   (699, 235, 'en', 'Privacy information'),
-  (699, 236, 'de', 'Es ist ein interner Fehler aufgetreten. Bitte kontaktieren Sie den Seitenbetreiber.'),
-  (699, 236, 'en', 'An internal error has occurred. Please contact the site operator.'),
-  (699, 236, 'es', 'Error interno del servidor');
+  (700, 236, 'de', 'Es ist ein interner Fehler aufgetreten. Bitte kontaktieren Sie den Seitenbetreiber.'),
+  (701, 236, 'en', 'An internal error has occurred. Please contact the site operator.'),
+  (702, 236, 'es', 'Error interno del servidor');
