@@ -36,7 +36,7 @@
                 {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
             </div><div class="pure-u-4-5">
                 <label for="select_page_key">{{ HT('pageadmin_choose_page') }}</label>
-                {{ macro.select('page_key', ['|Please choose group'], '', 'select_page_key', 'pure-u-1', false, 15) }}
+                {{ macro.select('page_key', ['|'~HT('pageadmin_choose_pagegroup_first')], '', 'select_page_key', 'pure-u-1', false, 15) }}
             </div>
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_choose_submit') }}</button>

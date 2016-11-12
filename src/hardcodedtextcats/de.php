@@ -76,8 +76,9 @@ return [
     'itemadmin_list_name' => 'Name',
     'itemadmin_list_edit' => 'bearb.',
 
-    'pageadmin_choose_pagegroup' => 'Page group:',
-    'pageadmin_choose_page' => 'Please choose page to edit:',
+    'pageadmin_choose_pagegroup' => 'Seitengruppe:',
+    'pageadmin_choose_page' => 'Bitte wählen Sie die zu bearbeitende Seite aus:',
+    'pageadmin_choose_pagegroup_first' => 'Bitte wählen Sie zuerst eine Seitengruppe aus.',
     'pageadmin_choose_submit' => 'Weiter',
     'pageadmin_choose_add' => '[Seite hinzufügen]',
 
