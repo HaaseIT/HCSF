@@ -308,6 +308,7 @@ $container['twig'] = function ($c) {
     $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
     $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
     $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
+    $twig->addFunction('makeLinkHRefWithAddedGetVars', new Twig_Function_Function('\HaaseIT\Tools::makeLinkHRefWithAddedGetVars'));
 
     return $twig;
 };

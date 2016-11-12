@@ -140,12 +140,6 @@ class Helper
         // TODO: Add head scripts to DB
         //if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
 
-        // Language selector
-        // TODO: move content of langselector out of php script
-        if (count($container['conf']['core']["lang_available"]) > 1) {
-            $aP["langselector"] = self::getLangSelector($container);
-        }
-
         // Shopping cart infos
         if ($container['conf']['core']["enable_module_shop"]) {
             $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container);
@@ -171,11 +165,14 @@ class Helper
 
         $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
 
+        $aP['lang_available'] = $container['conf']['core']['lang_available'];
+        $aP['lang_detection_method'] = $container['conf']['core']['lang_detection_method'];
+        $aP['lang_by_domain'] = $container['conf']['core']['lang_by_domain'];
+
         if ($container['conf']['core']['debug']) {
             self::getDebug($aP, $P);
+            $aP["debugdata"] = \HaaseIT\Tools::$sDebug;
         }
-
-        $aP["debugdata"] = \HaaseIT\Tools::$sDebug;
 
         return $aP;
     }
@@ -191,31 +188,7 @@ class Helper
             \HaaseIT\Tools::debug($_SESSION, '$_SESSION');
         }
         \HaaseIT\Tools::debug($aP, '$aP');
-        \HaaseIT\Tools::debug($P, '$P');
-    }
-
-    private static function getLangSelector($container)
-    {
-        $sLangselector = '';
-        if ($container['conf']['core']["lang_detection_method"] == 'domain') {
-            $aSessionGetVarsForLangSelector = [];
-            if (session_status() == PHP_SESSION_ACTIVE) {
-                $aSessionGetVarsForLangSelector[session_name()] = session_id();
-            }
-            $aRequestURL = parse_url($_SERVER["REQUEST_URI"]);
-        }
-        foreach ($container['conf']['core']["lang_available"] as $sKey => $sValue) {
-            if ($container['lang'] != $sKey) {
-                if ($container['conf']['core']["lang_detection_method"] == 'domain') {
-                    $sLangselector .= '<a href="//www.' . $container['conf']['core']["lang_by_domain"][$sKey] . $aRequestURL["path"] . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', $aSessionGetVarsForLangSelector) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
-                } else {
-                    $sLangselector .= '<a href="' . \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('', ['language' => $sKey]) . '">' . $container['textcats']->T("misc_language_" . $sKey) . '</a> ';
-                }
-            }
-        }
-        $sLangselector = \HaaseIT\Tools::cutStringend($sLangselector, 1);
-
-        return $sLangselector;
+        //\HaaseIT\Tools::debug($P, '$P');
     }
 
     public static function getLanguage($container)
