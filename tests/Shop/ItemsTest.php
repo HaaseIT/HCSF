@@ -1,22 +1,47 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use HaaseIT\HCSF\HelperConfig;
+use HaaseIT\HCSF\Shop\Items;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class ItemsTest
+ */
 class ItemsTest extends TestCase
 {
+    /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    /**
+     * ItemsTest constructor.
+     * @param null|string $name
+     * @param array $data
+     * @param string $dataName
+     */
+    public function __construct($name, array $data, $dataName)
+    {
+        parent::__construct($name, $data, $dataName);
+        $this->serviceManager = new ServiceManager();
+    }
+
+    /**
+     *
+     */
     public function testCalcPrice()
     {
         bcscale(6);
 
-        $container['conf']['shop'] = [
+        HelperConfig::$shop = [
             'vat' => [
                 'full' => 0,
                 'reduced' => 0,
             ],
         ];
-        $container['db'] = null;
-        $container['lang'] = 'de';
+        HelperConfig::$lang = 'de';
 
-        $items = new \HaaseIT\HCSF\Shop\Items($container);
+        $items = new Items($this->serviceManager);
 
         // regular price, no rebate, vat disabled
         $aData = [
@@ -34,7 +59,7 @@ class ItemsTest extends TestCase
         $this->assertArrayNotHasKey('netto_rebated', $aPrice);
 
         // set vat to normal values
-        $container['conf']['shop'] = [
+        HelperConfig::$shop = [
             'vat' => [
                 'full' => 19,
                 'reduced' => 7,
@@ -45,7 +70,7 @@ class ItemsTest extends TestCase
                 ],
             ],
         ];
-        $items = new \HaaseIT\HCSF\Shop\Items($container);
+        $items = new Items($this->serviceManager);
 
         // regular price, no rebate, reduced vat
         $aData = [
