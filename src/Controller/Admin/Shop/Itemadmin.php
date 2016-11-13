@@ -19,7 +19,10 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
-use \HaaseIT\HCSF\HardcodedText;
+
+use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\DBTools;
+use HaaseIT\Tools;
 
 class Itemadmin extends Base
 {
@@ -40,7 +43,7 @@ class Itemadmin extends Base
                     'itml_lang' => $this->container['lang'],
                 ];
 
-                $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_lang');
+                $sql = DBTools::buildInsertQuery($aData, 'item_lang');
                 $this->container['db']->exec($sql);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
@@ -82,7 +85,7 @@ class Itemadmin extends Base
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
                             $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
-                            $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'item_base');
+                            $sql = DBTools::buildInsertQuery($aData, 'item_base');
                             $this->container['db']->exec($sql);
                             $iInsertID = $this->container['db']->lastInsertId();
                             $sql = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
@@ -171,7 +174,7 @@ class Itemadmin extends Base
         }
         $aLData = [
             'numrows' => $aItemlist["numrows"],
-            'listtable' => \HaaseIT\Tools::makeListTable($aList, $aData, $this->container['twig']),
+            'listtable' => Tools::makeListtable($aList, $aData, $this->container['twig']),
         ];
 
         return $aLData;
@@ -204,7 +207,7 @@ class Itemadmin extends Base
     private function admin_prepareItem($aItemdata)
     {
         $aData = [
-            'form' => ['action' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', ['action' => 'showitem', 'itemno' => $aItemdata["base"]['itm_no']]),],
+            'form' => ['action' => Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', ['action' => 'showitem', 'itemno' => $aItemdata["base"]['itm_no']]),],
             'id' => $aItemdata["base"]['itm_id'],
             'itemno' => $aItemdata["base"]['itm_no'],
             'name' => $aItemdata["base"]['itm_name'],
@@ -261,7 +264,7 @@ class Itemadmin extends Base
         ];
         if (!$this->container['conf']['shop']["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
-        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
+        $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->container['db']->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
@@ -272,7 +275,7 @@ class Itemadmin extends Base
                 'itml_name_override' => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
                 'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
             ];
-            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
+            $sql = DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
             $hResult = $this->container['db']->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();

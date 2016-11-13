@@ -20,6 +20,9 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\Shop\Helper as SHelper;
+
 class Myorders extends Base
 {
     public function preparePage()
@@ -27,7 +30,7 @@ class Myorders extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'content';
 
-        if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if (!CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             require_once PATH_BASEDIR . 'src/shop/functions.shoppingcart.php';
@@ -52,7 +55,7 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->container['textcats']->T("order_paymentmethod_" . $aOrder["o_paymentmethod"]);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder["o_paymentcompleted"] == 'y') ? $this->container['textcats']->T("myorders_paymentstatus_completed") : $this->container['textcats']->T("myorders_paymentstatus_open"));
-                    $this->P->cb_customdata['orderdata']['orderstatus'] = \HaaseIT\HCSF\Shop\Helper::showOrderStatusText($this->container['textcats'], $aOrder["o_ordercompleted"]);
+                    $this->P->cb_customdata['orderdata']['orderstatus'] = SHelper::showOrderStatusText($this->container['textcats'], $aOrder["o_ordercompleted"]);
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder["o_shipping_service"];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder["o_shipping_trackingno"];
 
@@ -78,7 +81,7 @@ class Myorders extends Base
                         ];
                     }
 
-                    $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
+                    $aShoppingcart = SHelper::buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
                         $this->container,
                         true,
@@ -124,7 +127,7 @@ class Myorders extends Base
         $sql = 'SELECT * FROM orders WHERE o_custno = :custno ORDER BY o_ordertimestamp DESC';
 
         $hResult = $this->container['db']->prepare($sql);
-        $hResult->bindValue(':custno', \HaaseIT\HCSF\Customer\Helper::getUserData('cust_no'));
+        $hResult->bindValue(':custno', CHelper::getUserData('cust_no'));
         $hResult->execute();
 
         if ($hResult->rowCount() >= 1) {

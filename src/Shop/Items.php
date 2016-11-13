@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Shop;
 
+use \HaaseIT\HCSF\Customer\Helper as CHelper;
+
 class Items
 {
     private $container;
@@ -111,13 +113,13 @@ class Items
                 $sql .= ' OR itml_text2 LIKE :searchtextwild5)';
             }
         } else {
-            if (\is_array($mItemIndex)) {
+            if (is_array($mItemIndex)) {
                 $sql .= "(";
-                foreach ($mItemIndex as $sAIndex) $sql .= "itm_index LIKE '%".\filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
+                foreach ($mItemIndex as $sAIndex) $sql .= "itm_index LIKE '%".filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
                 $sql = \HaaseIT\Tools::cutStringend($sql, 4);
                 $sql .= ")";
             } else {
-                $sql .= "itm_index LIKE '%".\filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
+                $sql .= "itm_index LIKE '%".filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
         }
         $sql .= ' AND itm_index NOT LIKE \'%!%\' AND itm_index NOT LIKE \'%AL%\'';
@@ -168,6 +170,8 @@ class Items
 
             return $aAssembly;
         }
+
+        return false;
     }
 
     public function getGroupdata($sGroup)
@@ -209,7 +213,7 @@ class Items
             }
             if (
                 $aData['itm_rg'] != ''
-                && isset($this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')])
+                && isset($this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')])
             ) {
                 $aPrice["netto_rebated"] =
                     bcmul(
@@ -217,7 +221,7 @@ class Items
                         bcdiv(
                             bcsub(
                                 '100',
-                                (string)$this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')]
+                                (string)$this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')]
                             ),
                             '100'
                         )

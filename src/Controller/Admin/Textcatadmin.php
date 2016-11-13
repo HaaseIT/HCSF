@@ -20,6 +20,9 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\Tools;
+
 class Textcatadmin extends Base
 {
     public function preparePage()
@@ -36,10 +39,10 @@ class Textcatadmin extends Base
             $aData = $this->container['textcats']->getCompleteTextcatForCurrentLang();
 
             $aListSetting = [
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
-                ['title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                ['title' => HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
+                ['title' => HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                 [
-                    'title' => \HaaseIT\HCSF\HardcodedText::get('textcatadmin_list_title_edit'),
+                    'title' => HardcodedText::get('textcatadmin_list_title_edit'),
                     'key' => 'tc_id',
                     'width' => 35,
                     'linked' => true,
@@ -50,7 +53,7 @@ class Textcatadmin extends Base
                     ],
                 ],
             ];
-            $return .= \HaaseIT\Tools::makeListtable($aListSetting, $aData, $this->container['twig']);
+            $return .= Tools::makeListtable($aListSetting, $aData, $this->container['twig']);
         } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 $this->container['textcats']->deleteText($_GET["id"]);
@@ -91,7 +94,7 @@ class Textcatadmin extends Base
                         ['title' => 'tcl_text', 'key' => 'tcl_text', 'width' => '85%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                     ];
                     $aData = $hResult->fetchAll();
-                    $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+                    $this->P->cb_customdata['archived_list'] = Tools::makeListtable($aListSetting,
                         $aData, $this->container['twig']);
                 }
             }

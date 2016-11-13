@@ -19,7 +19,9 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
-use \HaaseIT\HCSF\HardcodedText;
+
+use HaaseIT\HCSF\HardcodedText;
+use \HaaseIT\HCSF\Customer\Helper as CHelper;
 
 class Customeradmin extends Base
 {
@@ -104,7 +106,7 @@ class Customeradmin extends Base
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
                     }
-                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf']['customer'], $this->container['lang'], $aErr, true);
+                    $aErr = CHelper::validateCustomerForm($this->container['conf']['customer'], $this->container['lang'], $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
                             'cust_no' => $sCustno,
@@ -141,7 +143,7 @@ class Customeradmin extends Base
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
-                $aPData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'admin', $aErr, $aUser);
+                $aPData["customerform"] = CHelper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'admin', $aErr, $aUser);
             } else {
                 $aInfo["nosuchuserfound"] = true;
             }

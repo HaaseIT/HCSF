@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\Tools;
+
 class DBStatus extends Base
 {
 
@@ -58,7 +60,7 @@ class DBStatus extends Base
                 ['title' => 'tcl_text', 'key' => 'tcl_text', 'width' => '82%', 'linked' => false, 'escapehtmlspecialchars' => true,],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_textcat_lang_list'] = \HaaseIT\Tools::makeListtable(
+            $this->P->cb_customdata['rows_textcat_lang_list'] = Tools::makeListtable(
                 $aListSetting,
                 $aData,
                 $this->container['twig']
@@ -83,7 +85,7 @@ class DBStatus extends Base
                 ['title' => 'tcl_text', 'key' => 'tcl_text', 'width' => '61%', 'linked' => false, 'escapehtmlspecialchars' => true,],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_textcat_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_textcat_lang_archive_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }
@@ -106,7 +108,7 @@ class DBStatus extends Base
                 ['title' => 'cl_title', 'key' => 'cl_title', 'width' => '13%', 'linked' => false, 'escapehtmlspecialchars' => true,],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_content_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_content_lang_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }
@@ -131,7 +133,7 @@ class DBStatus extends Base
                 ['title' => 'cl_title', 'key' => 'cl_title', 'width' => '10%', 'linked' => false, 'escapehtmlspecialchars' => true,],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_content_lang_archive_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_content_lang_archive_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }
@@ -171,7 +173,7 @@ class DBStatus extends Base
                 ],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_item_lang_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_item_lang_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }
@@ -204,7 +206,7 @@ class DBStatus extends Base
                 ],
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_itemgroups_text_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_itemgroups_text_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }
@@ -233,7 +235,7 @@ class DBStatus extends Base
 
             ];
             $aData = $hResult->fetchAll();
-            $this->P->cb_customdata['rows_orders_items_list'] = \HaaseIT\Tools::makeListtable($aListSetting,
+            $this->P->cb_customdata['rows_orders_items_list'] = Tools::makeListtable($aListSetting,
                 $aData, $this->container['twig']);
         }
     }

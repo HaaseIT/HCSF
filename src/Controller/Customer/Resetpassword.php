@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use HaaseIT\Tools;
+
 class Resetpassword extends Base
 {
     public function preparePage()
@@ -35,11 +37,11 @@ class Resetpassword extends Base
             } else {
                 $sql = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
 
-                $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+                $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
                 $hResult = $this->container['db']->prepare($sql);
                 $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
-                $hResult->bindValue(':pwresetcode', filter_var(trim(\HaaseIT\Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
+                $hResult->bindValue(':pwresetcode', filter_var(trim(Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
                 if ($hResult->rowCount() != 1) {
                     $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");

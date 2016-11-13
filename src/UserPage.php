@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF;
 
+use HaaseIT\DBTools;
 
 class UserPage extends Page
 {
@@ -71,7 +72,7 @@ class UserPage extends Page
             'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cb_key' => $this->cb_key,
         ];
-        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
+        $sql = DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
 
         $hResult = $this->container['db']->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -82,7 +83,7 @@ class UserPage extends Page
         $aData = [
             'cb_key' => $sPagekeytoadd,
         ];
-        $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_base');
+        $sql = DBTools::buildInsertQuery($aData, 'content_base');
         return $hResult = $this->container['db']->exec($sql);
     }
 

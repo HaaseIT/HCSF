@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF;
 
+use HaaseIT\DBTools;
 
 class UserPagePayload extends PagePayload
 {
@@ -66,7 +67,7 @@ class UserPagePayload extends PagePayload
             'cl_keywords' => filter_var($this->cl_keywords, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_id' => $this->cl_id,
         ];
-        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'content_lang', 'cl_id');
+        $sql = DBTools::buildPSUpdateQuery($aData, 'content_lang', 'cl_id');
 
         $hResult = $this->container['db']->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -78,7 +79,7 @@ class UserPagePayload extends PagePayload
             'cl_cb' => $iParentID,
             'cl_lang' => $this->container['lang'],
         ];
-        $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'content_lang');
+        $sql = DBTools::buildInsertQuery($aData, 'content_lang');
         $this->container['db']->exec($sql);
     }
 

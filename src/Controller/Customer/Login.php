@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use \HaaseIT\Tools;
+
 class Login extends Base
 {
     public function preparePage()
@@ -62,8 +64,8 @@ class Login extends Base
         $bTryEmail = false;
         if ('cust_no' != 'cust_email') $bTryEmail = true;
 
-        $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
-        $sUser = filter_var(trim(\HaaseIT\Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $sEmail = filter_var(trim(Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
+        $sUser = filter_var(trim(Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
         $sql = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
             . ' FROM customer WHERE ';

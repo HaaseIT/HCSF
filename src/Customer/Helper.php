@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Customer;
 
+use HaaseIT\Tools;
+use HaaseIT\HCSF\HardcodedText;
 
 class Helper
 {
@@ -82,65 +84,65 @@ class Helper
                     ? true
                     : false
             ),
-            'fv_custno' => \HaaseIT\Tools::getFormField(
+            'fv_custno' => Tools::getFormfield(
                 'custno',
                 self::getCustomerFormDefaultValue('cust_no', "custno", $aUserData),
                 true
             ),
-            'fv_email' => \HaaseIT\Tools::getFormField(
+            'fv_email' => Tools::getFormfield(
                 'email',
                 self::getCustomerFormDefaultValue('cust_email', "email", $aUserData),
                 true
             ),
-            'fv_corpname' => \HaaseIT\Tools::getFormField(
+            'fv_corpname' => Tools::getFormfield(
                 'corpname',
                 self::getCustomerFormDefaultValue('cust_corp', "corpname", $aUserData),
                 true
             ),
             'fr_corpname' => $C['customer']["validate_corpname"],
-            'fv_name' => \HaaseIT\Tools::getFormField(
+            'fv_name' => Tools::getFormfield(
                 'name',
                 self::getCustomerFormDefaultValue('cust_name', "name", $aUserData),
                 true
             ),
             'fr_name' => $C['customer']["validate_name"],
-            'fv_street' => \HaaseIT\Tools::getFormField(
+            'fv_street' => Tools::getFormfield(
                 'street',
                 self::getCustomerFormDefaultValue('cust_street', "street", $aUserData),
                 true
             ),
             'fr_street' => $C['customer']["validate_street"],
-            'fv_zip' => \HaaseIT\Tools::getFormField(
+            'fv_zip' => Tools::getFormfield(
                 'zip',
                 self::getCustomerFormDefaultValue('cust_zip', "zip", $aUserData),
                 true
             ),
             'fr_zip' => $C['customer']["validate_zip"],
-            'fv_town' => \HaaseIT\Tools::getFormField(
+            'fv_town' => Tools::getFormfield(
                 'town',
                 self::getCustomerFormDefaultValue('cust_town', "town", $aUserData),
                 true
             ),
             'fr_town' => $C['customer']["validate_town"],
-            'fv_phone' => \HaaseIT\Tools::getFormField(
+            'fv_phone' => Tools::getFormfield(
                 'phone',
                 self::getCustomerFormDefaultValue('cust_phone', "phone", $aUserData),
                 true
             ),
             'fr_phone' => $C['customer']["validate_phone"],
-            'fv_cellphone' => \HaaseIT\Tools::getFormField(
+            'fv_cellphone' => Tools::getFormfield(
                 'cellphone',
                 self::getCustomerFormDefaultValue('cust_cellphone', "cellphone", $aUserData),
                 true
             ),
             'fr_cellphone' => $C['customer']["validate_cellphone"],
-            'fv_fax' => \HaaseIT\Tools::getFormField(
+            'fv_fax' => Tools::getFormfield(
                 'fax',
                 self::getCustomerFormDefaultValue('cust_fax', "fax", $aUserData),
                 true
             ),
             'fr_fax' => $C['customer']["validate_fax"],
-            'fv_country' => \HaaseIT\Tools::getFormField(
+            'fv_country' => Tools::getFormfield(
                 'country',
                 ($sDefaultCountry ? $sDefaultCountry : self::getDefaultCountryByConfig($C, $sLang)),
                 true
@@ -150,7 +152,7 @@ class Helper
 
         if ($sPurpose == 'admin') {
             $aData["fv_custgroups"] = $C['customer']["customer_groups"];
-            $aData["fv_custgroup_selected"] = \HaaseIT\Tools::getFormField('custgroup', self::getUserData('cust_group', $aUserData), true);
+            $aData["fv_custgroup_selected"] = Tools::getFormfield('custgroup', self::getUserData('cust_group', $aUserData), true);
         } elseif ($sPurpose == 'shopadmin') {
             $aData["fv_custgroup"] = '';
             if (isset($C['customer']["customer_groups"][self::getUserData('cust_group', $aUserData)])) {
@@ -159,8 +161,8 @@ class Helper
         }
 
         if ($sPurpose == 'admin' || $sPurpose == 'register' || $sPurpose == 'editprofile') {
-            $aData["fv_pwd"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : \HaaseIT\Tools::getFormField('pwd', ''));
-            $aData["fv_pwdc"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : \HaaseIT\Tools::getFormField('pwdc', ''));
+            $aData["fv_pwd"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : Tools::getFormfield('pwd', ''));
+            $aData["fv_pwdc"] = (($sPurpose == 'admin' || $sPurpose == 'editprofile') ? '' : Tools::getFormfield('pwdc', ''));
         }
 
         if ($sPurpose == 'shoppingcart') {
@@ -168,19 +170,19 @@ class Helper
             if (isset($_SESSION["formsave_addrform"]["remarks"])) {
                 $sRememberedRemarks = $_SESSION["formsave_addrform"]["remarks"];
             }
-            $aData["fv_remarks"] = \HaaseIT\Tools::getFormField('remarks', $sRememberedRemarks, true);
+            $aData["fv_remarks"] = Tools::getFormfield('remarks', $sRememberedRemarks, true);
         }
 
         if ($sPurpose == 'shoppingcart' || $sPurpose == 'register') {
             if (!self::getUserData()) {
-                $aData["fv_tos"] = \HaaseIT\Tools::getCheckbox('tos', 'y');
-                $aData["fv_cancellationdisclaimer"] = \HaaseIT\Tools::getCheckbox('cancellationdisclaimer', 'y');
+                $aData["fv_tos"] = Tools::getCheckbox('tos', 'y');
+                $aData["fv_cancellationdisclaimer"] = Tools::getCheckbox('cancellationdisclaimer', 'y');
             }
         }
 
         if ($sPurpose == 'shoppingcart') {
             $aData["fv_paymentmethods"] = $C['shop']["paymentmethods"];
-            $aData["fv_paymentmethod"] = \HaaseIT\Tools::getFormField('paymentmethod', '');
+            $aData["fv_paymentmethod"] = Tools::getFormfield('paymentmethod', '');
         }
 
         if ($sPurpose == 'admin') {
@@ -201,9 +203,9 @@ class Helper
             $sMessage = $container['twig']->render('customer/sendverificationmail.twig', $aP);
         }
         else {
-            $sSubject = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_subject');
-            $sMessage = \HaaseIT\HCSF\HardcodedText::get('newcustomerregistration_mail_text1').' ';
-            $sMessage .= $sTargetAddress.\HaaseIT\HCSF\HardcodedText::get(
+            $sSubject = HardcodedText::get('newcustomerregistration_mail_subject');
+            $sMessage = HardcodedText::get('newcustomerregistration_mail_text1').' ';
+            $sMessage .= $sTargetAddress.HardcodedText::get(
                 'newcustomerregistration_mail_text2').' '.date($container['conf']['core']['locale_format_date_time']
                 );
             $sTargetAddress = $container['conf']['core']["email_sender"];
@@ -224,5 +226,4 @@ class Helper
             elseif ($sField = '') return false;
         }
     }
-
 }

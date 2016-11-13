@@ -20,6 +20,9 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\Tools;
+
 class Userhome extends Base
 {
     public function preparePage()
@@ -27,7 +30,7 @@ class Userhome extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'content';
 
-        if (!\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if (!CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
@@ -42,7 +45,7 @@ class Userhome extends Base
                 if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
-                    $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+                    $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
                     $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
@@ -50,21 +53,21 @@ class Userhome extends Base
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) $sErr .= $this->container['textcats']->T("userprofile_emailalreadyinuse") . '<br>';
-                    $sErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
+                    $sErr = CHelper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
 
                     if ($sErr == '') {
                         if ($this->container['conf']['customer']["allow_edituserprofile"]) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
-                                'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_street' => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_zip' => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_town' => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_phone' => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_corp' => filter_var(trim(Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_name' => filter_var(trim(Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_street' => filter_var(trim(Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_zip' => filter_var(trim(Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_town' => filter_var(trim(Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_phone' => filter_var(trim(Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_cellphone' => filter_var(trim(Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_fax' => filter_var(trim(Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_country' => filter_var(trim(Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             ];
                         }
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
@@ -86,7 +89,7 @@ class Userhome extends Base
                         }
                     }
                 }
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
                     $this->container['conf'],
                     $this->container['lang'],
                     'editprofile',
@@ -94,7 +97,7 @@ class Userhome extends Base
                 );
                 //if ($this->container['conf']['customer']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
                     $this->container['conf'],
                     $this->container['lang'],
                     'userhome'

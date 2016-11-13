@@ -20,6 +20,10 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
+use HaaseIT\DBTools;
+use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\Tools;
+
 class Itemgroupadmin extends Base
 {
     public function preparePage()
@@ -51,7 +55,7 @@ class Itemgroupadmin extends Base
                     'itmgt_pid' => $iGID,
                     'itmgt_lang' => $this->container['lang'],
                 ];
-                $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
+                $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
                 $hResult = $this->container['db']->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
@@ -94,7 +98,7 @@ class Itemgroupadmin extends Base
                         'itmg_no' => $sGNo,
                         'itmg_img' => $sImg,
                     ];
-                    $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
+                    $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
                     $hResult = $this->container['db']->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
@@ -138,7 +142,7 @@ class Itemgroupadmin extends Base
             'itmg_id'=> $iGID,
         ];
 
-        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
+        $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
         $hResult = $this->container['db']->prepare($sql);
         foreach ($aData as $sKey => $sValue) {
             $hResult->bindValue(':' . $sKey, $sValue);
@@ -160,7 +164,7 @@ class Itemgroupadmin extends Base
                 'itmgt_details' => $purifier->purify($_REQUEST["details"]),
                 'itmgt_id' => $aRow['itmgt_id'],
             ];
-            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
+            $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
             $hResult = $this->container['db']->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
@@ -172,7 +176,7 @@ class Itemgroupadmin extends Base
     private function admin_prepareGroup($sPurpose = 'none', $aData = [])
     {
         $aGData = [
-            'formaction' => \HaaseIT\Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
+            'formaction' => Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
             'id' => isset($aData['itmg_id']) ? $aData['itmg_id'] : '',
             'name' => isset($aData['itmg_name']) ? $aData['itmg_name'] : '',
             'no' => isset($aData['itmg_no']) ? $aData['itmg_no'] : '',
@@ -211,9 +215,9 @@ class Itemgroupadmin extends Base
     private function admin_showItemgroups($aGroups)
     {
         $aList = [
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_name'), 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => \HaaseIT\HCSF\HardcodedText::get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
+            ['title' => HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => HardcodedText::get('itemgroupadmin_list_name'), 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => HardcodedText::get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
         ];
         if (count($aGroups) > 0) {
             foreach ($aGroups as $aValue) {
@@ -223,7 +227,7 @@ class Itemgroupadmin extends Base
                     'gname' => $aValue['itmg_name'],
                 ];
             }
-            return \HaaseIT\Tools::makeListTable($aList, $aData, $this->container['twig']);
+            return Tools::makeListtable($aList, $aData, $this->container['twig']);
         } else {
             return false;
         }

@@ -19,7 +19,9 @@
  */
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
-use \HaaseIT\HCSF\HardcodedText;
+
+use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\Tools;
 
 class Shopadmin extends Base
 {
@@ -32,16 +34,16 @@ class Shopadmin extends Base
         $this->P->cb_customcontenttemplate = 'shop/shopadmin';
 
         if (isset($_POST["change"])) {
-            $iID = filter_var(trim(\HaaseIT\Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
+            $iID = filter_var(trim(Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
             $aData = [
                 'o_lastedit_timestamp' => time(),
-                'o_remarks_internal' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks_internal")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_transaction_no' => filter_var(trim(\HaaseIT\Tools::getFormfield("transaction_no")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_paymentcompleted' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_paymentcompleted")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_ordercompleted' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_completed")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_remarks_internal' => filter_var(trim(Tools::getFormfield("remarks_internal")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_transaction_no' => filter_var(trim(Tools::getFormfield("transaction_no")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_paymentcompleted' => filter_var(trim(Tools::getFormfield("order_paymentcompleted")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_ordercompleted' => filter_var(trim(Tools::getFormfield("order_completed")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_lastedit_user' => ((isset($_SERVER["PHP_AUTH_USER"])) ? $_SERVER["PHP_AUTH_USER"] : ''),
-                'o_shipping_service' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_service")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_shipping_trackingno' => filter_var(trim(\HaaseIT\Tools::getFormfield("order_shipping_trackingno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_shipping_service' => filter_var(trim(Tools::getFormfield("order_shipping_service")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_shipping_trackingno' => filter_var(trim(Tools::getFormfield("order_shipping_trackingno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_id' => $iID,
             ];
 
@@ -54,13 +56,13 @@ class Shopadmin extends Base
         }
 
         $aPData = [
-            'searchform_type' => \HaaseIT\Tools::getFormfield('type', 'openinwork'),
-            'searchform_fromday' => \HaaseIT\Tools::getFormfield('fromday', '01'),
-            'searchform_frommonth' => \HaaseIT\Tools::getFormfield('frommonth', '01'),
-            'searchform_fromyear' => \HaaseIT\Tools::getFormfield('fromyear', '2014'),
-            'searchform_today' => \HaaseIT\Tools::getFormfield('today', date("d")),
-            'searchform_tomonth' => \HaaseIT\Tools::getFormfield('tomonth', date("m")),
-            'searchform_toyear' => \HaaseIT\Tools::getFormfield('toyear', date("Y")),
+            'searchform_type' => Tools::getFormfield('type', 'openinwork'),
+            'searchform_fromday' => Tools::getFormfield('fromday', '01'),
+            'searchform_frommonth' => Tools::getFormfield('frommonth', '01'),
+            'searchform_fromyear' => Tools::getFormfield('fromyear', '2014'),
+            'searchform_today' => Tools::getFormfield('today', date("d")),
+            'searchform_tomonth' => Tools::getFormfield('tomonth', date("m")),
+            'searchform_toyear' => Tools::getFormfield('toyear', date("Y")),
         ];
 
         $CSA = [
@@ -121,10 +123,10 @@ class Shopadmin extends Base
             $sTo = null;
             if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
                 $sql .= "AND ";
-                $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
-                $sFrom .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
-                $sTo = \filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
-                $sTo .= '-'.\HaaseIT\Tools::dateAddLeadingZero(\filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
+                $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
+                $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
+                $sTo = \filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
+                $sTo .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
                 $sql .= "o_orderdate >= :from ";
                 $sql .= "AND o_orderdate <= :to ";
                 $bFromTo = true;
@@ -196,7 +198,7 @@ class Shopadmin extends Base
                     } else $k++;
                     $i++;
                 }
-                $aSData['listtable_orders'] = \HaaseIT\Tools::makeListtable($CSA["list_orders"], $aData, $this->container['twig']);
+                $aSData['listtable_orders'] = Tools::makeListtable($CSA["list_orders"], $aData, $this->container['twig']);
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;
                 $aSData['listtable_k'] = $k;

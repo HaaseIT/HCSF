@@ -20,6 +20,9 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\Tools;
+
 class Register extends Base
 {
     public function preparePage()
@@ -27,18 +30,18 @@ class Register extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'content';
 
-        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if (CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 
             $aErr = [];
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
-                $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr);
+                $aErr = CHelper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr);
                 if (count($aErr) == 0) {
                     $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
-                    $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+                    $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
                     $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
@@ -48,23 +51,23 @@ class Register extends Base
                         $sEmailVerificationcode = md5($_POST["email"] . time());
                         $aData = [
                             'cust_email' => $sEmail,
-                            'cust_corp' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")),
+                            'cust_corp' => filter_var(trim(Tools::getFormfield("corpname")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")),
+                            'cust_name' => filter_var(trim(Tools::getFormfield("name")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_street' => filter_var(trim(\HaaseIT\Tools::getFormfield("street")),
+                            'cust_street' => filter_var(trim(Tools::getFormfield("street")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_zip' => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING,
+                            'cust_zip' => filter_var(trim(Tools::getFormfield("zip")), FILTER_SANITIZE_STRING,
                                 FILTER_FLAG_STRIP_LOW),
-                            'cust_town' => filter_var(trim(\HaaseIT\Tools::getFormfield("town")),
+                            'cust_town' => filter_var(trim(Tools::getFormfield("town")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_phone' => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")),
+                            'cust_phone' => filter_var(trim(Tools::getFormfield("phone")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")),
+                            'cust_cellphone' => filter_var(trim(Tools::getFormfield("cellphone")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING,
+                            'cust_fax' => filter_var(trim(Tools::getFormfield("fax")), FILTER_SANITIZE_STRING,
                                 FILTER_FLAG_STRIP_LOW),
-                            'cust_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")),
+                            'cust_country' => filter_var(trim(Tools::getFormfield("country")),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             'cust_password' => password_hash($_POST["pwd"], PASSWORD_DEFAULT),
                             'cust_tosaccepted' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
@@ -82,22 +85,22 @@ class Register extends Base
                         }
                         $hResult->execute();
 
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
+                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
                             $this->container['twig']);
-                        \HaaseIT\HCSF\Customer\Helper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
+                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
                             true);
                         $aPData["showsuccessmessage"] = true;
                     } else {
                         $aErr["emailalreadytaken"] = true;
-                        $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'],
+                        $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'],
                             $this->container['lang'], 'register', $aErr);
                     }
                 } else {
-                    $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'],
+                    $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'],
                         $this->container['lang'], 'register', $aErr);
                 }
             } else {
-                $this->P->cb_customdata["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($this->container['conf'], $this->container['lang'],
+                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'], $this->container['lang'],
                     'register');
             }
             if (isset($aPData) && count($aPData)) {

@@ -82,7 +82,7 @@ if (substr($parsedrequesturi, 1, 1) != '/') {
 $container['request'] = $container['request']->withRequestTarget($parsedrequesturi);
 
 use Symfony\Component\Yaml\Yaml;
-$container['conf'] = function ($c) {
+$container['conf'] = function () {
     $conf['core'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.yml'));
     if (is_file(PATH_BASEDIR.'config/core.local.yml')) {
         $conf['core'] = array_merge($conf['core'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.local.yml')));

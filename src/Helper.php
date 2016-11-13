@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF;
 
+use HaaseIT\HCSF\Shop\Helper as SHelper;
+use HaaseIT\Tools;
 
 class Helper
 {
@@ -69,14 +71,14 @@ class Helper
         if (is_array($aImagesToEmbed) && count($aImagesToEmbed)) {
             foreach ($aImagesToEmbed as $sKey => $imgdata) {
                 $imginfo = getimagesizefromstring($imgdata['binimg']);
-                $mail->AddStringEmbeddedImage($imgdata['binimg'], $sKey, $sKey, 'base64', $imginfo['mime']);
+                $mail->addStringEmbeddedImage($imgdata['binimg'], $sKey, $sKey, 'base64', $imginfo['mime']);
             }
         }
 
         if (is_array($aFilesToAttach) && count($aFilesToAttach)) {
             foreach ($aFilesToAttach as $sValue) {
                 if (file_exists($sValue)) {
-                    $mail->AddAttachment($sValue);
+                    $mail->addAttachment($sValue);
                 }
             }
         }
@@ -142,7 +144,7 @@ class Helper
 
         // Shopping cart infos
         if ($container['conf']['core']["enable_module_shop"]) {
-            $aP["cartinfo"] = \HaaseIT\HCSF\Shop\Helper::getShoppingcartData($container);
+            $aP["cartinfo"] = SHelper::getShoppingcartData($container);
         }
 
         $aP["countrylist"][] = ' | ';
@@ -158,7 +160,7 @@ class Helper
                 || $aP["pagetype"] == 'itemdetail'
             )
         ) {
-            $aP = \HaaseIT\HCSF\Shop\Helper::handleItemPage($container, $P, $aP);
+            $aP = SHelper::handleItemPage($container, $P, $aP);
         }
 
         $aP["content"] = $P->oPayload->cl_html;
@@ -171,7 +173,7 @@ class Helper
 
         if ($container['conf']['core']['debug']) {
             self::getDebug($aP, $P);
-            $aP["debugdata"] = \HaaseIT\Tools::$sDebug;
+            $aP["debugdata"] = Tools::$sDebug;
         }
 
         return $aP;
@@ -180,15 +182,15 @@ class Helper
     private static function getDebug($aP, $P)
     {
         if (!empty($_POST)) {
-            \HaaseIT\Tools::debug($_POST, '$_POST');
+            Tools::debug($_POST, '$_POST');
         } elseif (!empty($_REQUEST)) {
-            \HaaseIT\Tools::debug($_REQUEST, '$_REQUEST');
+            Tools::debug($_REQUEST, '$_REQUEST');
         }
         if (!empty($_SESSION)) {
-            \HaaseIT\Tools::debug($_SESSION, '$_SESSION');
+            Tools::debug($_SESSION, '$_SESSION');
         }
-        \HaaseIT\Tools::debug($aP, '$aP');
-        //\HaaseIT\Tools::debug($P, '$P');
+        Tools::debug($aP, '$aP');
+        //Tools::debug($P, '$P');
     }
 
     public static function getLanguage($container)

@@ -118,10 +118,7 @@ class Paypalnotify extends Base
                 } else {
                     $sLogData .= "-- new entry - " . date($this->container['conf']['core']['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
                 }
-                $bNufile = false;
-                if (!file_exists(PATH_LOGS . FILE_PAYPALLOG)) {
-                    $bNufile = true;
-                }
+
                 $fp = fopen(PATH_LOGS . FILE_PAYPALLOG, 'a');
                 // Write $somecontent to our opened file.
                 fwrite($fp, $sLogData);

@@ -20,6 +20,9 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\HCSF\UserPage;
+use HaaseIT\HCSF\HardcodedText;
+
 class Pageadmin extends Base
 {
     public function preparePage()
@@ -32,14 +35,14 @@ class Pageadmin extends Base
 
         // adding language to page here
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
-            $Ptoinsertlang = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true);
+            $Ptoinsertlang = new UserPage($this->container, $_REQUEST["page_key"], true);
 
             if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
                 $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
                 header('Location: /_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
                 die();
             } else {
-                die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
+                die(HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
             }
         }
 
@@ -48,15 +51,15 @@ class Pageadmin extends Base
         } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
             if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
                 // delete and put message in customdata
-                $Ptodelete = new \HaaseIT\HCSF\UserPage($this->container, $_GET["page_key"], true);
+                $Ptodelete = new UserPage($this->container, $_GET["page_key"], true);
                 if ($Ptodelete->cb_id != NULL) {
                     $Ptodelete->remove();
                 } else {
-                    die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
+                    die(HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
                 }
                 $this->P->cb_customdata["deleted"] = true;
             } else { // edit or update page
-                if (isset($_REQUEST["page_key"]) && $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true)) {
+                if (isset($_REQUEST["page_key"]) && $Ptoedit = new UserPage($this->container, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
                         if ($this->container['conf']['core']['pagetext_enable_purifier']) {
@@ -81,7 +84,7 @@ class Pageadmin extends Base
                             $Ptoedit->oPayload->write();
                         }
 
-                        $Ptoedit = new \HaaseIT\HCSF\UserPage($this->container, $_REQUEST["page_key"], true);
+                        $Ptoedit = new UserPage($this->container, $_REQUEST["page_key"], true);
                         $this->P->cb_customdata["updated"] = true;
                     }
                     $this->P->cb_customdata["page"] = $Ptoedit;
@@ -118,7 +121,7 @@ class Pageadmin extends Base
                     }
 
                 } else {
-                    die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_pagenotfound'));
+                    die(HardcodedText::get('pageadmin_exception_pagenotfound'));
                 }
             }
         } elseif ($_GET["action"] == 'addpage') {
@@ -131,13 +134,13 @@ class Pageadmin extends Base
                 } elseif (strlen($sPagekeytoadd) < 4) {
                     $aErr["keytooshort"] = true;
                 } else {
-                    $Ptoadd = new \HaaseIT\HCSF\UserPage($this->container, $sPagekeytoadd, true);
+                    $Ptoadd = new UserPage($this->container, $sPagekeytoadd, true);
                     if ($Ptoadd->cb_id == NULL) {
                         if ($Ptoadd->insert($sPagekeytoadd)) {
                             header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                             die();
                         } else {
-                            die(\HaaseIT\HCSF\HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
+                            die(HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
                         }
                     } else {
                         $aErr["keyalreadyinuse"] = true;

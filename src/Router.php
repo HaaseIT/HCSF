@@ -8,7 +8,6 @@
 
 namespace HaaseIT\HCSF;
 
-
 class Router
 {
     private $P, $sPath, $container;
@@ -92,7 +91,7 @@ class Router
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
-                $this->P = new \HaaseIT\HCSF\UserPage($this->container, $this->sPath);
+                $this->P = new UserPage($this->container, $this->sPath);
 
                 // go and look if the page can be loaded yet
                 if ($this->P->cb_id == NULL) {
@@ -104,7 +103,7 @@ class Router
 
                     if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
-                    $this->P = new \HaaseIT\HCSF\UserPage($this->container, $this->sPath);
+                    $this->P = new UserPage($this->container, $this->sPath);
                 }
 
                 if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
@@ -124,14 +123,14 @@ class Router
             }
 
             if (!is_object($this->P) && $this->P == 404) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+                $this->P = new CorePage($this->container);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             } elseif (!is_object($this->P) && $this->P == 500) {
-                $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+                $this->P = new CorePage($this->container);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
@@ -174,7 +173,7 @@ class Router
                     $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i] . '.';
                 }
                 // remove the trailing dot
-                $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringEnd($aRoutingoverride["itemno"], 1);
+                $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringend($aRoutingoverride["itemno"], 1);
 
                 $aRoutingoverride["cb_pagetype"] = 'itemdetail';
 
