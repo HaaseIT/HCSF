@@ -20,6 +20,12 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+use HaaseIT\Tools;
+use HaaseIT\HCSF\Helper;
+use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\Shop\Helper as SHelper;
+use HaaseIT\DBTools;
+
 class Shoppingcart extends Base
 {
     public function preparePage()
@@ -27,7 +33,7 @@ class Shoppingcart extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->container);
         $this->P->cb_pagetype = 'contentnosubnav';
 
-        if ($this->container['conf']['shop']["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->container['conf']['shop']["show_pricesonlytologgedin"] && !CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
@@ -44,11 +50,11 @@ class Shoppingcart extends Base
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
                 $aErr = [];
                 if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
-                    $aErr = \HaaseIT\HCSF\Customer\Helper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr, true);
-                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($this->container['request']->parsedBody["tos"]) || $this->container['request']->parsedBody["tos"] != 'y')) {
+                    $aErr = CHelper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr, true);
+                    if (!CHelper::getUserData() && (!isset($this->container['request']->parsedBody["tos"]) || $this->container['request']->parsedBody["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }
-                    if (!\HaaseIT\HCSF\Customer\Helper::getUserData() && (!isset($this->container['request']->parsedBody["cancellationdisclaimer"]) || $this->container['request']->parsedBody["cancellationdisclaimer"] != 'y')) {
+                    if (!CHelper::getUserData() && (!isset($this->container['request']->parsedBody["cancellationdisclaimer"]) || $this->container['request']->parsedBody["cancellationdisclaimer"] != 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
                     if (
@@ -60,7 +66,7 @@ class Shoppingcart extends Base
                         $aErr["paymentmethod"] = true;
                     }
                 }
-                $aShoppingcart = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container, false, '', $aErr);
+                $aShoppingcart = SHelper::buildShoppingCartTable($_SESSION["cart"], $this->container, false, '', $aErr);
             }
 
             // ----------------------------------------------------------------------------
@@ -134,22 +140,22 @@ class Shoppingcart extends Base
     private function prepareDataOrder()
     {
         return [
-            'o_custno' => filter_var(trim(\HaaseIT\Tools::getFormfield("custno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_email' => filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL),
-            'o_corpname' => filter_var(trim(\HaaseIT\Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_name' => filter_var(trim(\HaaseIT\Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_street' => filter_var(trim(\HaaseIT\Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_zip' => filter_var(trim(\HaaseIT\Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_town' => filter_var(trim(\HaaseIT\Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_phone' => filter_var(trim(\HaaseIT\Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_cellphone' => filter_var(trim(\HaaseIT\Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_fax' => filter_var(trim(\HaaseIT\Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_country' => filter_var(trim(\HaaseIT\Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_group' => trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group')),
-            'o_remarks' => filter_var(trim(\HaaseIT\Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_tos' => ((isset($this->container['request']->parsedBody["tos"]) && $this->container['request']->parsedBody["tos"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
-            'o_cancellationdisclaimer' => ((isset($this->container['request']->parsedBody["cancellationdisclaimer"]) && $this->container['request']->parsedBody["cancellationdisclaimer"] == 'y' || \HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
-            'o_paymentmethod' => filter_var(trim(\HaaseIT\Tools::getFormfield("paymentmethod")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_custno' => filter_var(trim(Tools::getFormfield("custno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_email' => filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL),
+            'o_corpname' => filter_var(trim(Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_name' => filter_var(trim(Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_street' => filter_var(trim(Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_zip' => filter_var(trim(Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_town' => filter_var(trim(Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_phone' => filter_var(trim(Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_cellphone' => filter_var(trim(Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_fax' => filter_var(trim(Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_country' => filter_var(trim(Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_group' => trim(CHelper::getUserData('cust_group')),
+            'o_remarks' => filter_var(trim(Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'o_tos' => ((isset($this->container['request']->parsedBody["tos"]) && $this->container['request']->parsedBody["tos"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
+            'o_cancellationdisclaimer' => ((isset($this->container['request']->parsedBody["cancellationdisclaimer"]) && $this->container['request']->parsedBody["cancellationdisclaimer"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
+            'o_paymentmethod' => filter_var(trim(Tools::getFormfield("paymentmethod")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_sumvoll' => $_SESSION["cartpricesums"]["sumvoll"],
             'o_sumerm' => $_SESSION["cartpricesums"]["sumerm"],
             'o_sumnettoall' => $_SESSION["cartpricesums"]["sumnettoall"],
@@ -157,10 +163,10 @@ class Shoppingcart extends Base
             'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
             'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
             'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-            'o_shippingcost' => \HaaseIT\HCSF\Shop\Helper::getShippingcost($this->container),
+            'o_shippingcost' => SHelper::getShippingcost($this->container),
             'o_orderdate' => date("Y-m-d"),
             'o_ordertimestamp' => time(),
-            'o_authed' => ((\HaaseIT\HCSF\Customer\Helper::getUserData()) ? 'y' : 'n'),
+            'o_authed' => ((CHelper::getUserData()) ? 'y' : 'n'),
             'o_sessiondata' => serialize($_SESSION),
             'o_postdata' => serialize($this->container['request']->parsedBody),
             'o_remote_address' => $_SERVER["REMOTE_ADDR"],
@@ -181,7 +187,7 @@ class Shoppingcart extends Base
             $this->container['db']->beginTransaction();
 
             $aDataOrder = $this->prepareDataOrder();
-            $sql = \HaaseIT\DBTools::buildPSInsertQuery($aDataOrder, 'orders');
+            $sql = DBTools::buildPSInsertQuery($aDataOrder, 'orders');
             $hResult = $this->container['db']->prepare($sql);
             foreach ($aDataOrder as $sKey => $sValue) {
                 $hResult->bindValue(':' . $sKey, $sValue);
@@ -207,16 +213,16 @@ class Shoppingcart extends Base
                     'oi_vat' => $this->container['conf']['shop']["vat"][$aV["vat"]],
                     'oi_rg' => $aV["rg"],
                     'oi_rg_rebate' => isset(
-                        $this->container['conf']['shop']["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))]
+                        $this->container['conf']['shop']["rebate_groups"][$aV["rg"]][trim(CHelper::getUserData('cust_group'))]
                     )
-                        ? $this->container['conf']['shop']["rebate_groups"][$aV["rg"]][trim(\HaaseIT\HCSF\Customer\Helper::getUserData('cust_group'))]
+                        ? $this->container['conf']['shop']["rebate_groups"][$aV["rg"]][trim(CHelper::getUserData('cust_group'))]
                         : '',
                     'oi_itemname' => $aV["name"],
                     'oi_img' => $aImagesToSend[$aV["img"]]['base64img'],
                 ];
             }
             foreach ($aDataOrderItems as $aV) {
-                $sql = \HaaseIT\DBTools::buildPSInsertQuery($aV, 'orders_items');
+                $sql = DBTools::buildPSInsertQuery($aV, 'orders_items');
                 $hResult = $this->container['db']->prepare($sql);
                 foreach ($aV as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
@@ -224,7 +230,7 @@ class Shoppingcart extends Base
                 $hResult->execute();
             }
             $this->container['db']->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
@@ -278,7 +284,7 @@ class Shoppingcart extends Base
                 .$this->container['conf']['shop']["email_orderconfirmation_attachment_cancellationform_".$this->container['lang']];
         } else $aFilesToSend = [];
 
-        \HaaseIT\HCSF\Helper::mailWrapper(
+        Helper::mailWrapper(
             $this->container['conf'],
             $this->container['request']->parsedBody["email"],
             $this->container['textcats']->T("shoppingcart_mail_subject") . ' ' . $iInsertID,
@@ -286,7 +292,7 @@ class Shoppingcart extends Base
             $aImagesToSend,
             $aFilesToSend
         );
-        \HaaseIT\HCSF\Helper::mailWrapper(
+        Helper::mailWrapper(
             $this->container['conf'],
             $this->container['conf']['core']["email_sender"],
             'Bestellung im Webshop Nr: ' . $iInsertID,
@@ -310,7 +316,7 @@ class Shoppingcart extends Base
 
     private function buildOrderMailBody($bCust = true, $iId = 0)
     {
-        $aSHC = \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container, true);
+        $aSHC = SHelper::buildShoppingCartTable($_SESSION["cart"], $this->container, true);
 
         $aData = [
             'customerversion' => $bCust,
@@ -348,8 +354,8 @@ class Shoppingcart extends Base
             'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
             'paypallink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
             'sofortueberweisunglink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
-            'SESSION' => (!$bCust ? \HaaseIT\Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
-            'POST' => (!$bCust ? \HaaseIT\Tools::debug($this->container['request']->parsedBody, '$this->container[\'request\'][\'parsedBody\']', true, true) : ''),
+            'SESSION' => (!$bCust ? Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
+            'POST' => (!$bCust ? Tools::debug($this->container['request']->parsedBody, '$this->container[\'request\'][\'parsedBody\']', true, true) : ''),
             'orderid' => $iId,
         ];
 
@@ -385,7 +391,7 @@ class Shoppingcart extends Base
                             unset($TMP);
                         }
                     }
-                    $return = \HaaseIT\Tools::cutStringend($this->P->oPayload->cl_html, 2);
+                    $return = Tools::cutStringend($this->P->oPayload->cl_html, 2);
                 } else {
                     $return .= $_GET["cartkey"];
                 }
@@ -399,5 +405,4 @@ class Shoppingcart extends Base
 
         return $return;
     }
-
 }
