@@ -112,7 +112,7 @@ class Myorders extends Base
                     ],
                 ];
 
-                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList, $this->container['twig'], $this->container['db']);
+                $this->P->cb_customdata['listmyorders'] = $this->showMyOrders($COList);
             }
 
             if (isset($aShoppingcart)) {

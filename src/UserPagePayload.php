@@ -27,8 +27,9 @@ class UserPagePayload extends PagePayload
     public $cl_id, $cl_cb, $cl_lang, $purifier;
 
     public function __construct($container, $iParentID, $bReturnRaw = false) {
+        parent::__construct($container);
+
         //if (!$bReturnRaw) $this->container = $container;
-        $this->container = $container;
 
         if ($iParentID != '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
             $sql = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
