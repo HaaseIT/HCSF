@@ -25,9 +25,9 @@ use HaaseIT\Tools;
 
 class Helper
 {
-    public static function getSignedGlideURL($file, $width = 0, $height =0)
+    public static function getSignedGlideURL($file, $width = 0, $height = 0)
     {
-        $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', GLIDE_SIGNATURE_KEY);
+        $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', HelperConfig::$secrets['glide_signkey']);
 
         if ($width == 0 && $height == 0) return false;
         if ($width != 0) $param['w'] = $width;
@@ -37,32 +37,32 @@ class Helper
         return $urlBuilder->getUrl($file, $param);
     }
 
-    public static function mailWrapper($C, $to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
+    public static function mailWrapper($to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
         $mail = new \PHPMailer;
         $mail->CharSet = 'UTF-8';
 
         $mail->isMail();
-        if ($C['core']['mail_method'] == 'sendmail') {
+        if (HelperConfig::$core['mail_method'] == 'sendmail') {
             $mail->isSendmail();
-        } elseif ($C['core']['mail_method'] == 'smtp') {
+        } elseif (HelperConfig::$core['mail_method'] == 'smtp') {
             $mail->isSMTP();
-            $mail->Host = $C['secrets']['mail_smtp_server'];
-            $mail->Port = $C['secrets']['mail_smtp_port'];
-            if ($C['secrets']['mail_smtp_auth'] == true) {
+            $mail->Host = HelperConfig::$secrets['mail_smtp_server'];
+            $mail->Port = HelperConfig::$secrets['mail_smtp_port'];
+            if (HelperConfig::$secrets['mail_smtp_auth'] == true) {
                 $mail->SMTPAuth = true;
-                $mail->Username = $C['secrets']['mail_smtp_auth_user'];
-                $mail->Password = $C['secrets']['mail_smtp_auth_pwd'];
-                if ($C['secrets']['mail_smtp_secure']) {
+                $mail->Username = HelperConfig::$secrets['mail_smtp_auth_user'];
+                $mail->Password = HelperConfig::$secrets['mail_smtp_auth_pwd'];
+                if (HelperConfig::$secrets['mail_smtp_secure']) {
                     $mail->SMTPSecure = 'tls';
-                    if ($C['secrets']['mail_smtp_secure_method'] == 'ssl') {
+                    if (HelperConfig::$secrets['mail_smtp_secure_method'] == 'ssl') {
                         $mail->SMTPSecure = 'ssl';
                     }
                 }
             }
         }
 
-        $mail->From = $C['core']["email_sender"];
-        $mail->FromName = $C['core']["email_sendername"];
+        $mail->From = HelperConfig::$core["email_sender"];
+        $mail->FromName = HelperConfig::$core["email_sendername"];
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -95,29 +95,29 @@ class Helper
     public static function generatePage($container, $P, $requesturi)
     {
         $aP = [
-            'language' => $container['lang'],
+            'language' => HelperConfig::$lang,
             'pageconfig' => $P->cb_pageconfig,
             'pagetype' => $P->cb_pagetype,
             'subnavkey' => $P->cb_subnav,
             'requesturi' => $requesturi,
             'requesturiarray' => parse_url($requesturi),
-            'locale_format_date' => $container['conf']['core']['locale_format_date'],
-            'locale_format_date_time' => $container['conf']['core']['locale_format_date_time'],
-            'maintenancemode' => $container['conf']['core']['maintenancemode'],
-            'numberformat_decimals' => $container['conf']['core']['numberformat_decimals'],
-            'numberformat_decimal_point' => $container['conf']['core']['numberformat_decimal_point'],
-            'numberformat_thousands_seperator' => $container['conf']['core']['numberformat_thousands_seperator'],
+            'locale_format_date' => HelperConfig::$core['locale_format_date'],
+            'locale_format_date_time' => HelperConfig::$core['locale_format_date_time'],
+            'maintenancemode' => HelperConfig::$core['maintenancemode'],
+            'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
+            'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
+            'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
         ];
-        if ($container['conf']['core']["enable_module_customer"]) {
+        if (HelperConfig::$core["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP["enable_module_customer"] = true;
         }
-        if ($container['conf']['core']["enable_module_shop"]) {
-            $aP["currency"] = $container['conf']['shop']["waehrungssymbol"];
-            $aP["orderamounts"] = $container['conf']['shop']["orderamounts"];
-            if (isset($container['conf']['shop']["vat"]["full"])) $aP["vatfull"] = $container['conf']['shop']["vat"]["full"];
-            if (isset($container['conf']['shop']["vat"]["reduced"])) $aP["vatreduced"] = $container['conf']['shop']["vat"]["reduced"];
-            if (isset($container['conf']['shop']["custom_order_fields"])) $aP["custom_order_fields"] = $container['conf']['shop']["custom_order_fields"];
+        if (HelperConfig::$core["enable_module_shop"]) {
+            $aP["currency"] = HelperConfig::$shop["waehrungssymbol"];
+            $aP["orderamounts"] = HelperConfig::$shop["orderamounts"];
+            if (isset(HelperConfig::$shop["vat"]["full"])) $aP["vatfull"] = HelperConfig::$shop["vat"]["full"];
+            if (isset(HelperConfig::$shop["vat"]["reduced"])) $aP["vatreduced"] = HelperConfig::$shop["vat"]["reduced"];
+            if (isset(HelperConfig::$shop["custom_order_fields"])) $aP["custom_order_fields"] = HelperConfig::$shop["custom_order_fields"];
             $aP["enable_module_shop"] = true;
         }
         if (isset($P->cb_key)) $aP["path"] = pathinfo($P->cb_key);
@@ -128,11 +128,13 @@ class Helper
 
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
-        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && $container['conf']['core']["subnav_default"] != '') {
-            $aP["subnavkey"] = $container['conf']['core']["subnav_default"];
-            $P->cb_subnav = $container['conf']['core']["subnav_default"];
+        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && HelperConfig::$core["subnav_default"] != '') {
+            $aP["subnavkey"] = HelperConfig::$core["subnav_default"];
+            $P->cb_subnav = HelperConfig::$core["subnav_default"];
         }
-        if ($P->cb_subnav != NULL && isset($container['navstruct'][$P->cb_subnav])) $aP["subnav"] = $container['navstruct'][$P->cb_subnav];
+        if ($P->cb_subnav != NULL && isset(HelperConfig::$navigation[$P->cb_subnav])) {
+            $aP["subnav"] = HelperConfig::$navigation[$P->cb_subnav];
+        }
 
         // Get page title, meta-keywords, meta-description
         $aP["pagetitle"] = $P->oPayload->getTitle();
@@ -143,17 +145,17 @@ class Helper
         //if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
 
         // Shopping cart infos
-        if ($container['conf']['core']["enable_module_shop"]) {
+        if (HelperConfig::$core["enable_module_shop"]) {
             $aP["cartinfo"] = SHelper::getShoppingcartData($container);
         }
 
         $aP["countrylist"][] = ' | ';
-        foreach ($container['conf']['countries']["countries_".$container['lang']] as $sKey => $sValue) {
+        foreach (HelperConfig::$countries["countries_".HelperConfig::$lang] as $sKey => $sValue) {
             $aP["countrylist"][] = $sKey.'|'.$sValue;
         }
 
         if (
-            $container['conf']['core']["enable_module_shop"]
+            HelperConfig::$core["enable_module_shop"]
             && (
                 $aP["pagetype"] == 'itemoverview'
                 || $aP["pagetype"] == 'itemoverviewgrpd'
@@ -167,11 +169,11 @@ class Helper
 
         $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
 
-        $aP['lang_available'] = $container['conf']['core']['lang_available'];
-        $aP['lang_detection_method'] = $container['conf']['core']['lang_detection_method'];
-        $aP['lang_by_domain'] = $container['conf']['core']['lang_by_domain'];
+        $aP['lang_available'] = HelperConfig::$core['lang_available'];
+        $aP['lang_detection_method'] = HelperConfig::$core['lang_detection_method'];
+        $aP['lang_by_domain'] = HelperConfig::$core['lang_by_domain'];
 
-        if ($container['conf']['core']['debug']) {
+        if (HelperConfig::$core['debug']) {
             self::getDebug($aP, $P);
             $aP["debugdata"] = Tools::$sDebug;
         }
@@ -193,21 +195,21 @@ class Helper
         //Tools::debug($P, '$P');
     }
 
-    public static function getLanguage($container)
+    public static function getLanguage()
     {
-        $langavailable = $container['conf']['core']["lang_available"];
+        $langavailable = HelperConfig::$core["lang_available"];
         if (
-            $container['conf']['core']["lang_detection_method"] == 'domain'
-            && isset($container['conf']['core']["lang_by_domain"])
-            && is_array($container['conf']['core']["lang_by_domain"])
+            HelperConfig::$core["lang_detection_method"] == 'domain'
+            && isset(HelperConfig::$core["lang_by_domain"])
+            && is_array(HelperConfig::$core["lang_by_domain"])
         ) { // domain based language detection
-            foreach ($container['conf']['core']["lang_by_domain"] as $sKey => $sValue) {
+            foreach (HelperConfig::$core["lang_by_domain"] as $sKey => $sValue) {
                 if ($_SERVER["SERVER_NAME"] == $sValue || $_SERVER["SERVER_NAME"] == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }
             }
-        } elseif ($container['conf']['core']["lang_detection_method"] == 'legacy') { // legacy language detection
+        } elseif (HelperConfig::$core["lang_detection_method"] == 'legacy') { // legacy language detection
             $sLang = key($langavailable);
             if (isset($_GET["language"]) && array_key_exists($_GET["language"], $langavailable)) {
                 $sLang = strtolower($_GET["language"]);
@@ -225,12 +227,12 @@ class Helper
         return $sLang;
     }
 
-    public static function getPurifier($C, $purpose)
+    public static function getPurifier($purpose)
     {
         $purifier_config = \HTMLPurifier_Config::createDefault();
         $purifier_config->set('Core.Encoding', 'UTF-8');
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-        $purifier_config->set('HTML.Doctype', $C['purifier_doctype']);
+        $purifier_config->set('HTML.Doctype', HelperConfig::$core['purifier_doctype']);
 
         if ($purpose == 'textcat') {
             $configkey = 'textcat';
@@ -249,12 +251,15 @@ class Helper
         }
 
         if (
-            isset($C[$configsection][$configkey.'_unsafe_html_whitelist'])
-            && trim($C[$configsection][$configkey.'_unsafe_html_whitelist']) != ''
+            isset(HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist'])
+            && trim(HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist']) != ''
         ) {
-            $purifier_config->set('HTML.Allowed', $C[$configsection][$configkey.'_unsafe_html_whitelist']);
+            $purifier_config->set('HTML.Allowed', HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist']);
         }
-        if (isset($C[$configsection][$configkey.'_loose_filtering']) && $C[$configsection][$configkey.'_loose_filtering']) {
+        if (
+            isset(HelperConfig::$$configsection[$configkey.'_loose_filtering'])
+            && HelperConfig::$$configsection[$configkey.'_loose_filtering']
+        ) {
             $purifier_config->set('HTML.Trusted', true);
             $purifier_config->set('Attr.EnableID', true);
             $purifier_config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);

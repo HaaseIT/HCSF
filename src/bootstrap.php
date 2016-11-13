@@ -63,7 +63,7 @@ const ENTITY_USERPAGE_BASE = 'HaaseIT\HCSF\Entities\UserpageBase';
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$container = new Pimple\Container();
+$serviceManager = new Zend\ServiceManager\ServiceManager();
 
 $AuraLoader = new \Aura\Autoload\Loader;
 $AuraLoader->register();
@@ -71,77 +71,38 @@ $AuraLoader->addPrefix('\HaaseIT\HCSF', __DIR__.'/../src');
 
 // PSR-7 Stuff
 // Init request object
-$container['request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$serviceManager->setFactory('request', function () {
+    $request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
-// cleanup request
+    // cleanup request
+    $requesturi = urldecode($request->getRequestTarget());
+    $parsedrequesturi = substr($requesturi, strlen(dirname($_SERVER['PHP_SELF'])));
+    if (substr($parsedrequesturi, 1, 1) != '/') {
+        $parsedrequesturi = '/'.$parsedrequesturi;
+    }
+    return $request->withRequestTarget($parsedrequesturi);
+});
+/* old, pimple
+$container['request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 $requesturi = urldecode($container['request']->getRequestTarget());
 $parsedrequesturi = \substr($requesturi, \strlen(\dirname($_SERVER['PHP_SELF'])));
 if (substr($parsedrequesturi, 1, 1) != '/') {
     $parsedrequesturi = '/'.$parsedrequesturi;
 }
 $container['request'] = $container['request']->withRequestTarget($parsedrequesturi);
+*/
 
-use Symfony\Component\Yaml\Yaml;
-$container['conf'] = function () {
-    $conf['core'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.yml'));
-    if (is_file(PATH_BASEDIR.'config/core.local.yml')) {
-        $conf['core'] = array_merge($conf['core'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.local.yml')));
-    }
+use HaaseIT\HCSF\HelperConfig;
+HelperConfig::init();
 
-    $conf['countries'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.yml'));
-    if (is_file(PATH_BASEDIR.'config/countries.local.yml')) {
-        $conf['countries'] = array_merge($conf['countries'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.local.yml')));
-    }
+if (HelperConfig::$core['debug']) {
+    HaaseIT\Tools::$bEnableDebug = true;
+}
 
-    $conf['secrets'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.yml'));
-    if (is_file(PATH_BASEDIR.'config/secrets.local.yml')) {
-        $conf['secrets'] = array_merge($conf['secrets'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.local.yml')));
-    }
-
-    $conf['core']['directory_images'] = trim($conf['core']['directory_images'], " \t\n\r\0\x0B/"); // trim this
-
-    if (!empty($conf['core']['maintenancemode']) && $conf['core']['maintenancemode']) {
-        $conf['core']["enable_module_customer"] = false;
-        $conf['core']["enable_module_shop"] = false;
-        $conf['core']["templatecache_enable"] = false;
-        $conf['core']["debug"] = false;
-        $conf['core']['textcatsverbose'] = false;
-    } else {
-        $conf['core']['maintenancemode'] = false;
-    }
-
-    if ($conf['core']["enable_module_shop"]) {
-        $conf['core']["enable_module_customer"] = true;
-    }
-
-    if ($conf['core']["enable_module_customer"]) {
-        $conf['customer'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml'));
-        if (is_file(__DIR__.'/config/config.customer.yml')) {
-            $conf['customer'] = array_merge($conf['customer'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.local.yml')));
-        }
-    }
-
-    if ($conf['core']["enable_module_shop"]) {
-        $conf['shop'] = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml'));
-        if (is_file(PATH_BASEDIR.'config/shop.local.yml')) {
-            $conf['shop'] = array_merge($conf['shop'], Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.local.yml')));
-        }
-        if (isset($conf['shop']["vat_disable"]) && $conf['shop']["vat_disable"]) {
-            $conf['shop']["vat"] = ["full" => 0, "reduced" => 0];
-        }
-    }
-
-    return $conf;
-};
-
-define("GLIDE_SIGNATURE_KEY", $container['conf']['secrets']['glide_signkey']);
-
-if (isset($container['conf']['core']["debug"]) && $container['conf']['core']["debug"]) HaaseIT\Tools::$bEnableDebug = true;
-
-if ($container['conf']['core']["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+if (HelperConfig::$core["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
-    ini_set('session.use_only_cookies', 0); // TODO find another way to pass session when language detection == domain
+    ini_set('session.use_only_cookies', 0);
     session_name('sid');
     if(ini_get('session.use_trans_sid') == 1) {
         ini_set('session.use_trans_sid', 0);
@@ -169,15 +130,13 @@ if ($container['conf']['core']["enable_module_customer"] && isset($_COOKIE["acce
     }
 }
 
-date_default_timezone_set($container['conf']['core']["defaulttimezone"]);
+date_default_timezone_set(HelperConfig::$core["defaulttimezone"]);
 
-$container['lang'] = \HaaseIT\HCSF\Helper::getLanguage($container);
-
-if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')) {
-    $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php';
+if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php')) {
+    $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php';
 } else {
-    if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key($container['conf']['core']["lang_available"]).'.php')) {
-        $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.key($container['conf']['core']["lang_available"]).'.php';
+    if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php')) {
+        $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php';
     } else {
         $HT = require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
     }
@@ -185,25 +144,22 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.$container['lang'].'.php')
 use \HaaseIT\HCSF\HardcodedText;
 HardcodedText::init($HT);
 
-$container['navstruct'] = [];
-$container['db'] = null;
-$container['entitymanager'] = null;
-if (!$container['conf']['core']['maintenancemode']) {
+//$container['db'] = null;
+//$container['entitymanager'] = null;
+if (!HelperConfig::$core['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
 // ----------------------------------------------------------------------------
-
-    $container['entitymanager'] = function ($c)
-    {
-        $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], $c['conf']['core']['debug']);
+    $serviceManager->setFactory('entitymanager', function () {
+        $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], HelperConfig::$core['debug']);
 
         $connectionParams = array(
             'url' =>
-                $c['conf']['secrets']['db_type'].'://'
-                .$c['conf']['secrets']['db_user'].':'
-                .$c['conf']['secrets']['db_password'].'@'
-                .$c['conf']['secrets']['db_server'].'/'
-                .$c['conf']['secrets']['db_name'],
+                HelperConfig::$secrets['db_type'].'://'
+                .HelperConfig::$secrets['db_user'].':'
+                .HelperConfig::$secrets['db_password'].'@'
+                .HelperConfig::$secrets['db_server'].'/'
+                .HelperConfig::$secrets['db_name'],
             'charset' => 'UTF8',
             'driverOptions' => [
                 \PDO::ATTR_EMULATE_PREPARES => false,
@@ -213,97 +169,56 @@ if (!$container['conf']['core']['maintenancemode']) {
         );
 
         return Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
-    };
+    });
 
-    $container['db'] = function ($c)
-    {
-        return $c['entitymanager']->getConnection()->getWrappedConnection();
-    };
+    $serviceManager->setFactory('db', function () use($serviceManager) {
+        return $serviceManager->get('entitymanager')->getConnection()->getWrappedConnection();
+    });
 
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    $container['textcats'] = function ($c)
-    {
-        $langavailable = $c['conf']['core']["lang_available"];
-        $textcats = new \HaaseIT\Textcat($c, key($langavailable), $c['conf']['core']['textcatsverbose'], PATH_LOGS);
+    $serviceManager->setFactory('textcats', function () use($serviceManager) {
+        $langavailable = HelperConfig::$core["lang_available"];
+        $textcats = new \HaaseIT\Textcat(
+            HelperConfig::$lang,
+            $serviceManager->get('db'),
+            key($langavailable),
+            HelperConfig::$core['textcatsverbose'],
+            PATH_LOGS
+        );
         $textcats->loadTextcats();
 
         return $textcats;
-    };
+    });
 
-    $container['navstruct'] = function ($c)
-    {
-        if (is_file(PATH_BASEDIR.'config/navigation.local.yml')) {
-            $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.local.yml'));
-        } else {
-            $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.yml'));
-        }
-
-        if (!empty($navstruct) && $c['conf']['core']['navigation_fetch_text_from_textcats']) {
-            foreach ($navstruct as $key => $item) {
-                foreach ($item as $subkey => $subitem) {
-                    if (!empty($c['textcats']->T($subkey))) {
-                        $TMP[$key][$c['textcats']->T($subkey)] = $subitem;
-                    } else {
-                        $TMP[$key][$subkey] = $subitem;
-                    }
-                }
-            }
-            $navstruct = $TMP;
-            unset($TMP);
-        }
-
-        if (isset($navstruct["admin"])) {
-            unset($navstruct["admin"]);
-        }
-
-        $navstruct["admin"][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
-
-        if ($c['conf']['core']["enable_module_shop"]) {
-            $navstruct["admin"][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
-            $navstruct["admin"][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
-            $navstruct["admin"][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
-        }
-
-        if ($c['conf']['core']["enable_module_customer"]) {
-            $navstruct["admin"][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
-        }
-
-        $navstruct["admin"][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
-
-        return $navstruct;
-    };
+    HelperConfig::loadNavigation($serviceManager);
 }
 
 // ----------------------------------------------------------------------------
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$container['twig'] = function ($c) {
-    $loader = new Twig_Loader_Filesystem([__DIR__.'/../customviews', __DIR__.'/../src/views/']);
+$serviceManager->setFactory('twig', function () use($serviceManager) {
+    $loader = new Twig_Loader_Filesystem([PATH_BASEDIR.'customviews', PATH_BASEDIR.'src/views/']);
+
     $twig_options = [
         'autoescape' => false,
-        'debug' => (isset($c['conf']['core']["debug"]) && $c['conf']['core']["debug"] ? true : false)
+        'debug' => (HelperConfig::$core["debug"] ? true : false),
     ];
-    if (isset($c['conf']['core']["templatecache_enable"]) && $c['conf']['core']["templatecache_enable"] &&
+    if (HelperConfig::$core["templatecache_enable"] &&
         is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
         $twig_options["cache"] = PATH_TEMPLATECACHE;
     }
     $twig = new Twig_Environment($loader, $twig_options);
 
-    if ($c['conf']['core']['allow_parsing_of_page_content']) {
+    if (HelperConfig::$core['allow_parsing_of_page_content']) {
         $twig->addExtension(new Twig_Extension_StringLoader());
     } else { // make sure, template_from_string is callable
         $twig->addFunction('template_from_string', new Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
     }
 
-    $twig->addFunction(new Twig_SimpleFunction('T', [$c['textcats'], 'T']));
+    $twig->addFunction(new Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
 
     $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
     $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
@@ -311,19 +226,18 @@ $container['twig'] = function ($c) {
     $twig->addFunction('makeLinkHRefWithAddedGetVars', new Twig_Function_Function('\HaaseIT\Tools::makeLinkHRefWithAddedGetVars'));
 
     return $twig;
-};
+});
 
-$container['oItem'] = '';
-if ($container['conf']['core']["enable_module_shop"]) {
-    $container['oItem'] = function ($c)
-    {
-        return new \HaaseIT\HCSF\Shop\Items($c);
-    };
+//$container['oItem'] = '';
+if (HelperConfig::$core["enable_module_shop"]) {
+    $serviceManager->setFactory('oItem', function () use($serviceManager) {
+        return new \HaaseIT\HCSF\Shop\Items($serviceManager);
+    });
 }
 
 // ----------------------------------------------------------------------------
 // Begin routing
 // ----------------------------------------------------------------------------
 
-$router = new \HaaseIT\HCSF\Router($container);
+$router = new \HaaseIT\HCSF\Router($serviceManager);
 $P = $router->getPage();

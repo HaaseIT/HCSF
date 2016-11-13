@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Register extends Base
@@ -37,7 +38,7 @@ class Register extends Base
 
             $aErr = [];
             if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
-                $aErr = CHelper::validateCustomerForm($this->container['conf'], $this->container['lang'], $aErr);
+                $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr);
                 if (count($aErr) == 0) {
                     $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
@@ -74,7 +75,7 @@ class Register extends Base
                             'cust_cancellationdisclaimeraccepted' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
                             'cust_emailverified' => 'n',
                             'cust_emailverificationcode' => $sEmailVerificationcode,
-                            'cust_active' => (($this->container['conf']['customer']["register_require_manual_activation"]) ? 'n' : 'y'),
+                            'cust_active' => ((HelperConfig::$customer["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
                         ];
                         $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
@@ -92,16 +93,24 @@ class Register extends Base
                         $aPData["showsuccessmessage"] = true;
                     } else {
                         $aErr["emailalreadytaken"] = true;
-                        $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'],
-                            $this->container['lang'], 'register', $aErr);
+                        $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                            HelperConfig::$lang,
+                            'register',
+                            $aErr
+                        );
                     }
                 } else {
-                    $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'],
-                        $this->container['lang'], 'register', $aErr);
+                    $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                        HelperConfig::$lang,
+                        'register',
+                        $aErr
+                    );
                 }
             } else {
-                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm($this->container['conf'], $this->container['lang'],
-                    'register');
+                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                    HelperConfig::$lang,
+                    'register'
+                );
             }
             if (isset($aPData) && count($aPData)) {
                 $this->P->cb_customdata["register"] = $aPData;

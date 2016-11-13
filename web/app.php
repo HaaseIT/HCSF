@@ -24,7 +24,7 @@ $aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $requesturi);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
-$response->getBody()->write($container['twig']->render($container['conf']['core']["template_base"], $aP));
+$response->getBody()->write($container['twig']->render(\HaaseIT\HCSF\HelperConfig::$core["template_base"], $aP));
 
 $emitter = new \Zend\Diactoros\Response\SapiEmitter();
 $emitter->emit($response);

@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\HCSF\UserPage;
 use HaaseIT\HCSF\HardcodedText;
 
@@ -62,8 +63,8 @@ class Pageadmin extends Base
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new UserPage($this->container, $_REQUEST["page_key"], true)) {
                     if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
 
-                        if ($this->container['conf']['core']['pagetext_enable_purifier']) {
-                            $purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'page');
+                        if (HelperConfig::$core['pagetext_enable_purifier']) {
+                            $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
                         } else {
                             $purifier = false;
                         }
@@ -88,8 +89,8 @@ class Pageadmin extends Base
                         $this->P->cb_customdata["updated"] = true;
                     }
                     $this->P->cb_customdata["page"] = $Ptoedit;
-                    $this->P->cb_customdata["admin_page_types"] = $this->container['conf']['core']["admin_page_types"];
-                    $this->P->cb_customdata["admin_page_groups"] = $this->container['conf']['core']["admin_page_groups"];
+                    $this->P->cb_customdata["admin_page_types"] = HelperConfig::$core["admin_page_types"];
+                    $this->P->cb_customdata["admin_page_groups"] = HelperConfig::$core["admin_page_groups"];
                     $aOptions = [''];
                     foreach ($this->container["navstruct"] as $sKey => $aValue) {
                         if ($sKey == 'admin') {
@@ -103,7 +104,7 @@ class Pageadmin extends Base
                     // show archived versions of this page
                     if ($Ptoedit->oPayload->cl_id != NULL) {
                         $hResult = $this->container['db']->query(
-                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".$this->container['lang']."' ORDER BY cla_timestamp DESC"
+                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".HelperConfig::$lang."' ORDER BY cla_timestamp DESC"
                         );
                         $iArchivedRows = $hResult->rowCount();
                         if ($iArchivedRows > 0) {
@@ -157,7 +158,7 @@ class Pageadmin extends Base
         $hResult = $this->container['db']->query('SELECT * FROM content_base ORDER BY cb_key');
 
         $aGroups = [];
-        foreach ($this->container['conf']['core']["admin_page_groups"] as $sValue) {
+        foreach (HelperConfig::$core["admin_page_groups"] as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }

@@ -38,7 +38,7 @@ class UserPagePayload extends PagePayload
 
             // Try to get the payload in the current language
             $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-            $hResult->bindValue(':lang', $container['lang'], \PDO::PARAM_STR);
+            $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
             $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
             $hResult->execute();
 
@@ -48,7 +48,7 @@ class UserPagePayload extends PagePayload
                 // if the current language data is not available, lets see if we can get the default languages data
                 $hResult = $this->container['db']->prepare($sql);
                 $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-                $lang_available = $this->container['conf']['core']["lang_available"];
+                $lang_available = HelperConfig::$core["lang_available"];
                 $hResult->bindValue(':lang', key($lang_available), \PDO::PARAM_STR);
                 $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
                 $hResult->execute();
@@ -78,7 +78,7 @@ class UserPagePayload extends PagePayload
     public function insert($iParentID) {
         $aData = [
             'cl_cb' => $iParentID,
-            'cl_lang' => $this->container['lang'],
+            'cl_lang' => HelperConfig::$lang,
         ];
         $sql = DBTools::buildInsertQuery($aData, 'content_lang');
         $this->container['db']->exec($sql);

@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Paypalnotify extends Base
 {
     public function preparePage()
@@ -44,7 +46,7 @@ class Paypalnotify extends Base
                 $postdata .= $i . '=' . urlencode($v) . '&';
             }
             $postdata .= 'cmd=_notify-validate';
-            $web = parse_url($this->container['conf']['shop']["paypal"]["url"]);
+            $web = parse_url(HelperConfig::$shop["paypal"]["url"]);
 
             if ($web['scheme'] == 'https') {
                 $web['port'] = 443;
@@ -69,7 +71,7 @@ class Paypalnotify extends Base
                 $info = implode(',', $info);
                 if (!(strpos($info, 'VERIFIED') === false)) {
 
-                    $sLogData .= "-- new entry - " . date($this->container['conf']['core']['locale_format_date_time']) . " --\n\n";
+                    $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
                     $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
@@ -84,8 +86,8 @@ class Paypalnotify extends Base
                             $_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '')
                             && $_REQUEST["custom"] == $aOrder['o_id']
                             && $_REQUEST["payment_status"] == "Completed"
-                            && $_REQUEST["mc_currency"] == $this->container['conf']['shop']["paypal"]["currency_id"]
-                            && $_REQUEST["business"] == $this->container['conf']['shop']["paypal"]["business"]
+                            && $_REQUEST["mc_currency"] == HelperConfig::$shop["paypal"]["currency_id"]
+                            && $_REQUEST["business"] == HelperConfig::$shop["paypal"]["business"]
                         ) {
                             $aTxnUpdateData = [
                                 'o_paypal_tx' => $_REQUEST["txn_id"],
@@ -106,17 +108,17 @@ class Paypalnotify extends Base
                                     2, '.', '') . "\n";
                             $sLogData .= "custom: " . $_REQUEST["custom"] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
                             $sLogData .= "payment_status: " . $_REQUEST["payment_status"] . "\n";
-                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["currency_id"]: ' . $this->container['conf']['shop']["paypal"]["currency_id"] . "\n";
-                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["business"]: ' . $this->container['conf']['shop']["paypal"]["business"] . "\n\n";
+                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["currency_id"]: ' . HelperConfig::$shop["paypal"]["currency_id"] . "\n";
+                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["business"]: ' . HelperConfig::$shop["paypal"]["business"] . "\n\n";
                         }
                     } else {
                         // INVALID LOGGING ERROR
-                        $sLogData .= "-- new entry - " . date($this->container['conf']['core']['locale_format_date_time']) . " --\n\nPHAIL\n\n";
+                        $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL\n\n";
                         $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: " . $_REQUEST["txn_id"] . " !!!\n\n";
                         $sLogData .= "!!! INVALID !!!\n\n";
                     }
                 } else {
-                    $sLogData .= "-- new entry - " . date($this->container['conf']['core']['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
+                    $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
                 }
 
                 $fp = fopen(PATH_LOGS . FILE_PAYPALLOG, 'a');

@@ -21,6 +21,8 @@
 namespace HaaseIT\HCSF\Controller;
 
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Glide extends Base
 {
     private $aPath;
@@ -34,23 +36,23 @@ class Glide extends Base
     public function preparePage()
     {
         $sPath = implode('/', $this->aPath);
-        $sImageroot = PATH_BASEDIR . $this->container['conf']['core']['directory_glide_master'];
+        $sImageroot = PATH_BASEDIR.HelperConfig::$core['directory_glide_master'];
 
         if (
-            is_file($sImageroot.substr($sPath, strlen($this->container['conf']['core']['directory_images']) + 1))
-            && getimagesize($sImageroot.substr($sPath, strlen($this->container['conf']['core']['directory_images']) + 1))
+            is_file($sImageroot.substr($sPath, strlen(HelperConfig::$core['directory_images']) + 1))
+            && getimagesize($sImageroot.substr($sPath, strlen(HelperConfig::$core['directory_images']) + 1))
         ) {
             $glideserver = \League\Glide\ServerFactory::create([
                 'source' => $sImageroot,
                 'cache' => PATH_GLIDECACHE,
-                'max_image_size' => $this->container['conf']['core']['glide_max_imagesize'],
+                'max_image_size' => HelperConfig::$core['glide_max_imagesize'],
             ]);
-            $glideserver->setBaseUrl('/' . $this->container['conf']['core']['directory_images'] . '/');
+            $glideserver->setBaseUrl('/' . HelperConfig::$core['directory_images'] . '/');
             // Generate a URL
 
             try {
                 // Validate HTTP signature
-                \League\Glide\Signatures\SignatureFactory::create(GLIDE_SIGNATURE_KEY)->validateRequest($sPath, $_GET);
+                \League\Glide\Signatures\SignatureFactory::create(HelperConfig::$secrets['glide_signkey'])->validateRequest($sPath, $_GET);
                 $glideserver->outputImage($sPath, $_GET);
                 die();
 

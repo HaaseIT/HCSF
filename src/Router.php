@@ -8,21 +8,37 @@
 
 namespace HaaseIT\HCSF;
 
+
+use Zend\ServiceManager\ServiceManager;
+
 class Router
 {
-    private $P, $sPath, $container;
+    private $P;
 
-    public function __construct($container)
+    /**
+     * @var string
+     */
+    private $sPath;
+
+    /**
+     * @var ServiceManager
+     */
+    private $serviceManager;
+
+    /**
+     * Router constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
     {
-        $this->container = $container;
+        $this->serviceManager = $serviceManager;
     }
 
     public function getPage()
     {
-        if ($this->container['conf']['core']['maintenancemode']) {
-            $class = '\\HaaseIT\\HCSF\\Controller\\Maintenance';
+        if (HelperConfig::$core['maintenancemode']) {
             try {
-                $controller = new $class($this->container);
+                $controller = new \HaaseIT\HCSF\Controller\Maintenance($this->serviceManager);
                 $this->P = $controller->getPage();
             } catch (\Exception $e) {
                 $this->P = $e->getMessage();
@@ -60,25 +76,25 @@ class Router
                 '/_misc/paypal.html' => 'Shop\\Paypal',
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
-            if ($this->container['conf']['core']['enable_sandbox']) {
+            if (HelperConfig::$core['enable_sandbox']) {
                 $map['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
             }
             $this->P = 404;
-            $aURL = parse_url($this->container['request']->getRequestTarget());
+            $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
             $this->sPath = $aURL["path"];
 
             $aPath = explode('/', $this->sPath);
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
             } else {
-                if ($aPath[1] == $this->container['conf']['core']['directory_images']) {
+                if ($aPath[1] == HelperConfig::$core['directory_images']) {
                     $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
                 }
             }
 
             if (!empty($class)) {
                 try {
-                    $controller = new $class($this->container, $aPath);
+                    $controller = new $class($this->serviceManager, $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = 500;
@@ -87,11 +103,11 @@ class Router
 
                 }
             } else {
-                if ($this->container['conf']['core']["enable_module_shop"]) {
+                if (HelperConfig::$core["enable_module_shop"]) {
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
-                $this->P = new UserPage($this->container, $this->sPath);
+                $this->P = new UserPage($this->serviceManager, $this->sPath);
 
                 // go and look if the page can be loaded yet
                 if ($this->P->cb_id == NULL) {
@@ -103,7 +119,7 @@ class Router
 
                     if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
 
-                    $this->P = new UserPage($this->container, $this->sPath);
+                    $this->P = new UserPage($this->serviceManager, $this->sPath);
                 }
 
                 if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
@@ -123,32 +139,32 @@ class Router
             }
 
             if (!is_object($this->P) && $this->P == 404) {
-                $this->P = new CorePage($this->container);
+                $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_page_not_found");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_page_not_found");
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
             } elseif (!is_object($this->P) && $this->P == 500) {
-                $this->P = new CorePage($this->container);
+                $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_server_error");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_server_error");
                 header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
-                !(
-                    $this->P->cb_pagetype == 'itemoverview'
-                    || $this->P->cb_pagetype == 'itemoverviewgrpd'
-                    || $this->P->cb_pagetype == 'itemdetail'
-                )
+                    !(
+                        $this->P->cb_pagetype == 'itemoverview'
+                        || $this->P->cb_pagetype == 'itemoverviewgrpd'
+                        || $this->P->cb_pagetype == 'itemdetail'
+                    )
                 ) { // no payload is fine if page is one of these
-                    $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_content_not_found");
+                    $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_content_not_found");
                     header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
                 }
-            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != $this->container['lang']) { // if the page is available but not in the current language, display info
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
+            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
             }
         }
         return $this->P;

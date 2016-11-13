@@ -22,6 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
 use HaaseIT\HCSF\HardcodedText;
 use \HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\HelperConfig;
 
 class Customeradmin extends Base
 {
@@ -80,11 +81,11 @@ class Customeradmin extends Base
                 $aInfo["nodatafound"] = true;
             }
         } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-            $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+            $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $aErr = [];
             if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
                 $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                if (strlen($sCustno) < $this->container['conf']['customer']["minimum_length_custno"]) {
+                if (strlen($sCustno) < HelperConfig::$customer["minimum_length_custno"]) {
                     $aErr["custnoinvalid"] = true;
                 } else {
 
@@ -100,27 +101,27 @@ class Customeradmin extends Base
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
                     $hResult = $this->container['db']->prepare($sql);
                     $hResult->bindValue(':id', $iId);
-                    $hResult->bindValue(':email', \filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
+                    $hResult->bindValue(':email', filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
                         $aErr["emailalreadytaken"] = true;
                     }
-                    $aErr = CHelper::validateCustomerForm($this->container['conf']['customer'], $this->container['lang'], $aErr, true);
+                    $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
                     if (count($aErr) == 0) {
                         $aData = [
                             'cust_no' => $sCustno,
-                            'cust_email' => \trim(\filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
-                            'cust_corp' => \trim(\filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_name' => \trim(\filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_street' => \trim(\filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_zip' => \trim(\filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_town' => \trim(\filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_phone' => \trim(\filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_cellphone' => \trim(\filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_fax' => \trim(\filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_country' => \trim(\filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_group' => \trim(\filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_email' => trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
+                            'cust_corp' => trim(filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_name' => trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_street' => trim(filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_zip' => trim(filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_town' => trim(filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_phone' => trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_cellphone' => trim(filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_fax' => trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_country' => trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
+                            'cust_group' => trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                             'cust_emailverified' => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
                             'cust_active' => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
                             'cust_id' => $iId,
@@ -143,7 +144,7 @@ class Customeradmin extends Base
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
-                $aPData["customerform"] = CHelper::buildCustomerForm($this->container['conf'], $this->container['lang'], 'admin', $aErr, $aUser);
+                $aPData["customerform"] = CHelper::buildCustomerForm(HelperConfig::$lang, 'admin', $aErr, $aUser);
             } else {
                 $aInfo["nosuchuserfound"] = true;
             }

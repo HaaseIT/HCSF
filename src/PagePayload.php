@@ -35,7 +35,7 @@ class PagePayload
         if (isset($this->cl_title) && trim($this->cl_title) != '') {
             return $this->cl_title;
         } else {
-            return $this->container['conf']['core']['default_pagetitle'];
+            return HelperConfig::$core['default_pagetitle'];
         }
     }
 }

@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Updatecart extends Base
 {
     public function preparePage()
@@ -29,7 +31,7 @@ class Updatecart extends Base
 
         if (
             (
-                $this->container['conf']['shop']["show_pricesonlytologgedin"]
+                HelperConfig::$shop["show_pricesonlytologgedin"]
                 && !\HaaseIT\HCSF\Customer\Helper::getUserData()
             )
             || !isset($_SERVER["HTTP_REFERER"])
@@ -55,8 +57,8 @@ class Updatecart extends Base
                     $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
                     $sCartKey = $sItemno;
 
-                    if (isset($this->container['conf']['shop']["custom_order_fields"])) {
-                        foreach ($this->container['conf']['shop']["custom_order_fields"] as $sValue) {
+                    if (isset(HelperConfig::$shop["custom_order_fields"])) {
+                        foreach (HelperConfig::$shop["custom_order_fields"] as $sValue) {
                             if (isset($aData["item"][$sItemno]["itm_data"][$sValue])) {
                                 $aOptions = [];
                                 $TMP = explode('|', $aData["item"][$sItemno]["itm_data"][$sValue]);
@@ -114,10 +116,10 @@ class Updatecart extends Base
                 'cart' => $_SESSION["cart"],
                 'reply' => $sReply,
                 'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->container, $_SESSION["cart"]),
-                'currency' => $this->container['conf']['shop']["waehrungssymbol"],
-                'numberformat_decimals' => $this->container['conf']['core']['numberformat_decimals'],
-                'numberformat_decimal_point' => $this->container['conf']['core']['numberformat_decimal_point'],
-                'numberformat_thousands_seperator' => $this->container['conf']['core']['numberformat_thousands_seperator'],
+                'currency' => HelperConfig::$shop["waehrungssymbol"],
+                'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
+                'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
+                'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);
             echo $this->container['twig']->render('shop/update-cart.twig', $aAR);

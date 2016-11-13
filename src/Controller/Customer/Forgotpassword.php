@@ -83,7 +83,7 @@ class Forgotpassword extends Base
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                     $sMessage .= '<br><br>'.$this->container['textcats']->T("forgotpw_mail_text2");
 
-                    \HaaseIT\HCSF\Helper::mailWrapper($this->container['conf'], $sTargetAddress, $sSubject, $sMessage);
+                    \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
                 }
             }
         }

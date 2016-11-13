@@ -21,6 +21,8 @@
 namespace HaaseIT\HCSF\Controller;
 
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Base
 {
     protected $P, $container,
@@ -42,8 +44,8 @@ class Base
         if (
             $this->requireModuleCustomer
             && (
-                empty($this->container['conf']['core']["enable_module_customer"])
-                || !$this->container['conf']['core']["enable_module_customer"]
+                empty(HelperConfig::$core["enable_module_customer"])
+                || !HelperConfig::$core["enable_module_customer"]
             )
         ) {
             throw new \Exception(404);
@@ -51,8 +53,8 @@ class Base
         if (
             $this->requireModuleShop
             && (
-                empty($this->container['conf']['core']["enable_module_shop"])
-                || !$this->container['conf']['core']["enable_module_shop"])
+                empty(HelperConfig::$core["enable_module_shop"])
+                || !HelperConfig::$core["enable_module_shop"])
         ) {
             throw new \Exception(404);
         }
@@ -68,13 +70,13 @@ class Base
     private function requireAdminAuth() {
         if (
             (
-                empty($this->container['conf']['secrets']['admin_users'])
-                || !count($this->container['conf']['secrets']['admin_users'])
+                empty(HelperConfig::$secrets['admin_users'])
+                || !count(HelperConfig::$secrets['admin_users'])
             )
             && $this->requireAdminAuthAdminHome
         ) {
             return true;
-        } elseif (count($this->container['conf']['secrets']['admin_users'])) {
+        } elseif (count(HelperConfig::$secrets['admin_users'])) {
 
             if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
                 list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
@@ -85,20 +87,20 @@ class Base
                 $pass = $_SERVER['PHP_AUTH_PW'];
 
                 $validated = !empty(
-                    $this->container['conf']['secrets']['admin_users'][$user])
-                    && password_verify($pass, $this->container['conf']['secrets']['admin_users'][$user]
+                    HelperConfig::$secrets['admin_users'][$user])
+                    && password_verify($pass, HelperConfig::$secrets['admin_users'][$user]
                 );
             } else {
                 $validated = false;
             }
 
             if (!$validated) {
-                header('WWW-Authenticate: Basic realm="' . $this->container['conf']['secrets']['admin_authrealm'] . '"');
+                header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');
                 header('HTTP/1.0 401 Unauthorized');
                 die("Not authorized");
             }
         } else {
-            header('WWW-Authenticate: Basic realm="' . $this->container['conf']['secrets']['admin_authrealm'] . '"');
+            header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');
             header('HTTP/1.0 401 Unauthorized');
             die('Not authorized');
         }

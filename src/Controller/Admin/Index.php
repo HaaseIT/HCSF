@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Index extends Base
 {
     public function __construct($container)
@@ -43,7 +45,7 @@ class Index extends Base
             'path_purifiercache' => realpath(PATH_PURIFIERCACHE),
             'path_purifiercache_exists' => file_exists(PATH_PURIFIERCACHE),
             'path_purifiercache_writable' => is_writable(PATH_PURIFIERCACHE),
-            'enable_module_shop' => $this->container['conf']['core']["enable_module_shop"],
+            'enable_module_shop' => HelperConfig::$core["enable_module_shop"],
             'path_logs' => realpath(PATH_LOGS),
             'path_logs_exists' => file_exists(PATH_LOGS),
             'path_logs_writable' => is_writable(PATH_LOGS),

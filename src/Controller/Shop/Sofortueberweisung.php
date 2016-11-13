@@ -20,6 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Sofortueberweisung extends Base
 {
     public function preparePage()
@@ -42,12 +44,12 @@ class Sofortueberweisung extends Base
 
             $sPURL =
                 'https://www.sofortueberweisung.de/payment/start?user_id='
-                .$this->container['conf']['shop']["sofortueberweisung"]["user_id"]
-                .'&amp;project_id='.$this->container['conf']['shop']["sofortueberweisung"]["project_id"].'&amp;amount='
+                .HelperConfig::$shop["sofortueberweisung"]["user_id"]
+                .'&amp;project_id='.HelperConfig::$shop["sofortueberweisung"]["project_id"].'&amp;amount='
                 .number_format($fGesamtbrutto, 2, '.', '')
-                .'&amp;currency_id='.$this->container['conf']['shop']["sofortueberweisung"]["currency_id"].'&amp;reason_1='
+                .'&amp;currency_id='.HelperConfig::$shop["sofortueberweisung"]["currency_id"].'&amp;reason_1='
                 .urlencode($this->container['textcats']->T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ').$iId;
-            if ($this->container['conf']['shop']["interactive_paymentmethods_redirect_immediately"]) {
+            if (HelperConfig::$shop["interactive_paymentmethods_redirect_immediately"]) {
                 header('Location: ' . $sPURL);
                 die();
             }

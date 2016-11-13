@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class DBStatus extends Base
@@ -38,7 +39,7 @@ class DBStatus extends Base
         $this->handleContent();
         $this->handleContentArchive();
 
-        if ($this->container['conf']['core']['enable_module_shop']) {
+        if (HelperConfig::$core['enable_module_shop']) {
             $this->handleItems();
             $this->handleItemGroups();
             $this->handleOrderItems();

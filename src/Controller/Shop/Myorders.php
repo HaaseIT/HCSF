@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\HCSF\Shop\Helper as SHelper;
 
 class Myorders extends Base
@@ -49,7 +50,7 @@ class Myorders extends Base
                     $aOrder = $hResult->fetch();
 
                     $this->P->cb_customdata['orderdata']['ordertimestamp'] = date(
-                        $this->container['conf']['core']["locale_format_date_time"],
+                        HelperConfig::$core["locale_format_date_time"],
                         $aOrder["o_ordertimestamp"]
                     );
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder["o_remarks"];
@@ -147,7 +148,7 @@ class Myorders extends Base
                     'o_id' => $aRow["o_id"],
                     'o_order_status' => $sStatus,
                     'o_ordertime' => date(
-                        $this->container['conf']['core']['locale_format_date_time'],
+                        HelperConfig::$customer['locale_format_date_time'],
                         $aRow["o_ordertimestamp"]
                     ),
                     'o_paymentmethod' => $sPaymentmethod,

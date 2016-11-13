@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Userhome extends Base
@@ -53,10 +54,10 @@ class Userhome extends Base
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) $sErr .= $this->container['textcats']->T("userprofile_emailalreadyinuse") . '<br>';
-                    $sErr = CHelper::validateCustomerForm($this->container['conf'], $this->container['lang'], $sErr, true);
+                    $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
 
                     if ($sErr == '') {
-                        if ($this->container['conf']['customer']["allow_edituserprofile"]) {
+                        if (HelperConfig::$customer["allow_edituserprofile"]) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
                                 'cust_corp' => filter_var(trim(Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -90,16 +91,14 @@ class Userhome extends Base
                     }
                 }
                 $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
-                    $this->container['conf'],
-                    $this->container['lang'],
+                    HelperConfig::$lang,
                     'editprofile',
                     $sErr
                 );
-                //if ($this->container['conf']['customer']["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
+                //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
             } else {
                 $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
-                    $this->container['conf'],
-                    $this->container['lang'],
+                    HelperConfig::$lang,
                     'userhome'
                 );
             }

@@ -22,6 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 use HaaseIT\DBTools;
 use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Itemgroupadmin extends Base
@@ -45,7 +46,7 @@ class Itemgroupadmin extends Base
             $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
             $hResult = $this->container['db']->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
-            $hResult->bindValue(':lang', $this->container['lang']);
+            $hResult->bindValue(':lang', HelperConfig::$lang);
             $hResult->execute();
             $iNumRowsLang = $hResult->rowCount();
 
@@ -53,7 +54,7 @@ class Itemgroupadmin extends Base
                 $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
                 $aData = [
                     'itmgt_pid' => $iGID,
-                    'itmgt_lang' => $this->container['lang'],
+                    'itmgt_lang' => HelperConfig::$lang,
                 ];
                 $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
                 $hResult = $this->container['db']->prepare($sql);
@@ -66,7 +67,7 @@ class Itemgroupadmin extends Base
 
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
             if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
-                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'itemgroup'));
+                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
             }
 
             $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
@@ -152,7 +153,7 @@ class Itemgroupadmin extends Base
         $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
         $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':gid', $iGID);
-        $hResult->bindValue(':lang', $this->container['lang'], \PDO::PARAM_STR);
+        $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         $hResult->execute();
 
         $iNumRows = $hResult->rowCount();
@@ -203,7 +204,7 @@ class Itemgroupadmin extends Base
         if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
         $sql .= ' ORDER BY itmg_no';
         $hResult = $this->container['db']->prepare($sql);
-        $hResult->bindValue(':lang', $this->container['lang']);
+        $hResult->bindValue(':lang', HelperConfig::$lang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
 

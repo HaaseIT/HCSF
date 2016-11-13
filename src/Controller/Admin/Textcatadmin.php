@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Admin;
 
 use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Textcatadmin extends Base
@@ -65,8 +66,8 @@ class Textcatadmin extends Base
 
                 // if post:edit is set, update
                 if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
-                    if ($this->container['conf']['core']['textcat_enable_purifier']) {
-                        $this->container['textcats']->purifier = \HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'textcat');
+                    if (HelperConfig::$core['textcat_enable_purifier']) {
+                        $this->container['textcats']->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
                     } else {
                         $this->container['textcats']->purifier = false;
                     }
@@ -85,7 +86,7 @@ class Textcatadmin extends Base
 
                 // show archived versions of this textcat
                 $hResult = $this->container['db']->query(
-                    'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".$this->container['lang']."' ORDER BY tcla_timestamp DESC"
+                    'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".HelperConfig::$lang."' ORDER BY tcla_timestamp DESC"
                 );
                 $iArchivedRows = $hResult->rowCount();
                 if ($iArchivedRows > 0) {

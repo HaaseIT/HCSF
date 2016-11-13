@@ -22,6 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\DBTools;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Itemadmin extends Base
@@ -40,7 +41,7 @@ class Itemadmin extends Base
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
                 $aData = [
                     'itml_pid' => $aItemdata["base"]['itm_id'],
-                    'itml_lang' => $this->container['lang'],
+                    'itml_lang' => HelperConfig::$lang,
                 ];
 
                 $sql = DBTools::buildInsertQuery($aData, 'item_lang');
@@ -64,7 +65,7 @@ class Itemadmin extends Base
                     }
                 }
             } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
-                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier($this->container['conf'], 'item'));
+                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier('item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();
@@ -148,7 +149,7 @@ class Itemadmin extends Base
 
         $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
-        $hResult->bindValue(':lang', $this->container['lang']);
+        $hResult->bindValue(':lang', HelperConfig::$lang);
         $hResult->execute();
 
         $aItemlist["numrows"] = $hResult->rowCount();
@@ -197,7 +198,7 @@ class Itemadmin extends Base
         $sql = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
         $hResult = $this->container['db']->prepare($sql);
         $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
-        $hResult->bindValue(':lang', $this->container['lang']);
+        $hResult->bindValue(':lang', HelperConfig::$lang);
         $hResult->execute();
         if ($hResult->rowCount() != 0) $aItemdata["text"] = $hResult->fetch();
 
@@ -222,14 +223,14 @@ class Itemadmin extends Base
             'weight' => $aItemdata["base"]['itm_weight'],
         ];
 
-        if (!$this->container['conf']['shop']["vat_disable"]) {
+        if (!HelperConfig::$shop["vat_disable"]) {
             $aOptions[] = '|';
-            foreach ($this->container['conf']['shop']["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
+            foreach (HelperConfig::$shop["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
             $aData["vatoptions"] = $aOptions;
             unset($aOptions);
         }
         $aData["rgoptions"][] = '';
-        foreach ($this->container['conf']['shop']["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
+        foreach (HelperConfig::$shop["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
 
         $aGroups = $this->admin_getItemgroups('');
         $aData["groupoptions"][] = '';
@@ -262,7 +263,7 @@ class Itemadmin extends Base
             'itm_weight' => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
             'itm_id' => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!$this->container['conf']['shop']["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!HelperConfig::$shop["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
         $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->container['db']->prepare($sql);
@@ -292,7 +293,7 @@ class Itemadmin extends Base
         if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
         $sql .= ' ORDER BY itmg_no';
         $hResult = $this->container['db']->prepare($sql);
-        $hResult->bindValue(':lang', $this->container['lang']);
+        $hResult->bindValue(':lang', HelperConfig::$lang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
 

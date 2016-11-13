@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Shop;
 
 use \HaaseIT\HCSF\Customer\Helper as CHelper;
+use HaaseIT\HCSF\HelperConfig;
 
 class Items
 {
@@ -70,10 +71,10 @@ class Items
         $sql = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
         $sql .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
         $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.$this->container['conf']['shop']["items_orderdirection_default"];
+        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop["items_orderdirection_default"];
 
         $hResult = $this->container['db']->prepare($sql);
-        $hResult->bindValue(':lang', $this->container['lang'], \PDO::PARAM_STR);
+        $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         if ($mItemno != '') {
             if (!is_array($mItemno)) {
                 $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
@@ -182,7 +183,7 @@ class Items
             . ' WHERE itmg_id = :group';
 
         $hResult = $this->container['db']->prepare($sql);
-        $hResult->bindValue(':lang', $this->container['lang'], \PDO::PARAM_STR);
+        $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();
 
@@ -200,7 +201,7 @@ class Items
 
         if(is_numeric($aData['itm_price']) && (float) $aData['itm_price'] > 0) {
             $aPrice["netto_list"] = $aData['itm_price'];
-            $aPrice['brutto_list'] = $this->addVat($aPrice['netto_list'], $this->container['conf']['shop']['vat'][$aData['itm_vatid']]);
+            $aPrice['brutto_list'] = $this->addVat($aPrice['netto_list'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
             if (
                 isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
                 && isset($aData["itm_data"]["sale"]["price"])
@@ -208,12 +209,12 @@ class Items
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
                     $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
-                    $aPrice['brutto_sale'] = $this->addVat($aPrice['netto_sale'], $this->container['conf']['shop']['vat'][$aData['itm_vatid']]);
+                    $aPrice['brutto_sale'] = $this->addVat($aPrice['netto_sale'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
                 }
             }
             if (
                 $aData['itm_rg'] != ''
-                && isset($this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')])
+                && isset(HelperConfig::$shop["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')])
             ) {
                 $aPrice["netto_rebated"] =
                     bcmul(
@@ -221,12 +222,12 @@ class Items
                         bcdiv(
                             bcsub(
                                 '100',
-                                (string)$this->container['conf']['shop']["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')]
+                                (string)HelperConfig::$shop["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')]
                             ),
                             '100'
                         )
                     );
-                $aPrice['brutto_rebated'] = $this->addVat($aPrice['netto_rebated'], $this->container['conf']['shop']['vat'][$aData['itm_vatid']]);
+                $aPrice['brutto_rebated'] = $this->addVat($aPrice['netto_rebated'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
             }
         } else {
             return false;
@@ -241,7 +242,7 @@ class Items
             $aPrice["netto_use"] = $aPrice["netto_sale"];
         }
 
-        $aPrice["brutto_use"] = $this->addVat($aPrice["netto_use"], $this->container['conf']['shop']['vat'][$aData['itm_vatid']]);
+        $aPrice["brutto_use"] = $this->addVat($aPrice["netto_use"], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
 
         return $aPrice;
     }

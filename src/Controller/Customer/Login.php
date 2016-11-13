@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use HaaseIT\HCSF\HelperConfig;
 use \HaaseIT\Tools;
 
 class Login extends Base
@@ -54,7 +55,7 @@ class Login extends Base
             }
         }
 
-        if ($this->container['conf']['core']["enable_module_shop"]) {
+        if (HelperConfig::$core["enable_module_shop"]) {
             \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container);
         }
     }

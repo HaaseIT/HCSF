@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Shopadmin extends Base
@@ -171,22 +172,22 @@ class Shopadmin extends Base
                         'o_authed' => $aRow["o_authed"],
                         'o_sumnettoall' => number_format(
                             $aRow["o_sumnettoall"],
-                                $this->container['conf']['core']['numberformat_decimals'],
-                                $this->container['conf']['core']['numberformat_decimal_point'],
-                                $this->container['conf']['core']['numberformat_thousands_seperator']
+                                HelperConfig::$core['numberformat_decimals'],
+                                HelperConfig::$core['numberformat_decimal_point'],
+                                HelperConfig::$core['numberformat_thousands_seperator']
                             )
-                            .' '.$this->container['conf']['shop']["waehrungssymbol"]
+                            .' '.HelperConfig::$shop["waehrungssymbol"]
                             .(
                                 ($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '')
                                     ? '<br>+'.number_format(
                                         $aRow["o_mindermenge"],
-                                        $this->container['conf']['core']['numberformat_decimals'],
-                                        $this->container['conf']['core']['numberformat_decimal_point'],
-                                        $this->container['conf']['core']['numberformat_thousands_seperator']
-                                    ).' '.$this->container['conf']['shop']["waehrungssymbol"] : ''),
+                                        HelperConfig::$core['numberformat_decimals'],
+                                        HelperConfig::$core['numberformat_decimal_point'],
+                                        HelperConfig::$core['numberformat_thousands_seperator']
+                                    ).' '.HelperConfig::$shop["waehrungssymbol"] : ''),
                         'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
                         'o_ordertime_number' => date(
-                                $this->container['conf']['core']['locale_format_date_time'],
+                                HelperConfig::$core['locale_format_date_time'],
                                 $aRow["o_ordertimestamp"]
                             )
                             .((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
@@ -236,15 +237,14 @@ class Shopadmin extends Base
                     'cust_group' => $aSData["orderdata"]["o_group"],
                 ];
                 $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
-                    $this->container['conf'],
-                    $this->container['lang'],
+                    HelperConfig::$lang,
                     'shopadmin',
                     '',
                     $aUserdata
                 );
 
                 $aSData["orderdata"]["options_shippingservices"] = [''];
-                foreach ($this->container['conf']['shop']["shipping_services"] as $sValue) {
+                foreach (HelperConfig::$shop["shipping_services"] as $sValue) {
                     $aSData["orderdata"]["options_shippingservices"][] = $sValue;
                 }
 
@@ -258,7 +258,7 @@ class Shopadmin extends Base
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
 
-                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], $this->container['conf']['shop']["vat"][$aValue["oi_vat_id"]], '', true);
+                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], HelperConfig::$shop["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsCarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,

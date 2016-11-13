@@ -21,6 +21,8 @@
 namespace HaaseIT\HCSF\Shop;
 
 
+use HaaseIT\HCSF\HelperConfig;
+
 class Helper
 {
     public static function showOrderStatusText($textcats, $sStatusShort)
@@ -90,35 +92,35 @@ class Helper
         $aOrder["bMindesterreicht"] = true;
         $aOrder["fMindergebuehr"] = 0;
         $aOrder["iMindergebuehr_id"] = 0;
-        if ($fGesamtnettoitems < $container['conf']['shop']["minimumorderamountnet"]) {
+        if ($fGesamtnettoitems < HelperConfig::$shop["minimumorderamountnet"]) {
             $aOrder["bMindesterreicht"] = false;
             $aOrder["iMindergebuehr_id"] = 0;
-        } elseif ($fGesamtnettoitems < $container['conf']['shop']["reducedorderamountnet1"]) {
-            $aOrder["fVoll"] += $container['conf']['shop']["reducedorderamountfee1"];
-            $aOrder["fGesamtnetto"] += $container['conf']['shop']["reducedorderamountfee1"];
+        } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet1"]) {
+            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee1"];
+            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee1"];
             $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
             $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
             $aOrder["iMindergebuehr_id"] = 1;
-            $aOrder["fMindergebuehr"] = $container['conf']['shop']["reducedorderamountfee1"];
-        } elseif($fGesamtnettoitems < $container['conf']['shop']["reducedorderamountnet2"]) {
-            $aOrder["fVoll"] += $container['conf']['shop']["reducedorderamountfee2"];
-            $aOrder["fGesamtnetto"] += $container['conf']['shop']["reducedorderamountfee2"];
+            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee1"];
+        } elseif($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet2"]) {
+            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee2"];
+            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee2"];
             $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
             $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
             $aOrder["iMindergebuehr_id"] = 2;
-            $aOrder["fMindergebuehr"] = $container['conf']['shop']["reducedorderamountfee2"];
+            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee2"];
         }
 
         if (
-            isset($container['conf']['shop']["shippingcoststandardrate"])
-            && $container['conf']['shop']["shippingcoststandardrate"] != 0
+            isset(HelperConfig::$shop["shippingcoststandardrate"])
+            && HelperConfig::$shop["shippingcoststandardrate"] != 0
             &&
                 (
                     (
-                        !isset($container['conf']['shop']["mindestbetragversandfrei"])
-                        || !$container['conf']['shop']["mindestbetragversandfrei"]
+                        !isset(HelperConfig::$shop["mindestbetragversandfrei"])
+                        || !HelperConfig::$shop["mindestbetragversandfrei"]
                     )
-                    || $fGesamtnettoitems < $container['conf']['shop']["mindestbetragversandfrei"]
+                    || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
                 )
         )  {
             $aOrder["fVersandkostennetto"] = self::getShippingcost($container);
@@ -135,7 +137,7 @@ class Helper
     }
 
     public static function getShippingcost($container) {
-        $fShippingcost = $container['conf']['shop']["shippingcoststandardrate"];
+        $fShippingcost = HelperConfig::$shop["shippingcoststandardrate"];
 
         if (isset($_SESSION["user"]["cust_country"])) {
             $sCountry = $_SESSION["user"]["cust_country"];
@@ -144,10 +146,10 @@ class Helper
         } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
             $sCountry = $_SESSION["formsave_addrform"]["country"];
         } else {
-            $sCountry = \HaaseIT\HCSF\Customer\Helper::getDefaultCountryByConfig($container['conf'], $container['lang']);
+            $sCountry = \HaaseIT\HCSF\Customer\Helper::getDefaultCountryByConfig(HelperConfig::$lang);
         }
 
-        foreach ($container['conf']['shop']["shippingcosts"] as $aValue) {
+        foreach (HelperConfig::$shop["shippingcosts"] as $aValue) {
             if (isset($aValue["countries"][$sCountry])) {
                 $fShippingcost = $aValue["cost"];
                 break;
@@ -169,10 +171,10 @@ class Helper
             // will not add up to total price
             if ($aValue["vat"] != "reduced") {
                 $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($container['conf']['shop']["vat"]["full"] / 100));
+                $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["full"] / 100));
             } else {
                 $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * ($container['conf']['shop']["vat"]["reduced"] / 100));
+                $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["reduced"] / 100));
             }
         }
         $aSumme = ['sumvoll' => $fVoll, 'sumerm' => $fErm, 'taxvoll' => $fTaxVoll, 'taxerm' => $fTaxErm];
@@ -184,7 +186,7 @@ class Helper
     {
         if (isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                if (!isset($container['conf']['shop']["custom_order_fields"])) {
+                if (!isset(HelperConfig::$shop["custom_order_fields"])) {
                     $sItemkey = $sKey;
                 } else {
                     $TMP = explode('|', $sKey);
@@ -200,22 +202,22 @@ class Helper
     public static function buildShoppingCartTable($aCart, $container, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
     {
         if ($iVATfull == '' && $iVATreduced == '') {
-            $iVATfull = $container['conf']['shop']["vat"]["full"];
-            $iVATreduced = $container['conf']['shop']["vat"]["reduced"];
+            $iVATfull = HelperConfig::$shop["vat"]["full"];
+            $iVATreduced = HelperConfig::$shop["vat"]["reduced"];
         }
         $aSumme = self::calculateCartItems($container, $aCart);
         $aData["shoppingcart"] = [
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
-            'rebategroups' => $container['conf']['shop']["rebate_groups"],
+            'rebategroups' => HelperConfig::$shop["rebate_groups"],
             'additionalcoststoitems' => self::addAdditionalCostsToItems($container, $aSumme, $iVATfull, $iVATreduced),
-            'minimumorderamountnet' => $container['conf']['shop']["minimumorderamountnet"],
-            'reducedorderamountnet1' => $container['conf']['shop']["reducedorderamountnet1"],
-            'reducedorderamountnet2' => $container['conf']['shop']["reducedorderamountnet2"],
-            'reducedorderamountfee1' => $container['conf']['shop']["reducedorderamountfee1"],
-            'reducedorderamountfee2' => $container['conf']['shop']["reducedorderamountfee2"],
-            'minimumamountforfreeshipping' => $container['conf']['shop']["minimumamountforfreeshipping"],
+            'minimumorderamountnet' => HelperConfig::$shop["minimumorderamountnet"],
+            'reducedorderamountnet1' => HelperConfig::$shop["reducedorderamountnet1"],
+            'reducedorderamountnet2' => HelperConfig::$shop["reducedorderamountnet2"],
+            'reducedorderamountfee1' => HelperConfig::$shop["reducedorderamountfee1"],
+            'reducedorderamountfee2' => HelperConfig::$shop["reducedorderamountfee2"],
+            'minimumamountforfreeshipping' => HelperConfig::$shop["minimumamountforfreeshipping"],
         ];
 
         if (!$bReadonly) {
@@ -224,7 +226,7 @@ class Helper
         }
 
         if ($aData["shoppingcart"]["additionalcoststoitems"]["bMindesterreicht"] && !$bReadonly) {
-            $aData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm($container['conf'], $container['lang'], 'shoppingcart', $aErr);
+            $aData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
         }
 
         return $aData;
@@ -238,7 +240,7 @@ class Helper
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         ];
-        if ((!$container['conf']['shop']["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+        if ((!HelperConfig::$shop["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($container, $_SESSION["cart"]);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION["cart"]),
@@ -298,8 +300,8 @@ class Helper
         unset($aPossibleSuggestions, $aDefinedSuggestions); // not needed anymore
         $iNumberOfSuggestions = count($aSuggestions);
         $iNumberOfAdditionalSuggestions = count($aAdditionalSuggestions);
-        if ($iNumberOfSuggestions > $container['conf']['shop']["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
-            $aKeysSuggestions = array_rand($aSuggestions, $container['conf']['shop']["itemdetail_suggestions"]); // get the array keys that will stay
+        if ($iNumberOfSuggestions > HelperConfig::$shop["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
+            $aKeysSuggestions = array_rand($aSuggestions, HelperConfig::$shop["itemdetail_suggestions"]); // get the array keys that will stay
             foreach ($aSuggestions as $aSuggestionsKey => $aSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
                 if (!in_array($aSuggestionsKey, $aKeysSuggestions)) {
                     unset($aSuggestions[$aSuggestionsKey]);
@@ -308,10 +310,10 @@ class Helper
             unset($aKeysSuggestions);
         } else { // if less or equal continue here
             if (
-                $iNumberOfSuggestions < $container['conf']['shop']["itemdetail_suggestions"]
+                $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
                 && $iNumberOfAdditionalSuggestions > 0
             ) { // if there are less suggestions than should be displayed and there are additional available
-                $iAdditionalSuggestionsRequired = $container['conf']['shop']["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
+                $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
                 if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) { // see if there are more available than required, if so, pick as many as needed
                     if ($iAdditionalSuggestionsRequired == 1) { // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
                         $aKeysAdditionalSuggestions[] = array_rand($aAdditionalSuggestions, $iAdditionalSuggestionsRequired);
@@ -410,7 +412,7 @@ class Helper
                         }
                         
                         // build item suggestions if needed
-                        if ($container['conf']['shop']["itemdetail_suggestions"] > 0) {
+                        if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
                             $aP["item"]["suggestions"] = self::getItemSuggestions(
                                 $container,
                                 $aP["items"]["item"],

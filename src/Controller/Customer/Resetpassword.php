@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 
 class Resetpassword extends Base
@@ -53,7 +54,7 @@ class Resetpassword extends Base
                         $this->P->oPayload->cl_html = $this->container['textcats']->T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
-                        $this->P->cb_customdata["pwreset"]["minpwlength"] = $this->container['conf']['customer']["minimum_length_password"];
+                        $this->P->cb_customdata["pwreset"]["minpwlength"] = HelperConfig::$customer["minimum_length_password"];
                         if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
                             $aErr = $this->handlePasswordReset($aErr, $aResult['cust_id']);
                             if (count($aErr) == 0) {
@@ -71,8 +72,8 @@ class Resetpassword extends Base
     private function handlePasswordReset($aErr, $iID) {
         if (isset($_POST["pwd"]) && trim($_POST["pwd"]) != '') {
             if (
-                strlen($_POST["pwd"]) < $this->container['conf']['customer']["minimum_length_password"]
-                || strlen($_POST["pwd"]) > $this->container['conf']['customer']["maximum_length_password"]
+                strlen($_POST["pwd"]) < HelperConfig::$customer["minimum_length_password"]
+                || strlen($_POST["pwd"]) > HelperConfig::$customer["maximum_length_password"]
             ) $aErr[] = 'pwlength';
             if ($_POST["pwd"] != $_POST["pwdc"]) $aErr[] = 'pwmatch';
             if (count($aErr) == 0) {
