@@ -10,28 +10,16 @@ use Zend\ServiceManager\ServiceManager;
 class ItemsTest extends TestCase
 {
     /**
-     * @var ServiceManager
-     */
-    protected $serviceManager;
-
-    /**
-     * ItemsTest constructor.
-     * @param null|string $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct($name, array $data, $dataName)
-    {
-        parent::__construct($name, $data, $dataName);
-        $this->serviceManager = new ServiceManager();
-    }
-
-    /**
      *
      */
     public function testCalcPrice()
     {
         bcscale(6);
+
+        $serviceManager = new ServiceManager();
+        $serviceManager->setFactory('db', function () {
+            return null;
+        });
 
         HelperConfig::$shop = [
             'vat' => [
@@ -41,7 +29,7 @@ class ItemsTest extends TestCase
         ];
         HelperConfig::$lang = 'de';
 
-        $items = new Items($this->serviceManager);
+        $items = new Items($serviceManager);
 
         // regular price, no rebate, vat disabled
         $aData = [
@@ -70,7 +58,7 @@ class ItemsTest extends TestCase
                 ],
             ],
         ];
-        $items = new Items($this->serviceManager);
+        $items = new Items($serviceManager);
 
         // regular price, no rebate, reduced vat
         $aData = [
