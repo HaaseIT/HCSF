@@ -391,7 +391,7 @@ class Shoppingcart extends Base
                             unset($TMP);
                         }
                     }
-                    $return = Tools::cutStringend($this->P->oPayload->cl_html, 2);
+                    $return = Tools::cutStringend($return, 2);
                 } else {
                     $return .= $_GET["cartkey"];
                 }
