@@ -63,6 +63,10 @@ const ENTITY_USERPAGE_BASE = 'HaaseIT\HCSF\Entities\UserpageBase';
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
+use \HaaseIT\HCSF\HardcodedText;
+
 $serviceManager = new ServiceManager();
 
 $AuraLoader = new \Aura\Autoload\Loader;
@@ -82,10 +86,6 @@ $serviceManager->setFactory('request', function () {
     }
     return $request->withRequestTarget($parsedrequesturi);
 });
-
-use HaaseIT\HCSF\HelperConfig;
-use Zend\ServiceManager\ServiceManager;
-use \HaaseIT\HCSF\HardcodedText;
 
 HelperConfig::init();
 
@@ -138,6 +138,10 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php'
 
 HardcodedText::init($HT);
 
+$serviceManager->setFactory('db', function () {
+    return null;
+});
+
 if (!HelperConfig::$core['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
@@ -145,7 +149,7 @@ if (!HelperConfig::$core['maintenancemode']) {
     $serviceManager->setFactory('entitymanager', function () {
         $doctrineconfig = Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], HelperConfig::$core['debug']);
 
-        $connectionParams = array(
+        $connectionParams = [
             'url' =>
                 HelperConfig::$secrets['db_type'].'://'
                 .HelperConfig::$secrets['db_user'].':'
@@ -158,7 +162,7 @@ if (!HelperConfig::$core['maintenancemode']) {
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             ],
-        );
+        ];
 
         return Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
     });
