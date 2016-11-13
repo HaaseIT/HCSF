@@ -63,7 +63,7 @@ const ENTITY_USERPAGE_BASE = 'HaaseIT\HCSF\Entities\UserpageBase';
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-$serviceManager = new Zend\ServiceManager\ServiceManager();
+$serviceManager = new ServiceManager();
 
 $AuraLoader = new \Aura\Autoload\Loader;
 $AuraLoader->register();
