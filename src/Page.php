@@ -23,6 +23,6 @@ namespace HaaseIT\HCSF;
 
 class Page
 {
-    protected $container;
+    protected $serviceManager;
     public $cb_pagetype, $cb_pageconfig, $cb_subnav, $cb_customcontenttemplate, $cb_customdata, $oPayload, $iStatus;
 }

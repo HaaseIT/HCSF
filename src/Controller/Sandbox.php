@@ -21,23 +21,36 @@
 namespace HaaseIT\HCSF\Controller;
 
 
+use Zend\ServiceManager\ServiceManager;
+
 class Sandbox extends Base
 {
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $entityManager;
+
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->entityManager = $serviceManager->get('entitymanager');
+    }
+
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         $html = '<pre>';
 
         /*
-        $this->container['entitymanager']->getConnection()
+        $this->entityManager->getConnection()
             ->getConfiguration()
             ->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger())
         ;
         */
 
-        //$customer = $this->container['entitymanager']->find(ENTITY_CUSTOMER, 1);
+        //$customer = $this->entityManager->find(ENTITY_CUSTOMER, 1);
 
         //$this->P->oPayload->cl_html = \HaaseIT\Tools::debug($customer->getName(), 'customername', true);
 
@@ -47,7 +60,7 @@ class Sandbox extends Base
         //die($dql);
         try
         {
-            $pages = $this->container['entitymanager']->createQuery($dql)
+            $pages = $this->entityManager->createQuery($dql)
                 ->setParameter(1, 'de')
                 ->setParameter(2, '/index.html')
                 ->setMaxResults(10)
@@ -70,8 +83,8 @@ class Sandbox extends Base
                 $page->getBasepage()->setGroup('testi');
                 $page->setKeywords('testi kel');
 
-                $this->container['entitymanager']->persist($page);
-                $this->container['entitymanager']->flush();
+                $this->serviceManager->get('entitymanager')->persist($page);
+                $this->serviceManager->get('entitymanager')->flush();
 
 
             }

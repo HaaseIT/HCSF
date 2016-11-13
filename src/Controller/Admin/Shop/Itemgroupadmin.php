@@ -24,12 +24,35 @@ use HaaseIT\DBTools;
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Itemgroupadmin
+ * @package HaaseIT\HCSF\Controller\Admin\Shop
+ */
 class Itemgroupadmin extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Itemgroupadmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -38,13 +61,13 @@ class Itemgroupadmin extends Base
         $return = '';
         if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
             $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->execute();
             $iNumRowsBasis = $hResult->rowCount();
 
             $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
             $hResult->bindValue(':lang', HelperConfig::$lang);
             $hResult->execute();
@@ -57,7 +80,7 @@ class Itemgroupadmin extends Base
                     'itmgt_lang' => HelperConfig::$lang,
                 ];
                 $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
-                $hResult = $this->container['db']->prepare($sql);
+                $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
                 header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
@@ -88,7 +111,7 @@ class Itemgroupadmin extends Base
                 if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
                 if (count($aErr) == 0) {
                     $sql = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
                     if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
@@ -100,10 +123,10 @@ class Itemgroupadmin extends Base
                         'itmg_img' => $sImg,
                     ];
                     $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
-                    $iLastInsertID = $this->container['db']->lastInsertId();
+                    $iLastInsertID = $this->db->lastInsertId();
                     header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
                     die();
                 } else {
@@ -123,10 +146,14 @@ class Itemgroupadmin extends Base
         $this->P->oPayload->cl_html = $return;
     }
 
-    private function admin_updateGroup($purifier)
+    /**
+     * @param $purifier
+     * @return string
+     */
+    private function admin_updateGroup( $purifier)
     {
         $sql = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
         $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $hResult->bindValue(':id', $iGID);
@@ -144,14 +171,14 @@ class Itemgroupadmin extends Base
         ];
 
         $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         foreach ($aData as $sKey => $sValue) {
             $hResult->bindValue(':' . $sKey, $sValue);
         }
         $hResult->execute();
 
         $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':gid', $iGID);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         $hResult->execute();
@@ -166,7 +193,7 @@ class Itemgroupadmin extends Base
                 'itmgt_id' => $aRow['itmgt_id'],
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
         }
@@ -174,6 +201,11 @@ class Itemgroupadmin extends Base
         return 'success';
     }
 
+    /**
+     * @param string $sPurpose
+     * @param array $aData
+     * @return array
+     */
     private function admin_prepareGroup($sPurpose = 'none', $aData = [])
     {
         $aGData = [
@@ -196,6 +228,10 @@ class Itemgroupadmin extends Base
         return $aGData;
     }
 
+    /**
+     * @param string $iGID
+     * @return mixed
+     */
     private function admin_getItemgroups($iGID = '')
     {
         $sql = 'SELECT * FROM itemgroups_base '
@@ -203,7 +239,7 @@ class Itemgroupadmin extends Base
             . ' AND itemgroups_text.itmgt_lang = :lang';
         if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
         $sql .= ' ORDER BY itmg_no';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();
@@ -213,6 +249,10 @@ class Itemgroupadmin extends Base
         return $aGroups;
     }
 
+    /**
+     * @param $aGroups
+     * @return bool|mixed
+     */
     private function admin_showItemgroups($aGroups)
     {
         $aList = [
@@ -221,6 +261,7 @@ class Itemgroupadmin extends Base
             ['title' => HardcodedText::get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
         ];
         if (count($aGroups) > 0) {
+            $aData = [];
             foreach ($aGroups as $aValue) {
                 $aData[] = [
                     'gid' => $aValue['itmg_id'],
@@ -228,7 +269,7 @@ class Itemgroupadmin extends Base
                     'gname' => $aValue['itmg_name'],
                 ];
             }
-            return Tools::makeListtable($aList, $aData, $this->container['twig']);
+            return Tools::makeListtable($aList, $aData, $this->serviceManager->get('twig'));
         } else {
             return false;
         }

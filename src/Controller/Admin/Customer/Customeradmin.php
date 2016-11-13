@@ -20,15 +20,39 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
+
 use HaaseIT\HCSF\HardcodedText;
 use \HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Customeradmin
+ * @package HaaseIT\HCSF\Controller\Admin\Customer
+ */
 class Customeradmin extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Customeradmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -48,12 +72,17 @@ class Customeradmin extends Base
                 'lgetvars' => ['action' => 'edit',],
             ],
         ];
-        $aPData = $this->handleCustomerAdmin($CUA, $this->container['twig']);
+        $aPData = $this->handleCustomerAdmin($CUA, $this->serviceManager->get('twig'));
         $this->P->cb_customcontenttemplate = 'customer/customeradmin';
         $this->P->oPayload->cl_html = $aPData["customeradmin"]["text"];
         $this->P->cb_customdata = $aPData;
     }
 
+    /**
+     * @param $CUA
+     * @param $twig
+     * @return mixed
+     */
     private function handleCustomerAdmin($CUA, $twig)
     {
         $sType = 'all';
@@ -73,7 +102,7 @@ class Customeradmin extends Base
                 $sql .= ' WHERE cust_active = \'n\'';
             }
             $sql .= ' ORDER BY cust_no ASC';
-            $hResult = $this->container['db']->query($sql);
+            $hResult = $this->db->query($sql);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
                 $return .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
@@ -90,7 +119,7 @@ class Customeradmin extends Base
                 } else {
 
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':custno', $sCustno);
                     $hResult->execute();
@@ -99,7 +128,7 @@ class Customeradmin extends Base
                         $aErr["custnoalreadytaken"] = true;
                     }
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':id', $iId);
                     $hResult->bindValue(':email', filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
                     $hResult->execute();
@@ -131,7 +160,7 @@ class Customeradmin extends Base
                             $aInfo["passwordchanged"] = true;
                         }
                         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                        $hResult = $this->container['db']->prepare($sql);
+                        $hResult = $this->db->prepare($sql);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();
                         $aInfo["changeswritten"] = true;
@@ -139,7 +168,7 @@ class Customeradmin extends Base
                 }
             }
             $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {

@@ -22,14 +22,15 @@ namespace HaaseIT\HCSF\Controller;
 
 
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
 
 class Glide extends Base
 {
     private $aPath;
 
-    public function __construct($container, $aPath)
+    public function __construct(ServiceManager $serviceManager, $aPath)
     {
-        parent::__construct($container);
+        parent::__construct($serviceManager);
         $this->aPath = $aPath;
     }
 

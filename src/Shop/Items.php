@@ -20,19 +20,22 @@
 
 namespace HaaseIT\HCSF\Shop;
 
-use \HaaseIT\HCSF\Customer\Helper as CHelper;
+
+use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
 
 class Items
 {
-    private $container;
-    // make method getItemPathByIndex()
-    // if itemindexpathtree not set, load from db
+    /**
+     * @var \PDO
+     */
+    private $db;
 
     // Initialize Class
-    public function __construct($container)
+    public function __construct(ServiceManager $serviceManager)
     {
-        $this->container = $container;
+        $this->db = $serviceManager->get('db');
     }
 
     public function getItemPathTree()
@@ -40,7 +43,7 @@ class Items
         $itemindexpathtree = [];
         $aItemoverviewpages = [];
         $sql = "SELECT * FROM content_base WHERE cb_pagetype = 'itemoverview' OR cb_pagetype = 'itemoverviewgrpd'";
-        $oQuery = $this->container['db']->query($sql);
+        $oQuery = $this->db->query($sql);
         while ($aRow = $oQuery->fetch()) {
             $aItemoverviewpages[] = [
                 'path' => $aRow['cb_key'],
@@ -73,7 +76,7 @@ class Items
         $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
         $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop["items_orderdirection_default"];
 
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         if ($mItemno != '') {
             if (!is_array($mItemno)) {
@@ -132,6 +135,7 @@ class Items
     {
         if ($mItemno != '') {
             if (\is_array($mItemno)) {
+                $TMP = [];
                 foreach ($mItemno as $sKey => $sValue) {
                     $TMP[$sKey] = \filter_var(\trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 }
@@ -182,7 +186,7 @@ class Items
             . ' AND itmgt_lang = :lang'
             . ' WHERE itmg_id = :group';
 
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
         $hResult->bindValue(':group', $sGroup, \PDO::PARAM_INT);
         $hResult->execute();

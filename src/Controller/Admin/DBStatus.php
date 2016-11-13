@@ -20,15 +20,44 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class DBStatus
+ * @package HaaseIT\HCSF\Controller\Admin
+ */
 class DBStatus extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
 
+    /**
+     * @var \Twig_Environment
+     */
+    private $twig;
+
+    /**
+     * DBStatus constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+        $this->twig = $serviceManager->get('twig');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -46,12 +75,16 @@ class DBStatus extends Base
         }
     }
 
+    /**
+     *
+     */
     private function handleTextcats()
     {
         if (isset($_GET['clearorphanedtextcats'])) {
-            $this->container['db']->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+            $this->db->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang'] > 0) {
             $aListSetting = [
@@ -64,17 +97,21 @@ class DBStatus extends Base
             $this->P->cb_customdata['rows_textcat_lang_list'] = Tools::makeListtable(
                 $aListSetting,
                 $aData,
-                $this->container['twig']
+                $this->twig
             );
         }
     }
 
+    /**
+     *
+     */
     private function handleTextcatArchive()
     {
         if (isset($_GET['clearorphanedtextcatsarchive'])) {
-            $this->container['db']->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+            $this->db->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         $this->P->cb_customdata['rows_textcat_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_textcat_lang_archive'] > 0) {
             $aListSetting = [
@@ -87,16 +124,20 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_textcat_lang_archive_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 
+    /**
+     *
+     */
     private function handleContent()
     {
         if (isset($_GET['clearorphanedcontent'])) {
-            $this->container['db']->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+            $this->db->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang'] > 0) {
             $aListSetting = [
@@ -110,16 +151,20 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 
+    /**
+     *
+     */
     private function handleContentArchive()
     {
         if (isset($_GET['clearorphanedcontentarchive'])) {
-            $this->container['db']->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+            $this->db->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         $this->P->cb_customdata['rows_content_lang_archive'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_content_lang_archive'] > 0) {
             $aListSetting = [
@@ -135,16 +180,20 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_content_lang_archive_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 
+    /**
+     *
+     */
     private function handleItems()
     {
         if (isset($_GET['clearorphaneditems'])) {
-            $this->container['db']->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+            $this->db->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
         $this->P->cb_customdata['rows_item_lang'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_item_lang'] > 0) {
             $aListSetting = [
@@ -175,16 +224,20 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_item_lang_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 
+    /**
+     *
+     */
     private function handleItemGroups()
     {
         if (isset($_GET['clearorphaneditemgroups'])) {
-            $this->container['db']->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+            $this->db->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
         $this->P->cb_customdata['rows_itemgroups_text'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_itemgroups_text'] > 0) {
             $aListSetting = [
@@ -208,16 +261,20 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_itemgroups_text_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 
+    /**
+     *
+     */
     private function handleOrderItems()
     {
         if (isset($_GET['clearorphanedorderitems'])) {
-            $this->container['db']->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+            $this->db->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         }
-        $hResult = $this->container['db']->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->db->query('SELECT * FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         $this->P->cb_customdata['rows_orders_items'] = $hResult->rowCount();
         if ($this->P->cb_customdata['rows_orders_items'] > 0) {
             $aListSetting = [
@@ -237,7 +294,7 @@ class DBStatus extends Base
             ];
             $aData = $hResult->fetchAll();
             $this->P->cb_customdata['rows_orders_items_list'] = Tools::makeListtable($aListSetting,
-                $aData, $this->container['twig']);
+                $aData, $this->twig);
         }
     }
 }

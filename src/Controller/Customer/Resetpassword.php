@@ -22,36 +22,65 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Resetpassword
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Resetpassword extends Base
 {
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Resetpassword constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->textcats = $serviceManager->get('textcats');
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
         } else {
             if (!isset($_GET["key"]) || !isset($_GET["email"]) || trim($_GET["key"]) == '' || trim($_GET["email"]) == '' || !\filter_var($_GET["email"], FILTER_VALIDATE_EMAIL)) {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+                $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
             } else {
                 $sql = 'SELECT * FROM customer WHERE cust_email = :email AND cust_pwresetcode = :pwresetcode AND cust_pwresetcode != \'\'';
 
                 $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                $hResult = $this->container['db']->prepare($sql);
+                $hResult = $this->db->prepare($sql);
                 $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                 $hResult->bindValue(':pwresetcode', filter_var(trim(Tools::getFormfield("key")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
                 $hResult->execute();
                 if ($hResult->rowCount() != 1) {
-                    $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+                    $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
                 } else {
                     $aErr = [];
                     $aResult = $hResult->fetch();
                     $iTimestamp = time();
                     if ($aResult['cust_pwresettimestamp'] < $iTimestamp - DAY) {
-                        $this->P->oPayload->cl_html = $this->container['textcats']->T("pwreset_error_expired");
+                        $this->P->oPayload->cl_html = $this->textcats->T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
                         $this->P->cb_customdata["pwreset"]["minpwlength"] = HelperConfig::$customer["minimum_length_password"];
@@ -69,6 +98,11 @@ class Resetpassword extends Base
         }
     }
 
+    /**
+     * @param $aErr
+     * @param $iID
+     * @return array
+     */
     private function handlePasswordReset($aErr, $iID) {
         if (isset($_POST["pwd"]) && trim($_POST["pwd"]) != '') {
             if (
@@ -84,7 +118,7 @@ class Resetpassword extends Base
                     'cust_id' => $iID,
                 ];
                 $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $this->container['db']->prepare($sql);
+                $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();
             }

@@ -26,15 +26,17 @@ class Resendverificationmail extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
         } else {
             $sql = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
             $sql .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
-            $hResult = $this->container['db']->prepare($sql);
+
+            /** @var \PDOStatement $hResult */
+            $hResult = $this->serviceManager->get('db')->prepare($sql);
             $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -42,9 +44,9 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow['cust_emailverificationcode'];
 
-                CHelper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->container, true);
+                CHelper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->serviceManager, true);
 
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("register_verificationmailresent");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("register_verificationmailresent");
             }
         }
     }

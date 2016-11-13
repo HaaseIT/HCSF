@@ -24,12 +24,35 @@ use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\DBTools;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Itemadmin
+ * @package HaaseIT\HCSF\Controller\Admin\Shop
+ */
 class Itemadmin extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Itemadmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -45,7 +68,7 @@ class Itemadmin extends Base
                 ];
 
                 $sql = DBTools::buildInsertQuery($aData, 'item_lang');
-                $this->container['db']->exec($sql);
+                $this->db->exec($sql);
 
                 header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
                 die();
@@ -80,17 +103,17 @@ class Itemadmin extends Base
                     else {
                         $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                        $hResult = $this->container['db']->query($sql);
+                        $hResult = $this->db->query($sql);
                         $iRows = $hResult->rowCount();
                         if ($iRows > 0) {
                             $aErr["itemnoalreadytaken"] = true;
                         } else {
                             $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
                             $sql = DBTools::buildInsertQuery($aData, 'item_base');
-                            $this->container['db']->exec($sql);
-                            $iInsertID = $this->container['db']->lastInsertId();
+                            $this->db->exec($sql);
+                            $iInsertID = $this->db->lastInsertId();
                             $sql = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
-                            $hResult = $this->container['db']->query($sql);
+                            $hResult = $this->db->query($sql);
                             $aRow = $hResult->fetch();
                             header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
                             die();
@@ -103,6 +126,9 @@ class Itemadmin extends Base
         }
     }
 
+    /**
+     * @return mixed
+     */
     private function admin_prepareItemlistsearchform()
     {
         $aData["searchcats"] = [
@@ -128,6 +154,9 @@ class Itemadmin extends Base
         return $aData;
     }
 
+    /**
+     * @return bool
+     */
     private function admin_getItemlist()
     {
         $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -147,7 +176,7 @@ class Itemadmin extends Base
         if ($_REQUEST["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
         elseif ($_REQUEST["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
 
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
         $hResult->bindValue(':lang', HelperConfig::$lang);
         $hResult->execute();
@@ -160,6 +189,10 @@ class Itemadmin extends Base
         } else return false;
     }
 
+    /**
+     * @param $aItemlist
+     * @return array
+     */
     private function admin_prepareItemlist($aItemlist)
     {
         $aList = [
@@ -167,6 +200,7 @@ class Itemadmin extends Base
             ['title' => HardcodedText::get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
             ['title' => HardcodedText::get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
         ];
+        $aData = [];
         foreach ($aItemlist["data"] as $aValue) {
             $aData[] = [
                 'itemno' => $aValue['itm_no'],
@@ -175,12 +209,16 @@ class Itemadmin extends Base
         }
         $aLData = [
             'numrows' => $aItemlist["numrows"],
-            'listtable' => Tools::makeListtable($aList, $aData, $this->container['twig']),
+            'listtable' => Tools::makeListtable($aList, $aData, $this->serviceManager->get('twig')),
         ];
 
         return $aLData;
     }
 
+    /**
+     * @param string $sItemno
+     * @return bool
+     */
     private function admin_getItem($sItemno = '')
     {
         if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = filter_var($_REQUEST["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
@@ -189,14 +227,14 @@ class Itemadmin extends Base
         $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
         $sql = 'SELECT * FROM item_base WHERE itm_no = :itemno';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':itemno', $sItemno);
         $hResult->execute();
 
         $aItemdata["base"] = $hResult->fetch();
 
         $sql = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
         $hResult->bindValue(':lang', HelperConfig::$lang);
         $hResult->execute();
@@ -205,6 +243,10 @@ class Itemadmin extends Base
         return $aItemdata;
     }
 
+    /**
+     * @param $aItemdata
+     * @return array
+     */
     private function admin_prepareItem($aItemdata)
     {
         $aData = [
@@ -249,6 +291,10 @@ class Itemadmin extends Base
         return $aData;
     }
 
+    /**
+     * @param $purifier
+     * @return bool
+     */
     private function admin_updateItem($purifier)
     {
         $aData = [
@@ -266,7 +312,7 @@ class Itemadmin extends Base
         if (!HelperConfig::$shop["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
         $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
         if (isset($_REQUEST["textid"])) {
@@ -277,7 +323,7 @@ class Itemadmin extends Base
                 'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
             $hResult->execute();
         }
@@ -285,6 +331,10 @@ class Itemadmin extends Base
         return true;
     }
 
+    /**
+     * @param string $iGID
+     * @return mixed
+     */
     private function admin_getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
     {
         $sql = 'SELECT * FROM itemgroups_base'
@@ -292,7 +342,7 @@ class Itemadmin extends Base
             . ' AND itemgroups_text.itmgt_lang = :lang';
         if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
         $sql .= ' ORDER BY itmg_no';
-        $hResult = $this->container['db']->prepare($sql);
+        $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang);
         if ($iGID != '') $hResult->bindValue(':gid', $iGID);
         $hResult->execute();

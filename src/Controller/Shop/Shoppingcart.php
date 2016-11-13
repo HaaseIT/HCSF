@@ -29,13 +29,38 @@ use HaaseIT\DBTools;
 
 class Shoppingcart extends Base
 {
+    /**
+     * @var \Zend\Diactoros\Request
+     */
+    private $request;
+
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * Shoppingcart constructor.
+     * @param \Zend\ServiceManager\ServiceManager $serviceManager
+     */
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->request = $this->serviceManager->get('request');
+        $this->textcats = $this->serviceManager->get('textcats');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'contentnosubnav';
 
+
         if (HelperConfig::$shop["show_pricesonlytologgedin"] && !CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->textcats->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
             $this->P->oPayload->cl_html = '';
@@ -48,39 +73,39 @@ class Shoppingcart extends Base
             // ----------------------------------------------------------------------------
             // Display the shoppingcart
             // ----------------------------------------------------------------------------
+            $aErr = [];
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
-                $aErr = [];
-                if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
+                if (isset($this->request->parsedBody["doCheckout"]) && $this->request->parsedBody["doCheckout"] == 'yes') {
                     $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
-                    if (!CHelper::getUserData() && (!isset($this->container['request']->parsedBody["tos"]) || $this->container['request']->parsedBody["tos"] != 'y')) {
+                    if (!CHelper::getUserData() && (!isset($this->request->parsedBody["tos"]) || $this->request->parsedBody["tos"] != 'y')) {
                         $aErr["tos"] = true;
                     }
-                    if (!CHelper::getUserData() && (!isset($this->container['request']->parsedBody["cancellationdisclaimer"]) || $this->container['request']->parsedBody["cancellationdisclaimer"] != 'y')) {
+                    if (!CHelper::getUserData() && (!isset($this->request->parsedBody["cancellationdisclaimer"]) || $this->request->parsedBody["cancellationdisclaimer"] != 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
                     if (
-                        !isset($this->container['request']->parsedBody["paymentmethod"])
+                        !isset($this->request->parsedBody["paymentmethod"])
                         || array_search(
-                            $this->container['request']->parsedBody["paymentmethod"],
+                            $this->request->parsedBody["paymentmethod"],
                             HelperConfig::$shop["paymentmethods"]
                         ) === false) {
                         $aErr["paymentmethod"] = true;
                     }
                 }
-                $aShoppingcart = SHelper::buildShoppingCartTable($_SESSION["cart"], $this->container, false, '', $aErr);
+                $aShoppingcart = SHelper::buildShoppingCartTable($_SESSION["cart"], false, '', $aErr);
             }
 
             // ----------------------------------------------------------------------------
             // Checkout
             // ----------------------------------------------------------------------------
             if (!isset($aShoppingcart)) {
-                $this->P->oPayload->cl_html .= $this->container['textcats']->T("shoppingcart_empty");
+                $this->P->oPayload->cl_html .= $this->textcats->T("shoppingcart_empty");
             } else {
-                if (isset($this->container['request']->parsedBody["doCheckout"]) && $this->container['request']->parsedBody["doCheckout"] == 'yes') {
+                if (isset($this->request->parsedBody["doCheckout"]) && $this->request->parsedBody["doCheckout"] == 'yes') {
                     if (count($aErr) == 0) {
                         $this->doCheckout();
                     }
-                } // endif $this->container['request']->parsedBody["doCheckout"] == 'yes'
+                } // endif $this->request->parsedBody["doCheckout"] == 'yes'
             }
 
             if (isset($aShoppingcart)) {
@@ -89,6 +114,10 @@ class Shoppingcart extends Base
         }
     }
 
+    /**
+     * @param $aV
+     * @return array
+     */
     private function getItemImage($aV)
     {
         // base64 encode img and prepare for db
@@ -138,6 +167,9 @@ class Shoppingcart extends Base
         return $aImagesToSend;
     }
 
+    /**
+     * @return array
+     */
     private function prepareDataOrder()
     {
         return [
@@ -154,8 +186,8 @@ class Shoppingcart extends Base
             'o_country' => filter_var(trim(Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_group' => trim(CHelper::getUserData('cust_group')),
             'o_remarks' => filter_var(trim(Tools::getFormfield("remarks")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_tos' => ((isset($this->container['request']->parsedBody["tos"]) && $this->container['request']->parsedBody["tos"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
-            'o_cancellationdisclaimer' => ((isset($this->container['request']->parsedBody["cancellationdisclaimer"]) && $this->container['request']->parsedBody["cancellationdisclaimer"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
+            'o_tos' => ((isset($this->request->parsedBody["tos"]) && $this->request->parsedBody["tos"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
+            'o_cancellationdisclaimer' => ((isset($this->request->parsedBody["cancellationdisclaimer"]) && $this->request->parsedBody["cancellationdisclaimer"] == 'y' || CHelper::getUserData()) ? 'y' : 'n'),
             'o_paymentmethod' => filter_var(trim(Tools::getFormfield("paymentmethod")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_sumvoll' => $_SESSION["cartpricesums"]["sumvoll"],
             'o_sumerm' => $_SESSION["cartpricesums"]["sumerm"],
@@ -164,12 +196,12 @@ class Shoppingcart extends Base
             'o_taxerm' => $_SESSION["cartpricesums"]["taxerm"],
             'o_sumbruttoall' => $_SESSION["cartpricesums"]["sumbruttoall"],
             'o_mindermenge' => (isset($_SESSION["cartpricesums"]["mindergebuehr"]) ? $_SESSION["cartpricesums"]["mindergebuehr"] : ''),
-            'o_shippingcost' => SHelper::getShippingcost($this->container),
+            'o_shippingcost' => SHelper::getShippingcost(),
             'o_orderdate' => date("Y-m-d"),
             'o_ordertimestamp' => time(),
             'o_authed' => ((CHelper::getUserData()) ? 'y' : 'n'),
             'o_sessiondata' => serialize($_SESSION),
-            'o_postdata' => serialize($this->container['request']->parsedBody),
+            'o_postdata' => serialize($this->request->parsedBody),
             'o_remote_address' => $_SERVER["REMOTE_ADDR"],
             'o_ordercompleted' => 'n',
             'o_paymentcompleted' => 'n',
@@ -179,22 +211,29 @@ class Shoppingcart extends Base
         ];
     }
 
+    /**
+     * @return bool
+     */
     private function doCheckout()
     {
         if (empty($_SESSION["cart"])) {
             return false;
         }
+
+        /** @var \PDO $db */
+        $db = $this->serviceManager->get('db');
+
         try {
-            $this->container['db']->beginTransaction();
+            $db->beginTransaction();
 
             $aDataOrder = $this->prepareDataOrder();
             $sql = DBTools::buildPSInsertQuery($aDataOrder, 'orders');
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $db->prepare($sql);
             foreach ($aDataOrder as $sKey => $sValue) {
                 $hResult->bindValue(':' . $sKey, $sValue);
             }
             $hResult->execute();
-            $iInsertID = $this->container['db']->lastInsertId();
+            $iInsertID = $db->lastInsertId();
 
             $aDataOrderItems = [];
             $aImagesToSend = [];
@@ -224,19 +263,19 @@ class Shoppingcart extends Base
             }
             foreach ($aDataOrderItems as $aV) {
                 $sql = DBTools::buildPSInsertQuery($aV, 'orders_items');
-                $hResult = $this->container['db']->prepare($sql);
+                $hResult = $db->prepare($sql);
                 foreach ($aV as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }
                 $hResult->execute();
             }
-            $this->container['db']->commit();
+            $db->commit();
         } catch (\Exception $e) {
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
             print $e;
-            $this->container['db']->rollBack();
+            $db->rollBack();
         }
         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
         $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
@@ -252,15 +291,15 @@ class Shoppingcart extends Base
         if (isset($_SESSION["sondercart"])) unset($_SESSION["sondercart"]);
 
         if (
-            isset($this->container['request']->parsedBody["paymentmethod"])
-            && $this->container['request']->parsedBody["paymentmethod"] == 'paypal'
+            isset($this->request->parsedBody["paymentmethod"])
+            && $this->request->parsedBody["paymentmethod"] == 'paypal'
             && array_search('paypal', HelperConfig::$shop["paymentmethods"]) !== false
             && isset(HelperConfig::$shop["paypal_interactive"]) && HelperConfig::$shop["paypal_interactive"]
         ) {
             header('Location: /_misc/paypal.html?id=' . $iInsertID);
         } elseif (
-            isset($this->container['request']->parsedBody["paymentmethod"])
-            && $this->container['request']->parsedBody["paymentmethod"] == 'sofortueberweisung'
+            isset($this->request->parsedBody["paymentmethod"])
+            && $this->request->parsedBody["paymentmethod"] == 'sofortueberweisung'
             && array_search('sofortueberweisung', HelperConfig::$shop["paymentmethods"]) !== false
         ) {
             header('Location: /_misc/sofortueberweisung.html?id=' . $iInsertID);
@@ -270,6 +309,12 @@ class Shoppingcart extends Base
         die();
     }
 
+    /**
+     * @param $iInsertID
+     * @param $sMailbody_us
+     * @param $sMailbody_they
+     * @param $aImagesToSend
+     */
     private function sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend)
     {
         if (
@@ -286,8 +331,8 @@ class Shoppingcart extends Base
         } else $aFilesToSend = [];
 
         Helper::mailWrapper(
-            $this->container['request']->parsedBody["email"],
-            $this->container['textcats']->T("shoppingcart_mail_subject") . ' ' . $iInsertID,
+            $this->request->parsedBody["email"],
+            $this->textcats->T("shoppingcart_mail_subject") . ' ' . $iInsertID,
             $sMailbody_they,
             $aImagesToSend,
             $aFilesToSend
@@ -300,6 +345,9 @@ class Shoppingcart extends Base
         );
     }
 
+    /**
+     * @param $sMailbody_us
+     */
     private function writeCheckoutToFile($sMailbody_us)
     {
         $fp = fopen(PATH_LOGS . 'shoplog_' . date("Y-m-d") . '.html', 'a');
@@ -308,23 +356,32 @@ class Shoppingcart extends Base
         fclose($fp);
     }
 
+    /**
+     * @param $field
+     * @return string
+     */
     private function getPostValue($field)
     {
-        return (isset($this->container['request']->parsedBody[$field]) && trim($this->container['request']->parsedBody[$field]) != '' ? $this->container['request']->parsedBody[$field] : '');
+        return (isset($this->request->parsedBody[$field]) && trim($this->request->parsedBody[$field]) != '' ? $this->request->parsedBody[$field] : '');
     }
 
+    /**
+     * @param bool $bCust
+     * @param int $iId
+     * @return mixed
+     */
     private function buildOrderMailBody($bCust = true, $iId = 0)
     {
-        $aSHC = SHelper::buildShoppingCartTable($_SESSION["cart"], $this->container, true);
+        $aSHC = SHelper::buildShoppingCartTable($_SESSION["cart"], true);
 
         $aData = [
             'customerversion' => $bCust,
             //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
             'datetime' => date("d.m.Y - H:i"),
             'custno' => (
-                isset($this->container['request']->parsedBody["custno"])
-                && strlen(trim($this->container['request']->parsedBody["custno"])) >= HelperConfig::$customer["minimum_length_custno"]
-                    ? $this->container['request']->parsedBody["custno"]
+                isset($this->request->parsedBody["custno"])
+                && strlen(trim($this->request->parsedBody["custno"])) >= HelperConfig::$customer["minimum_length_custno"]
+                    ? $this->request->parsedBody["custno"]
                     : ''
             ),
             'corpname' => $this->getPostValue('corpname'),
@@ -337,13 +394,13 @@ class Shoppingcart extends Base
             'fax' => $this->getPostValue('fax'),
             'email' => $this->getPostValue('email'),
             'country' => (
-                isset($this->container['request']->parsedBody["country"]) && trim($this->container['request']->parsedBody["country"]) != '' ?
+                isset($this->request->parsedBody["country"]) && trim($this->request->parsedBody["country"]) != '' ?
                 (
                     isset(
-                        HelperConfig::$countries["countries_".HelperConfig::$lang][$this->container['request']->parsedBody["country"]]
+                        HelperConfig::$countries["countries_".HelperConfig::$lang][$this->request->parsedBody["country"]]
                     )
-                        ? HelperConfig::$countries["countries_".HelperConfig::$lang][$this->container['request']->parsedBody["country"]]
-                        : $this->container['request']->parsedBody["country"])
+                        ? HelperConfig::$countries["countries_".HelperConfig::$lang][$this->request->parsedBody["country"]]
+                        : $this->request->parsedBody["country"])
                 : ''
             ),
             'remarks' => $this->getPostValue('remarks'),
@@ -351,10 +408,10 @@ class Shoppingcart extends Base
             'cancellationdisclaimer' => $this->getPostValue('cancellationdisclaimer'),
             'paymentmethod' => $this->getPostValue('paymentmethod'),
             'shippingcost' => (!isset($_SESSION["shippingcost"]) || $_SESSION["shippingcost"] == 0 ? false : $_SESSION["shippingcost"]),
-            'paypallink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
-            'sofortueberweisunglink' => (isset($this->container['request']->parsedBody["paymentmethod"]) && $this->container['request']->parsedBody["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
+            'paypallink' => (isset($this->request->parsedBody["paymentmethod"]) && $this->request->parsedBody["paymentmethod"] == 'paypal' ?  $_SERVER["SERVER_NAME"].'/_misc/paypal.html?id='.$iId : ''),
+            'sofortueberweisunglink' => (isset($this->request->parsedBody["paymentmethod"]) && $this->request->parsedBody["paymentmethod"] == 'sofortueberweisung' ?  $_SERVER["SERVER_NAME"].'/_misc/sofortueberweisung.html?id='.$iId : ''),
             'SESSION' => (!$bCust ? Tools::debug($_SESSION, '$_SESSION', true, true) : ''),
-            'POST' => (!$bCust ? Tools::debug($this->container['request']->parsedBody, '$this->container[\'request\'][\'parsedBody\']', true, true) : ''),
+            'POST' => (!$bCust ? Tools::debug($this->request->parsedBody, '$this->request->parsedBody', true, true) : ''),
             'orderid' => $iId,
         ];
 
@@ -365,10 +422,13 @@ class Shoppingcart extends Base
         }
         $aM["customdata"]["mail"] = $aData;
 
-        return $this->container['twig']->render('shop/mail-order-html.twig', $aM);
+        return $this->serviceManager->get('twig')->render('shop/mail-order-html.twig', $aM);
 
     }
 
+    /**
+     * @return string
+     */
     private function getNotification()
     {
         $return = '';
@@ -378,7 +438,7 @@ class Shoppingcart extends Base
                 || ($_GET["msg"] == 'removed')
                 && isset($_GET["cartkey"])
             ) {
-                $return .= $this->container['textcats']->T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
+                $return .= $this->textcats->T("shoppingcart_msg_" . $_GET["msg"] . "_1") . ' ';
                 if (isset(HelperConfig::$shop["custom_order_fields"]) && mb_strpos($_GET["cartkey"], '|') !== false) {
                     $mCartkeys = explode('|', $_GET["cartkey"]);
                     foreach ($mCartkeys as $sKey => $sValue) {
@@ -386,7 +446,7 @@ class Shoppingcart extends Base
                             $return .= $sValue . ', ';
                         } else {
                             $TMP = explode(':', $sValue);
-                            $return .= $this->container['textcats']->T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
+                            $return .= $this->textcats->T("shoppingcart_item_" . $TMP[0]) . ' ' . $TMP[1] . ', ';
                             unset($TMP);
                         }
                     }
@@ -394,7 +454,7 @@ class Shoppingcart extends Base
                 } else {
                     $return .= $_GET["cartkey"];
                 }
-                $return.= ' ' . $this->container['textcats']->T("shoppingcart_msg_" . $_GET["msg"] . "_2");
+                $return.= ' ' . $this->textcats->T("shoppingcart_msg_" . $_GET["msg"] . "_2");
                 if ($_GET["msg"] == 'updated') {
                     $return .= ' ' . $_GET["amount"];
                 }

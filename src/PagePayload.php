@@ -21,13 +21,15 @@
 namespace HaaseIT\HCSF;
 
 
+use Zend\ServiceManager\ServiceManager;
+
 class PagePayload
 {
-    protected $container;
+    protected $serviceManager;
     public $cl_lang, $cl_html, $cl_keywords, $cl_description, $cl_title;
 
-    public function __construct($container) {
-        $this->container = $container;
+    public function __construct(ServiceManager $serviceManager) {
+        $this->serviceManager = $serviceManager;
     }
 
     function getTitle()

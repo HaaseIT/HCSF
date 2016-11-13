@@ -22,6 +22,7 @@ namespace HaaseIT\HCSF;
 
 use HaaseIT\HCSF\Shop\Helper as SHelper;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
 class Helper
 {
@@ -29,10 +30,19 @@ class Helper
     {
         $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', HelperConfig::$secrets['glide_signkey']);
 
-        if ($width == 0 && $height == 0) return false;
-        if ($width != 0) $param['w'] = $width;
-        if ($height != 0) $param['h'] = $height;
-        if ($width != 0 && $height != 0) $param['fit'] = 'stretch';
+        $param = [];
+        if ($width == 0 && $height == 0) {
+            return false;
+        }
+        if ($width != 0) {
+            $param['w'] = $width;
+        }
+        if ($height != 0) {
+            $param['h'] = $height;
+        }
+        if ($width != 0 && $height != 0) {
+            $param['fit'] = 'stretch';
+        }
 
         return $urlBuilder->getUrl($file, $param);
     }
@@ -92,8 +102,10 @@ class Helper
         return $string;
     }
 
-    public static function generatePage($container, $P, $requesturi)
+    public static function generatePage(ServiceManager $serviceManager, $P)
     {
+        $requesturi = $serviceManager->get('request')->getRequestTarget();
+
         $aP = [
             'language' => HelperConfig::$lang,
             'pageconfig' => $P->cb_pageconfig,
@@ -146,7 +158,7 @@ class Helper
 
         // Shopping cart infos
         if (HelperConfig::$core["enable_module_shop"]) {
-            $aP["cartinfo"] = SHelper::getShoppingcartData($container);
+            $aP["cartinfo"] = SHelper::getShoppingcartData();
         }
 
         $aP["countrylist"][] = ' | ';
@@ -162,7 +174,7 @@ class Helper
                 || $aP["pagetype"] == 'itemdetail'
             )
         ) {
-            $aP = SHelper::handleItemPage($container, $P, $aP);
+            $aP = SHelper::handleItemPage($serviceManager, $P, $aP);
         }
 
         $aP["content"] = $P->oPayload->cl_html;

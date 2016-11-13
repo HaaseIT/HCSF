@@ -82,17 +82,11 @@ $serviceManager->setFactory('request', function () {
     }
     return $request->withRequestTarget($parsedrequesturi);
 });
-/* old, pimple
-$container['request'] = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
-$requesturi = urldecode($container['request']->getRequestTarget());
-$parsedrequesturi = \substr($requesturi, \strlen(\dirname($_SERVER['PHP_SELF'])));
-if (substr($parsedrequesturi, 1, 1) != '/') {
-    $parsedrequesturi = '/'.$parsedrequesturi;
-}
-$container['request'] = $container['request']->withRequestTarget($parsedrequesturi);
-*/
 
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
+use \HaaseIT\HCSF\HardcodedText;
+
 HelperConfig::init();
 
 if (HelperConfig::$core['debug']) {
@@ -141,11 +135,9 @@ if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php'
         $HT = require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
     }
 }
-use \HaaseIT\HCSF\HardcodedText;
+
 HardcodedText::init($HT);
 
-//$container['db'] = null;
-//$container['entitymanager'] = null;
 if (!HelperConfig::$core['maintenancemode']) {
 // ----------------------------------------------------------------------------
 // Begin database init
@@ -171,14 +163,14 @@ if (!HelperConfig::$core['maintenancemode']) {
         return Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
     });
 
-    $serviceManager->setFactory('db', function () use($serviceManager) {
+    $serviceManager->setFactory('db', function (ServiceManager $serviceManager) {
         return $serviceManager->get('entitymanager')->getConnection()->getWrappedConnection();
     });
 
     // ----------------------------------------------------------------------------
     // more init stuff
     // ----------------------------------------------------------------------------
-    $serviceManager->setFactory('textcats', function () use($serviceManager) {
+    $serviceManager->setFactory('textcats', function (ServiceManager $serviceManager) {
         $langavailable = HelperConfig::$core["lang_available"];
         $textcats = new \HaaseIT\Textcat(
             HelperConfig::$lang,
@@ -199,7 +191,7 @@ if (!HelperConfig::$core['maintenancemode']) {
 // Begin Twig loading and init
 // ----------------------------------------------------------------------------
 
-$serviceManager->setFactory('twig', function () use($serviceManager) {
+$serviceManager->setFactory('twig', function (ServiceManager $serviceManager) {
     $loader = new Twig_Loader_Filesystem([PATH_BASEDIR.'customviews', PATH_BASEDIR.'src/views/']);
 
     $twig_options = [
@@ -228,9 +220,8 @@ $serviceManager->setFactory('twig', function () use($serviceManager) {
     return $twig;
 });
 
-//$container['oItem'] = '';
 if (HelperConfig::$core["enable_module_shop"]) {
-    $serviceManager->setFactory('oItem', function () use($serviceManager) {
+    $serviceManager->setFactory('oItem', function (ServiceManager $serviceManager) {
         return new \HaaseIT\HCSF\Shop\Items($serviceManager);
     });
 }

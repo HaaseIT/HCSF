@@ -20,19 +20,32 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
-use HaaseIT\HCSF\HelperConfig;
 
+use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Index
+ * @package HaaseIT\HCSF\Controller\Admin
+ */
 class Index extends Base
 {
-    public function __construct($container)
+    /**
+     * Index constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
     {
-        parent::__construct($container);
+        parent::__construct($serviceManager);
         $this->requireAdminAuthAdminHome = true;
     }
 
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 

@@ -23,43 +23,56 @@ namespace HaaseIT\HCSF\Controller\Customer;
 use HaaseIT\HCSF\HelperConfig;
 use \HaaseIT\Tools;
 
+/**
+ * Class Login
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Login extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
+
+        /** @var \HaaseIT\Textcat $textcats */
+        $textcats = $this->serviceManager->get('textcats');
 
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
             $mLogin = $this->getLogin();
             if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_success") . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
                 die();
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'tosnotaccepted') {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_tosnotaccepted") . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T("login_fail_tosnotaccepted") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_emailnotverified") . '<br><br>';
+                $this->P->oPayload->cl_html = $textcats->T("login_fail_emailnotverified") . '<br><br>';
                 $this->P->oPayload->cl_html .= '<a href="/_misc/resendverificationmail.html?email='
-                    . $mLogin["data"]['cust_email'] . '">' . $this->container['textcats']->T("login_fail_emailnotverifiedresend") . '</a>';
+                    . $mLogin["data"]['cust_email'] . '">' . $textcats->T("login_fail_emailnotverifiedresend") . '</a>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail_accountinactive") . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T("login_fail_accountinactive") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } else {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("login_fail");
+                $this->P->oPayload->cl_html = $textcats->T("login_fail");
                 $this->P->cb_customcontenttemplate = 'customer/login';
             }
         }
 
         if (HelperConfig::$core["enable_module_shop"]) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container);
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
         }
     }
 
+    /**
+     * @return array|bool
+     */
     private function getLogin()
     {
         $bTryEmail = false;
@@ -79,7 +92,8 @@ class Login extends Base
 
         if ($bTryEmail) $sql .= ' OR cust_email != \'\')';
 
-        $hResult = $this->container['db']->prepare($sql);
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->serviceManager->get('db')->prepare($sql);
         $hResult->bindValue(':user', $sUser, \PDO::PARAM_STR);
         if ($bTryEmail) {
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);

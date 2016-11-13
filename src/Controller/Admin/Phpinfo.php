@@ -20,11 +20,18 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
+/**
+ * Class Phpinfo
+ * @package HaaseIT\HCSF\Controller\Admin
+ */
 class Phpinfo extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 

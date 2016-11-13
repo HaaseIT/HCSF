@@ -20,15 +20,45 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Forgotpassword
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Forgotpassword extends Base
 {
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Forgotpassword constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->textcats = $serviceManager->get('textcats');
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
 
@@ -44,6 +74,10 @@ class Forgotpassword extends Base
         }
     }
 
+    /**
+     * @param $aErr
+     * @return array
+     */
     private function handleForgotPassword($aErr) {
         if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
             $aErr[] = 'emailinvalid';
@@ -52,7 +86,7 @@ class Forgotpassword extends Base
 
             $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
             $hResult->execute();
             if ($hResult->rowCount() != 1) {
@@ -70,18 +104,18 @@ class Forgotpassword extends Base
                         'cust_id' => $aResult['cust_id'],
                     ];
                     $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();
 
                     $sTargetAddress = $aResult['cust_email'];
-                    $sSubject = $this->container['textcats']->T("forgotpw_mail_subject");
-                    $sMessage = $this->container['textcats']->T("forgotpw_mail_text1");
+                    $sSubject = $this->textcats->T("forgotpw_mail_subject");
+                    $sMessage = $this->textcats->T("forgotpw_mail_text1");
                     $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
                     $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
-                    $sMessage .= '<br><br>'.$this->container['textcats']->T("forgotpw_mail_text2");
+                    $sMessage .= '<br><br>'.$this->textcats->T("forgotpw_mail_text2");
 
                     \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
                 }

@@ -22,18 +22,19 @@ namespace HaaseIT\HCSF\Controller;
 
 
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
 
 class Base
 {
-    protected $P, $container,
+    protected $P, $serviceManager,
         $requireAdminAuth = false,
         $requireAdminAuthAdminHome = false,
         $requireModuleCustomer = false,
         $requireModuleShop = false;
 
-    public function __construct($container)
+    public function __construct(ServiceManager $serviceManager)
     {
-        $this->container = $container;
+        $this->serviceManager = $serviceManager;
     }
 
     public function getPage()

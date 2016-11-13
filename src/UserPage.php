@@ -20,16 +20,18 @@
 
 namespace HaaseIT\HCSF;
 
+
 use HaaseIT\DBTools;
+use Zend\ServiceManager\ServiceManager;
 
 class UserPage extends Page
 {
     protected $bReturnRaw;
     public $cb_id, $cb_key, $cb_group, $purifier;
 
-    public function __construct($container, $sPagekey, $bReturnRaw = false) {
+    public function __construct(ServiceManager $serviceManager, $sPagekey, $bReturnRaw = false) {
         //if (!$bReturnRaw) $this->container = $container;
-        $this->container = $container;
+        $this->serviceManager = $serviceManager;
         $this->iStatus = 200;
         $this->bReturnRaw = $bReturnRaw;
 
@@ -43,8 +45,9 @@ class UserPage extends Page
             // first get base data
             $sql = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
             $sql .= "FROM content_base WHERE cb_key = :key ";
-            $hResult = $this->container['db']->prepare($sql);
 
+            /** @var \PDOStatement $hResult */
+            $hResult = $this->serviceManager->get('db')->prepare($sql);
             $hResult->bindValue(':key', $sPagekey, \PDO::PARAM_STR);
             $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
             $hResult->execute();
@@ -61,7 +64,7 @@ class UserPage extends Page
     }
 
     protected function getPayload() {
-        return new UserPagePayload($this->container, $this->cb_id, $this->bReturnRaw);
+        return new UserPagePayload($this->serviceManager, $this->cb_id, $this->bReturnRaw);
     }
 
     public function write() {
@@ -74,8 +77,11 @@ class UserPage extends Page
         ];
         $sql = DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
 
-        $hResult = $this->container['db']->prepare($sql);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->serviceManager->get('db')->prepare($sql);
+        foreach ($aData as $sKey => $sValue) {
+            $hResult->bindValue(':'.$sKey, $sValue);
+        }
         return $hResult->execute();
     }
 
@@ -84,7 +90,7 @@ class UserPage extends Page
             'cb_key' => $sPagekeytoadd,
         ];
         $sql = DBTools::buildInsertQuery($aData, 'content_base');
-        return $hResult = $this->container['db']->exec($sql);
+        return $hResult = $this->serviceManager->get('db')->exec($sql);
     }
 
     public function remove() {
@@ -93,7 +99,6 @@ class UserPage extends Page
 
         // then delete base row
         $sql = "DELETE FROM content_base WHERE cb_id = '".$this->cb_id."'";
-        return $this->container['db']->exec($sql);
+        return $this->serviceManager->get('db')->exec($sql);
     }
-
 }

@@ -21,12 +21,26 @@
 namespace HaaseIT\HCSF\Controller\Admin;
 
 
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Base
+ * @package HaaseIT\HCSF\Controller\Admin
+ */
 class Base extends \HaaseIT\HCSF\Controller\Base
 {
+    /**
+     * @var bool
+     */
     protected $bAdminhome = false;
-    public function __construct($container)
+
+    /**
+     * Base constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
     {
-        parent::__construct($container);
+        parent::__construct($serviceManager);
         $this->requireAdminAuth = true;
     }
 }

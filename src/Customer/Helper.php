@@ -23,6 +23,7 @@ namespace HaaseIT\HCSF\Customer;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
 use HaaseIT\HCSF\HardcodedText;
+use Zend\ServiceManager\ServiceManager;
 
 class Helper
 {
@@ -192,15 +193,15 @@ class Helper
         return $aData;
     }
 
-    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, $container, $bCust = false)
+    public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, ServiceManager $serviceManager, $bCust = false)
     {
         if ($bCust) {
-            $sSubject = $container['textcats']->T("register_mail_emailverification_subject");
+            $sSubject = $serviceManager->get('textcats')->T("register_mail_emailverification_subject");
 
             $aP['link'] = 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
             $aP['link'] .= $_SERVER["SERVER_NAME"].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
 
-            $sMessage = $container['twig']->render('customer/sendverificationmail.twig', $aP);
+            $sMessage = $serviceManager->get('twig')->render('customer/sendverificationmail.twig', $aP);
         }
         else {
             $sSubject = HardcodedText::get('newcustomerregistration_mail_subject');

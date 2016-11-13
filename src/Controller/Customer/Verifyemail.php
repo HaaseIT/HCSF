@@ -20,19 +20,50 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Verifyemail
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Verifyemail extends Base
 {
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Verifyemail constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->textcats = $serviceManager->get('textcats');
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
         } else {
             $sql = 'SELECT cust_email, cust_id FROM customer '
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
-            $hResult = $this->container['db']->prepare($sql);
+            /** @var \PDOStatement $hResult */
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -41,14 +72,15 @@ class Verifyemail extends Base
                 $aRow = $hResult->fetch();
                 $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
                 $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                $hResult = $this->container['db']->prepare($sql);
+                /** @var \PDOStatement $hResult */
+                $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }
                 $hResult->execute();
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("register_emailverificationsuccess");
+                $this->P->oPayload->cl_html = $this->textcats->T("register_emailverificationsuccess");
             } else {
-                $this->P->oPayload->cl_html = $this->container['textcats']->T("register_emailverificationfail");
+                $this->P->oPayload->cl_html = $this->textcats->T("register_emailverificationfail");
             }
         }
     }

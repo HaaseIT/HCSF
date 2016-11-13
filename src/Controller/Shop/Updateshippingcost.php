@@ -20,17 +20,25 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+
 use HaaseIT\HCSF\HelperConfig;
 
+/**
+ * Class Updateshippingcost
+ * @package HaaseIT\HCSF\Controller\Shop
+ */
 class Updateshippingcost extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"], $this->container);
+        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"]);
 
         header("Content-Type: text/html; charset=UTF-8");
         $return = '<div>';

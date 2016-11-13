@@ -23,16 +23,45 @@ namespace HaaseIT\HCSF\Controller\Customer;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Userhome
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Userhome extends Base
 {
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Userhome constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->textcats = $serviceManager->get('textcats');
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (!CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->textcats->T("denied_notloggedin");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
 
@@ -48,12 +77,12 @@ class Userhome extends Base
 
                     $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
-                    $hResult = $this->container['db']->prepare($sql);
+                    $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
-                    if ($iRows == 1) $sErr .= $this->container['textcats']->T("userprofile_emailalreadyinuse") . '<br>';
+                    if ($iRows == 1) $sErr .= $this->textcats->T("userprofile_emailalreadyinuse") . '<br>';
                     $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
 
                     if ($sErr == '') {
@@ -79,7 +108,7 @@ class Userhome extends Base
 
                         if (count($aData) > 1) {
                             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                            $hResult = $this->container['db']->prepare($sql);
+                            $hResult = $this->db->prepare($sql);
                             foreach ($aData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
@@ -95,7 +124,7 @@ class Userhome extends Base
                     'editprofile',
                     $sErr
                 );
-                //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->container['textcats']->T("userprofile_infoeditemail"); // Future implementation
+                //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->textcats->T("userprofile_infoeditemail"); // Future implementation
             } else {
                 $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
                     HelperConfig::$lang,

@@ -20,11 +20,11 @@
 
 require __DIR__.'/../src/bootstrap.php';
 
-$aP = \HaaseIT\HCSF\Helper::generatePage($container, $P, $requesturi);
+$aP = \HaaseIT\HCSF\Helper::generatePage($serviceManager, $P);
 
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
-$response->getBody()->write($container['twig']->render(\HaaseIT\HCSF\HelperConfig::$core["template_base"], $aP));
+$response->getBody()->write($serviceManager->get('twig')->render(\HaaseIT\HCSF\HelperConfig::$core["template_base"], $aP));
 
 $emitter = new \Zend\Diactoros\Response\SapiEmitter();
 $emitter->emit($response);

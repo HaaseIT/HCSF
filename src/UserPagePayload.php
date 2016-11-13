@@ -21,20 +21,21 @@
 namespace HaaseIT\HCSF;
 
 use HaaseIT\DBTools;
+use Zend\ServiceManager\ServiceManager;
 
 class UserPagePayload extends PagePayload
 {
     public $cl_id, $cl_cb, $cl_lang, $purifier;
 
-    public function __construct($container, $iParentID, $bReturnRaw = false) {
-        parent::__construct($container);
-
-        //if (!$bReturnRaw) $this->container = $container;
+    public function __construct(ServiceManager $serviceManager, $iParentID, $bReturnRaw = false) {
+        parent::__construct($serviceManager);
 
         if ($iParentID != '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
             $sql = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
             $sql .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
-            $hResult = $this->container['db']->prepare($sql);
+
+            /** @var \PDOStatement $hResult */
+            $hResult = $this->serviceManager->get('db')->prepare($sql);
 
             // Try to get the payload in the current language
             $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
@@ -46,7 +47,9 @@ class UserPagePayload extends PagePayload
                 $hResult->fetch();
             } elseif (!$bReturnRaw) { // if raw data is required, don't try to fetch default lang data
                 // if the current language data is not available, lets see if we can get the default languages data
-                $hResult = $this->container['db']->prepare($sql);
+
+                /** @var \PDOStatement $hResult */
+                $hResult = $this->serviceManager->get('db')->prepare($sql);
                 $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
                 $lang_available = HelperConfig::$core["lang_available"];
                 $hResult->bindValue(':lang', key($lang_available), \PDO::PARAM_STR);
@@ -70,8 +73,11 @@ class UserPagePayload extends PagePayload
         ];
         $sql = DBTools::buildPSUpdateQuery($aData, 'content_lang', 'cl_id');
 
-        $hResult = $this->container['db']->prepare($sql);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+        $hResult = $this->serviceManager->get('db')->prepare($sql);
+        foreach ($aData as $sKey => $sValue) {
+            /** @var \PDOStatement $hResult */
+            $hResult->bindValue(':'.$sKey, $sValue);
+        }
         return $hResult->execute();
     }
 
@@ -81,12 +87,11 @@ class UserPagePayload extends PagePayload
             'cl_lang' => HelperConfig::$lang,
         ];
         $sql = DBTools::buildInsertQuery($aData, 'content_lang');
-        $this->container['db']->exec($sql);
+        $this->serviceManager->get('db')->exec($sql);
     }
 
     public function remove($sParentID) {
         $sql = "DELETE FROM content_lang WHERE cl_cb = '".$sParentID."'";
-        return $this->container['db']->exec($sql);
+        return $this->serviceManager->get('db')->exec($sql);
     }
-
 }

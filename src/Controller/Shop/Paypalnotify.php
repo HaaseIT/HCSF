@@ -20,13 +20,37 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\HelperConfig;
 
+use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Paypalnotify
+ * @package HaaseIT\HCSF\Controller\Shop
+ */
 class Paypalnotify extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Paypalnotify constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         $sLogData = '';
@@ -34,7 +58,7 @@ class Paypalnotify extends Base
         $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders WHERE o_id = ' . $iId . ' AND o_paymentmethod' . " = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->container['db']->query($sql);
+        $hResult = $this->db->query($sql);
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
@@ -64,6 +88,8 @@ class Paypalnotify extends Base
                 fputs($fp, "Content-length: " . strlen($postdata) . "\r\n");
                 fputs($fp, "Connection: close\r\n\r\n");
                 fputs($fp, $postdata . "\r\n\r\n");
+
+                $info = [];
                 while (!feof($fp)) {
                     $info[] = @fgets($fp, 1024);
                 }
@@ -77,7 +103,7 @@ class Paypalnotify extends Base
 
                     // Check if the transaction id has been used before
                     $sTxn_idQ = 'SELECT o_paypal_tx FROM orders WHERE o_paypal_tx = :txn_id';
-                    $hTxn_idResult = $this->container['db']->prepare($sTxn_idQ);
+                    $hTxn_idResult = $this->db->prepare($sTxn_idQ);
                     $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
                     $hTxn_idResult->execute();
 
@@ -95,7 +121,7 @@ class Paypalnotify extends Base
                                 'o_id' => $iId,
                             ];
                             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
-                            $hResult = $this->container['db']->prepare($sql);
+                            $hResult = $this->db->prepare($sql);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
@@ -108,8 +134,8 @@ class Paypalnotify extends Base
                                     2, '.', '') . "\n";
                             $sLogData .= "custom: " . $_REQUEST["custom"] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
                             $sLogData .= "payment_status: " . $_REQUEST["payment_status"] . "\n";
-                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["currency_id"]: ' . HelperConfig::$shop["paypal"]["currency_id"] . "\n";
-                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - $this->container[\'conf\'][\'shop\']["paypal"]["business"]: ' . HelperConfig::$shop["paypal"]["business"] . "\n\n";
+                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - HelperConfig::$shop["paypal"]["currency_id"]: ' . HelperConfig::$shop["paypal"]["currency_id"] . "\n";
+                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - HelperConfig::$shop["paypal"]["business"]: ' . HelperConfig::$shop["paypal"]["business"] . "\n\n";
                         }
                     } else {
                         // INVALID LOGGING ERROR

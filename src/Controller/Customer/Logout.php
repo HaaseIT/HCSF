@@ -22,17 +22,24 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
 
+/**
+ * Class Logout
+ * @package HaaseIT\HCSF\Controller\Customer
+ */
 class Logout extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         unset($_SESSION["user"]);
         if (HelperConfig::$core["enable_module_shop"] && isset($_SESSION["cart"])) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->container);
+            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
         }
-        $this->P->oPayload->cl_html = $this->container['textcats']->T("logout_message");
+        $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("logout_message");
     }
 }

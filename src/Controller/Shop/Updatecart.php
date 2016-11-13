@@ -22,11 +22,18 @@ namespace HaaseIT\HCSF\Controller\Shop;
 
 use HaaseIT\HCSF\HelperConfig;
 
+/**
+ * Class Updatecart
+ * @package HaaseIT\HCSF\Controller\Shop
+ */
 class Updatecart extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (
@@ -36,7 +43,7 @@ class Updatecart extends Base
             )
             || !isset($_SERVER["HTTP_REFERER"])
         ) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
         } else {
             $iAmount = '';
             if (isset($_REQUEST["amount"])) {
@@ -49,7 +56,7 @@ class Updatecart extends Base
                 $iAmount = floor($iAmount);
 
                 // Check if this item exists
-                $aData = $this->container['oItem']->sortItems('', $_REQUEST["itemno"]);
+                $aData = $this->serviceManager->get('oItem')->sortItems('', $_REQUEST["itemno"]);
                 if (!isset($aData)) {
                     $this->replyToCartUpdate('itemnotfound');
                 } else {
@@ -83,7 +90,7 @@ class Updatecart extends Base
                     }
                     $aItem = [
                         'amount' => $iAmount,
-                        'price' => $this->container['oItem']->calcPrice($aData["item"][$sItemno]),
+                        'price' => $this->serviceManager->get('oItem')->calcPrice($aData["item"][$sItemno]),
                         'rg' => $aData["item"][$sItemno]['itm_rg'],
                         'vat' => $aData["item"][$sItemno]['itm_vatid'],
                         'name' => $aData["item"][$sItemno]['itm_name'],
@@ -110,19 +117,23 @@ class Updatecart extends Base
         }
     }
 
+    /**
+     * @param $sReply
+     * @param array $aMore
+     */
     private function replyToCartUpdate($sReply, $aMore = []) {
         if (isset($_REQUEST["ajax"])) {
             $aAR = [
                 'cart' => $_SESSION["cart"],
                 'reply' => $sReply,
-                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($this->container, $_SESSION["cart"]),
+                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION["cart"]),
                 'currency' => HelperConfig::$shop["waehrungssymbol"],
                 'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
                 'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
                 'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
             ];
             if (count($aMore)) $aAR = array_merge($aAR, $aMore);
-            echo $this->container['twig']->render('shop/update-cart.twig', $aAR);
+            echo $this->serviceManager->get('twig')->render('shop/update-cart.twig', $aAR);
         } else {
             $aMSG["msg"] =  $sReply;
             if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);

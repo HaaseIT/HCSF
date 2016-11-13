@@ -20,11 +20,18 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
+/**
+ * Class Itemsearch
+ * @package HaaseIT\HCSF\Controller\Shop
+ */
 class Itemsearch extends Base
 {
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'itemoverview';
     }
 }

@@ -21,11 +21,21 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Base
+ * @package HaaseIT\HCSF\Controller\Admin\Shop
+ */
 class Base extends \HaaseIT\HCSF\Controller\Admin\Base
 {
-    public function __construct($container)
+    /**
+     * Base constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
     {
-        parent::__construct($container);
+        parent::__construct($serviceManager);
         $this->requireModuleShop = true;
     }
 }

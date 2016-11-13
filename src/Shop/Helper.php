@@ -22,10 +22,11 @@ namespace HaaseIT\HCSF\Shop;
 
 
 use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
 
 class Helper
 {
-    public static function showOrderStatusText($textcats, $sStatusShort)
+    public static function showOrderStatusText(\HaaseIT\Textcat $textcats, $sStatusShort)
     {
         if ($sStatusShort == 'y') {
             return $textcats->T("order_status_completed");
@@ -65,7 +66,7 @@ class Helper
         return $fGesamtbrutto;
     }
 
-    public static function addAdditionalCostsToItems($container, $aSumme, $iVATfull, $iVATreduced)
+    public static function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
     {
         $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
         $fSteuervoll = $aSumme["sumvoll"] * $iVATfull / 100;
@@ -123,7 +124,7 @@ class Helper
                     || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
                 )
         )  {
-            $aOrder["fVersandkostennetto"] = self::getShippingcost($container);
+            $aOrder["fVersandkostennetto"] = self::getShippingcost();
             $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
             $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
 
@@ -136,7 +137,7 @@ class Helper
         return $aOrder;
     }
 
-    public static function getShippingcost($container) {
+    public static function getShippingcost() {
         $fShippingcost = HelperConfig::$shop["shippingcoststandardrate"];
 
         if (isset($_SESSION["user"]["cust_country"])) {
@@ -159,7 +160,7 @@ class Helper
         return $fShippingcost;
     }
 
-    public static function calculateCartItems($container, $aCart)
+    public static function calculateCartItems($aCart)
     {
         $fErm = 0;
         $fVoll = 0;
@@ -182,7 +183,7 @@ class Helper
         return $aSumme;
     }
 
-    public static function refreshCartItems($container) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
+    public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
         if (isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             foreach ($_SESSION["cart"] as $sKey => $aValue) {
@@ -193,25 +194,25 @@ class Helper
                     $sItemkey = $TMP[0];
                     unset($TMP);
                 }
-                $aData = $container['oItem']->sortItems('', $sItemkey);
+                $aData = $serviceManager->get('oItem')->sortItems('', $sItemkey);
                 $_SESSION["cart"][$sKey]["price"] = $aData["item"][$sItemkey]["pricedata"];
             }
         }
     }
 
-    public static function buildShoppingCartTable($aCart, $container, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
+    public static function buildShoppingCartTable($aCart, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
     {
         if ($iVATfull == '' && $iVATreduced == '') {
             $iVATfull = HelperConfig::$shop["vat"]["full"];
             $iVATreduced = HelperConfig::$shop["vat"]["reduced"];
         }
-        $aSumme = self::calculateCartItems($container, $aCart);
+        $aSumme = self::calculateCartItems($aCart);
         $aData["shoppingcart"] = [
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
             'rebategroups' => HelperConfig::$shop["rebate_groups"],
-            'additionalcoststoitems' => self::addAdditionalCostsToItems($container, $aSumme, $iVATfull, $iVATreduced),
+            'additionalcoststoitems' => self::addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced),
             'minimumorderamountnet' => HelperConfig::$shop["minimumorderamountnet"],
             'reducedorderamountnet1' => HelperConfig::$shop["reducedorderamountnet1"],
             'reducedorderamountnet2' => HelperConfig::$shop["reducedorderamountnet2"],
@@ -232,7 +233,7 @@ class Helper
         return $aData;
     }
 
-    public static function getShoppingcartData($container)
+    public static function getShoppingcartData()
     {
         $aCartinfo = [
             'numberofitems' => 0,
@@ -241,7 +242,7 @@ class Helper
             'cartsumbrutto' => 0,
         ];
         if ((!HelperConfig::$shop["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($container, $_SESSION["cart"]);
+            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION["cart"]);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION["cart"]),
                 'cartsums' => $aCartsums,
@@ -263,7 +264,7 @@ class Helper
         return $aCartinfo;
     }
 
-    public static function getItemSuggestions($container, $aPossibleSuggestions, $sSetSuggestions, $sCurrentitem, $mItemindex, $aItemindexpathtreeforsuggestions)
+    public static function getItemSuggestions(\HaaseIT\HCSF\Shop\Items $oItem, $aPossibleSuggestions, $sSetSuggestions, $sCurrentitem, $mItemindex, $aItemindexpathtreeforsuggestions)
     {
         //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
         unset($aPossibleSuggestions[$sCurrentitem]); // remove the currently shown item from this list, we do not want to show it as a suggestion
@@ -282,7 +283,7 @@ class Helper
             }
         }
         if (isset($aSuggestionsToLoad)) { // if there are not yet loaded suggestions, load them
-            $aItemsNotInCategory = $container['oItem']->sortItems('', $aSuggestionsToLoad, false);
+            $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad, false);
             if (isset($aItemsNotInCategory)) { // merge loaded and newly loaded items
                 $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
             }
@@ -365,16 +366,19 @@ class Helper
         return $aSuggestions;
     }
 
-    static function handleItemPage($container, $P, $aP)
+    static function handleItemPage(ServiceManager $serviceManager, $P, $aP)
     {
         $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
             $mItemIndex = $P->cb_pageconfig->itemindex;
         }
-        $aP["items"] = $container['oItem']->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
+
+        $oItem = $serviceManager->get('oItem');
+
+        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
         if ($aP["pagetype"] == 'itemdetail') {
 
-            $aP["itemindexpathtreeforsuggestions"] = $container['oItem']->getItemPathTree();
+            $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
 
             if (isset($aP["pageconfig"]->itemindex)) {
                 if (is_array($aP["pageconfig"]->itemindex)) {
@@ -414,7 +418,7 @@ class Helper
                         // build item suggestions if needed
                         if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
                             $aP["item"]["suggestions"] = self::getItemSuggestions(
-                                $container,
+                                $oItem,
                                 $aP["items"]["item"],
                                 (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
                                 $sKey,

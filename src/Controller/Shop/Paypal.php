@@ -20,20 +20,45 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\HelperConfig;
 
+use HaaseIT\HCSF\HelperConfig;
+use Zend\ServiceManager\ServiceManager;
+
+/**
+ * Class Paypal
+ * @package HaaseIT\HCSF\Controller\Shop
+ */
 class Paypal extends Base
 {
+    /**
+     * @var \HaaseIT\Textcat
+     */
+    private $textcats;
+
+    /**
+     * Paypal constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->textcats = $serviceManager->get('textcats');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders ';
         $sql .= "WHERE o_id = :id AND o_paymentmethod = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->container['db']->prepare($sql);
+        /** @var \PDOStatement $hResult */
+        $hResult = $this->serviceManager->get('db')->prepare($sql);
         $hResult->bindValue(':id', $iId, \PDO::PARAM_INT);
 
         $hResult->execute();
@@ -45,7 +70,7 @@ class Paypal extends Base
             $sPaypalURL = HelperConfig::$shop["paypal"]["url"]
                 .'?cmd=_xclick&rm=2&custom='
                 .$iId . '&business='.HelperConfig::$shop["paypal"]["business"];
-            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . $this->container['textcats']->T("misc_paypaypal_paypaltitle") . ' ' . $iId;
+            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . $this->textcats->T("misc_paypaypal_paypaltitle") . ' ' . $iId;
             $sPaypalURL .= '&currency_code=' . HelperConfig::$shop["paypal"]["currency_id"]
                 .'&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
             if (HelperConfig::$shop["interactive_paymentmethods_redirect_immediately"]) {
@@ -53,10 +78,10 @@ class Paypal extends Base
                 die();
             }
 
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paypaypal_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . $this->container['textcats']->T("misc_paypaypal") . '</a>';
+            $this->P->oPayload->cl_html = $this->textcats->T("misc_paypaypal_greeting") . '<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . $this->textcats->T("misc_paypaypal") . '</a>';
         } else {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("misc_paypaypal_paymentnotavailable");
+            $this->P->oPayload->cl_html = $this->textcats->T("misc_paypaypal_paymentnotavailable");
         }
     }
 }

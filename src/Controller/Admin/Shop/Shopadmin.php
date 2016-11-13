@@ -23,12 +23,35 @@ namespace HaaseIT\HCSF\Controller\Admin\Shop;
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Shopadmin
+ * @package HaaseIT\HCSF\Controller\Admin\Shop
+ */
 class Shopadmin extends Base
 {
+    /**
+     * @var \PDO
+     */
+    private $db;
+
+    /**
+     * Shopadmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
@@ -49,7 +72,7 @@ class Shopadmin extends Base
             ];
 
             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
             header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
@@ -99,6 +122,10 @@ class Shopadmin extends Base
         $this->P->cb_customdata = array_merge($aPData, $aShopadmin);
     }
 
+    /**
+     * @param $CSA
+     * @return array
+     */
     private function handleShopAdmin($CSA)
     {
         $aSData = [];
@@ -134,7 +161,7 @@ class Shopadmin extends Base
             }
             $sql .= "ORDER BY o_ordertimestamp DESC";
 
-            $hResult = $this->container['db']->prepare($sql);
+            $hResult = $this->db->prepare($sql);
             if ($bFromTo) {
                 $hResult->bindValue(':from', $sFrom);
                 $hResult->bindValue(':to', $sTo);
@@ -156,7 +183,7 @@ class Shopadmin extends Base
 
                     if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
                     else $sZahlungsmethode = '<span style="color: red;">';
-                    $mZahlungsmethode = $this->container['textcats']->T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
+                    $mZahlungsmethode = $this->serviceManager->get('textcats')->T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
                     if ($mZahlungsmethode ) $sZahlungsmethode .= $mZahlungsmethode;
                     else $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
                     $sZahlungsmethode .= '</span>';
@@ -199,7 +226,7 @@ class Shopadmin extends Base
                     } else $k++;
                     $i++;
                 }
-                $aSData['listtable_orders'] = Tools::makeListtable($CSA["list_orders"], $aData, $this->container['twig']);
+                $aSData['listtable_orders'] = Tools::makeListtable($CSA["list_orders"], $aData, $this->serviceManager->get('twig'));
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;
                 $aSData['listtable_k'] = $k;
@@ -208,16 +235,17 @@ class Shopadmin extends Base
                 $aSData['nomatchingordersfound'] = true;
             }
         } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
-            $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+            $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $sql = 'SELECT * FROM orders WHERE o_id = :id';
 
-            $hResult = $this->container['db']->prepare($sql);
+            /** @var \PDOStatement $hResult */
+            $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aSData["orderdata"] = $hResult->fetch();
                 $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                $hResult = $this->container['db']->prepare($sql);
+                $hResult = $this->db->prepare($sql);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
                 $aItems = $hResult->fetchAll();
@@ -273,7 +301,6 @@ class Shopadmin extends Base
                 $aSData = array_merge(
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsCarttable,
-                        $this->container,
                         true,
                         $aSData["orderdata"]["o_group"],
                         '',

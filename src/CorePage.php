@@ -21,16 +21,18 @@
 namespace HaaseIT\HCSF;
 
 
+use Zend\ServiceManager\ServiceManager;
+
 class CorePage extends Page
 {
-    public function __construct($container)
+    public function __construct(ServiceManager $serviceManager)
     {
         $this->iStatus = 200;
-        $this->container = $container;
+        $this->serviceManager = $serviceManager;
         $this->getPayload();
     }
 
     protected function getPayload() {
-        $this->oPayload = new PagePayload($this->container);
+        $this->oPayload = new PagePayload($this->serviceManager);
     }
 }

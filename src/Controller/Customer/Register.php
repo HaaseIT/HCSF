@@ -28,11 +28,11 @@ class Register extends Base
 {
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->container);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
         if (CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->container['textcats']->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 
@@ -43,7 +43,9 @@ class Register extends Base
                     $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
                     $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
-                    $hResult = $this->container['db']->prepare($sql);
+
+                    /** @var \PDOStatement $hResult */
+                    $hResult = $this->serviceManager->get('db')->prepare($sql);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
@@ -80,16 +82,13 @@ class Register extends Base
                         ];
                         $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
 
-                        $hResult = $this->container['db']->prepare($sql);
+                        $hResult = $this->serviceManager->get('db')->prepare($sql);
                         foreach ($aData as $sKey => $sValue) {
                             $hResult->bindValue(':' . $sKey, $sValue, \PDO::PARAM_STR);
                         }
                         $hResult->execute();
 
-                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
-                            $this->container['twig']);
-                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->container,
-                            true);
+                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->serviceManager, true);
                         $aPData["showsuccessmessage"] = true;
                     } else {
                         $aErr["emailalreadytaken"] = true;
