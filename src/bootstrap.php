@@ -69,10 +69,6 @@ use \HaaseIT\HCSF\HardcodedText;
 
 $serviceManager = new ServiceManager();
 
-$AuraLoader = new \Aura\Autoload\Loader;
-$AuraLoader->register();
-$AuraLoader->addPrefix('\HaaseIT\HCSF', __DIR__.'/../src');
-
 // PSR-7 Stuff
 // Init request object
 $serviceManager->setFactory('request', function () {

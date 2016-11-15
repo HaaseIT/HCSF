@@ -4,58 +4,9 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ec17f554c5b85cef289209401b6c3d1a",
-    "content-hash": "8bf953212c806dbc124ecc027389e870",
+    "hash": "e91cbd7b9163e6dc643b80b519c47b46",
+    "content-hash": "e5b3998f8f61ffa32030833d4a5579c7",
     "packages": [
-        {
-            "name": "aura/autoload",
-            "version": "2.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/auraphp/Aura.Autoload.git",
-                "reference": "306a7f8d3cb58fb6f94bcff1dddf20c543f68668"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Autoload/zipball/306a7f8d3cb58fb6f94bcff1dddf20c543f68668",
-                "reference": "306a7f8d3cb58fb6f94bcff1dddf20c543f68668",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "aura": {
-                    "type": "library"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Aura\\Autoload\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Aura.Autoload Contributors",
-                    "homepage": "https://github.com/auraphp/Aura.Autoload/contributors"
-                }
-            ],
-            "description": "Provides a PSR-4 compliant autoloader implementation.",
-            "homepage": "https://github.com/auraphp/Aura.Autoload",
-            "keywords": [
-                "PSR-4",
-                "SPL autoloader",
-                "autoload",
-                "autoloader",
-                "class loader"
-            ],
-            "time": "2016-10-03 19:36:19"
-        },
         {
             "name": "container-interop/container-interop",
             "version": "1.1.0",
@@ -1187,16 +1138,16 @@
         },
         {
             "name": "league/glide",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/glide.git",
-                "reference": "5d71f2fb030907fdd9552b4952d1ecdc1804702e"
+                "reference": "93bfc82142c62bf3d18420cc6c0fc0b1a8f82274"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/glide/zipball/5d71f2fb030907fdd9552b4952d1ecdc1804702e",
-                "reference": "5d71f2fb030907fdd9552b4952d1ecdc1804702e",
+                "url": "https://api.github.com/repos/thephpleague/glide/zipball/93bfc82142c62bf3d18420cc6c0fc0b1a8f82274",
+                "reference": "93bfc82142c62bf3d18420cc6c0fc0b1a8f82274",
                 "shasum": ""
             },
             "require": {
@@ -1244,7 +1195,7 @@
                 "manipulation",
                 "processing"
             ],
-            "time": "2016-08-19 20:49:36"
+            "time": "2016-11-14 16:36:03"
         },
         {
             "name": "league/oauth2-client",
@@ -1636,16 +1587,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "dff51f72b0706335131b00a7f49606168c582594"
+                "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/dff51f72b0706335131b00a7f49606168c582594",
-                "reference": "dff51f72b0706335131b00a7f49606168c582594",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/e79d363049d1c2128f133a2667e4f4190904f7f4",
+                "reference": "e79d363049d1c2128f133a2667e4f4190904f7f4",
                 "shasum": ""
             },
             "require": {
@@ -1657,7 +1608,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2-dev"
+                    "dev-master": "1.3-dev"
                 }
             },
             "autoload": {
@@ -1691,7 +1642,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2016-05-18 14:26:46"
+            "time": "2016-11-14 01:06:16"
         },
         {
             "name": "symfony/yaml",
@@ -2406,16 +2357,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.6.2",
+            "version": "5.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "cd13b23ac5a519a4708e00736c26ee0bb28b2e01"
+                "reference": "a9de0dbafeb6b1391b391fbb034734cb0af9f67c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/cd13b23ac5a519a4708e00736c26ee0bb28b2e01",
-                "reference": "cd13b23ac5a519a4708e00736c26ee0bb28b2e01",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a9de0dbafeb6b1391b391fbb034734cb0af9f67c",
+                "reference": "a9de0dbafeb6b1391b391fbb034734cb0af9f67c",
                 "shasum": ""
             },
             "require": {
@@ -2484,7 +2435,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-10-25 07:40:25"
+            "time": "2016-11-14 06:39:40"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2922,16 +2873,16 @@
         },
         {
             "name": "sebastian/recursion-context",
-            "version": "1.0.2",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791"
+                "reference": "938df7a6478e72795e5f8266cff24d06e3136f2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/913401df809e99e4f47b27cdd781f4a258d58791",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/938df7a6478e72795e5f8266cff24d06e3136f2e",
+                "reference": "938df7a6478e72795e5f8266cff24d06e3136f2e",
                 "shasum": ""
             },
             "require": {
@@ -2971,7 +2922,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2015-11-11 19:50:13"
+            "time": "2016-11-15 06:55:36"
         },
         {
             "name": "sebastian/resource-operations",
