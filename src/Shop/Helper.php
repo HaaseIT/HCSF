@@ -395,40 +395,40 @@ class Helper
             $aP["pagetype"] = 'itemoverview';
             if (count($aP["items"]["item"])) {
                 foreach ($aP["items"]["item"] as $sKey => $aValue) {
-                    if ($aValue['itm_no'] == $P->cb_pageconfig->itemno) {
-                        $aP["pagetype"] = 'itemdetail';
-                        $aP["item"]["data"] = $aValue;
-                        $aP["item"]["key"] = $sKey;
-
-                        $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
-                        $aP["item"]["currentitem"] = $iPositionInItems + 1;
-
-                        if ($iPositionInItems == 0) {
-                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
-                        } else {
-                            $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
-                        }
-
-                        if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
-                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
-                        } else {
-                            $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
-                        }
-                        
-                        // build item suggestions if needed
-                        if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
-                            $aP["item"]["suggestions"] = self::getItemSuggestions(
-                                $oItem,
-                                $aP["items"]["item"],
-                                (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
-                                $sKey,
-                                (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
-                                (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
-                            );
-                        }
-                        // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
-                        break;
+                    if ($aValue['itm_no'] != $P->cb_pageconfig->itemno) {
+                        continue;
                     }
+
+                    $aP["pagetype"] = 'itemdetail';
+                    $aP["item"]["data"] = $aValue;
+                    $aP["item"]["key"] = $sKey;
+
+                    $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
+                    $aP["item"]["currentitem"] = $iPositionInItems + 1;
+
+                    $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
+                    if ($iPositionInItems == 0) {
+                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                    }
+
+                    $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
+                    if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
+                        $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
+                    }
+
+                    // build item suggestions if needed
+                    if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
+                        $aP["item"]["suggestions"] = self::getItemSuggestions(
+                            $oItem,
+                            $aP["items"]["item"],
+                            (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
+                            $sKey,
+                            (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
+                            (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
+                        );
+                    }
+                    // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
+                    break;
                 }
             }
         }
