@@ -28,16 +28,16 @@ class Helper
 {
     public static function showOrderStatusText(\HaaseIT\Textcat $textcats, $sStatusShort)
     {
-        if ($sStatusShort == 'y') {
-            return $textcats->T("order_status_completed");
-        } elseif ($sStatusShort == 'n') {
-            return $textcats->T("order_status_open");
-        } elseif ($sStatusShort == 'i') {
-            return $textcats->T("order_status_inwork");
-        } elseif ($sStatusShort == 's') {
-            return $textcats->T("order_status_canceled");
-        } elseif ($sStatusShort == 'd') {
-            return $textcats->T("order_status_deleted");
+        $mapping = [
+            'y' => 'order_status_completed',
+            'n' => 'order_status_open',
+            'i' => 'order_status_inwork',
+            's' => 'order_status_canceled',
+            'd' => 'order_status_deleted',
+        ];
+
+        if (!empty($mapping[$sStatusShort])) {
+            return $textcats->T($mapping[$sStatusShort]);
         }
 
         return '';
@@ -185,7 +185,7 @@ class Helper
 
     public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
-        if (isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+        if (isset($_SESSION["cart"]) && is_array($_SESSION["cart"])) {
             foreach ($_SESSION["cart"] as $sKey => $aValue) {
                 if (!isset(HelperConfig::$shop["custom_order_fields"])) {
                     $sItemkey = $sKey;
@@ -264,41 +264,83 @@ class Helper
         return $aCartinfo;
     }
 
-    public static function getItemSuggestions(\HaaseIT\HCSF\Shop\Items $oItem, $aPossibleSuggestions, $sSetSuggestions, $sCurrentitem, $mItemindex, $aItemindexpathtreeforsuggestions)
+    /**
+     * @param string $sSetSuggestions
+     * @param array $aPossibleSuggestions
+     * @param Items $oItem
+     * @return array
+     */
+    public static function prepareSuggestions($sSetSuggestions, $aPossibleSuggestions, \HaaseIT\HCSF\Shop\Items $oItem)
     {
-        //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
-        unset($aPossibleSuggestions[$sCurrentitem]); // remove the currently shown item from this list, we do not want to show it as a suggestion
-
         $aDefinedSuggestions = [];
         if (trim($sSetSuggestions) != '') {
             if (mb_strpos($sSetSuggestions, '|') !== false) {
-                $aDefinedSuggestions = explode('|', $sSetSuggestions); // convert all defined suggestions to array
+                // convert all defined suggestions to array
+                $aDefinedSuggestions = explode('|', $sSetSuggestions);
             } else {
                 $aDefinedSuggestions[] = $sSetSuggestions;
             }
         }
-        foreach ($aDefinedSuggestions as $aDefinedSuggestionsValue) { // iterate all defined suggestions and put those not loaded yet into array
+
+        $aSuggestionsToLoad = [];
+        // iterate all defined suggestions and put those not loaded yet into array
+        foreach ($aDefinedSuggestions as $aDefinedSuggestionsValue) {
             if (!isset($aPossibleSuggestions[$aDefinedSuggestionsValue])) {
                 $aSuggestionsToLoad[] = $aDefinedSuggestionsValue;
             }
         }
-        if (isset($aSuggestionsToLoad)) { // if there are not yet loaded suggestions, load them
+
+        // if there are not yet loaded suggestions, load them
+        if (isset($aSuggestionsToLoad)) {
             $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad, false);
-            if (isset($aItemsNotInCategory)) { // merge loaded and newly loaded items
+
+            // merge loaded and newly loaded items
+            if (isset($aItemsNotInCategory)) {
                 $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
             }
         }
-        unset($aSuggestionsToLoad, $aItemsNotInCategory);
-        $aSuggestions = [];
-        $aAdditionalSuggestions = [];
+
+        $suggestions = [
+            'default' => [],
+            'additional' => [],
+        ];
         foreach ($aPossibleSuggestions as $aPossibleSuggestionsKey => $aPossibleSuggestionsValue) { // iterate through all possible suggestions
             if (in_array($aPossibleSuggestionsKey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
-                $aSuggestions[$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
+                $suggestions['default'][$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
             } else { // if not, put into this one
-                $aAdditionalSuggestions[$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
+                $suggestions['additional'][$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
             }
         }
-        unset($aPossibleSuggestions, $aDefinedSuggestions); // not needed anymore
+
+        return $suggestions;
+    }
+
+    /**
+     * @param Items $oItem
+     * @param array $aPossibleSuggestions
+     * @param string $sSetSuggestions
+     * @param string $sCurrentitem
+     * @param string|array $mItemindex
+     * @param array $aItemindexpathtreeforsuggestions
+     * @return array
+     */
+    public static function getItemSuggestions(
+        \HaaseIT\HCSF\Shop\Items $oItem,
+        $aPossibleSuggestions,
+        $sSetSuggestions,
+        $sCurrentitem,
+        $mItemindex,
+        $aItemindexpathtreeforsuggestions
+    )
+    {
+        //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
+        unset($aPossibleSuggestions[$sCurrentitem]); // remove the currently shown item from this list, we do not want to show it as a suggestion
+
+        $suggestions = static::prepareSuggestions($sSetSuggestions, $aPossibleSuggestions, $oItem);
+        $aSuggestions = $suggestions['default'];
+        $aAdditionalSuggestions = $suggestions['additional'];
+        unset($suggestions);
+
         $iNumberOfSuggestions = count($aSuggestions);
         $iNumberOfAdditionalSuggestions = count($aAdditionalSuggestions);
         if ($iNumberOfSuggestions > HelperConfig::$shop["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
