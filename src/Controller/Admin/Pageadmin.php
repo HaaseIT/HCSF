@@ -23,9 +23,45 @@ namespace HaaseIT\HCSF\Controller\Admin;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\HCSF\UserPage;
 use HaaseIT\HCSF\HardcodedText;
+use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Pageadmin
+ * @package HaaseIT\HCSF\Controller\Admin
+ */
 class Pageadmin extends Base
 {
+    /**
+     * @var \Zend\Diactoros\ServerRequest
+     */
+    private $request;
+
+    /**
+     * @var null|array|object
+     */
+    private $post;
+
+    /**
+     * @var array
+     */
+    private $get;
+
+    /**
+     * Pageadmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        /** @var \Zend\Diactoros\ServerRequest request */
+        $this->request = $serviceManager->get('request');
+        $this->post = $this->request->getParsedBody();
+        $this->get = $this->request->getQueryParams();
+    }
+
+    /**
+     *
+     */
     public function preparePage()
     {
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
@@ -47,12 +83,12 @@ class Pageadmin extends Base
             }
         }
 
-        if (!isset($_GET["action"])) {
+        if (!isset($this->get["action"])) {
             $this->P->cb_customdata["pageselect"] = $this->showPageselect();
-        } elseif (($_GET["action"] == 'edit' || $_GET["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
-            if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
+        } elseif (($this->get["action"] == 'edit' || $this->get["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
+            if ($this->get["action"] == 'delete' && isset($this->post["delete"]) && $this->post["delete"] == 'do') {
                 // delete and put message in customdata
-                $Ptodelete = new UserPage($this->serviceManager, $_GET["page_key"], true);
+                $Ptodelete = new UserPage($this->serviceManager, $this->get["page_key"], true);
                 if ($Ptodelete->cb_id != NULL) {
                     $Ptodelete->remove();
                 } else {
@@ -69,18 +105,18 @@ class Pageadmin extends Base
                             $purifier = false;
                         }
 
-                        $Ptoedit->cb_pagetype = $_POST['page_type'];
-                        $Ptoedit->cb_group = $_POST['page_group'];
-                        $Ptoedit->cb_pageconfig = $_POST['page_config'];
-                        $Ptoedit->cb_subnav = $_POST['page_subnav'];
+                        $Ptoedit->cb_pagetype = $this->post['page_type'];
+                        $Ptoedit->cb_group = $this->post['page_group'];
+                        $Ptoedit->cb_pageconfig = $this->post['page_config'];
+                        $Ptoedit->cb_subnav = $this->post['page_subnav'];
                         $Ptoedit->purifier = $purifier;
                         $Ptoedit->write();
 
                         if ($Ptoedit->oPayload->cl_id != NULL) {
-                            $Ptoedit->oPayload->cl_html = $_POST['page_html'];
-                            $Ptoedit->oPayload->cl_title = $_POST['page_title'];
-                            $Ptoedit->oPayload->cl_description = $_POST['page_description'];
-                            $Ptoedit->oPayload->cl_keywords = $_POST['page_keywords'];
+                            $Ptoedit->oPayload->cl_html = $this->post['page_html'];
+                            $Ptoedit->oPayload->cl_title = $this->post['page_title'];
+                            $Ptoedit->oPayload->cl_description = $this->post['page_description'];
+                            $Ptoedit->oPayload->cl_keywords = $this->post['page_keywords'];
                             $Ptoedit->oPayload->purifier = $purifier;
                             $Ptoedit->oPayload->write();
                         }
@@ -129,9 +165,9 @@ class Pageadmin extends Base
                     die(HardcodedText::get('pageadmin_exception_pagenotfound'));
                 }
             }
-        } elseif ($_GET["action"] == 'addpage') {
+        } elseif ($this->get["action"] == 'addpage') {
             $aErr = [];
-            if (isset($_POST["addpage"]) && $_POST["addpage"] == 'do') {
+            if (isset($this->post["addpage"]) && $this->post["addpage"] == 'do') {
                 $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
 
                 if (mb_substr($sPagekeytoadd, 0, 2) == '/_') {
@@ -158,6 +194,9 @@ class Pageadmin extends Base
         }
     }
 
+    /**
+     * @return array
+     */
     private function showPageselect() {
         /** @var \PDOStatement $hResult */
         $hResult = $this->serviceManager->get('db')->query('SELECT * FROM content_base ORDER BY cb_key');
