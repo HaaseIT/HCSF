@@ -394,14 +394,18 @@ class Helper
             $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
             && $iNumberOfAdditionalSuggestions > 0
         ) { // if there are less suggestions than should be displayed and there are additional available
-            $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
-            if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) { // see if there are more available than required, if so, pick as many as needed
-                if ($iAdditionalSuggestionsRequired == 1) { // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
-                    $aKeysAdditionalSuggestions[] = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
-                } else {
-                    $aKeysAdditionalSuggestions = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
+            // how many more are needed?
+            $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions;
+            // see if there are more available than required, if so, pick as many as needed
+            if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) {
+                // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
+                $aKeysAdditionalSuggestions = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
+                if (is_string($aKeysAdditionalSuggestions)) {
+                    $aKeysAdditionalSuggestions = [$aKeysAdditionalSuggestions];
                 }
-                foreach ($suggestions['additional'] as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
+
+                // iterate suggestions and remove those that which will not be kept
+                foreach ($suggestions['additional'] as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) {
                     if (!in_array($aAdditionalSuggestionsKey, $aKeysAdditionalSuggestions)) {
                         unset($suggestions['additional'][$aAdditionalSuggestionsKey]);
                     }
