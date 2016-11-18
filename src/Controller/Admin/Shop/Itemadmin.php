@@ -77,7 +77,7 @@ class Itemadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/itemadmin';
 
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
+        if (isset($this->get["action"]) && $this->get["action"] == 'insert_lang') {
             $aItemdata = $this->admin_getItem();
 
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
@@ -89,14 +89,14 @@ class Itemadmin extends Base
                 $sql = DBTools::buildInsertQuery($aData, 'item_lang');
                 $this->db->exec($sql);
 
-                header('Location: /_admin/itemadmin.html?itemno='.$_REQUEST["itemno"].'&action=showitem');
+                header('Location: /_admin/itemadmin.html?itemno='.$this->get["itemno"].'&action=showitem');
                 die();
             }
         }
         $this->P->cb_customdata["searchform"] = $this->admin_prepareItemlistsearchform();
 
-        if (isset($_REQUEST["action"])) {
-            if ($_REQUEST["action"] == 'search') {
+        if (isset($this->get["action"])) {
+            if ($this->get["action"] == 'search') {
                 $this->P->cb_customdata["searchresult"] = true;
                 if ($aItemlist = $this->admin_getItemlist()) {
                     if (count($aItemlist["data"]) == 1) {
@@ -106,13 +106,13 @@ class Itemadmin extends Base
                         $this->P->cb_customdata["itemlist"] = $this->admin_prepareItemlist($aItemlist);
                     }
                 }
-            } elseif (isset($_REQUEST["doaction"]) && $_REQUEST["doaction"] == 'edititem') {
+            } elseif (isset($this->post["doaction"]) && $this->post["doaction"] == 'edititem') {
                 $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier('item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
-            } elseif ($_REQUEST["action"] == 'showitem') {
+            } elseif ($this->get["action"] == 'showitem') {
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
             } elseif ($this->get["action"] == 'additem') {
