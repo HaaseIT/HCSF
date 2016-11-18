@@ -114,13 +114,13 @@ class Helper
             isset(HelperConfig::$shop["shippingcoststandardrate"])
             && HelperConfig::$shop["shippingcoststandardrate"] != 0
             &&
+            (
                 (
-                    (
-                        !isset(HelperConfig::$shop["mindestbetragversandfrei"])
-                        || !HelperConfig::$shop["mindestbetragversandfrei"]
-                    )
-                    || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
+                    !isset(HelperConfig::$shop["mindestbetragversandfrei"])
+                    || !HelperConfig::$shop["mindestbetragversandfrei"]
                 )
+                || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
+            )
         )  {
             $aOrder["fVersandkostennetto"] = self::getShippingcost();
             $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
@@ -263,6 +263,64 @@ class Helper
     }
 
     /**
+     * @param Items $oItem
+     * @param array $aPossibleSuggestions
+     * @param string $sSetSuggestions
+     * @param string $sCurrentitem
+     * @param string|array $mItemindex
+     * @param array $aItemindexpathtreeforsuggestions
+     * @return array
+     */
+    public static function getItemSuggestions(
+        Items $oItem,
+        $aPossibleSuggestions,
+        $sSetSuggestions,
+        $sCurrentitem,
+        $mItemindex,
+        $aItemindexpathtreeforsuggestions
+    )
+    {
+        //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
+        unset($aPossibleSuggestions[$sCurrentitem]); // remove the currently shown item from this list, we do not want to show it as a suggestion
+
+        $suggestions = static::prepareSuggestions($sSetSuggestions, $aPossibleSuggestions, $oItem);
+
+        $suggestions = static::fillSuggestions($suggestions);
+
+        foreach ($suggestions as $aSuggestionsKey => $aSuggestionsValue) { // build the paths to the suggested items
+            if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
+                $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
+                foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
+                    if (isset($mItemindex)) { // check if there is an index configured on this page
+                        if (is_array($mItemindex)) { // check if it is an array
+                            if (in_array($sSuggestionIndexesValue, $mItemindex)) { // if the suggestions index is in that array, set path to empty string
+                                $suggestions[$aSuggestionsKey]["path"] = '';
+                                continue 2; // path to suggestion set, continue with next suggestion
+                            }
+                        } else {
+                            if ($mItemindex == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
+                                $suggestions[$aSuggestionsKey]["path"] = '';
+                                continue 2; // path to suggestion set, continue with next suggestion
+                            }
+                        }
+                    }
+                    if (isset($aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue])) {
+                        $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue];
+                        continue 2;
+                    }
+                }
+                unset($aSuggestionIndexes);
+            } else {
+                if (isset($aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]])) {
+                    $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]];
+                }
+            }
+        }
+
+        return shuffle($suggestions);
+    }
+
+    /**
      * @param string $sSetSuggestions
      * @param array $aPossibleSuggestions
      * @param Items $oItem
@@ -311,31 +369,9 @@ class Helper
         return $suggestions;
     }
 
-    /**
-     * @param Items $oItem
-     * @param array $aPossibleSuggestions
-     * @param string $sSetSuggestions
-     * @param string $sCurrentitem
-     * @param string|array $mItemindex
-     * @param array $aItemindexpathtreeforsuggestions
-     * @return array
-     */
-    public static function getItemSuggestions(
-        Items $oItem,
-        $aPossibleSuggestions,
-        $sSetSuggestions,
-        $sCurrentitem,
-        $mItemindex,
-        $aItemindexpathtreeforsuggestions
-    )
+    public static function fillSuggestions($suggestions)
     {
-        //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
-        unset($aPossibleSuggestions[$sCurrentitem]); // remove the currently shown item from this list, we do not want to show it as a suggestion
-
-        $suggestions = static::prepareSuggestions($sSetSuggestions, $aPossibleSuggestions, $oItem);
-
         $iNumberOfSuggestions = count($suggestions['default']);
-        $iNumberOfAdditionalSuggestions = count($suggestions['additional']);
         if ($iNumberOfSuggestions > HelperConfig::$shop["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
             $aKeysSuggestions = array_rand($suggestions['default'], HelperConfig::$shop["itemdetail_suggestions"]); // get the array keys that will stay
             foreach ($suggestions['default'] as $aSuggestionsKey => $aSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
@@ -343,62 +379,35 @@ class Helper
                     unset($suggestions['default'][$aSuggestionsKey]);
                 }
             }
-            unset($aKeysSuggestions);
-        } else { // if less or equal continue here
-            if (
-                $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
-                && $iNumberOfAdditionalSuggestions > 0
-            ) { // if there are less suggestions than should be displayed and there are additional available
-                $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
-                if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) { // see if there are more available than required, if so, pick as many as needed
-                    if ($iAdditionalSuggestionsRequired == 1) { // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
-                        $aKeysAdditionalSuggestions[] = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
-                    } else {
-                        $aKeysAdditionalSuggestions = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
-                    }
-                    foreach ($suggestions['additional'] as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
-                        if (!in_array($aAdditionalSuggestionsKey, $aKeysAdditionalSuggestions)) {
-                            unset($suggestions['additional'][$aAdditionalSuggestionsKey]);
-                        }
-                    }
-                    unset($aKeysAdditionalSuggestions);
-                }
-                $aSuggestions = array_merge($suggestions['default'], $suggestions['additional']); // merge
-                unset($iAdditionalSuggestionsRequired);
-            }
+
+            return $suggestions['default'];
         }
 
-        foreach ($suggestions['default'] as $aSuggestionsKey => $aSuggestionsValue) { // build the paths to the suggested items
-            if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
-                $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
-                foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
-                    if (isset($mItemindex)) { // check if there is an index configured on this page
-                        if (is_array($mItemindex)) { // check if it is an array
-                            if (in_array($sSuggestionIndexesValue, $mItemindex)) { // if the suggestions index is in that array, set path to empty string
-                                $suggestions['default'][$aSuggestionsKey]["path"] = '';
-                                continue 2; // path to suggestion set, continue with next suggestion
-                            }
-                        } else {
-                            if ($mItemindex == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
-                                $suggestions['default'][$aSuggestionsKey]["path"] = '';
-                                continue 2; // path to suggestion set, continue with next suggestion
-                            }
-                        }
-                    }
-                    if (isset($aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue])) {
-                        $suggestions['default'][$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue];
-                        continue 2;
+        // if less or equal continue here
+        $iNumberOfAdditionalSuggestions = count($suggestions['additional']);
+        if (
+            $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
+            && $iNumberOfAdditionalSuggestions > 0
+        ) { // if there are less suggestions than should be displayed and there are additional available
+            $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions; // how many more are needed?
+            if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) { // see if there are more available than required, if so, pick as many as needed
+                if ($iAdditionalSuggestionsRequired == 1) { // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
+                    $aKeysAdditionalSuggestions[] = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
+                } else {
+                    $aKeysAdditionalSuggestions = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
+                }
+                foreach ($suggestions['additional'] as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
+                    if (!in_array($aAdditionalSuggestionsKey, $aKeysAdditionalSuggestions)) {
+                        unset($suggestions['additional'][$aAdditionalSuggestionsKey]);
                     }
                 }
-                unset($aSuggestionIndexes);
-            } else {
-                if (isset($aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]])) {
-                    $suggestions['default'][$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]];
-                }
+                unset($aKeysAdditionalSuggestions);
             }
+            return array_merge($suggestions['default'], $suggestions['additional']); // merge
         }
-        shuffle($suggestions['default']);
 
+        // if the number of default suggestions is not larger than configured and also not smaller, then it equals the
+        // configured amount, so lets return this then.
         return $suggestions['default'];
     }
 
