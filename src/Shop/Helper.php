@@ -22,8 +22,8 @@ namespace HaaseIT\HCSF\Shop;
 
 
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\HCSF\Shop\Items;
 use Zend\ServiceManager\ServiceManager;
+use HaaseIT\HCSF\Customer\Helper as CHelper;
 
 class Helper
 {
@@ -140,14 +140,13 @@ class Helper
     {
         $fShippingcost = HelperConfig::$shop["shippingcoststandardrate"];
 
+        $sCountry = CHelper::getDefaultCountryByConfig(HelperConfig::$lang);
         if (isset($_SESSION["user"]["cust_country"])) {
             $sCountry = $_SESSION["user"]["cust_country"];
         } elseif (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes' && isset($_POST["country"])) {
             $sCountry = trim(\HaaseIT\Tools::getFormfield("country"));
         } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
             $sCountry = $_SESSION["formsave_addrform"]["country"];
-        } else {
-            $sCountry = \HaaseIT\HCSF\Customer\Helper::getDefaultCountryByConfig(HelperConfig::$lang);
         }
 
         foreach (HelperConfig::$shop["shippingcosts"] as $aValue) {
@@ -173,23 +172,27 @@ class Helper
             if ($aValue["vat"] != "reduced") {
                 $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
                 $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["full"] / 100));
-            } else {
-                $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["reduced"] / 100));
+                continue;
             }
-        }
-        $aSumme = ['sumvoll' => $fVoll, 'sumerm' => $fErm, 'taxvoll' => $fTaxVoll, 'taxerm' => $fTaxErm];
 
-        return $aSumme;
+            $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
+            $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["reduced"] / 100));
+        }
+
+        return [
+            'sumvoll' => $fVoll,
+            'sumerm' => $fErm,
+            'taxvoll' => $fTaxVoll,
+            'taxerm' => $fTaxErm
+        ];
     }
 
     public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
         if (isset($_SESSION["cart"]) && is_array($_SESSION["cart"])) {
             foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                if (!isset(HelperConfig::$shop["custom_order_fields"])) {
-                    $sItemkey = $sKey;
-                } else {
+                $sItemkey = $sKey;
+                if (!empty(HelperConfig::$shop["custom_order_fields"])) {
                     $TMP = explode('|', $sKey);
                     $sItemkey = $TMP[0];
                     unset($TMP);
@@ -227,7 +230,7 @@ class Helper
         }
 
         if ($aData["shoppingcart"]["additionalcoststoitems"]["bMindesterreicht"] && !$bReadonly) {
-            $aData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
+            $aData["customerform"] = CHelper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
         }
 
         return $aData;
@@ -241,7 +244,7 @@ class Helper
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         ];
-        if ((!HelperConfig::$shop["show_pricesonlytologgedin"] || \HaaseIT\HCSF\Customer\Helper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
+        if ((!HelperConfig::$shop["show_pricesonlytologgedin"] || CHelper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
             $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION["cart"]);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION["cart"]),
@@ -434,55 +437,61 @@ class Helper
             $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
 
             if (isset($aP["pageconfig"]->itemindex)) {
+                $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
                 if (is_array($aP["pageconfig"]->itemindex)) {
                     foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
                         $aP["itemindexpathtreeforsuggestions"][$sItemIndexValue] = '';
                     }
-                } else {
-                    $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
                 }
             }
 
-            // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
-            // if it is not found, we will show the overview
-            $aP["pagetype"] = 'itemoverview';
-            if (count($aP["items"]["item"])) {
-                foreach ($aP["items"]["item"] as $sKey => $aValue) {
-                    if ($aValue['itm_no'] != $P->cb_pageconfig->itemno) {
-                        continue;
-                    }
+            $aP = static::seekItem($P, $aP, $oItem);
+        }
 
-                    $aP["pagetype"] = 'itemdetail';
-                    $aP["item"]["data"] = $aValue;
-                    $aP["item"]["key"] = $sKey;
+        return $aP;
+    }
 
-                    $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
-                    $aP["item"]["currentitem"] = $iPositionInItems + 1;
-
-                    $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
-                    if ($iPositionInItems == 0) {
-                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
-                    }
-
-                    $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
-                    if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
-                        $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
-                    }
-
-                    // build item suggestions if needed
-                    if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
-                        $aP["item"]["suggestions"] = self::getItemSuggestions(
-                            $oItem,
-                            $aP["items"]["item"],
-                            (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
-                            $sKey,
-                            (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
-                            (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
-                        );
-                    }
-                    // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
-                    break;
+    public static function seekItem($P, $aP, Items $oItem)
+    {
+        // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
+        // if it is not found, we will show the overview
+        $aP["pagetype"] = 'itemoverview';
+        if (count($aP["items"]["item"])) {
+            foreach ($aP["items"]["item"] as $sKey => $aValue) {
+                if ($aValue['itm_no'] != $P->cb_pageconfig->itemno) {
+                    continue;
                 }
+
+                $aP["pagetype"] = 'itemdetail';
+                $aP["item"]["data"] = $aValue;
+                $aP["item"]["key"] = $sKey;
+
+                $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
+                $aP["item"]["currentitem"] = $iPositionInItems + 1;
+
+                $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
+                if ($iPositionInItems == 0) {
+                    $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                }
+
+                $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
+                if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
+                    $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
+                }
+
+                // build item suggestions if needed
+                if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
+                    $aP["item"]["suggestions"] = self::getItemSuggestions(
+                        $oItem,
+                        $aP["items"]["item"],
+                        (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
+                        $sKey,
+                        (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
+                        (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
+                    );
+                }
+                // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.
+                break;
             }
         }
 
