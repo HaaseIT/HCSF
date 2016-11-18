@@ -48,21 +48,19 @@ class Helper
     {
         $fGesamtnetto = $aOrder["o_sumnettoall"];
         $fVoll = $aOrder["o_sumvoll"];
-        $fGesamtbrutto = $aOrder["o_sumbruttoall"];
         $fSteuererm = $aOrder["o_taxerm"];
 
         if ($aOrder["o_mindermenge"] > 0) {
             $fVoll += $aOrder["o_mindermenge"];
             $fGesamtnetto += $aOrder["o_mindermenge"];
-            $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
-            $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
         }
         if ($aOrder["o_shippingcost"] > 0) {
             $fVoll += $aOrder["o_shippingcost"];
             $fGesamtnetto += $aOrder["o_shippingcost"];
-            $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
-            $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
         }
+
+        $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
+        $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
         return $fGesamtbrutto;
     }
@@ -98,19 +96,18 @@ class Helper
             $aOrder["bMindesterreicht"] = false;
             $aOrder["iMindergebuehr_id"] = 0;
         } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet1"]) {
-            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee1"];
-            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee1"];
-            $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
-            $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
             $aOrder["iMindergebuehr_id"] = 1;
-            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee1"];
+
         } elseif($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet2"]) {
-            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee2"];
-            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee2"];
+            $aOrder["iMindergebuehr_id"] = 2;
+        }
+
+        if ($aOrder["iMindergebuehr_id"] > 0) {
+            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
+            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
             $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
             $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
-            $aOrder["iMindergebuehr_id"] = 2;
-            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee2"];
+            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
         }
 
         if (
