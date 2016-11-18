@@ -25,6 +25,10 @@ use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Items
+ * @package HaaseIT\HCSF\Shop
+ */
 class Items
 {
     /**

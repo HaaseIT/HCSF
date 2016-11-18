@@ -53,6 +53,10 @@ class Helper
         return $aErr;
     }
 
+    /**
+     * @param string $sLang
+     * @return string
+     */
     public static function getDefaultCountryByConfig($sLang) {
         if (isset(HelperConfig::$core["defaultcountrybylang"][$sLang])) {
             return HelperConfig::$core["defaultcountrybylang"][$sLang];
