@@ -262,16 +262,10 @@ class Helper
             return false;
         }
 
-        if (
-            isset(HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist'])
-            && trim(HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist']) != ''
-        ) {
-            $purifier_config->set('HTML.Allowed', HelperConfig::$$configsection[$configkey.'_unsafe_html_whitelist']);
+        if (!empty(HelperConfig::${$configsection}[$configkey.'_unsafe_html_whitelist'])) {
+            $purifier_config->set('HTML.Allowed', HelperConfig::${$configsection}[$configkey.'_unsafe_html_whitelist']);
         }
-        if (
-            isset(HelperConfig::$$configsection[$configkey.'_loose_filtering'])
-            && HelperConfig::$$configsection[$configkey.'_loose_filtering']
-        ) {
+        if (!empty(HelperConfig::${$configsection}[$configkey.'_loose_filtering'])) {
             $purifier_config->set('HTML.Trusted', true);
             $purifier_config->set('Attr.EnableID', true);
             $purifier_config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
