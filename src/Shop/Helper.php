@@ -98,18 +98,19 @@ class Helper
         } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet1"]) {
             $aOrder["iMindergebuehr_id"] = 1;
 
-        } elseif($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet2"]) {
+        } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet2"]) {
             $aOrder["iMindergebuehr_id"] = 2;
         }
 
         if ($aOrder["iMindergebuehr_id"] > 0) {
-            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
-            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
+            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
+            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
             $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
             $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
-            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee".$aOrder["iMindergebuehr_id"]];
+            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
         }
 
+        $aOrder["fVersandkosten"] = 0;
         if (
             isset(HelperConfig::$shop["shippingcoststandardrate"])
             && HelperConfig::$shop["shippingcoststandardrate"] != 0
@@ -121,7 +122,7 @@ class Helper
                 )
                 || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
             )
-        )  {
+        ) {
             $aOrder["fVersandkostennetto"] = self::getShippingcost();
             $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
             $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
@@ -130,12 +131,13 @@ class Helper
             $aOrder["fVoll"] += $aOrder["fVersandkostennetto"];
             $aOrder["fGesamtnetto"] += $aOrder["fVersandkostennetto"];
             $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
-        } else $aOrder["fVersandkosten"] = 0;
+        }
 
         return $aOrder;
     }
 
-    public static function getShippingcost() {
+    public static function getShippingcost()
+    {
         $fShippingcost = HelperConfig::$shop["shippingcoststandardrate"];
 
         if (isset($_SESSION["user"]["cust_country"])) {
@@ -290,18 +292,20 @@ class Helper
         foreach ($suggestions as $aSuggestionsKey => $aSuggestionsValue) { // build the paths to the suggested items
             if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
                 $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
-                foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) { // iterate through these indexes
-                    if (isset($mItemindex)) { // check if there is an index configured on this page
-                        if (is_array($mItemindex)) { // check if it is an array
-                            if (in_array($sSuggestionIndexesValue, $mItemindex)) { // if the suggestions index is in that array, set path to empty string
-                                $suggestions[$aSuggestionsKey]["path"] = '';
-                                continue 2; // path to suggestion set, continue with next suggestion
-                            }
-                        } else {
-                            if ($mItemindex == $sSuggestionIndexesValue) { // if the suggestion index is on this page, set path to empty string
-                                $suggestions[$aSuggestionsKey]["path"] = '';
-                                continue 2; // path to suggestion set, continue with next suggestion
-                            }
+
+                // iterate through these indexes
+                foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) {
+                    // check if there is an index configured on this page
+                    if (isset($mItemindex)) {
+                        // check if it is an array and if the suggestions index is in that array, set path to empty string
+                        if (is_array($mItemindex) && in_array($sSuggestionIndexesValue, $mItemindex)) {
+                            $suggestions[$aSuggestionsKey]["path"] = '';
+                            // path to suggestion set, continue with next suggestion
+                            continue 2;
+                        // if the suggestion index is on this page, set path to empty string
+                        } elseif ($mItemindex == $sSuggestionIndexesValue) {
+                            $suggestions[$aSuggestionsKey]["path"] = '';
+                            continue 2; // path to suggestion set, continue with next suggestion
                         }
                     }
                     if (isset($aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue])) {
@@ -309,11 +313,8 @@ class Helper
                         continue 2;
                     }
                 }
-                unset($aSuggestionIndexes);
-            } else {
-                if (isset($aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]])) {
-                    $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]];
-                }
+            } elseif (isset($aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]])) {
+                $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]];
             }
         }
 
@@ -369,6 +370,10 @@ class Helper
         return $suggestions;
     }
 
+    /**
+     * @param array $suggestions
+     * @return array
+     */
     public static function fillSuggestions($suggestions)
     {
         $iNumberOfSuggestions = count($suggestions['default']);
