@@ -24,6 +24,7 @@ use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\DBTools;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Tools;
+use Zend\Diactoros\ServerRequest;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -38,6 +39,21 @@ class Itemadmin extends Base
     private $db;
 
     /**
+     * @var array
+     */
+    private $get;
+
+    /**
+     * @var array
+     */
+    private $post;
+
+    /**
+     * @var ServerRequest;
+     */
+    private $request;
+
+    /**
      * Itemadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -45,6 +61,9 @@ class Itemadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->db = $serviceManager->get('db');
+        $this->request = $serviceManager->get('request');
+        $this->get = $this->request->getQueryParams();
+        $this->post = $this->request->getParsedBody();
     }
 
     /**
@@ -96,10 +115,10 @@ class Itemadmin extends Base
             } elseif ($_REQUEST["action"] == 'showitem') {
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
-            } elseif ($_GET["action"] == 'additem') {
+            } elseif ($this->get["action"] == 'additem') {
                 $aErr = [];
-                if (isset($_POST["additem"]) && $_POST["additem"] == 'do') {
-                    if (strlen($_POST["itemno"]) < 4) $aErr["itemnotooshort"] = true;
+                if (isset($this->post["additem"]) && $this->post["additem"] == 'do') {
+                    if (strlen($this->post["itemno"]) < 4) $aErr["itemnotooshort"] = true;
                     else {
                         $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
@@ -141,14 +160,14 @@ class Itemadmin extends Base
             'name|'.HardcodedText::get('itemadmin_search_itemname'),
         ];
 
-        if (isset($_GET["searchcat"])) {
-            $aData["searchcat"] = $_GET["searchcat"];
-            $_SESSION["itemadmin_searchcat"] = $_GET["searchcat"];
+        if (isset($this->get["searchcat"])) {
+            $aData["searchcat"] = $this->get["searchcat"];
+            $_SESSION["itemadmin_searchcat"] = $this->get["searchcat"];
         } elseif (isset($_SESSION["itemadmin_searchcat"])) $aData["searchcat"] = $_SESSION["itemadmin_searchcat"];
 
-        if (isset($_GET["orderby"])) {
-            $aData["orderby"] = $_GET["orderby"];
-            $_SESSION["itemadmin_orderby"] = $_GET["orderby"];
+        if (isset($this->get["orderby"])) {
+            $aData["orderby"] = $this->get["orderby"];
+            $_SESSION["itemadmin_orderby"] = $this->get["orderby"];
         } elseif (isset($_SESSION["itemadmin_orderby"])) $aData["orderby"] = $_SESSION["itemadmin_orderby"];
 
         return $aData;
@@ -165,16 +184,16 @@ class Itemadmin extends Base
         $sql = 'SELECT itm_no, itm_name FROM item_base'
             . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
             . ' WHERE ';
-        if ($_REQUEST["searchcat"] == 'name') {
+        if ($this->get["searchcat"] == 'name') {
             $sql .= 'itm_name LIKE :searchstring ';
-        } elseif ($_REQUEST["searchcat"] == 'nummer') {
+        } elseif ($this->get["searchcat"] == 'nummer') {
             $sql .= 'itm_no LIKE :searchstring ';
-        } elseif ($_REQUEST["searchcat"] == 'index') {
+        } elseif ($this->get["searchcat"] == 'index') {
             $sql .= 'itm_index LIKE :searchstring ';
         } else exit;
 
-        if ($_REQUEST["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
-        elseif ($_REQUEST["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
+        if ($this->get["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
+        elseif ($this->get["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
 
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
@@ -221,8 +240,10 @@ class Itemadmin extends Base
      */
     private function admin_getItem($sItemno = '')
     {
-        if (isset($_REQUEST["itemno"]) && $_REQUEST["itemno"] != '') $sItemno = filter_var($_REQUEST["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        elseif ($sItemno == '') return false;
+        if (empty($this->get["itemno"])) {
+            return false;
+        }
+        $sItemno = filter_var($this->get["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
         $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
@@ -298,29 +319,29 @@ class Itemadmin extends Base
     private function admin_updateItem($purifier)
     {
         $aData = [
-            'itm_name' => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_group' => filter_var($_REQUEST["group"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_img' => filter_var($_REQUEST["bild"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_index' => filter_var($_REQUEST["index"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_order' => filter_var($_REQUEST["prio"], FILTER_SANITIZE_NUMBER_INT),
-            'itm_price' => filter_var($_REQUEST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
-            'itm_rg' => filter_var($_REQUEST["rg"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_data' => filter_var($_REQUEST["data"], FILTER_UNSAFE_RAW),
-            'itm_weight' => filter_var($_REQUEST["weight"], FILTER_SANITIZE_NUMBER_INT),
-            'itm_id' => filter_var($_REQUEST["id"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_name' => filter_var($this->post["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_group' => filter_var($this->post["group"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_img' => filter_var($this->post["bild"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_index' => filter_var($this->post["index"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_order' => filter_var($this->post["prio"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_price' => filter_var($this->post["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
+            'itm_rg' => filter_var($this->post["rg"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itm_data' => filter_var($this->post["data"], FILTER_UNSAFE_RAW),
+            'itm_weight' => filter_var($this->post["weight"], FILTER_SANITIZE_NUMBER_INT),
+            'itm_id' => filter_var($this->post["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!HelperConfig::$shop["vat_disable"]) $aData['itm_vatid'] = filter_var($_REQUEST["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!HelperConfig::$shop["vat_disable"]) $aData['itm_vatid'] = filter_var($this->post["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         else $aData['itm_vatid'] = 'full';
         $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->db->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
         $hResult->execute();
-        if (isset($_REQUEST["textid"])) {
+        if (isset($this->post["textid"])) {
             $aData = [
-                'itml_text1' => $purifier->purify($_REQUEST["text1"]),
-                'itml_text2' => $purifier->purify($_REQUEST["text2"]),
-                'itml_name_override' => filter_var($_REQUEST["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
-                'itml_id' => filter_var($_REQUEST["textid"], FILTER_SANITIZE_NUMBER_INT),
+                'itml_text1' => $purifier->purify($this->post["text1"]),
+                'itml_text2' => $purifier->purify($this->post["text2"]),
+                'itml_name_override' => filter_var($this->post["name_override"], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
+                'itml_id' => filter_var($this->post["textid"], FILTER_SANITIZE_NUMBER_INT),
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
             $hResult = $this->db->prepare($sql);
