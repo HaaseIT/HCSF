@@ -270,7 +270,7 @@ class Helper
      * @param string $sSetSuggestions
      * @param string $sCurrentitem
      * @param string|array $mItemindex
-     * @param array $aItemindexpathtreeforsuggestions
+     * @param array $itemindexpathtree
      * @return array
      */
     public static function getItemSuggestions(
@@ -279,7 +279,7 @@ class Helper
         $sSetSuggestions,
         $sCurrentitem,
         $mItemindex,
-        $aItemindexpathtreeforsuggestions
+        $itemindexpathtree
     )
     {
         //$aPossibleSuggestions = $aP["items"]["item"]; // put all possible suggestions that are already loaded into this array
@@ -294,27 +294,27 @@ class Helper
                 $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
 
                 // iterate through these indexes
-                foreach ($aSuggestionIndexes as $sSuggestionIndexesValue) {
+                foreach ($aSuggestionIndexes as $suggestionindexval) {
                     // check if there is an index configured on this page
                     if (isset($mItemindex)) {
                         // check if it is an array and if the suggestions index is in that array, set path to empty string
-                        if (is_array($mItemindex) && in_array($sSuggestionIndexesValue, $mItemindex)) {
+                        if (is_array($mItemindex) && in_array($suggestionindexval, $mItemindex)) {
                             $suggestions[$aSuggestionsKey]["path"] = '';
                             // path to suggestion set, continue with next suggestion
                             continue 2;
                         // if the suggestion index is on this page, set path to empty string
-                        } elseif ($mItemindex == $sSuggestionIndexesValue) {
+                        } elseif ($mItemindex == $suggestionindexval) {
                             $suggestions[$aSuggestionsKey]["path"] = '';
                             continue 2; // path to suggestion set, continue with next suggestion
                         }
                     }
-                    if (isset($aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue])) {
-                        $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$sSuggestionIndexesValue];
+                    if (isset($itemindexpathtree[$suggestionindexval])) {
+                        $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$suggestionindexval];
                         continue 2;
                     }
                 }
-            } elseif (isset($aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]])) {
-                $suggestions[$aSuggestionsKey]["path"] = $aItemindexpathtreeforsuggestions[$aSuggestionsValue["itm_index"]];
+            } elseif (isset($itemindexpathtree[$aSuggestionsValue["itm_index"]])) {
+                $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$aSuggestionsValue["itm_index"]];
             }
         }
 
@@ -338,9 +338,9 @@ class Helper
 
         $aSuggestionsToLoad = [];
         // iterate all defined suggestions and put those not loaded yet into array
-        foreach ($aDefinedSuggestions as $aDefinedSuggestionsValue) {
-            if (!isset($aPossibleSuggestions[$aDefinedSuggestionsValue])) {
-                $aSuggestionsToLoad[] = $aDefinedSuggestionsValue;
+        foreach ($aDefinedSuggestions as $defisugsval) {
+            if (!isset($aPossibleSuggestions[$defisugsval])) {
+                $aSuggestionsToLoad[] = $defisugsval;
             }
         }
 
@@ -358,13 +358,13 @@ class Helper
             'default' => [],
             'additional' => [],
         ];
-        foreach ($aPossibleSuggestions as $aPossibleSuggestionsKey => $aPossibleSuggestionsValue) { // iterate through all possible suggestions
-            if (in_array($aPossibleSuggestionsKey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
-                $suggestions['default'][$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
+        foreach ($aPossibleSuggestions as $posssugskey => $posssugsval) { // iterate through all possible suggestions
+            if (in_array($posssugskey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
+                $suggestions['default'][$posssugskey] = $posssugsval;
                 continue;
             }
             // if not, put into this one
-            $suggestions['additional'][$aPossibleSuggestionsKey] = $aPossibleSuggestionsValue;
+            $suggestions['additional'][$posssugskey] = $posssugsval;
         }
 
         return $suggestions;
@@ -389,28 +389,27 @@ class Helper
         }
 
         // if less or equal continue here
-        $iNumberOfAdditionalSuggestions = count($suggestions['additional']);
+        $numAdditionalSuggs = count($suggestions['additional']);
         if (
             $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
-            && $iNumberOfAdditionalSuggestions > 0
+            && $numAdditionalSuggs > 0
         ) { // if there are less suggestions than should be displayed and there are additional available
             // how many more are needed?
-            $iAdditionalSuggestionsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions;
+            $addSuggsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions;
             // see if there are more available than required, if so, pick as many as needed
-            if ($iNumberOfAdditionalSuggestions > $iAdditionalSuggestionsRequired) {
+            if ($numAdditionalSuggs > $addSuggsRequired) {
                 // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
-                $aKeysAdditionalSuggestions = array_rand($suggestions['additional'], $iAdditionalSuggestionsRequired);
-                if (is_string($aKeysAdditionalSuggestions)) {
-                    $aKeysAdditionalSuggestions = [$aKeysAdditionalSuggestions];
+                $keysAddSuggs = array_rand($suggestions['additional'], $addSuggsRequired);
+                if (is_string($keysAddSuggs)) {
+                    $keysAddSuggs = [$keysAddSuggs];
                 }
 
                 // iterate suggestions and remove those that which will not be kept
-                foreach ($suggestions['additional'] as $aAdditionalSuggestionsKey => $aAdditionalSuggestionsValue) {
-                    if (!in_array($aAdditionalSuggestionsKey, $aKeysAdditionalSuggestions)) {
-                        unset($suggestions['additional'][$aAdditionalSuggestionsKey]);
+                foreach ($suggestions['additional'] as $addSuggsKey => $addSuggsVal) {
+                    if (!in_array($addSuggsKey, $keysAddSuggs)) {
+                        unset($suggestions['additional'][$addSuggsKey]);
                     }
                 }
-                unset($aKeysAdditionalSuggestions);
             }
             return array_merge($suggestions['default'], $suggestions['additional']); // merge
         }
