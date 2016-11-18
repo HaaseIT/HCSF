@@ -320,8 +320,9 @@ class Helper
                 $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$aSuggestionsValue["itm_index"]];
             }
         }
+        shuffle($suggestions);
 
-        return shuffle($suggestions);
+        return $suggestions;
     }
 
     /**
@@ -352,7 +353,7 @@ class Helper
             $aItemsNotInCategory = $oItem->sortItems('', $aSuggestionsToLoad, false);
 
             // merge loaded and newly loaded items
-            if (isset($aItemsNotInCategory)) {
+            if (!empty($aItemsNotInCategory)) {
                 $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
             }
         }
@@ -469,9 +470,10 @@ class Helper
                 $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
                 $aP["item"]["currentitem"] = $iPositionInItems + 1;
 
-                $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
-                if ($iPositionInItems == 0) {
+                if ($iPositionInItems === 0) {
                     $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                } else {
+                    $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
                 }
 
                 $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
