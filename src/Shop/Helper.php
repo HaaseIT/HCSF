@@ -403,14 +403,18 @@ class Helper
             // see if there are more available than required, if so, pick as many as needed
             if ($numAdditionalSuggs > $addSuggsRequired) {
                 // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
-                $keysAddSuggs = array_rand($suggestions['additional'], $addSuggsRequired);
-                if (is_string($keysAddSuggs)) {
-                    $keysAddSuggs = [$keysAddSuggs];
+                $keysAddSuggsTMP = array_rand($suggestions['additional'], $addSuggsRequired);
+                if (is_string($keysAddSuggsTMP) || is_int($keysAddSuggsTMP)) {
+                    $keysAddSuggsTMP = [$keysAddSuggsTMP];
+                }
+                // because array_rand will change numerical (string) values to integer, we have to do this awkward dance
+                foreach ($keysAddSuggsTMP as $key => $item) {
+                    $keysAddSuggs[] = (string)$item;
                 }
 
                 // iterate suggestions and remove those that which will not be kept
                 foreach ($suggestions['additional'] as $addSuggsKey => $addSuggsVal) {
-                    if (!in_array($addSuggsKey, $keysAddSuggs)) {
+                    if (!in_array((string)$addSuggsKey, $keysAddSuggs, true)) {
                         unset($suggestions['additional'][$addSuggsKey]);
                     }
                 }
