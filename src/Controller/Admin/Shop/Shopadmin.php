@@ -91,6 +91,7 @@ class Shopadmin extends Base
 
         $CSA = [
             'list_orders' => [
+                ['title' => HardcodedText::get('shopadmin_list_orderid'), 'key' => 'o_id', 'width' => 30, 'linked' => false,],
                 ['title' => HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
                 ['title' => HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
                 ['title' => HardcodedText::get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
@@ -315,5 +316,4 @@ class Shopadmin extends Base
 
         return $aSData;
     }
-
 }

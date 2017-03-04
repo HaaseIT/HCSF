@@ -218,6 +218,7 @@ return [
     'itemgroupadmin_list_name' => 'Gruppenname',
     'itemgroupadmin_list_edit' => 'bearb.',
 
+    'shopadmin_list_orderid' => 'ID',
     'shopadmin_list_customer' => 'Kunde',
     'shopadmin_list_sumnettoall' => 'Netto',
     'shopadmin_list_orderstatus' => 'Status',
@@ -292,4 +293,3 @@ return [
     'dbstatus_orphanedrowsinfo' => 'Anzahl der verwaisten Datensätze in',
     'dbstatus_orphanedrowsremove' => 'Klicken Sie hier um sie zu löschen.',
 ];
-
