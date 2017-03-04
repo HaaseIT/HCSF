@@ -141,7 +141,7 @@ class Shoppingcart extends Base
         $binImg = false;
 
         if (HelperConfig::$shop['email_orderconfirmation_embed_itemimages_method'] == 'glide') {
-            $sPathToImage = '/'.HelperConfig::$core['directory_images'].'/'.HelperConfig::$core['directory_images_items'].'/';
+            $sPathToImage = '/'.HelperConfig::$core['directory_images'].'/'.HelperConfig::$shop['directory_images_items'].'/';
             $sImageroot = PATH_BASEDIR . HelperConfig::$core['directory_glide_master'];
 
             if (
