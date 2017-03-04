@@ -60,9 +60,8 @@ class Helper
         }
 
         $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
-        $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
-        return $fGesamtbrutto;
+        return $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
     public static function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
@@ -427,7 +426,7 @@ class Helper
         return $suggestions['default'];
     }
 
-    static function handleItemPage(ServiceManager $serviceManager, $P, $aP)
+    public static function handleItemPage(ServiceManager $serviceManager, $P, $aP)
     {
         $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
@@ -436,8 +435,8 @@ class Helper
 
         $oItem = $serviceManager->get('oItem');
 
-        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] == 'itemoverviewgrpd' ? true : false));
-        if ($aP["pagetype"] == 'itemdetail') {
+        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] === 'itemoverviewgrpd' ? true : false));
+        if ($aP["pagetype"] === 'itemdetail') {
 
             $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
 
