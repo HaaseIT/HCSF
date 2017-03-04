@@ -185,7 +185,7 @@ class Itemadmin extends Base
         $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
         $sSearchstring = str_replace('*', '%', $sSearchstring);
 
-        $sql = 'SELECT itm_no, itm_name FROM item_base'
+        $sql = 'SELECT itm_no, itm_name, itm_index FROM item_base'
             . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
             . ' WHERE ';
         if ($this->get["searchcat"] === 'name') {
@@ -228,6 +228,7 @@ class Itemadmin extends Base
     private function admin_prepareItemlist($aItemlist)
     {
         $aList = [
+            ['title' => HardcodedText::get('itemadmin_list_active'), 'key' => 'itemindex', 'width' => 30, 'linked' => false, 'callback' => 'renderItemStatusIcon',],
             ['title' => HardcodedText::get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
             ['title' => HardcodedText::get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
             ['title' => HardcodedText::get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
@@ -235,6 +236,7 @@ class Itemadmin extends Base
         $aData = [];
         foreach ($aItemlist["data"] as $aValue) {
             $aData[] = [
+                'itemindex' => $aValue['itm_index'],
                 'itemno' => $aValue['itm_no'],
                 'name' => $aValue['itm_name'],
             ];

@@ -72,6 +72,7 @@ return [
     'itemadmin_search_itemname' => 'Artikelname',
     'itemadmin_search_itemindex' => 'Artikelindex',
 
+    'itemadmin_list_active' => 'Aktiv',
     'itemadmin_list_itemno' => 'Art. Nr.',
     'itemadmin_list_name' => 'Name',
     'itemadmin_list_edit' => 'bearb.',

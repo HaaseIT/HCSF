@@ -502,4 +502,12 @@ class Helper
 
         return $aP;
     }
+
+    public static function renderItemStatusIcon($itemindex)
+    {
+        if (mb_substr($itemindex, 0, 1) === '!') {
+            return 'X';
+        }
+        return 'I';
+    }
 }

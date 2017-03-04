@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d1abfb6175edb06c2c32449c2f3a36fa",
-    "content-hash": "b0f7502bd7442f5ecc7dd51fc3fc42fc",
+    "hash": "230bbacb27adefe721439fee8e2fe1e4",
+    "content-hash": "de82a91ea8477e6f83b6352c3d329b4a",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -862,16 +862,16 @@
         },
         {
             "name": "haaseit/toolbox",
-            "version": "dev-master",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/HaaseIT/Toolbox.git",
-                "reference": "e175c63ac26cfcf657129921d38b25c9f9fc3b05"
+                "reference": "0bcb6be960a8441a81fca34e659defd189e27577"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/HaaseIT/Toolbox/zipball/e175c63ac26cfcf657129921d38b25c9f9fc3b05",
-                "reference": "e175c63ac26cfcf657129921d38b25c9f9fc3b05",
+                "url": "https://api.github.com/repos/HaaseIT/Toolbox/zipball/0bcb6be960a8441a81fca34e659defd189e27577",
+                "reference": "0bcb6be960a8441a81fca34e659defd189e27577",
                 "shasum": ""
             },
             "require": {
@@ -880,7 +880,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "HaaseIT\\": "./"
+                    "HaaseIT\\Toolbox\\": "./"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -900,7 +900,7 @@
             "keywords": [
                 "tools"
             ],
-            "time": "2017-03-04 16:54:18"
+            "time": "2017-03-04 18:25:00"
         },
         {
             "name": "intervention/image",
@@ -3327,7 +3327,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "haaseit/toolbox": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,

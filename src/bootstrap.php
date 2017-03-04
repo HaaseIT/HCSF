@@ -215,6 +215,7 @@ $serviceManager->setFactory('twig', function (ServiceManager $serviceManager) {
     $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
     $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Toolbox\Tools::getFormField'));
     $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
+    $twig->addFunction('callback', new Twig_Function_Function('HaaseIT\HCSF\Helper::twigCallback'));
     $twig->addFunction('makeLinkHRefWithAddedGetVars', new Twig_Function_Function('\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
 
     return $twig;

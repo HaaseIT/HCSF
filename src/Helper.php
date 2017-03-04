@@ -273,4 +273,18 @@ class Helper
 
         return new \HTMLPurifier($purifier_config);
     }
+
+    public static function twigCallback($callback, $parameters)
+    {
+        $callbacks = [
+            'renderItemStatusIcon' => '\HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon'
+        ];
+
+        if (!isset($callbacks[$callback])) {
+            return false;
+        }
+        
+        //return \HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon($parameters);
+        return call_user_func($callbacks[$callback], $parameters);
+    }
 }
