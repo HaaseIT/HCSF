@@ -146,7 +146,7 @@ class HelperConfig
     private static function loadCustomer()
     {
         $customer = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml'));
-        if (is_file(__DIR__.'/config/config.customer.yml')) {
+        if (is_file(PATH_BASEDIR.'/config/customer.local.yml')) {
             $customer = array_merge($customer, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.local.yml')));
         }
 
