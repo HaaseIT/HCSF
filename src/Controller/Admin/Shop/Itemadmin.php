@@ -163,12 +163,16 @@ class Itemadmin extends Base
         if (isset($this->get["searchcat"])) {
             $aData["searchcat"] = $this->get["searchcat"];
             $_SESSION["itemadmin_searchcat"] = $this->get["searchcat"];
-        } elseif (isset($_SESSION["itemadmin_searchcat"])) $aData["searchcat"] = $_SESSION["itemadmin_searchcat"];
+        } elseif (isset($_SESSION["itemadmin_searchcat"])) {
+            $aData["searchcat"] = $_SESSION["itemadmin_searchcat"];
+        }
 
         if (isset($this->get["orderby"])) {
             $aData["orderby"] = $this->get["orderby"];
             $_SESSION["itemadmin_orderby"] = $this->get["orderby"];
-        } elseif (isset($_SESSION["itemadmin_orderby"])) $aData["orderby"] = $_SESSION["itemadmin_orderby"];
+        } elseif (isset($_SESSION["itemadmin_orderby"])) {
+            $aData["orderby"] = $_SESSION["itemadmin_orderby"];
+        }
 
         return $aData;
     }
@@ -184,16 +188,21 @@ class Itemadmin extends Base
         $sql = 'SELECT itm_no, itm_name FROM item_base'
             . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
             . ' WHERE ';
-        if ($this->get["searchcat"] == 'name') {
+        if ($this->get["searchcat"] === 'name') {
             $sql .= 'itm_name LIKE :searchstring ';
-        } elseif ($this->get["searchcat"] == 'nummer') {
+        } elseif ($this->get["searchcat"] === 'nummer') {
             $sql .= 'itm_no LIKE :searchstring ';
-        } elseif ($this->get["searchcat"] == 'index') {
+        } elseif ($this->get["searchcat"] === 'index') {
             $sql .= 'itm_index LIKE :searchstring ';
-        } else exit;
+        } else {
+            exit;
+        }
 
-        if ($this->get["orderby"] == 'name') $sql .= 'ORDER BY itm_name';
-        elseif ($this->get["orderby"] == 'nummer') $sql .= ' ORDER BY itm_no';
+        if ($this->get["orderby"] === 'name') {
+            $sql .= 'ORDER BY itm_name';
+        } elseif ($this->get["orderby"] === 'nummer') {
+            $sql .= ' ORDER BY itm_no';
+        }
 
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':searchstring', $sSearchstring);
@@ -203,9 +212,13 @@ class Itemadmin extends Base
         $aItemlist["numrows"] = $hResult->rowCount();
 
         if ($aItemlist["numrows"] != 0) {
-            while ($aRow = $hResult->fetch()) $aItemlist["data"][] = $aRow;
+            while ($aRow = $hResult->fetch()) {
+                $aItemlist["data"][] = $aRow;
+            }
             return $aItemlist;
-        } else return false;
+        }
+
+        return false;
     }
 
     /**
@@ -226,12 +239,11 @@ class Itemadmin extends Base
                 'name' => $aValue['itm_name'],
             ];
         }
-        $aLData = [
+
+        return [
             'numrows' => $aItemlist["numrows"],
             'listtable' => Tools::makeListtable($aList, $aData, $this->serviceManager->get('twig')),
         ];
-
-        return $aLData;
     }
 
     /**
@@ -259,7 +271,9 @@ class Itemadmin extends Base
         $hResult->bindValue(':parentpkey', $aItemdata["base"]['itm_id']);
         $hResult->bindValue(':lang', HelperConfig::$lang);
         $hResult->execute();
-        if ($hResult->rowCount() != 0) $aItemdata["text"] = $hResult->fetch();
+        if ($hResult->rowCount() != 0) {
+            $aItemdata["text"] = $hResult->fetch();
+        }
 
         return $aItemdata;
     }
@@ -288,16 +302,22 @@ class Itemadmin extends Base
 
         if (!HelperConfig::$shop["vat_disable"]) {
             $aOptions[] = '|';
-            foreach (HelperConfig::$shop["vat"] as $sKey => $sValue) $aOptions[] = $sKey.'|'.$sValue;
+            foreach (HelperConfig::$shop["vat"] as $sKey => $sValue) {
+                $aOptions[] = $sKey.'|'.$sValue;
+            }
             $aData["vatoptions"] = $aOptions;
             unset($aOptions);
         }
         $aData["rgoptions"][] = '';
-        foreach (HelperConfig::$shop["rebate_groups"] as $sKey => $aValue) $aData["rgoptions"][] = $sKey;
+        foreach (HelperConfig::$shop["rebate_groups"] as $sKey => $aValue) {
+            $aData["rgoptions"][] = $sKey;
+        }
 
         $aGroups = $this->admin_getItemgroups('');
         $aData["groupoptions"][] = '';
-        foreach ($aGroups as $aValue) $aData["groupoptions"][] = $aValue['itmg_id'] . '|' . $aValue['itmg_no'] . ' - ' . $aValue['itmg_name'];
+        foreach ($aGroups as $aValue) {
+            $aData["groupoptions"][] = $aValue['itmg_id'] . '|' . $aValue['itmg_no'] . ' - ' . $aValue['itmg_name'];
+        }
         unset($aGroups);
 
         if (isset($aItemdata["text"])) {
@@ -330,11 +350,16 @@ class Itemadmin extends Base
             'itm_weight' => filter_var($this->post["weight"], FILTER_SANITIZE_NUMBER_INT),
             'itm_id' => filter_var($this->post["id"], FILTER_SANITIZE_NUMBER_INT),
         ];
-        if (!HelperConfig::$shop["vat_disable"]) $aData['itm_vatid'] = filter_var($this->post["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        else $aData['itm_vatid'] = 'full';
+        if (!HelperConfig::$shop["vat_disable"]) {
+            $aData['itm_vatid'] = filter_var($this->post["vatid"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        } else {
+            $aData['itm_vatid'] = 'full';
+        }
         $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
         $hResult = $this->db->prepare($sql);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
+        foreach ($aData as $sKey => $sValue) {
+            $hResult->bindValue(':' . $sKey, $sValue);
+        }
         $hResult->execute();
         if (isset($this->post["textid"])) {
             $aData = [
@@ -345,7 +370,9 @@ class Itemadmin extends Base
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
             $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
+            foreach ($aData as $sKey => $sValue) {
+                $hResult->bindValue(':' . $sKey, $sValue);
+            }
             $hResult->execute();
         }
 
@@ -361,16 +388,18 @@ class Itemadmin extends Base
         $sql = 'SELECT * FROM itemgroups_base'
             . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
             . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
+        if ($iGID != '') {
+            $sql .= ' WHERE itmg_id = :gid';
+        }
         $sql .= ' ORDER BY itmg_no';
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang);
-        if ($iGID != '') $hResult->bindValue(':gid', $iGID);
+        if ($iGID != '') {
+            $hResult->bindValue(':gid', $iGID);
+        }
         $hResult->execute();
 
-        $aGroups = $hResult->fetchAll();
-
-        return $aGroups;
+        return $hResult->fetchAll();
     }
 
 }
