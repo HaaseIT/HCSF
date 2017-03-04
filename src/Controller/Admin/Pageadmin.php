@@ -153,7 +153,7 @@ class Pageadmin extends Base
                                 ['title' => 'cl_title', 'key' => 'cl_title', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                             ];
                             $aData = $hResult->fetchAll();
-                            $this->P->cb_customdata['archived_list'] = \HaaseIT\Tools::makeListtable(
+                            $this->P->cb_customdata['archived_list'] = \HaaseIT\Toolbox\Tools::makeListtable(
                                 $aListSetting,
                                 $aData,
                                 $this->serviceManager->get('twig')

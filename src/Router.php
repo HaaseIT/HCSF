@@ -189,7 +189,7 @@ class Router
                     $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i] . '.';
                 }
                 // remove the trailing dot
-                $aRoutingoverride["itemno"] = \HaaseIT\Tools::cutStringend($aRoutingoverride["itemno"], 1);
+                $aRoutingoverride["itemno"] = \HaaseIT\Toolbox\Tools::cutStringend($aRoutingoverride["itemno"], 1);
 
                 $aRoutingoverride["cb_pagetype"] = 'itemdetail';
 

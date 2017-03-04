@@ -21,9 +21,9 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 use HaaseIT\HCSF\HardcodedText;
-use HaaseIT\DBTools;
+use HaaseIT\Toolbox\DBTools;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\Diactoros\ServerRequest;
 use Zend\ServiceManager\ServiceManager;
 

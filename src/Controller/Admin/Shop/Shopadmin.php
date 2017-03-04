@@ -22,7 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -71,7 +71,7 @@ class Shopadmin extends Base
                 'o_id' => $iID,
             ];
 
-            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
+            $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
             $hResult = $this->db->prepare($sql);
             foreach ($aData as $sKey => $sValue) {
                 $hResult->bindValue(':'.$sKey, $sValue);

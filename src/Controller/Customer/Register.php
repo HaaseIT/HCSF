@@ -22,7 +22,7 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 
 class Register extends Base
 {
@@ -80,7 +80,7 @@ class Register extends Base
                             'cust_active' => ((HelperConfig::$customer["register_require_manual_activation"]) ? 'n' : 'y'),
                             'cust_registrationtimestamp' => time(),
                         ];
-                        $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'customer');
+                        $sql = \HaaseIT\Toolbox\DBTools::buildPSInsertQuery($aData, 'customer');
 
                         $hResult = $this->serviceManager->get('db')->prepare($sql);
                         foreach ($aData as $sKey => $sValue) {

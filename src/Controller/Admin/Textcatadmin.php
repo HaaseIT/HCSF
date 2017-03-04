@@ -22,7 +22,7 @@ namespace HaaseIT\HCSF\Controller\Admin;
 
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 class Textcatadmin extends Base

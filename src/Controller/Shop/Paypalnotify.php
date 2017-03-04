@@ -99,7 +99,7 @@ class Paypalnotify extends Base
 
                     $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
-                    $sLogData .= \HaaseIT\Tools::debug($_REQUEST, '', true, true) . "\n\n";
+                    $sLogData .= \HaaseIT\Toolbox\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
                     // Check if the transaction id has been used before
                     $sTxn_idQ = 'SELECT o_paypal_tx FROM orders WHERE o_paypal_tx = :txn_id';
@@ -120,7 +120,7 @@ class Paypalnotify extends Base
                                 'o_paymentcompleted' => 'y',
                                 'o_id' => $iId,
                             ];
-                            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
+                            $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
                             $hResult = $this->db->prepare($sql);
                             foreach ($aTxnUpdateData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);

@@ -77,7 +77,7 @@ $serviceManager->setFactory('request', function () {
     // cleanup request
     $requesturi = urldecode($request->getRequestTarget());
     $parsedrequesturi = substr($requesturi, strlen(dirname($_SERVER['PHP_SELF'])));
-    if (substr($parsedrequesturi, 1, 1) != '/') {
+    if (substr($parsedrequesturi, 1, 1) !== '/') {
         $parsedrequesturi = '/'.$parsedrequesturi;
     }
     return $request->withRequestTarget($parsedrequesturi);
@@ -86,7 +86,7 @@ $serviceManager->setFactory('request', function () {
 HelperConfig::init();
 
 if (HelperConfig::$core['debug']) {
-    HaaseIT\Tools::$bEnableDebug = true;
+    HaaseIT\Toolbox\Tools::$bEnableDebug = true;
 }
 
 if (HelperConfig::$core["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
@@ -172,7 +172,7 @@ if (!HelperConfig::$core['maintenancemode']) {
     // ----------------------------------------------------------------------------
     $serviceManager->setFactory('textcats', function (ServiceManager $serviceManager) {
         $langavailable = HelperConfig::$core["lang_available"];
-        $textcats = new \HaaseIT\Textcat(
+        $textcats = new \HaaseIT\Toolbox\Textcat(
             HelperConfig::$lang,
             $serviceManager->get('db'),
             key($langavailable),
@@ -213,9 +213,9 @@ $serviceManager->setFactory('twig', function (ServiceManager $serviceManager) {
     $twig->addFunction(new Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
 
     $twig->addFunction('HT', new Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
-    $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Tools::getFormField'));
+    $twig->addFunction('gFF', new Twig_Function_Function('\HaaseIT\Toolbox\Tools::getFormField'));
     $twig->addFunction('ImgURL', new Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
-    $twig->addFunction('makeLinkHRefWithAddedGetVars', new Twig_Function_Function('\HaaseIT\Tools::makeLinkHRefWithAddedGetVars'));
+    $twig->addFunction('makeLinkHRefWithAddedGetVars', new Twig_Function_Function('\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
 
     return $twig;
 });

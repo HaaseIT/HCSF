@@ -21,7 +21,7 @@
 namespace HaaseIT\HCSF;
 
 use HaaseIT\HCSF\Shop\Helper as SHelper;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 class Helper

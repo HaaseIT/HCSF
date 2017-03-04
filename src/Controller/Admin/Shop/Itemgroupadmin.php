@@ -20,10 +20,10 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
-use HaaseIT\DBTools;
+use HaaseIT\Toolbox\DBTools;
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**

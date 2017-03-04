@@ -22,7 +22,7 @@ namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -32,7 +32,7 @@ use Zend\ServiceManager\ServiceManager;
 class Userhome extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 
@@ -107,7 +107,7 @@ class Userhome extends Base
                         $aData['cust_id'] = $_SESSION["user"]['cust_id'];
 
                         if (count($aData) > 1) {
-                            $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                            $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                             $hResult = $this->db->prepare($sql);
                             foreach ($aData as $sKey => $sValue) {
                                 $hResult->bindValue(':' . $sKey, $sValue);

@@ -28,7 +28,7 @@ use Zend\ServiceManager\ServiceManager;
 class Myorders extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 
@@ -180,7 +180,7 @@ class Myorders extends Base
                     'o_shipping_trackingno' => $aRow["o_shipping_trackingno"],
                 ];
             }
-            $return .= \HaaseIT\Tools::makeListtable($COList, $aData, $this->serviceManager->get('twig'));
+            $return .= \HaaseIT\Toolbox\Tools::makeListtable($COList, $aData, $this->serviceManager->get('twig'));
         } else $return .= $this->textcats->T("myorders_no_orders_to_display");
 
         return $return;

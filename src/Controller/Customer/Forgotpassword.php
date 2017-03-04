@@ -29,7 +29,7 @@ use Zend\ServiceManager\ServiceManager;
 class Forgotpassword extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 
@@ -84,7 +84,7 @@ class Forgotpassword extends Base
         } else {
             $sql = 'SELECT * FROM customer WHERE cust_email = :email';
 
-            $sEmail = filter_var(trim(\HaaseIT\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+            $sEmail = filter_var(trim(\HaaseIT\Toolbox\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
 
             $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
@@ -103,7 +103,7 @@ class Forgotpassword extends Base
                         'cust_pwresettimestamp' => $iTimestamp,
                         'cust_id' => $aResult['cust_id'],
                     ];
-                    $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                    $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                     $hResult = $this->db->prepare($sql);
                     foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                     $hResult->execute();

@@ -21,11 +21,11 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use HaaseIT\HCSF\Helper;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\Shop\Helper as SHelper;
-use HaaseIT\DBTools;
+use HaaseIT\Toolbox\DBTools;
 
 class Shoppingcart extends Base
 {
@@ -35,7 +35,7 @@ class Shoppingcart extends Base
     private $request;
 
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 

@@ -27,7 +27,7 @@ use HaaseIT\HCSF\Customer\Helper as CHelper;
 
 class Helper
 {
-    public static function showOrderStatusText(\HaaseIT\Textcat $textcats, $sStatusShort)
+    public static function showOrderStatusText(\HaaseIT\Toolbox\Textcat $textcats, $sStatusShort)
     {
         $mapping = [
             'y' => 'order_status_completed',
@@ -143,7 +143,7 @@ class Helper
         if (isset($_SESSION["user"]["cust_country"])) {
             $sCountry = $_SESSION["user"]["cust_country"];
         } elseif (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes' && isset($_POST["country"])) {
-            $sCountry = trim(\HaaseIT\Tools::getFormfield("country"));
+            $sCountry = trim(\HaaseIT\Toolbox\Tools::getFormfield("country"));
         } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
             $sCountry = $_SESSION["formsave_addrform"]["country"];
         }

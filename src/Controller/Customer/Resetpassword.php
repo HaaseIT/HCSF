@@ -21,7 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -31,7 +31,7 @@ use Zend\ServiceManager\ServiceManager;
 class Resetpassword extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 
@@ -117,7 +117,7 @@ class Resetpassword extends Base
                     'cust_pwresetcode' => '',
                     'cust_id' => $iID,
                 ];
-                $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                 $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
                 $hResult->execute();

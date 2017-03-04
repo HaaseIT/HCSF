@@ -29,7 +29,7 @@ use Zend\ServiceManager\ServiceManager;
 class Verifyemail extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 
@@ -71,7 +71,7 @@ class Verifyemail extends Base
             if ($iRows == 1) {
                 $aRow = $hResult->fetch();
                 $aData = ['cust_emailverified' => 'y', 'cust_id' => $aRow['cust_id']];
-                $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                 /** @var \PDOStatement $hResult */
                 $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) {

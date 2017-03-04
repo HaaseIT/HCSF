@@ -21,7 +21,7 @@
 namespace HaaseIT\HCSF;
 
 
-use HaaseIT\DBTools;
+use HaaseIT\Toolbox\DBTools;
 use Zend\ServiceManager\ServiceManager;
 
 class UserPage extends Page
@@ -35,7 +35,7 @@ class UserPage extends Page
         $this->iStatus = 200;
         $this->bReturnRaw = $bReturnRaw;
 
-        if ($sPagekey == '/_misc/index.html') {
+        if ($sPagekey === '/_misc/index.html') {
             $this->cb_id = $sPagekey;
             $this->cb_key = $sPagekey;
             $this->cb_pagetype = 'itemoverview';
@@ -55,7 +55,7 @@ class UserPage extends Page
             if ($hResult->rowCount() == 1) {
                 $hResult->fetch();
 
-                if ($this->cb_pagetype != 'shorturl') {
+                if ($this->cb_pagetype !== 'shorturl') {
                     if (!$bReturnRaw) $this->cb_pageconfig = json_decode($this->cb_pageconfig);
                     $this->oPayload = $this->getPayload();
                 }

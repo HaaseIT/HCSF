@@ -20,7 +20,7 @@
 
 namespace HaaseIT\HCSF;
 
-use HaaseIT\DBTools;
+use HaaseIT\Toolbox\DBTools;
 use Zend\ServiceManager\ServiceManager;
 
 class UserPagePayload extends PagePayload

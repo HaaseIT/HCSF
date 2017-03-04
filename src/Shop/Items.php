@@ -124,7 +124,7 @@ class Items
             if (is_array($mItemIndex)) {
                 $sql .= "(";
                 foreach ($mItemIndex as $sAIndex) $sql .= "itm_index LIKE '%".filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
-                $sql = \HaaseIT\Tools::cutStringend($sql, 4);
+                $sql = \HaaseIT\Toolbox\Tools::cutStringend($sql, 4);
                 $sql .= ")";
             } else {
                 $sql .= "itm_index LIKE '%".filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";

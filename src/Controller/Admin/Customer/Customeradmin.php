@@ -105,7 +105,7 @@ class Customeradmin extends Base
             $hResult = $this->db->query($sql);
             if ($hResult->rowCount() != 0) {
                 $aData = $hResult->fetchAll();
-                $return .= \HaaseIT\Tools::makeListtable($CUA, $aData, $twig);
+                $return .= \HaaseIT\Toolbox\Tools::makeListtable($CUA, $aData, $twig);
             } else {
                 $aInfo["nodatafound"] = true;
             }
@@ -159,7 +159,7 @@ class Customeradmin extends Base
                             $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                             $aInfo["passwordchanged"] = true;
                         }
-                        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
+                        $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                         $hResult = $this->db->prepare($sql);
                         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
                         $hResult->execute();

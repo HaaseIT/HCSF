@@ -31,7 +31,7 @@ use Zend\ServiceManager\ServiceManager;
 class Paypal extends Base
 {
     /**
-     * @var \HaaseIT\Textcat
+     * @var \HaaseIT\Toolbox\Textcat
      */
     private $textcats;
 

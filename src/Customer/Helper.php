@@ -21,7 +21,7 @@
 namespace HaaseIT\HCSF\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 use HaaseIT\HCSF\HardcodedText;
 use Zend\ServiceManager\ServiceManager;
 
@@ -46,8 +46,12 @@ class Helper
             if (
                 strlen($_POST["pwd"]) < HelperConfig::$customer["minimum_length_password"]
                 || strlen($_POST["pwd"]) > HelperConfig::$customer["maximum_length_password"]
-            ) $aErr["passwordlength"] = true;
-            if ($_POST["pwd"] != $_POST["pwdc"]) $aErr["passwordmatch"] = true;
+            ) {
+                $aErr["passwordlength"] = true;
+            }
+            if ($_POST["pwd"] != $_POST["pwdc"]) {
+                $aErr["passwordmatch"] = true;
+            }
         }
 
         return $aErr;

@@ -137,7 +137,7 @@ class Updatecart extends Base
         } else {
             $aMSG["msg"] =  $sReply;
             if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);
-            header('Location: '.\HaaseIT\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], $aMSG, true, false));
+            header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], $aMSG, true, false));
         }
         die();
     }

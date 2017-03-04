@@ -52,7 +52,7 @@ class Sandbox extends Base
 
         //$customer = $this->entityManager->find(ENTITY_CUSTOMER, 1);
 
-        //$this->P->oPayload->cl_html = \HaaseIT\Tools::debug($customer->getName(), 'customername', true);
+        //$this->P->oPayload->cl_html = \HaaseIT\Toolbox\Tools::debug($customer->getName(), 'customername', true);
 
 
         $dql = "SELECT l, b FROM ".ENTITY_USERPAGE_LANG." l JOIN l.basepage b WHERE l.language = ?1 AND b.key = ?2";
@@ -91,7 +91,7 @@ class Sandbox extends Base
         }
         catch (\Exception $e)
         {
-            $html .= \HaaseIT\Tools::debug($e, 'exception', true);
+            $html .= \HaaseIT\Toolbox\Tools::debug($e, 'exception', true);
         }
 
         $this->P->oPayload->cl_html = $html.'</pre>';

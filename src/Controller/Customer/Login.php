@@ -21,7 +21,7 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
-use \HaaseIT\Tools;
+use HaaseIT\Toolbox\Tools;
 
 /**
  * Class Login
@@ -37,7 +37,7 @@ class Login extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        /** @var \HaaseIT\Textcat $textcats */
+        /** @var \HaaseIT\Toolbox\Textcat $textcats */
         $textcats = $this->serviceManager->get('textcats');
 
         if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
