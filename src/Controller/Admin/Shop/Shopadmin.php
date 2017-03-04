@@ -73,7 +73,9 @@ class Shopadmin extends Base
 
             $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
             $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+            foreach ($aData as $sKey => $sValue) {
+                $hResult->bindValue(':'.$sKey, $sValue);
+            }
             $hResult->execute();
             header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
             die();
@@ -135,22 +137,35 @@ class Shopadmin extends Base
             $bIgnoreStorno = false;
             $sql = 'SELECT * FROM orders WHERE ';
 
-            if (!isset($_REQUEST["type"]) OR $_REQUEST["type"] == 'openinwork') $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
-            elseif ($_REQUEST["type"] == 'closed') $sql .= "o_ordercompleted = 'y' ";
-            elseif ($_REQUEST["type"] == 'open') $sql .= "o_ordercompleted = 'n' ";
-            elseif ($_REQUEST["type"] == 'inwork') $sql .= "o_ordercompleted = 'i' ";
-            elseif ($_REQUEST["type"] == 'storno') $sql .= "o_ordercompleted = 's' ";
-            elseif ($_REQUEST["type"] == 'deleted') $sql .= "o_ordercompleted = 'd' ";
-            elseif ($_REQUEST["type"] == 'all') {
-                $sql .= "o_ordercompleted != 'd' ";
-                $bIgnoreStorno = true;
-            } else {
-                die(HardcodedText::get('shopadmin_error_invalidrequest'));
+            switch ($_REQUEST["type"]) {
+                case 'closed':
+                    $sql .= "o_ordercompleted = 'y' ";
+                    break;
+                case 'open':
+                    $sql .= "o_ordercompleted = 'n' ";
+                    break;
+                case 'inwork':
+                    $sql .= "o_ordercompleted = 'i' ";
+                    break;
+                case 'storno':
+                    $sql .= "o_ordercompleted = 's' ";
+                    break;
+                case 'deleted':
+                    $sql .= "o_ordercompleted = 'd' ";
+                    break;
+                case 'all':
+                    $sql .= "o_ordercompleted != 'd' ";
+                    $bIgnoreStorno = true;
+                    break;
+                case 'openinwork':
+                default:
+                    $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
             }
+
             $bFromTo = false;
             $sFrom = null;
             $sTo = null;
-            if (isset($_REQUEST["type"]) && ($_REQUEST["type"] == 'deleted' OR $_REQUEST["type"] == 'all' OR $_REQUEST["type"] == 'closed')) {
+            if (isset($_REQUEST["type"]) && ($_REQUEST["type"] === 'deleted' || $_REQUEST["type"] === 'all' || $_REQUEST["type"] === 'closed')) {
                 $sql .= "AND ";
                 $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
                 $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
@@ -175,22 +190,44 @@ class Shopadmin extends Base
                 $k = 0;
                 $fGesamtnetto = 0.0;
                 while ($aRow = $hResult->fetch()) {
-                    if ($aRow["o_ordercompleted"] == 'y') $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'n') $sStatus = '<span style="color: orange; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_open').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'i') $sStatus = '<span style="color: orange;">'.HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 's') $sStatus = '<span style="color: red; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
-                    elseif ($aRow["o_ordercompleted"] == 'd') $sStatus = HardcodedText::get('shopadmin_orderstatus_deleted');
-                    else $sStatus = '';
+                    switch ($aRow["o_ordercompleted"]) {
+                        case 'y':
+                            $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
+                            break;
+                        case 'n':
+                            $sStatus = '<span style="color: orange; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_open').'</span>';
+                            break;
+                        case 'i':
+                            $sStatus = '<span style="color: orange;">'.HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
+                            break;
+                        case 's':
+                            $sStatus = '<span style="color: red; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
+                            break;
+                        case 'd':
+                            $sStatus = HardcodedText::get('shopadmin_orderstatus_deleted');
+                            break;
+                        default:
+                            $sStatus = '';
+                    }
 
-                    if ($aRow["o_paymentcompleted"] == 'y') $sZahlungsmethode = '<span style="color: green;">';
-                    else $sZahlungsmethode = '<span style="color: red;">';
+                    if ($aRow["o_paymentcompleted"] === 'y') {
+                        $sZahlungsmethode = '<span style="color: green;">';
+                    } else {
+                        $sZahlungsmethode = '<span style="color: red;">';
+                    }
                     $mZahlungsmethode = $this->serviceManager->get('textcats')->T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
-                    if ($mZahlungsmethode ) $sZahlungsmethode .= $mZahlungsmethode;
-                    else $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
+                    if ($mZahlungsmethode ) {
+                        $sZahlungsmethode .= $mZahlungsmethode;
+                    } else {
+                        $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
+                    }
                     $sZahlungsmethode .= '</span>';
 
-                    if (trim($aRow["o_corpname"]) == '') $sName = $aRow["o_name"];
-                    else $sName = $aRow["o_corpname"];
+                    if (trim($aRow["o_corpname"]) == '') {
+                        $sName = $aRow["o_name"];
+                    } else {
+                        $sName = $aRow["o_corpname"];
+                    }
 
                     $aData[] = [
                         'o_id' => $aRow["o_id"],
@@ -224,7 +261,9 @@ class Shopadmin extends Base
                     if (!($aRow["o_ordercompleted"] == 's' && $bIgnoreStorno)) {
                         $fGesamtnetto += $aRow["o_sumnettoall"];
                         $j ++;
-                    } else $k++;
+                    } else {
+                        $k++;
+                    }
                     $i++;
                 }
                 $aSData['listtable_orders'] = Tools::makeListtable($CSA["list_orders"], $aData, $this->serviceManager->get('twig'));
@@ -235,7 +274,7 @@ class Shopadmin extends Base
             } else {
                 $aSData['nomatchingordersfound'] = true;
             }
-        } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
+        } elseif (isset($_GET["action"]) && $_GET["action"] === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $sql = 'SELECT * FROM orders WHERE o_id = :id';
 
@@ -287,7 +326,6 @@ class Shopadmin extends Base
                         'brutto_use' => $aValue["oi_price_brutto_use"],
                     ];
 
-                    //$aPrice = $oItem->calcPrice($aValue["oi_price_netto"], HelperConfig::$shop["vat"][$aValue["oi_vat_id"]], '', true);
                     $aItemsCarttable[$aValue["oi_cartkey"]] = [
                         'amount' => $aValue["oi_amount"],
                         'price' => $aPrice,

@@ -232,8 +232,6 @@ return [
     'shopadmin_list_itemnetto' => 'Netto',
     'shopadmin_list_itemsumnetto' => 'Ges. Netto',
 
-    'shopadmin_error_invalidrequest' => 'Invalid request error.',
-
     'shopadmin_orderstatus_completed' => 'erledigt',
     'shopadmin_orderstatus_open' => 'offen',
     'shopadmin_orderstatus_inwork' => 'in Arbeit',
