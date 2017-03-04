@@ -6,4 +6,4 @@ php:
 install:
   - composer install
 script:
-  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+  - vendor/bin/phpunit
