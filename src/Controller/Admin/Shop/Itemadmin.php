@@ -240,12 +240,12 @@ class Itemadmin extends Base
      */
     private function admin_getItem($sItemno = '')
     {
-        if (empty($this->get["itemno"])) {
-            return false;
+        if ($sItemno === '') {
+            if (empty($this->get["itemno"])) {
+                return false;
+            }
+            $sItemno = filter_var($this->get["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         }
-        $sItemno = filter_var($this->get["itemno"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-
-        $sItemno = filter_var($sItemno, FILTER_SANITIZE_SPECIAL_CHARS);
 
         $sql = 'SELECT * FROM item_base WHERE itm_no = :itemno';
         $hResult = $this->db->prepare($sql);
