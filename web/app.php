@@ -25,6 +25,12 @@ $aP = \HaaseIT\HCSF\Helper::generatePage($serviceManager, $P);
 $response = new \Zend\Diactoros\Response();
 $response = $response->withStatus($P->iStatus);
 
+if (count($aP['headers'])) {
+    foreach ($aP['headers'] as $header => $value) {
+        $response = $response->withHeader($header, $value);
+    }
+}
+
 if ($aP['customroottemplate'] != '') {
     $response->getBody()->write($serviceManager->get('twig')->render($aP['customroottemplate'], $aP));
 } else {

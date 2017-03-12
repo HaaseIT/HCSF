@@ -51,15 +51,35 @@ class ShopadminExportCSV extends Base
      */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager, 'shop/shopadmin-export-csv.twig');
+        $headers = [
+//            'Content-Disposition' => 'attachment; filename=hcsf_export.csv',
+//            'Content-type' => 'text/csv',
+            'Content-type' => 'text/plain',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager, $headers, 'shop/shopadmin-export-csv.twig');
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
+        // filter input
+        $ids = [];
+        foreach ($_POST['id'] as $item) {
+            $item = (int) $item;
+            if ($item > 0) {
+                $ids[$item] = $item;
+            }
+        }
+
         // fetch orders from db and add to $this->P->cb_customdata
+        $sql = 'SELECT * FROM orders o INNER JOIN orders_items oi on o.o_id = oi.oi_o_id WHERE o.o_id IN('.implode(', ', $ids).') ORDER BY oi.oi_o_id, oi.oi_id';
+        $query = $this->db->query($sql);
+
+        $data = $query->fetchAll();
+
         // set header application/csv or whatever
 
-
-        $this->P->cb_customdata = [];
+        $this->P->cb_customdata['rows'] = $data;
     }
 
 }

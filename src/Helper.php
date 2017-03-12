@@ -120,6 +120,7 @@ class Helper
             'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
             'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
             'customroottemplate' => $P->getCustomRootTemplate(),
+            'headers' => $P->getHeaders(),
         ];
         if (HelperConfig::$core["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();

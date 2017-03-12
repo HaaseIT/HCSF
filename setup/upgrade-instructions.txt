@@ -1,4 +1,6 @@
 V3.0.0
+ALTER TABLE `orders_items` CHANGE COLUMN `oi_img` `oi_img` MEDIUMTEXT NULL AFTER `oi_price_brutto_use`;
+
 The langselector variable in base.twig is no longer available, please see base.twig on how to implement it in the template
 
 The config.navi.php has moved to config.navigation.yml, please migrate it!

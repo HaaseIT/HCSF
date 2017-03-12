@@ -25,6 +25,10 @@ namespace HaaseIT\HCSF;
  * Class Page
  * @package HaaseIT\HCSF
  */
+/**
+ * Class Page
+ * @package HaaseIT\HCSF
+ */
 class Page
 {
     /**
@@ -73,10 +77,20 @@ class Page
     public $cb_pageconfig;
 
     /**
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
      * @return string
      */
     public function getCustomRootTemplate()
     {
         return $this->customroottemplate;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }

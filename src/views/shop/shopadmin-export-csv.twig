@@ -1,2 +1,8 @@
-{# iterate over customdata #}
-foo
+Verkaufsprotokollnummer,Mitgliedsname,Name des Käufers,Telefonnummer,E-Mail-Adresse,Adresse 1,Adresse 2,Ort,Region,PLZ,Land,Artikelnummer,Artikelbezeichnung,Bestandseinheit,Stückzahl,Preis,MwSt.-Satz,Verpackung und Versand,Versicherung,Nachnahmekosten,Gesamtpreis,Zahlungsmethode,Verkauft am,Datum der Kaufabwicklung,Zahlungsdatum,Versanddatum,Rechnungsdatum,Rechnungsnummer,Abgegebene Bewertung,Erhaltene Bewertung,Notizzettel,PayPal-Transaktions-ID,Versandservice,Option ?Nachnahme?,Transaktions-ID,Bestellnummer,Variantendetails,Programm zum weltweiten Versand,Weltweiter Versand: Referenznummer,Click &amp, Collect,Click &amp, Collect: Referenznummer,Versand nach Adresse 1,Versand nach Adresse 2,Versand nach Ort,Versand nach Staat,Versand nach PLZ
+{% for row in customdata.rows
+%}{% if ('|size:' in row.oi_cartkey)
+%}{% set itemnoraw = row.oi_cartkey|split('|size:')
+%}{% set itemno = itemnoraw[0]~'_'~itemnoraw[1] %}{% else
+%}{% set itemno = row.oi_cartkey %}{% endif
+%}{{ row.o_id }},,{{ row.o_name }},{{ row.o_phone }},{{ row.o_email }},{{ row.o_street }},,{{ row.o_town }},,{{ row.o_zip }},{{ row.o_country }},{{ itemno }},{{ row.oi_itemname }},,{{ row.oi_amount }},{{ row.oi_price_brutto_use }},19%,{{ row.o_shippingcost }},,,{{ row.o_sumbruttoall }},{{ row.o_paymentmethod }},{{ row.o_ordertimestamp|date("Y-m-d") }},,,,,,,,,{{ o_remarks|replace({"\n":' ', "\r":' '}) }},,,,,,,,,,,,,,,,,,
+{% endfor %}

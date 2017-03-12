@@ -286,7 +286,8 @@ class Shoppingcart extends Base
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
-            print $e;
+            //print $e;
+            error_log($e);
             $db->rollBack();
         }
         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
@@ -298,9 +299,15 @@ class Shoppingcart extends Base
         // Send Mails
         $this->sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend);
 
-        if (isset($_SESSION["cart"])) unset($_SESSION["cart"]);
-        if (isset($_SESSION["cartpricesums"])) unset($_SESSION["cartpricesums"]);
-        if (isset($_SESSION["sondercart"])) unset($_SESSION["sondercart"]);
+        if (isset($_SESSION["cart"])) {
+            unset($_SESSION["cart"]);
+        }
+        if (isset($_SESSION["cartpricesums"])) {
+            unset($_SESSION["cartpricesums"]);
+        }
+        if (isset($_SESSION["sondercart"])) {
+            unset($_SESSION["sondercart"]);
+        }
 
         if (
             isset($this->post["paymentmethod"])
