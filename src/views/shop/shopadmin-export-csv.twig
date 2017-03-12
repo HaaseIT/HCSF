@@ -4,5 +4,22 @@ Verkaufsprotokollnummer,Mitgliedsname,Name des Käufers,Telefonnummer,E-Mail-Adr
 %}{% set itemnoraw = row.oi_cartkey|split('|size:')
 %}{% set itemno = itemnoraw[0]~'_'~itemnoraw[1] %}{% else
 %}{% set itemno = row.oi_cartkey %}{% endif
-%}{{ row.o_id }},,{{ row.o_name }},{{ row.o_phone }},{{ row.o_email }},{{ row.o_street }},,{{ row.o_town }},,{{ row.o_zip }},{{ row.o_country }},{{ itemno }},{{ row.oi_itemname }},,{{ row.oi_amount }},{{ row.oi_price_brutto_use }},19%,{{ row.o_shippingcost }},,,{{ row.o_sumbruttoall }},{{ row.o_paymentmethod }},{{ row.o_ordertimestamp|date("Y-m-d") }},,,,,,,,,{{ o_remarks|replace({"\n":' ', "\r":' '}) }},,,,,,,,,,,,,,,,,,
+%}{{
+row.o_id }},,{{
+row.o_name }},{{
+row.o_phone }},{{
+row.o_email }},{{
+row.o_street }},,{{
+row.o_town }},,{{
+row.o_zip }},{{
+row.o_country }},{{
+itemno }},{{
+row.oi_itemname }},,{{
+row.oi_amount }},{{
+row.oi_price_brutto_use }},19%,{{
+row.o_shippingcost }},,,{{
+row.o_sumbruttoall }},{{
+row.o_paymentmethod }},{{
+row.o_ordertimestamp|date("Y-m-d") }},,,,,,,,,{{
+o_remarks|replace({"\n":' ', "\r":' '}) }},,,,,,,,,,,,,,,,,,
 {% endfor %}

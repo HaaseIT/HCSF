@@ -52,9 +52,9 @@ class ShopadminExportCSV extends Base
     public function preparePage()
     {
         $headers = [
-//            'Content-Disposition' => 'attachment; filename=hcsf_export.csv',
-//            'Content-type' => 'text/csv',
-            'Content-type' => 'text/plain',
+            'Content-Disposition' => 'attachment; filename=hcsf_export.csv',
+            'Content-type' => 'text/csv',
+//            'Content-type' => 'text/plain',
             'Pragma' => 'no-cache',
             'Expires' => '0'
         ];
