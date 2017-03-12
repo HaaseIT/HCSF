@@ -77,7 +77,7 @@ class Itemadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/itemadmin';
 
-        if (isset($this->get["action"]) && $this->get["action"] == 'insert_lang') {
+        if (isset($this->get["action"]) && $this->get["action"] === 'insert_lang') {
             $aItemdata = $this->admin_getItem();
 
             if (isset($aItemdata["base"]) && !isset($aItemdata["text"])) {
@@ -96,7 +96,7 @@ class Itemadmin extends Base
         $this->P->cb_customdata["searchform"] = $this->admin_prepareItemlistsearchform();
 
         if (isset($this->get["action"])) {
-            if ($this->get["action"] == 'search') {
+            if ($this->get["action"] === 'search') {
                 $this->P->cb_customdata["searchresult"] = true;
                 if ($aItemlist = $this->admin_getItemlist()) {
                     if (count($aItemlist["data"]) == 1) {
@@ -106,20 +106,21 @@ class Itemadmin extends Base
                         $this->P->cb_customdata["itemlist"] = $this->admin_prepareItemlist($aItemlist);
                     }
                 }
-            } elseif (isset($this->post["doaction"]) && $this->post["doaction"] == 'edititem') {
+            } elseif (isset($this->post["doaction"]) && $this->post["doaction"] === 'edititem') {
                 $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier('item'));
                 $this->P->cb_customdata["itemupdated"] = true;
 
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
-            } elseif ($this->get["action"] == 'showitem') {
+            } elseif ($this->get["action"] === 'showitem') {
                 $aItemdata = $this->admin_getItem();
                 $this->P->cb_customdata["item"] = $this->admin_prepareItem($aItemdata);
-            } elseif ($this->get["action"] == 'additem') {
+            } elseif ($this->get["action"] === 'additem') {
                 $aErr = [];
-                if (isset($this->post["additem"]) && $this->post["additem"] == 'do') {
-                    if (strlen($this->post["itemno"]) < 4) $aErr["itemnotooshort"] = true;
-                    else {
+                if (isset($this->post["additem"]) && $this->post["additem"] === 'do') {
+                    if (strlen($this->post["itemno"]) < 4) {
+                        $aErr["itemnotooshort"] = true;
+                    } else {
                         $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
                         $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
                         $hResult = $this->db->query($sql);

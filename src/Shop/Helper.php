@@ -510,4 +510,10 @@ class Helper
         }
         return 'I';
     }
+
+    // todo: when we use twig 2.x, move this to macro
+    public static function shopadminMakeCheckbox($id)
+    {
+        return '<input type="checkbox" name="id[]" value="'.$id.'">';
+    }
 }

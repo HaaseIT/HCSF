@@ -93,6 +93,7 @@ class Shopadmin extends Base
 
         $CSA = [
             'list_orders' => [
+                ['title' => '', 'key' => 'o_id', 'width' => 30, 'linked' => false, 'callback' => 'shopadminMakeCheckbox'],
                 ['title' => HardcodedText::get('shopadmin_list_orderid'), 'key' => 'o_id', 'width' => 30, 'linked' => false,],
                 ['title' => HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
                 ['title' => HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],

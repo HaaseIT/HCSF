@@ -18,35 +18,48 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace HaaseIT\HCSF;
+namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
-
+use HaaseIT\HCSF\HardcodedText;
+use HaaseIT\HCSF\HelperConfig;
+use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
- * Class CorePage
- * @package HaaseIT\HCSF
+ * Class Shopadmin
+ * @package HaaseIT\HCSF\Controller\Admin\Shop
  */
-class CorePage extends Page
+class ShopadminExportCSV extends Base
 {
     /**
-     * CorePage constructor.
-     * @param ServiceManager $serviceManager
-     * @param string $customroottemplate
+     * @var \PDO
      */
-    public function __construct(ServiceManager $serviceManager, $customroottemplate = '')
+    private $db;
+
+    /**
+     * Shopadmin constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
     {
-        $this->iStatus = 200;
-        $this->serviceManager = $serviceManager;
-        $this->customroottemplate = $customroottemplate;
-        $this->getPayload();
+        parent::__construct($serviceManager);
+        $this->db = $serviceManager->get('db');
     }
 
     /**
      *
      */
-    protected function getPayload()
+    public function preparePage()
     {
-        $this->oPayload = new PagePayload($this->serviceManager);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager, 'shop/shopadmin-export-csv.twig');
+        $this->P->cb_pagetype = 'content';
+        $this->P->cb_subnav = 'admin';
+
+        // fetch orders from db and add to $this->P->cb_customdata
+        // set header application/csv or whatever
+
+
+        $this->P->cb_customdata = [];
     }
+
 }

@@ -56,6 +56,7 @@ class Router
                 '/_admin/customeradmin.html' => 'Admin\\Customer\\Customeradmin',
                 '/_admin/itemadmin.html' => 'Admin\\Shop\\Itemadmin',
                 '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
+                '/_admin/shopadmin_export.csv' => 'Admin\\Shop\\ShopadminExportCSV',
                 '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
                 '/_admin/dbstatus.html' => 'Admin\\DBStatus',
                 '/_misc/login.html' => 'Customer\\Login',

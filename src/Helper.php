@@ -52,19 +52,19 @@ class Helper
         $mail->CharSet = 'UTF-8';
 
         $mail->isMail();
-        if (HelperConfig::$core['mail_method'] == 'sendmail') {
+        if (HelperConfig::$core['mail_method'] === 'sendmail') {
             $mail->isSendmail();
-        } elseif (HelperConfig::$core['mail_method'] == 'smtp') {
+        } elseif (HelperConfig::$core['mail_method'] === 'smtp') {
             $mail->isSMTP();
             $mail->Host = HelperConfig::$secrets['mail_smtp_server'];
             $mail->Port = HelperConfig::$secrets['mail_smtp_port'];
-            if (HelperConfig::$secrets['mail_smtp_auth'] == true) {
+            if (HelperConfig::$secrets['mail_smtp_auth'] === true) {
                 $mail->SMTPAuth = true;
                 $mail->Username = HelperConfig::$secrets['mail_smtp_auth_user'];
                 $mail->Password = HelperConfig::$secrets['mail_smtp_auth_pwd'];
                 if (HelperConfig::$secrets['mail_smtp_secure']) {
                     $mail->SMTPSecure = 'tls';
-                    if (HelperConfig::$secrets['mail_smtp_secure_method'] == 'ssl') {
+                    if (HelperConfig::$secrets['mail_smtp_secure_method'] === 'ssl') {
                         $mail->SMTPSecure = 'ssl';
                     }
                 }
@@ -102,7 +102,7 @@ class Helper
         return $string;
     }
 
-    public static function generatePage(ServiceManager $serviceManager, $P)
+    public static function generatePage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P)
     {
         $requesturi = $serviceManager->get('request')->getRequestTarget();
 
@@ -119,6 +119,7 @@ class Helper
             'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
             'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
             'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
+            'customroottemplate' => $P->getCustomRootTemplate(),
         ];
         if (HelperConfig::$core["enable_module_customer"]) {
             $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
@@ -127,16 +128,31 @@ class Helper
         if (HelperConfig::$core["enable_module_shop"]) {
             $aP["currency"] = HelperConfig::$shop["waehrungssymbol"];
             $aP["orderamounts"] = HelperConfig::$shop["orderamounts"];
-            if (isset(HelperConfig::$shop["vat"]["full"])) $aP["vatfull"] = HelperConfig::$shop["vat"]["full"];
-            if (isset(HelperConfig::$shop["vat"]["reduced"])) $aP["vatreduced"] = HelperConfig::$shop["vat"]["reduced"];
-            if (isset(HelperConfig::$shop["custom_order_fields"])) $aP["custom_order_fields"] = HelperConfig::$shop["custom_order_fields"];
+            if (isset(HelperConfig::$shop["vat"]["full"])) {
+                $aP["vatfull"] = HelperConfig::$shop["vat"]["full"];
+            }
+            if (isset(HelperConfig::$shop["vat"]["reduced"])) {
+                $aP["vatreduced"] = HelperConfig::$shop["vat"]["reduced"];
+            }
+            if (isset(HelperConfig::$shop["custom_order_fields"])) {
+                $aP["custom_order_fields"] = HelperConfig::$shop["custom_order_fields"];
+            }
             $aP["enable_module_shop"] = true;
         }
-        if (isset($P->cb_key)) $aP["path"] = pathinfo($P->cb_key);
-        else $aP["path"] = pathinfo($aP["requesturi"]);
-        if ($P->cb_customcontenttemplate != NULL) $aP["customcontenttemplate"] = $P->cb_customcontenttemplate;
-        if ($P->cb_customdata != NULL) $aP["customdata"] = $P->cb_customdata;
-        if (isset($_SERVER["HTTP_REFERER"])) $aP["referer"] = $_SERVER["HTTP_REFERER"];
+        if (isset($P->cb_key)) {
+            $aP["path"] = pathinfo($P->cb_key);
+        } else {
+            $aP["path"] = pathinfo($aP["requesturi"]);
+        }
+        if ($P->cb_customcontenttemplate != NULL) {
+            $aP["customcontenttemplate"] = $P->cb_customcontenttemplate;
+        }
+        if ($P->cb_customdata != NULL) {
+            $aP["customdata"] = $P->cb_customdata;
+        }
+        if (isset($_SERVER["HTTP_REFERER"])) {
+            $aP["referer"] = $_SERVER["HTTP_REFERER"];
+        }
 
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
@@ -169,9 +185,9 @@ class Helper
         if (
             HelperConfig::$core["enable_module_shop"]
             && (
-                $aP["pagetype"] == 'itemoverview'
-                || $aP["pagetype"] == 'itemoverviewgrpd'
-                || $aP["pagetype"] == 'itemdetail'
+                $aP["pagetype"] === 'itemoverview'
+                || $aP["pagetype"] === 'itemoverviewgrpd'
+                || $aP["pagetype"] === 'itemdetail'
             )
         ) {
             $aP = SHelper::handleItemPage($serviceManager, $P, $aP);
@@ -211,7 +227,7 @@ class Helper
     {
         $langavailable = HelperConfig::$core["lang_available"];
         if (
-            HelperConfig::$core["lang_detection_method"] == 'domain'
+            HelperConfig::$core["lang_detection_method"] === 'domain'
             && isset(HelperConfig::$core["lang_by_domain"])
             && is_array(HelperConfig::$core["lang_by_domain"])
         ) { // domain based language detection
@@ -221,7 +237,7 @@ class Helper
                     break;
                 }
             }
-        } elseif (HelperConfig::$core["lang_detection_method"] == 'legacy') { // legacy language detection
+        } elseif (HelperConfig::$core["lang_detection_method"] === 'legacy') { // legacy language detection
             $sLang = key($langavailable);
             if (isset($_GET["language"]) && array_key_exists($_GET["language"], $langavailable)) {
                 $sLang = strtolower($_GET["language"]);
@@ -246,16 +262,16 @@ class Helper
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
         $purifier_config->set('HTML.Doctype', HelperConfig::$core['purifier_doctype']);
 
-        if ($purpose == 'textcat') {
+        if ($purpose === 'textcat') {
             $configkey = 'textcat';
             $configsection = 'core';
-        } elseif ($purpose == 'page') {
+        } elseif ($purpose === 'page') {
             $configkey = 'pagetext';
             $configsection = 'core';
-        } elseif ($purpose == 'item') {
+        } elseif ($purpose === 'item') {
             $configkey = 'itemtext';
             $configsection = 'shop';
-        } elseif ($purpose == 'itemgroup') {
+        } elseif ($purpose === 'itemgroup') {
             $configkey = 'itemgrouptext';
             $configsection = 'shop';
         } else {
@@ -277,14 +293,14 @@ class Helper
     public static function twigCallback($callback, $parameters)
     {
         $callbacks = [
-            'renderItemStatusIcon' => '\HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon'
+            'renderItemStatusIcon' => '\HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon',
+            'shopadminMakeCheckbox' => '\HaaseIT\HCSF\Shop\Helper::shopadminMakeCheckbox',
         ];
 
         if (!isset($callbacks[$callback])) {
             return false;
         }
         
-        //return \HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon($parameters);
         return call_user_func($callbacks[$callback], $parameters);
     }
 }

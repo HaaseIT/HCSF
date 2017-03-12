@@ -21,8 +21,62 @@
 namespace HaaseIT\HCSF;
 
 
+/**
+ * Class Page
+ * @package HaaseIT\HCSF
+ */
 class Page
 {
+    /**
+     * @var \Zend\ServiceManager\ServiceManager
+     */
     protected $serviceManager;
-    public $cb_pagetype, $cb_pageconfig, $cb_subnav, $cb_customcontenttemplate, $cb_customdata, $oPayload, $iStatus;
+
+    /**
+     * @var string
+     */
+    protected $customroottemplate;
+
+    /**
+     * @var string
+     */
+    public $cb_pagetype;
+
+    /**
+     * @var string
+     */
+    public $cb_subnav;
+
+    /**
+     * @var string
+     */
+    public $cb_customcontenttemplate;
+
+    /**
+     * @var int
+     */
+    public $iStatus;
+
+    /**
+     * @var \HaaseIT\HCSF\PagePayload
+     */
+    public $oPayload;
+
+    /**
+     * @var array
+     */
+    public $cb_customdata;
+
+    /**
+     * @var array
+     */
+    public $cb_pageconfig;
+
+    /**
+     * @return string
+     */
+    public function getCustomRootTemplate()
+    {
+        return $this->customroottemplate;
+    }
 }

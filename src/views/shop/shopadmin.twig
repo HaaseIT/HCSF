@@ -90,7 +90,10 @@ customdata.orderdata.o_lastedit_timestamp != '' ? HT('shopadmin_orderlasteditdat
 {{ customdata.ordernotfound is defined ? '<p>'~HT('shopadmin_info_ordernotfound')~'</p>' : '' }}
 {{ customdata.nomatchingordersfound is defined ? '<p>'~HT('shopadmin_info_nomatchingordersfound')~'</p>' : '' }}
 {% if customdata.listtable_orders is defined %}
+    <form method="post" action="/_admin/shopadmin_export.csv">
+        <input type="submit" value="Markierte exportieren">
     {{ customdata.listtable_orders }}
+    </form>
     {% if customdata.listtable_i > 0 %}
         <br>{{ customdata.listtable_i }} {{ HT('shopadmin_info_ordersshown_1') }}
         {{ customdata.listtable_k != 0 ? HT('shopadmin_info_ordersshown_2')~' '~customdata.listtable_k~' '~HT('shopadmin_info_ordersshown_3') : '.' }}
