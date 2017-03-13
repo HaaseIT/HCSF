@@ -91,7 +91,7 @@ customdata.orderdata.o_lastedit_timestamp != '' ? HT('shopadmin_orderlasteditdat
 {{ customdata.nomatchingordersfound is defined ? '<p>'~HT('shopadmin_info_nomatchingordersfound')~'</p>' : '' }}
 {% if customdata.listtable_orders is defined %}
     <form method="post" action="/_admin/shopadmin_export.csv">
-        <input type="submit" value="Markierte exportieren">
+        <input type="submit" value="{# TODO: move to textcat #}Markierte exportieren">
     {{ customdata.listtable_orders }}
     </form>
     {% if customdata.listtable_i > 0 %}
