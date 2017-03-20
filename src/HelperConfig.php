@@ -90,9 +90,9 @@ class HelperConfig
      */
     private static function loadCore()
     {
-        $core = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.yml'));
-        if (is_file(PATH_BASEDIR.'config/core.local.yml')) {
-            $core = array_merge($core, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.local.yml')));
+        $core = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/core.yml'));
+        if (is_file(PATH_BASEDIR.'config/core.yml')) {
+            $core = array_merge($core, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.yml')));
         }
 
         $core['directory_images'] = trim($core['directory_images'], " \t\n\r\0\x0B/"); // trim this
@@ -119,9 +119,9 @@ class HelperConfig
      */
     private static function loadCountries()
     {
-        $countries = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.yml'));
-        if (is_file(PATH_BASEDIR.'config/countries.local.yml')) {
-            $countries = array_merge($countries, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.local.yml')));
+        $countries = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/countries.yml'));
+        if (is_file(PATH_BASEDIR.'config/countries.yml')) {
+            $countries = array_merge($countries, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.yml')));
         }
 
         static::$countries = $countries;
@@ -132,9 +132,9 @@ class HelperConfig
      */
     private static function loadSecrets()
     {
-        $secrets = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.yml'));
-        if (is_file(PATH_BASEDIR.'config/secrets.local.yml')) {
-            $secrets = array_merge($secrets, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.local.yml')));
+        $secrets = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/secrets.yml'));
+        if (is_file(PATH_BASEDIR.'config/secrets.yml')) {
+            $secrets = array_merge($secrets, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.yml')));
         }
 
         static::$secrets = $secrets;
@@ -145,9 +145,9 @@ class HelperConfig
      */
     private static function loadCustomer()
     {
-        $customer = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml'));
-        if (is_file(PATH_BASEDIR.'/config/customer.local.yml')) {
-            $customer = array_merge($customer, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.local.yml')));
+        $customer = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/customer.yml'));
+        if (is_file(PATH_BASEDIR.'/config/customer.yml')) {
+            $customer = array_merge($customer, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml')));
         }
 
         static::$customer = $customer;
@@ -158,9 +158,9 @@ class HelperConfig
      */
     private static function loadShop()
     {
-        $shop = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml'));
-        if (is_file(PATH_BASEDIR.'config/shop.local.yml')) {
-            $shop = array_merge($shop, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.local.yml')));
+        $shop = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/shop.yml'));
+        if (is_file(PATH_BASEDIR.'config/shop.yml')) {
+            $shop = array_merge($shop, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml')));
         }
         if (isset($shop["vat_disable"]) && $shop["vat_disable"]) {
             $shop["vat"] = ["full" => 0, "reduced" => 0];
@@ -174,10 +174,10 @@ class HelperConfig
      */
     public static function loadNavigation(ServiceManager $serviceManager)
     {
-        if (is_file(PATH_BASEDIR.'config/navigation.local.yml')) {
-            $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.local.yml'));
-        } else {
+        if (is_file(PATH_BASEDIR.'config/navigation.yml')) {
             $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.yml'));
+        } else {
+            $navstruct = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/navigation.yml'));
         }
 
         if (!empty($navstruct) && static::$core['navigation_fetch_text_from_textcats']) {
