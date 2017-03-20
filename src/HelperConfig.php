@@ -90,7 +90,7 @@ class HelperConfig
      */
     private static function loadCore()
     {
-        $core = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/core.yml'));
+        $core = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/core.yml'));
         if (is_file(PATH_BASEDIR.'config/core.yml')) {
             $core = array_merge($core, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/core.yml')));
         }
@@ -119,7 +119,7 @@ class HelperConfig
      */
     private static function loadCountries()
     {
-        $countries = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/countries.yml'));
+        $countries = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/countries.yml'));
         if (is_file(PATH_BASEDIR.'config/countries.yml')) {
             $countries = array_merge($countries, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.yml')));
         }
@@ -132,7 +132,7 @@ class HelperConfig
      */
     private static function loadSecrets()
     {
-        $secrets = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/secrets.yml'));
+        $secrets = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/secrets.yml'));
         if (is_file(PATH_BASEDIR.'config/secrets.yml')) {
             $secrets = array_merge($secrets, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.yml')));
         }
@@ -145,7 +145,7 @@ class HelperConfig
      */
     private static function loadCustomer()
     {
-        $customer = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/customer.yml'));
+        $customer = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/customer.yml'));
         if (is_file(PATH_BASEDIR.'/config/customer.yml')) {
             $customer = array_merge($customer, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml')));
         }
@@ -158,7 +158,7 @@ class HelperConfig
      */
     private static function loadShop()
     {
-        $shop = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/shop.yml'));
+        $shop = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/shop.yml'));
         if (is_file(PATH_BASEDIR.'config/shop.yml')) {
             $shop = array_merge($shop, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml')));
         }
@@ -177,7 +177,7 @@ class HelperConfig
         if (is_file(PATH_BASEDIR.'config/navigation.yml')) {
             $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.yml'));
         } else {
-            $navstruct = Yaml::parse(file_get_contents(HCSF::BASEDIR.'config/navigation.yml'));
+            $navstruct = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/navigation.yml'));
         }
 
         if (!empty($navstruct) && static::$core['navigation_fetch_text_from_textcats']) {

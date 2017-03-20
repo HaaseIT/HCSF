@@ -10,7 +10,7 @@ class HCSF
 
     public function __construct()
     {
-        define('BASEDIR', dirname(__DIR__).DIRECTORY_SEPARATOR);
+        define('HCSF_BASEDIR', dirname(__DIR__).DIRECTORY_SEPARATOR);
     }
 
     public function init()
@@ -105,13 +105,13 @@ class HCSF
 
     protected function setupHardcodedTextcats()
     {
-        if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php')) {
-            $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php';
+        if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php')) {
+            $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php';
         } else {
-            if (file_exists(PATH_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php')) {
-                $HT = require PATH_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php';
+            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php')) {
+                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php';
             } else {
-                $HT = require PATH_BASEDIR.'src/hardcodedtextcats/de.php';
+                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/de.php';
             }
         }
 
@@ -166,7 +166,7 @@ class HCSF
     protected function setupTwig()
     {
         $this->serviceManager->setFactory('twig', function (ServiceManager $serviceManager) {
-            $loader = new \Twig_Loader_Filesystem([PATH_BASEDIR.'customviews', PATH_BASEDIR.'src/views/']);
+            $loader = new \Twig_Loader_Filesystem([PATH_BASEDIR.'customviews', HCSF_BASEDIR.'src/views/']);
 
             $twig_options = [
                 'autoescape' => false,
@@ -181,18 +181,30 @@ class HCSF
             if (HelperConfig::$core['allow_parsing_of_page_content']) {
                 $twig->addExtension(new \Twig_Extension_StringLoader());
             } else { // make sure, template_from_string is callable
-                $twig->addFunction('template_from_string', new \Twig_Function_Function('\HaaseIT\HCSF\Helper::reachThrough'));
+                $twig->addFunction(new \Twig_SimpleFunction('template_from_string', '\HaaseIT\HCSF\Helper::reachThrough'));
             }
 
-            $twig->addFunction(new \Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
+            if (!HelperConfig::$core['maintenancemode']) {
+                $twig->addFunction(new \Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
+            } else {
+                $twig->addFunction(new \Twig_SimpleFunction('T', '\HaaseIT\HCSF\Helper::returnEmptyString'));
+            }
 
-            $twig->addFunction('HT', new \Twig_Function_Function('\HaaseIT\HCSF\HardcodedText::get'));
-            $twig->addFunction('gFF', new \Twig_Function_Function('\HaaseIT\Toolbox\Tools::getFormField'));
-            $twig->addFunction('ImgURL', new \Twig_Function_Function('\HaaseIT\HCSF\Helper::getSignedGlideURL'));
-            $twig->addFunction('callback', new \Twig_Function_Function('HaaseIT\HCSF\Helper::twigCallback'));
-            $twig->addFunction('makeLinkHRefWithAddedGetVars', new \Twig_Function_Function('\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
+            $twig->addFunction(new \Twig_SimpleFunction('HT', '\HaaseIT\HCSF\HardcodedText::get'));
+            $twig->addFunction(new \Twig_SimpleFunction('gFF', '\HaaseIT\Toolbox\Tools::getFormField'));
+            $twig->addFunction(new \Twig_SimpleFunction('ImgURL', '\HaaseIT\HCSF\Helper::getSignedGlideURL'));
+            $twig->addFunction(new \Twig_SimpleFunction('callback', 'HaaseIT\HCSF\Helper::twigCallback'));
+            $twig->addFunction(new \Twig_SimpleFunction('makeLinkHRefWithAddedGetVars', '\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
 
             return $twig;
         });
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getServiceManager()
+    {
+        return $this->serviceManager;
     }
 }

@@ -101,6 +101,10 @@ class Helper
     public static function reachThrough($string) {
         return $string;
     }
+    // don't remove this, this is the fallback for unavailable twig functions
+    public static function returnEmptyString() {
+        return '';
+    }
 
     public static function generatePage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P)
     {
