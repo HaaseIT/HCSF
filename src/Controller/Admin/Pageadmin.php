@@ -85,8 +85,8 @@ class Pageadmin extends Base
 
         if (!isset($this->get["action"])) {
             $this->P->cb_customdata["pageselect"] = $this->showPageselect();
-        } elseif (($this->get["action"] == 'edit' || $this->get["action"] == 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
-            if ($this->get["action"] == 'delete' && isset($this->post["delete"]) && $this->post["delete"] == 'do') {
+        } elseif (($this->get["action"] === 'edit' || $this->get["action"] === 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
+            if ($this->get["action"] === 'delete' && isset($this->post["delete"]) && $this->post["delete"] === 'do') {
                 // delete and put message in customdata
                 $Ptodelete = new UserPage($this->serviceManager, $this->get["page_key"], true);
                 if ($Ptodelete->cb_id != NULL) {
@@ -97,7 +97,7 @@ class Pageadmin extends Base
                 $this->P->cb_customdata["deleted"] = true;
             } else { // edit or update page
                 if (isset($_REQUEST["page_key"]) && $Ptoedit = new UserPage($this->serviceManager, $_REQUEST["page_key"], true)) {
-                    if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] == 'true') {
+                    if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] === 'true') {
 
                         if (HelperConfig::$core['pagetext_enable_purifier']) {
                             $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
@@ -129,7 +129,7 @@ class Pageadmin extends Base
                     $this->P->cb_customdata["admin_page_groups"] = HelperConfig::$core["admin_page_groups"];
                     $aOptions = [''];
                     foreach (HelperConfig::$navigation as $sKey => $aValue) {
-                        if ($sKey == 'admin') {
+                        if ($sKey === 'admin') {
                             continue;
                         }
                         $aOptions[] = $sKey;
@@ -139,11 +139,23 @@ class Pageadmin extends Base
 
                     // show archived versions of this page
                     if ($Ptoedit->oPayload->cl_id != NULL) {
-                        /** @var \PDOStatement $hResult */
-                        $hResult = $this->serviceManager->get('db')->query(
-                            'SELECT * FROM content_lang_archive WHERE cl_id = '.$Ptoedit->oPayload->cl_id." AND cl_lang = '".HelperConfig::$lang."' ORDER BY cla_timestamp DESC"
-                        );
-                        $iArchivedRows = $hResult->rowCount();
+
+                        $dbal = $this->serviceManager->get('dbal');
+
+                        /** @var \Doctrine\DBAL\Query\QueryBuilder $queryBuilder */
+                        $queryBuilder = $dbal->createQueryBuilder();
+                        $queryBuilder
+                            ->select('*')
+                            ->from('content_lang_archive')
+                            ->where('cl_id = ?')
+                            ->andWhere('cl_lang = ?')
+                            ->setParameter(0, $Ptoedit->oPayload->cl_id)
+                            ->setParameter(1, HelperConfig::$lang)
+                            ->orderBy('cla_timestamp', 'DESC')
+                        ;
+                        $statement = $queryBuilder->execute();
+                        $iArchivedRows = $statement->rowCount();
+
                         if ($iArchivedRows > 0) {
                             $aListSetting = [
                                 ['title' => 'cla_timestamp', 'key' => 'cla_timestamp', 'width' => '15%', 'linked' => false,],
@@ -152,7 +164,7 @@ class Pageadmin extends Base
                                 ['title' => 'cl_description', 'key' => 'cl_description', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                                 ['title' => 'cl_title', 'key' => 'cl_title', 'width' => '15%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                             ];
-                            $aData = $hResult->fetchAll();
+                            $aData = $statement->fetchAll();
                             $this->P->cb_customdata['archived_list'] = \HaaseIT\Toolbox\Tools::makeListtable(
                                 $aListSetting,
                                 $aData,
@@ -165,12 +177,12 @@ class Pageadmin extends Base
                     die(HardcodedText::get('pageadmin_exception_pagenotfound'));
                 }
             }
-        } elseif ($this->get["action"] == 'addpage') {
+        } elseif ($this->get["action"] === 'addpage') {
             $aErr = [];
-            if (isset($this->post["addpage"]) && $this->post["addpage"] == 'do') {
+            if (isset($this->post["addpage"]) && $this->post["addpage"] === 'do') {
                 $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
 
-                if (mb_substr($sPagekeytoadd, 0, 2) == '/_') {
+                if (mb_substr($sPagekeytoadd, 0, 2) === '/_') {
                     $aErr["reservedpath"] = true;
                 } elseif (strlen($sPagekeytoadd) < 4) {
                     $aErr["keytooshort"] = true;
@@ -198,16 +210,24 @@ class Pageadmin extends Base
      * @return array
      */
     private function showPageselect() {
-        /** @var \PDOStatement $hResult */
-        $hResult = $this->serviceManager->get('db')->query('SELECT * FROM content_base ORDER BY cb_key');
-
         $aGroups = [];
         foreach (HelperConfig::$core["admin_page_groups"] as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }
 
-        while ($aResult = $hResult->fetch()) {
+        $dbal = $this->serviceManager->get('dbal');
+
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $queryBuilder */
+        $queryBuilder = $dbal->createQueryBuilder();
+        $queryBuilder
+            ->select('*')
+            ->from('content_base')
+            ->orderBy('cb_key')
+        ;
+        $statement = $queryBuilder->execute();
+
+        while ($aResult = $statement->fetch()) {
             if (isset($aGroups[$aResult["cb_group"]])) {
                 $aTree[$aResult["cb_group"]][] = $aResult;
             } else {
