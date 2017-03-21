@@ -36,22 +36,27 @@ class Itemadmin extends Base
     /**
      * @var \PDO
      */
-    private $db;
+    protected $db;
+
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $dbal;
 
     /**
      * @var array
      */
-    private $get;
+    protected $get;
 
     /**
      * @var array
      */
-    private $post;
+    protected $post;
 
     /**
      * @var ServerRequest;
      */
-    private $request;
+    protected $request;
 
     /**
      * Itemadmin constructor.
@@ -61,6 +66,7 @@ class Itemadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
         $this->request = $serviceManager->get('request');
         $this->get = $this->request->getQueryParams();
         $this->post = $this->request->getParsedBody();
@@ -132,10 +138,17 @@ class Itemadmin extends Base
                             $sql = DBTools::buildInsertQuery($aData, 'item_base');
                             $this->db->exec($sql);
                             $iInsertID = $this->db->lastInsertId();
-                            $sql = 'SELECT itm_no FROM item_base WHERE itm_id = '.$iInsertID;
-                            $hResult = $this->db->query($sql);
-                            $aRow = $hResult->fetch();
-                            header('Location: /_admin/itemadmin.html?itemno='.$aRow['itm_no'].'&action=showitem');
+
+                            $queryBuilder = $this->dbal->createQueryBuilder();
+                            $queryBuilder
+                                ->select('itm_no')
+                                ->from('item_base')
+                                ->where('itm_id = '.$queryBuilder->createNamedParameter($iInsertID))
+                            ;
+                            $statement = $queryBuilder->execute();
+                            $row = $statement->fetch();
+
+                            header('Location: /_admin/itemadmin.html?itemno='.$row['itm_no'].'&action=showitem');
                             die();
                         }
                     }

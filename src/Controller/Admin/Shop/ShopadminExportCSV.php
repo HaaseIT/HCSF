@@ -31,7 +31,12 @@ class ShopadminExportCSV extends Base
     /**
      * @var \PDO
      */
-    private $db;
+    protected $db;
+
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $dbal;
 
     /**
      * Shopadmin constructor.
@@ -41,6 +46,7 @@ class ShopadminExportCSV extends Base
     {
         parent::__construct($serviceManager);
         $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
     }
 
     /**
@@ -69,14 +75,25 @@ class ShopadminExportCSV extends Base
         }
 
         // fetch orders from db and add to $this->P->cb_customdata
-        $sql = 'SELECT * FROM orders o INNER JOIN orders_items oi on o.o_id = oi.oi_o_id WHERE o.o_id IN('.implode(', ', $ids).') ORDER BY oi.oi_o_id, oi.oi_id';
-        $query = $this->db->query($sql);
+        $queryBuilder = $this->dbal->createQueryBuilder();
+        $queryBuilder
+            ->select('*')
+            ->from('orders', 'o')
+            ->innerJoin('o', 'orders_items', 'oi', 'o.o_id = oi.oi_o_id')
+            ->where('o.o_id IN ('.substr(str_repeat('?,', count($ids)), 0, -1).')')
+            ->orderBy('oi.oi_o_id')
+            ->addOrderBy('oi.oi_id')
+        ;
+        $i = 0;
+        foreach ($ids as $id) {
+            $queryBuilder->setParameter($i, $id);
+            $i++;
+        }
+        $statement = $queryBuilder->execute();
 
-        $data = $query->fetchAll();
+        $rows = $statement->fetchAll();
 
-        // set header application/csv or whatever
-
-        $this->P->cb_customdata['rows'] = $data;
+        $this->P->cb_customdata['rows'] = $rows;
     }
 
 }
