@@ -120,8 +120,8 @@ class HCSF
 
     protected function setupDB()
     {
-        $this->serviceManager->setFactory('entitymanager', function () {
-            $doctrineconfig = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([PATH_BASEDIR."/src"], HelperConfig::$core['debug']);
+        $this->serviceManager->setFactory('dbal', function () {
+            $config = \Doctrine\DBAL\Configuration::class();
 
             $connectionParams = [
                 'url' =>
@@ -138,11 +138,11 @@ class HCSF
                 ],
             ];
 
-            return \Doctrine\ORM\EntityManager::create($connectionParams, $doctrineconfig);
+            return \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
         });
 
         $this->serviceManager->setFactory('db', function (ServiceManager $serviceManager) {
-            return $serviceManager->get('entitymanager')->getConnection()->getWrappedConnection();
+            return $serviceManager->get('dbal')->getConnection()->getWrappedConnection();
         });
     }
 
