@@ -31,9 +31,9 @@ use Zend\ServiceManager\ServiceManager;
 class Paypalnotify extends Base
 {
     /**
-     * @var \PDO
+     * @var \Doctrine\DBAL\Connection
      */
-    private $db;
+    private $dbal;
 
     /**
      * Paypalnotify constructor.
@@ -42,7 +42,7 @@ class Paypalnotify extends Base
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
     }
 
     /**
@@ -56,12 +56,20 @@ class Paypalnotify extends Base
         $sLogData = '';
 
         $iId = \filter_input(INPUT_POST, 'custom', FILTER_SANITIZE_NUMBER_INT);
-        $sql = 'SELECT * FROM orders WHERE o_id = ' . $iId . ' AND o_paymentmethod' . " = 'paypal' AND o_paymentcompleted = 'n'";
 
-        $hResult = $this->db->query($sql);
+        $queryBuilder = $this->dbal->createQueryBuilder();
+        $queryBuilder
+            ->select('*')
+            ->from('orders')
+            ->where('o_id = ?')
+            ->andWhere('o_paymentmethod = \'paypal\'')
+            ->andWhere('o_paymentcompleted = \'n\'')
+            ->setParameter(0, $iId)
+        ;
+        $statement = $queryBuilder->execute();
 
-        if ($hResult->rowCount() == 1) {
-            $aOrder = $hResult->fetch();
+        if ($statement->rowCount() == 1) {
+            $aOrder = $statement->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
             $postdata = '';
@@ -72,7 +80,7 @@ class Paypalnotify extends Base
             $postdata .= 'cmd=_notify-validate';
             $web = parse_url(HelperConfig::$shop["paypal"]["url"]);
 
-            if ($web['scheme'] == 'https') {
+            if ($web['scheme'] === 'https') {
                 $web['port'] = 443;
                 $ssl = 'ssl://';
             } else {
@@ -82,12 +90,12 @@ class Paypalnotify extends Base
             $fp = @fsockopen($ssl . $web['host'], $web['port'], $errnum, $errstr, 30);
 
             if ($fp) {
-                fputs($fp, "POST " . $web['path'] . " HTTP/1.1\r\n");
-                fputs($fp, "Host: " . $web['host'] . "\r\n");
-                fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-                fputs($fp, "Content-length: " . strlen($postdata) . "\r\n");
-                fputs($fp, "Connection: close\r\n\r\n");
-                fputs($fp, $postdata . "\r\n\r\n");
+                fwrite($fp, "POST " . $web['path'] . " HTTP/1.1\r\n");
+                fwrite($fp, "Host: " . $web['host'] . "\r\n");
+                fwrite($fp, "Content-type: application/x-www-form-urlencoded\r\n");
+                fwrite($fp, "Content-length: " . strlen($postdata) . "\r\n");
+                fwrite($fp, "Connection: close\r\n\r\n");
+                fwrite($fp, $postdata . "\r\n\r\n");
 
                 $info = [];
                 while (!feof($fp)) {
@@ -102,30 +110,33 @@ class Paypalnotify extends Base
                     $sLogData .= \HaaseIT\Toolbox\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
                     // Check if the transaction id has been used before
-                    $sTxn_idQ = 'SELECT o_paypal_tx FROM orders WHERE o_paypal_tx = :txn_id';
-                    $hTxn_idResult = $this->db->prepare($sTxn_idQ);
-                    $hTxn_idResult->bindValue(':txn_id', $_REQUEST["txn_id"]);
-                    $hTxn_idResult->execute();
+                    $queryBuilder = $this->dbal->createQueryBuilder();
+                    $queryBuilder
+                        ->select('o_paypal_tx')
+                        ->from('orders')
+                        ->where('o_paypal_tx = ?')
+                        ->setParameter(0, $_REQUEST["txn_id"])
+                    ;
+                    $statement = $queryBuilder->execute();
 
-                    if ($hTxn_idResult->rowCount() == 0) {
+                    if ($statement->rowCount() == 0) {
                         if (
                             $_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '')
                             && $_REQUEST["custom"] == $aOrder['o_id']
-                            && $_REQUEST["payment_status"] == "Completed"
+                            && $_REQUEST["payment_status"] === "Completed"
                             && $_REQUEST["mc_currency"] == HelperConfig::$shop["paypal"]["currency_id"]
                             && $_REQUEST["business"] == HelperConfig::$shop["paypal"]["business"]
                         ) {
-                            $aTxnUpdateData = [
-                                'o_paypal_tx' => $_REQUEST["txn_id"],
-                                'o_paymentcompleted' => 'y',
-                                'o_id' => $iId,
-                            ];
-                            $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aTxnUpdateData, 'orders', 'o_id');
-                            $hResult = $this->db->prepare($sql);
-                            foreach ($aTxnUpdateData as $sKey => $sValue) {
-                                $hResult->bindValue(':' . $sKey, $sValue);
-                            }
-                            $hResult->execute();
+                            $queryBuilder = $this->dbal->createQueryBuilder();
+                            $queryBuilder
+                                ->update('orders')
+                                ->set('o_paypal_tx', '?')
+                                ->set('o_paymentcompleted', 'y')
+                                ->setParameter(0, $_REQUEST["txn_id"])
+                                ->where('o_id = ?')
+                                ->setParameter(1, $iId)
+                            ;
+                            $queryBuilder->execute();
 
                             $sLogData .= "-- Alles ok. Zahlung erfolgreich. TXNID: " . $_REQUEST["txn_id"] . " --\n\n";
                         } else {
@@ -147,10 +158,7 @@ class Paypalnotify extends Base
                     $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
                 }
 
-                $fp = fopen(PATH_LOGS . FILE_PAYPALLOG, 'a');
-                // Write $somecontent to our opened file.
-                fwrite($fp, $sLogData);
-                fclose($fp);
+                file_put_contents(PATH_LOGS . FILE_PAYPALLOG, $sLogData, FILE_APPEND);
             }
         }
 
