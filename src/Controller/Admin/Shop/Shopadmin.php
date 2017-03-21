@@ -138,29 +138,33 @@ class Shopadmin extends Base
             $bIgnoreStorno = false;
             $sql = 'SELECT * FROM orders WHERE ';
 
-            switch ($_REQUEST["type"]) {
-                case 'closed':
-                    $sql .= "o_ordercompleted = 'y' ";
-                    break;
-                case 'open':
-                    $sql .= "o_ordercompleted = 'n' ";
-                    break;
-                case 'inwork':
-                    $sql .= "o_ordercompleted = 'i' ";
-                    break;
-                case 'storno':
-                    $sql .= "o_ordercompleted = 's' ";
-                    break;
-                case 'deleted':
-                    $sql .= "o_ordercompleted = 'd' ";
-                    break;
-                case 'all':
-                    $sql .= "o_ordercompleted != 'd' ";
-                    $bIgnoreStorno = true;
-                    break;
-                case 'openinwork':
-                default:
-                    $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
+            if (isset($_REQUEST["type"])) {
+                switch ($_REQUEST["type"]) {
+                    case 'closed':
+                        $sql .= "o_ordercompleted = 'y' ";
+                        break;
+                    case 'open':
+                        $sql .= "o_ordercompleted = 'n' ";
+                        break;
+                    case 'inwork':
+                        $sql .= "o_ordercompleted = 'i' ";
+                        break;
+                    case 'storno':
+                        $sql .= "o_ordercompleted = 's' ";
+                        break;
+                    case 'deleted':
+                        $sql .= "o_ordercompleted = 'd' ";
+                        break;
+                    case 'all':
+                        $sql .= "o_ordercompleted != 'd' ";
+                        $bIgnoreStorno = true;
+                        break;
+                    case 'openinwork':
+                    default:
+                        $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
+                }
+            } else {
+                $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
             }
 
             $bFromTo = false;
