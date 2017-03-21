@@ -72,7 +72,7 @@ class Userhome extends Base
             if (isset($_GET["editprofile"])) {
                 $sErr = '';
 
-                if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
+                if (isset($_POST["doEdit"]) && $_POST["doEdit"] === 'yes') {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
                     $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
@@ -82,7 +82,9 @@ class Userhome extends Base
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
-                    if ($iRows == 1) $sErr .= $this->textcats->T("userprofile_emailalreadyinuse") . '<br>';
+                    if ($iRows == 1) {
+                        $sErr .= $this->textcats->T("userprofile_emailalreadyinuse") . '<br>';
+                    }
                     $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
 
                     if ($sErr == '') {

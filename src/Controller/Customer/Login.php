@@ -40,23 +40,23 @@ class Login extends Base
         /** @var \HaaseIT\Toolbox\Textcat $textcats */
         $textcats = $this->serviceManager->get('textcats');
 
-        if (!isset($_POST["sAction"]) || $_POST["sAction"] != "login") {
+        if (!isset($_POST["sAction"]) || $_POST["sAction"] !== "login") {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
             $mLogin = $this->getLogin();
-            if (isset($mLogin["status"]) && $mLogin["status"] == 'success') {
+            if (isset($mLogin["status"]) && $mLogin["status"] === 'success') {
                 $this->P->oPayload->cl_html = $textcats->T("login_success") . '<br>';
                 header('Location: /_misc/userhome.html?login=true');
                 die();
-            } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'tosnotaccepted') {
+            } elseif (isset($mLogin["status"]) && $mLogin["status"] === 'tosnotaccepted') {
                 $this->P->oPayload->cl_html = $textcats->T("login_fail_tosnotaccepted") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
-            } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'emailnotverified') {
+            } elseif (isset($mLogin["status"]) && $mLogin["status"] === 'emailnotverified') {
                 $this->P->oPayload->cl_html = $textcats->T("login_fail_emailnotverified") . '<br><br>';
                 $this->P->oPayload->cl_html .= '<a href="/_misc/resendverificationmail.html?email='
                     . $mLogin["data"]['cust_email'] . '">' . $textcats->T("login_fail_emailnotverifiedresend") . '</a>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
-            } elseif (isset($mLogin["status"]) && $mLogin["status"] == 'accountinactive') {
+            } elseif (isset($mLogin["status"]) && $mLogin["status"] === 'accountinactive') {
                 $this->P->oPayload->cl_html = $textcats->T("login_fail_accountinactive") . '<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } else {
@@ -76,21 +76,31 @@ class Login extends Base
     private function getLogin()
     {
         $bTryEmail = false;
-        if ('cust_no' != 'cust_email') $bTryEmail = true;
+        if ('cust_no' !== 'cust_email') {
+            $bTryEmail = true;
+        }
 
         $sEmail = filter_var(trim(Tools::getFormfield("user")), FILTER_SANITIZE_EMAIL);
         $sUser = filter_var(trim(Tools::getFormfield("user")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
         $sql = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
             . ' FROM customer WHERE ';
-        if ($bTryEmail) $sql .= "(";
+        if ($bTryEmail) {
+            $sql .= "(";
+        }
         $sql .= 'cust_no = :user';
-        if ($bTryEmail) $sql .= ' OR cust_email = :email) ';
+        if ($bTryEmail) {
+            $sql .= ' OR cust_email = :email) ';
+        }
         $sql .= " AND ";
-        if ($bTryEmail) $sql .= "(";
+        if ($bTryEmail) {
+            $sql .= "(";
+        }
         $sql .= 'cust_no != \'\'';
 
-        if ($bTryEmail) $sql .= ' OR cust_email != \'\')';
+        if ($bTryEmail) {
+            $sql .= ' OR cust_email != \'\')';
+        }
 
         /** @var \PDOStatement $hResult */
         $hResult = $this->serviceManager->get('db')->prepare($sql);
@@ -105,14 +115,14 @@ class Login extends Base
             $aRow = $hResult->fetch();
 
             if (password_verify($_POST["password"], $aRow['cust_password'])) {
-                if ($aRow['cust_active'] == 'y' && $aRow['cust_emailverified'] == 'y' && $aRow['cust_tosaccepted'] == 'y') {
+                if ($aRow['cust_active'] === 'y' && $aRow['cust_emailverified'] === 'y' && $aRow['cust_tosaccepted'] === 'y') {
                     $_SESSION["user"] = $aRow;
                     return ['status' => 'success'];
-                } elseif ($aRow['cust_tosaccepted'] == 'n') {
+                } elseif ($aRow['cust_tosaccepted'] === 'n') {
                     return ['status' => 'tosnotaccepted'];
-                } elseif ($aRow['cust_emailverified'] == 'n') {
+                } elseif ($aRow['cust_emailverified'] === 'n') {
                     return ['status' => 'emailnotverified', 'data' => $aRow,];
-                } elseif ($aRow['cust_active'] == 'n') {
+                } elseif ($aRow['cust_active'] === 'n') {
                     return ['status' => 'accountinactive',];
                 }
             }

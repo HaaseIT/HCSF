@@ -60,7 +60,7 @@ class Myorders extends Base
 
             $this->P->cb_customcontenttemplate = 'shop/myorders';
 
-            if (isset($_GET["action"]) && $_GET["action"] == 'show' && isset($_GET["id"])) {
+            if (isset($_GET["action"], $_GET["id"]) && $_GET["action"] === 'show') {
                 $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
                 $sql = "SELECT * FROM " . 'orders WHERE o_id = :id AND o_custno = \'' . $_SESSION['user']['cust_no'] . '\' AND o_ordercompleted != \'d\'';
@@ -158,14 +158,26 @@ class Myorders extends Base
             while ($aRow = $hResult->fetch()) {
                 $sStatus = SHelper::showOrderStatusText($this->textcats, $aRow["o_ordercompleted"]);
 
-                if ($aRow["o_paymentmethod"] == 'prepay') $sPaymentmethod = $this->textcats->T("order_paymentmethod_prepay");
-                elseif ($aRow["o_paymentmethod"] == 'paypal') $sPaymentmethod = $this->textcats->T("order_paymentmethod_paypal");
-                elseif ($aRow["o_paymentmethod"] == 'debit') $sPaymentmethod = $this->textcats->T("order_paymentmethod_debit");
-                elseif ($aRow["o_paymentmethod"] == 'invoice') $sPaymentmethod = $this->textcats->T("order_paymentmethod_invoice");
-                else $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);
+                if ($aRow["o_paymentmethod"] === 'prepay') {
+                    $sPaymentmethod = $this->textcats->T("order_paymentmethod_prepay");
+                }
+                elseif ($aRow["o_paymentmethod"] === 'paypal') {
+                    $sPaymentmethod = $this->textcats->T("order_paymentmethod_paypal");
+                }
+                elseif ($aRow["o_paymentmethod"] === 'debit') {
+                    $sPaymentmethod = $this->textcats->T("order_paymentmethod_debit");
+                }
+                elseif ($aRow["o_paymentmethod"] === 'invoice') {
+                    $sPaymentmethod = $this->textcats->T("order_paymentmethod_invoice");
+                } else {
+                    $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);
+                }
 
-                if ($aRow["o_paymentcompleted"] == 'y') $sPaymentstatus = ucwords($this->textcats->T("misc_yes"));
-                else $sPaymentstatus = ucwords($this->textcats->T("misc_no"));
+                if ($aRow["o_paymentcompleted"] === 'y') {
+                    $sPaymentstatus = ucwords($this->textcats->T("misc_yes"));
+                } else {
+                    $sPaymentstatus = ucwords($this->textcats->T("misc_no"));
+                }
 
                 $aData[] = [
                     'o_id' => $aRow["o_id"],
@@ -181,9 +193,10 @@ class Myorders extends Base
                 ];
             }
             $return .= \HaaseIT\Toolbox\Tools::makeListtable($COList, $aData, $this->serviceManager->get('twig'));
-        } else $return .= $this->textcats->T("myorders_no_orders_to_display");
+        } else {
+            $return .= $this->textcats->T("myorders_no_orders_to_display");
+        }
 
         return $return;
     }
-
 }

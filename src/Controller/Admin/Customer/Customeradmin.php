@@ -87,18 +87,18 @@ class Customeradmin extends Base
     {
         $sType = 'all';
         if (isset($_REQUEST["type"])) {
-            if ($_REQUEST["type"] == 'active') {
+            if ($_REQUEST["type"] === 'active') {
                 $sType = 'active';
-            } elseif ($_REQUEST["type"] == 'inactive') {
+            } elseif ($_REQUEST["type"] === 'inactive') {
                 $sType = 'inactive';
             }
         }
         $return = '';
         if (!isset($_GET["action"])) {
             $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
-            if ($sType == 'active') {
+            if ($sType === 'active') {
                 $sql .= ' WHERE cust_active = \'y\'';
-            } elseif ($sType == 'inactive') {
+            } elseif ($sType === 'inactive') {
                 $sql .= ' WHERE cust_active = \'n\'';
             }
             $sql .= ' ORDER BY cust_no ASC';
@@ -109,15 +109,14 @@ class Customeradmin extends Base
             } else {
                 $aInfo["nodatafound"] = true;
             }
-        } elseif (isset($_GET["action"]) && $_GET["action"] == 'edit') {
+        } elseif (isset($_GET["action"]) && $_GET["action"] === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $aErr = [];
-            if (isset($_POST["doEdit"]) && $_POST["doEdit"] == 'yes') {
+            if (isset($_POST["doEdit"]) && $_POST["doEdit"] === 'yes') {
                 $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 if (strlen($sCustno) < HelperConfig::$customer["minimum_length_custno"]) {
                     $aErr["custnoinvalid"] = true;
                 } else {
-
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
                     $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':id', $iId);
@@ -151,8 +150,8 @@ class Customeradmin extends Base
                             'cust_fax' => trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                             'cust_country' => trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                             'cust_group' => trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_emailverified' => ((isset($_POST["emailverified"]) && $_POST["emailverified"] == 'y') ? 'y' : 'n'),
-                            'cust_active' => ((isset($_POST["active"]) && $_POST["active"] == 'y') ? 'y' : 'n'),
+                            'cust_emailverified' => ((isset($_POST["emailverified"]) && $_POST["emailverified"] === 'y') ? 'y' : 'n'),
+                            'cust_active' => ((isset($_POST["active"]) && $_POST["active"] === 'y') ? 'y' : 'n'),
                             'cust_id' => $iId,
                         ];
                         if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
@@ -161,7 +160,9 @@ class Customeradmin extends Base
                         }
                         $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                         $hResult = $this->db->prepare($sql);
-                        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
+                        foreach ($aData as $sKey => $sValue) {
+                            $hResult->bindValue(':' . $sKey, $sValue);
+                        }
                         $hResult->execute();
                         $aInfo["changeswritten"] = true;
                     }
@@ -180,7 +181,9 @@ class Customeradmin extends Base
         }
         $aPData["customeradmin"]["text"] = $return;
         $aPData["customeradmin"]["type"] = $sType;
-        if (isset($aInfo)) $aPData["customeradmin"]["info"] = $aInfo;
+        if (isset($aInfo)) {
+            $aPData["customeradmin"]["info"] = $aInfo;
+        }
         return $aPData;
     }
 

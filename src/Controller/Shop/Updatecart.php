@@ -132,11 +132,15 @@ class Updatecart extends Base
                 'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
                 'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
             ];
-            if (count($aMore)) $aAR = array_merge($aAR, $aMore);
+            if (count($aMore)) {
+                $aAR = array_merge($aAR, $aMore);
+            }
             echo $this->serviceManager->get('twig')->render('shop/update-cart.twig', $aAR);
         } else {
             $aMSG["msg"] =  $sReply;
-            if (count($aMore)) $aMSG = array_merge($aMSG, $aMore);
+            if (count($aMore)) {
+                $aMSG = array_merge($aMSG, $aMore);
+            }
             header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], $aMSG, true, false));
         }
         die();

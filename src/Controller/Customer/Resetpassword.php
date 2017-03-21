@@ -79,12 +79,12 @@ class Resetpassword extends Base
                     $aErr = [];
                     $aResult = $hResult->fetch();
                     $iTimestamp = time();
-                    if ($aResult['cust_pwresettimestamp'] < $iTimestamp - DAY) {
+                    if ($aResult['cust_pwresettimestamp'] < $iTimestamp - strtotime('1 Day', 0)) {
                         $this->P->oPayload->cl_html = $this->textcats->T("pwreset_error_expired");
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
                         $this->P->cb_customdata["pwreset"]["minpwlength"] = HelperConfig::$customer["minimum_length_password"];
-                        if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
+                        if (isset($_POST["doSend"]) && $_POST["doSend"] === 'yes') {
                             $aErr = $this->handlePasswordReset($aErr, $aResult['cust_id']);
                             if (count($aErr) == 0) {
                                 $this->P->cb_customdata["pwreset"]["showsuccessmessage"] = true;
@@ -108,8 +108,12 @@ class Resetpassword extends Base
             if (
                 strlen($_POST["pwd"]) < HelperConfig::$customer["minimum_length_password"]
                 || strlen($_POST["pwd"]) > HelperConfig::$customer["maximum_length_password"]
-            ) $aErr[] = 'pwlength';
-            if ($_POST["pwd"] != $_POST["pwdc"]) $aErr[] = 'pwmatch';
+            ) {
+                $aErr[] = 'pwlength';
+            }
+            if ($_POST["pwd"] != $_POST["pwdc"]) {
+                $aErr[] = 'pwmatch';
+            }
             if (count($aErr) == 0) {
                 $sEnc = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
                 $aData = [
@@ -119,7 +123,9 @@ class Resetpassword extends Base
                 ];
                 $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                 $hResult = $this->db->prepare($sql);
-                foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                foreach ($aData as $sKey => $sValue) {
+                    $hResult->bindValue(':'.$sKey, $sValue);
+                }
                 $hResult->execute();
             }
         } else {
@@ -128,5 +134,4 @@ class Resetpassword extends Base
 
         return $aErr;
     }
-
 }

@@ -347,7 +347,9 @@ class Shoppingcart extends Base
             $aFilesToSend[] =
                 PATH_DOCROOT.HelperConfig::$core['directory_emailattachments'].'/'
                 .HelperConfig::$shop["email_orderconfirmation_attachment_cancellationform_".HelperConfig::$lang];
-        } else $aFilesToSend = [];
+        } else {
+            $aFilesToSend = [];
+        }
 
         Helper::mailWrapper(
             $this->post["email"],

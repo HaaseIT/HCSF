@@ -63,7 +63,7 @@ class Forgotpassword extends Base
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
 
             $aErr = [];
-            if (isset($_POST["doSend"]) && $_POST["doSend"] == 'yes') {
+            if (isset($_POST["doSend"]) && $_POST["doSend"] === 'yes') {
                 $aErr = $this->handleForgotPassword($aErr);
                 if (count($aErr) == 0) {
                     $this->P->cb_customdata["forgotpw"]["showsuccessmessage"] = true;
@@ -94,7 +94,7 @@ class Forgotpassword extends Base
             } else {
                 $aResult = $hResult->fetch();
                 $iTimestamp = time();
-                if ($iTimestamp - HOUR < $aResult['cust_pwresettimestamp']) { // 1 hour delay between requests
+                if ($iTimestamp - strtotime('1 Hour', 0) < $aResult['cust_pwresettimestamp']) { // 1 hour delay between requests
                     $aErr[] = 'pwresetstilllocked';
                 } else {
                     $sResetCode = md5($aResult['cust_email'].$iTimestamp);
@@ -105,15 +105,17 @@ class Forgotpassword extends Base
                     ];
                     $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                     $hResult = $this->db->prepare($sql);
-                    foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                    foreach ($aData as $sKey => $sValue) {
+                        $hResult->bindValue(':'.$sKey, $sValue);
+                    }
                     $hResult->execute();
 
                     $sTargetAddress = $aResult['cust_email'];
                     $sSubject = $this->textcats->T("forgotpw_mail_subject");
                     $sMessage = $this->textcats->T("forgotpw_mail_text1");
-                    $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
+                    $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
-                    $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == 'on' ? 's' : '').'://';
+                    $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on' ? 's' : '').'://';
                     $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                     $sMessage .= '<br><br>'.$this->textcats->T("forgotpw_mail_text2");
 

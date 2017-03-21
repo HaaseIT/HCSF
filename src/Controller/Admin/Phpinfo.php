@@ -37,12 +37,12 @@ class Phpinfo extends Base
 
         ob_start();
         phpinfo();
-        preg_match ('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);
+        preg_match('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);
         $html = '<div class=\'phpinfodisplay\'><style type=\'text/css\'>';
 
-        $html .= implode( "\n",
+        $html .= implode("\n",
             array_map(
-                function ($i) {
+                function($i) {
                     return ".phpinfodisplay " . preg_replace( "/,/", ",.phpinfodisplay ", $i );
                 },
                 preg_split('/\n/', $matches[1])
