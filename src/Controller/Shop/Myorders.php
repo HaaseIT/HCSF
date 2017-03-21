@@ -160,14 +160,11 @@ class Myorders extends Base
 
                 if ($aRow["o_paymentmethod"] === 'prepay') {
                     $sPaymentmethod = $this->textcats->T("order_paymentmethod_prepay");
-                }
-                elseif ($aRow["o_paymentmethod"] === 'paypal') {
+                } elseif ($aRow["o_paymentmethod"] === 'paypal') {
                     $sPaymentmethod = $this->textcats->T("order_paymentmethod_paypal");
-                }
-                elseif ($aRow["o_paymentmethod"] === 'debit') {
+                } elseif ($aRow["o_paymentmethod"] === 'debit') {
                     $sPaymentmethod = $this->textcats->T("order_paymentmethod_debit");
-                }
-                elseif ($aRow["o_paymentmethod"] === 'invoice') {
+                } elseif ($aRow["o_paymentmethod"] === 'invoice') {
                     $sPaymentmethod = $this->textcats->T("order_paymentmethod_invoice");
                 } else {
                     $sPaymentmethod = ucwords($aRow["o_paymentmethod"]);

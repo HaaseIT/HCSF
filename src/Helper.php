@@ -24,8 +24,18 @@ use HaaseIT\HCSF\Shop\Helper as SHelper;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Helper
+ * @package HaaseIT\HCSF
+ */
 class Helper
 {
+    /**
+     * @param $file
+     * @param int $width
+     * @param int $height
+     * @return bool|string
+     */
     public static function getSignedGlideURL($file, $width = 0, $height = 0)
     {
         $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', HelperConfig::$secrets['glide_signkey']);
@@ -47,6 +57,14 @@ class Helper
         return $urlBuilder->getUrl($file, $param);
     }
 
+    /**
+     * @param $to
+     * @param string $subject
+     * @param string $message
+     * @param array $aImagesToEmbed
+     * @param array $aFilesToAttach
+     * @return bool
+     */
     public static function mailWrapper($to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
         $mail = new \PHPMailer;
         $mail->CharSet = 'UTF-8';
@@ -98,14 +116,26 @@ class Helper
     }
 
     // don't remove this, this is the fallback for unavailable twig functions
+    /**
+     * @param $string
+     * @return mixed
+     */
     public static function reachThrough($string) {
         return $string;
     }
     // don't remove this, this is the fallback for unavailable twig functions
+    /**
+     * @return string
+     */
     public static function returnEmptyString() {
         return '';
     }
 
+    /**
+     * @param ServiceManager $serviceManager
+     * @param Page $P
+     * @return array
+     */
     public static function generatePage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P)
     {
         $requesturi = $serviceManager->get('request')->getRequestTarget();
@@ -214,6 +244,10 @@ class Helper
         return $aP;
     }
 
+    /**
+     * @param array $aP
+     * @param Page $P
+     */
     private static function getDebug($aP, $P)
     {
         if (!empty($_POST)) {
@@ -228,6 +262,9 @@ class Helper
         //Tools::debug($P, '$P');
     }
 
+    /**
+     * @return int|mixed|string
+     */
     public static function getLanguage()
     {
         $langavailable = HelperConfig::$core["lang_available"];
@@ -260,6 +297,10 @@ class Helper
         return $sLang;
     }
 
+    /**
+     * @param string $purpose
+     * @return bool|\HTMLPurifier
+     */
     public static function getPurifier($purpose)
     {
         $purifier_config = \HTMLPurifier_Config::createDefault();
@@ -295,6 +336,11 @@ class Helper
         return new \HTMLPurifier($purifier_config);
     }
 
+    /**
+     * @param $callback
+     * @param $parameters
+     * @return bool|mixed
+     */
     public static function twigCallback($callback, $parameters)
     {
         $callbacks = [

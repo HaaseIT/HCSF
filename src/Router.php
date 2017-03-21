@@ -116,9 +116,13 @@ class Router
                     If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
                     If there is already a slash at the end, the last part of the path array will be empty.
                      */
-                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') $this->sPath .= '/';
+                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') {
+                        $this->sPath .= '/';
+                    }
 
-                    if ($this->sPath[strlen($this->sPath) - 1] == '/') $this->sPath .= 'index.html';
+                    if ($this->sPath[strlen($this->sPath) - 1] === '/') {
+                        $this->sPath .= 'index.html';
+                    }
 
                     $this->P = new UserPage($this->serviceManager, $this->sPath);
                 }
@@ -127,12 +131,12 @@ class Router
                     $this->P = 404;
                 } else { // if it is found, go on
                     // Support for shorturls
-                    if ($this->P->cb_pagetype == 'shorturl') {
+                    if ($this->P->cb_pagetype === 'shorturl') {
                         header('Location: ' . $this->P->cb_pageconfig, true, 302);
                         exit();
                     }
 
-                    if (isset($this->P) && isset($aRoutingoverride) && count($aRoutingoverride)) {
+                    if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {
                         $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
                         $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
                     }
@@ -156,9 +160,9 @@ class Router
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
                     !(
-                        $this->P->cb_pagetype == 'itemoverview'
-                        || $this->P->cb_pagetype == 'itemoverviewgrpd'
-                        || $this->P->cb_pagetype == 'itemdetail'
+                        $this->P->cb_pagetype === 'itemoverview'
+                        || $this->P->cb_pagetype === 'itemoverviewgrpd'
+                        || $this->P->cb_pagetype === 'itemdetail'
                     )
                 ) { // no payload is fine if page is one of these
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_content_not_found");
@@ -177,13 +181,13 @@ class Router
         // /xxxx/item/0010.html
         $aTMP["parts_in_path"] = count($aPath);
         // if the last dir in path is 'item' and the last part of the path is not empty
-        if ($aPath[$aTMP["parts_in_path"] - 2] == 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
+        if ($aPath[$aTMP["parts_in_path"] - 2] === 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
 
             // explode the filename by .
             $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
 
             // if the filename ends in '.html', get the requested itemno
-            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] == 'html') {
+            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] === 'html') {
                 // to allow dots in the filename, we have to iterate through all parts of the filename
                 $aRoutingoverride["itemno"] = '';
                 for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {

@@ -25,8 +25,18 @@ use HaaseIT\Toolbox\Tools;
 use HaaseIT\HCSF\HardcodedText;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class Helper
+ * @package HaaseIT\HCSF\Customer
+ */
 class Helper
 {
+    /**
+     * @param string $sLang
+     * @param array $aErr
+     * @param bool $bEdit
+     * @return array
+     */
     public static function validateCustomerForm($sLang, $aErr = [], $bEdit = false)
     {
         if (!isset($_POST["email"]) || !\filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
@@ -92,6 +102,12 @@ class Helper
         return '';
     }
 
+    /**
+     * @param string $sKeyConfig
+     * @param string $sKeyForm
+     * @param array|bool $aUserData
+     * @return bool
+     */
     public static function getCustomerFormDefaultValue($sKeyConfig, $sKeyForm, $aUserData) {
         $sDefaultValue = self::getUserData($sKeyConfig, $aUserData);
         if (!$sDefaultValue && isset($_SESSION["formsave_addrform"][$sKeyForm])) {
@@ -101,6 +117,13 @@ class Helper
         return $sDefaultValue;
     }
 
+    /**
+     * @param $sLang
+     * @param string $sPurpose
+     * @param string $sErr
+     * @param bool $aUserData
+     * @return array
+     */
     public static function buildCustomerForm($sLang, $sPurpose = 'none', $sErr = '', $aUserData = false)
     {
         $sDefaultCountry = self::getCustomerFormDefaultValue('cust_country', "country", $aUserData);
@@ -225,6 +248,12 @@ class Helper
         return $aData;
     }
 
+    /**
+     * @param $sEmailVerificationcode
+     * @param $sTargetAddress
+     * @param ServiceManager $serviceManager
+     * @param bool $bCust
+     */
     public static function sendVerificationMail($sEmailVerificationcode, $sTargetAddress, ServiceManager $serviceManager, $bCust = false)
     {
         if ($bCust) {
@@ -246,6 +275,11 @@ class Helper
         \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
     }
 
+    /**
+     * @param string $sField
+     * @param bool $aUserdata
+     * @return bool
+     */
     public static function getUserData($sField = '', $aUserdata = false)
     {
         if (!$aUserdata) {

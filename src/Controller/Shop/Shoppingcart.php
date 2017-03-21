@@ -87,12 +87,12 @@ class Shoppingcart extends Base
             // ----------------------------------------------------------------------------
             $aErr = [];
             if (isset($_SESSION["cart"]) && count($_SESSION["cart"]) >= 1) {
-                if (isset($this->post["doCheckout"]) && $this->post["doCheckout"] == 'yes') {
+                if (isset($this->post["doCheckout"]) && $this->post["doCheckout"] === 'yes') {
                     $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
-                    if (!CHelper::getUserData() && (!isset($this->post["tos"]) || $this->post["tos"] != 'y')) {
+                    if (!CHelper::getUserData() && (!isset($this->post["tos"]) || $this->post["tos"] !== 'y')) {
                         $aErr["tos"] = true;
                     }
-                    if (!CHelper::getUserData() && (!isset($this->post["cancellationdisclaimer"]) || $this->post["cancellationdisclaimer"] != 'y')) {
+                    if (!CHelper::getUserData() && (!isset($this->post["cancellationdisclaimer"]) || $this->post["cancellationdisclaimer"] !== 'y')) {
                         $aErr["cancellationdisclaimer"] = true;
                     }
                     if (
@@ -113,11 +113,11 @@ class Shoppingcart extends Base
             if (!isset($aShoppingcart)) {
                 $this->P->oPayload->cl_html .= $this->textcats->T("shoppingcart_empty");
             } else {
-                if (isset($this->post["doCheckout"]) && $this->post["doCheckout"] == 'yes') {
+                if (isset($this->post["doCheckout"]) && $this->post["doCheckout"] === 'yes') {
                     if (count($aErr) == 0) {
                         $this->doCheckout();
                     }
-                } // endif $this->post["doCheckout"] == 'yes'
+                }
             }
 
             if (isset($aShoppingcart)) {

@@ -59,7 +59,7 @@ class Itemgroupadmin extends Base
         $this->P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
         $return = '';
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'insert_lang') {
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'insert_lang') {
             $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
             $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':gid', $_REQUEST["gid"]);
@@ -81,15 +81,17 @@ class Itemgroupadmin extends Base
                 ];
                 $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
                 $hResult = $this->db->prepare($sql);
-                foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                foreach ($aData as $sKey => $sValue) {
+                    $hResult->bindValue(':'.$sKey, $sValue);
+                }
                 $hResult->execute();
                 header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
                 die();
             }
         }
 
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'editgroup') {
-            if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
+        if (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'editgroup') {
+            if (isset($_REQUEST["do"]) && $_REQUEST["do"] === 'true') {
                 $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
             }
 
@@ -100,21 +102,27 @@ class Itemgroupadmin extends Base
             }
             $this->P->cb_customdata["showform"] = 'edit';
             $this->P->cb_customdata["group"] = $this->admin_prepareGroup('edit', $aGroup[0]);
-        } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] == 'addgroup') {
+        } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'addgroup') {
             $aErr = [];
-            if (isset($_REQUEST["do"]) && $_REQUEST["do"] == 'true') {
+            if (isset($_REQUEST["do"]) && $_REQUEST["do"] === 'true') {
                 $sName = filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 $sImg = filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
-                if (strlen($sName) < 3) $aErr["nametooshort"] = true;
-                if (strlen($sGNo) < 3) $aErr["grouptooshort"] = true;
+                if (strlen($sName) < 3) {
+                    $aErr["nametooshort"] = true;
+                }
+                if (strlen($sGNo) < 3) {
+                    $aErr["grouptooshort"] = true;
+                }
                 if (count($aErr) == 0) {
                     $sql = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
                     $hResult = $this->db->prepare($sql);
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
-                    if ($hResult->rowCount() > 0) $aErr["duplicateno"] = true;
+                    if ($hResult->rowCount() > 0) {
+                        $aErr["duplicateno"] = true;
+                    }
                 }
                 if (count($aErr) == 0) {
                     $aData = [
@@ -124,7 +132,9 @@ class Itemgroupadmin extends Base
                     ];
                     $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
                     $hResult = $this->db->prepare($sql);
-                    foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+                    foreach ($aData as $sKey => $sValue) {
+                        $hResult->bindValue(':'.$sKey, $sValue);
+                    }
                     $hResult->execute();
                     $iLastInsertID = $this->db->lastInsertId();
                     header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
@@ -161,7 +171,9 @@ class Itemgroupadmin extends Base
         $hResult->execute();
         $iNumRows = $hResult->rowCount();
 
-        if ($iNumRows > 0) return 'duplicateno';
+        if ($iNumRows > 0) {
+            return 'duplicateno';
+        }
 
         $aData = [
             'itmg_name' => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -194,7 +206,9 @@ class Itemgroupadmin extends Base
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
             $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) $hResult->bindValue(':' . $sKey, $sValue);
+            foreach ($aData as $sKey => $sValue) {
+                $hResult->bindValue(':' . $sKey, $sValue);
+            }
             $hResult->execute();
         }
 
@@ -216,7 +230,7 @@ class Itemgroupadmin extends Base
             'img' => isset($aData['itmg_img']) ? $aData['itmg_img'] : '',
         ];
 
-        if ($sPurpose == 'edit') {
+        if ($sPurpose === 'edit') {
             if ($aData['itmgt_id'] != '') {
                 $aGData["lang"] = [
                     'shorttext' => isset($aData['itmgt_shorttext']) ? $aData['itmgt_shorttext'] : '',
@@ -237,16 +251,18 @@ class Itemgroupadmin extends Base
         $sql = 'SELECT * FROM itemgroups_base '
             . 'LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
             . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') $sql .= ' WHERE itmg_id = :gid';
+        if ($iGID != '') {
+            $sql .= ' WHERE itmg_id = :gid';
+        }
         $sql .= ' ORDER BY itmg_no';
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang);
-        if ($iGID != '') $hResult->bindValue(':gid', $iGID);
+        if ($iGID != '') {
+            $hResult->bindValue(':gid', $iGID);
+        }
         $hResult->execute();
 
-        $aGroups = $hResult->fetchAll();
-
-        return $aGroups;
+        return $hResult->fetchAll();
     }
 
     /**
@@ -274,5 +290,4 @@ class Itemgroupadmin extends Base
             return false;
         }
     }
-
 }

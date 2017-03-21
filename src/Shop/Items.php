@@ -86,8 +86,7 @@ class Items
             if (!is_array($mItemno)) {
                 $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
             }
-        }
-        elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
+        } elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
             $sSearchtext = filter_var(trim($_REQUEST["searchtext"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             if (isset($_REQUEST["artnoexact"])) {
                 $hResult->bindValue(':searchtext', $sSearchtext, \PDO::PARAM_STR);
@@ -114,8 +113,9 @@ class Items
                 $sql .= 'item_base.itm_no = :itemno';
             }
         } elseif (isset($_REQUEST["searchtext"]) && \strlen($_REQUEST["searchtext"]) > 2) {
-            if (isset($_REQUEST["artnoexact"])) $sql .= 'item_base.itm_no = :searchtext';
-            else {
+            if (isset($_REQUEST["artnoexact"])) {
+                $sql .= 'item_base.itm_no = :searchtext';
+            } else {
                 $sql .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';
                 $sql .= ' OR itml_name_override LIKE :searchtextwild3 OR itml_text1 LIKE :searchtextwild4';
                 $sql .= ' OR itml_text2 LIKE :searchtextwild5)';
@@ -123,7 +123,9 @@ class Items
         } else {
             if (is_array($mItemIndex)) {
                 $sql .= "(";
-                foreach ($mItemIndex as $sAIndex) $sql .= "itm_index LIKE '%".filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
+                foreach ($mItemIndex as $sAIndex) {
+                    $sql .= "itm_index LIKE '%".filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
+                }
                 $sql = \HaaseIT\Toolbox\Tools::cutStringend($sql, 4);
                 $sql .= ")";
             } else {
@@ -203,7 +205,7 @@ class Items
     public function calcPrice($aData)
     {
         $aPrice = [];
-        if ($aData['itm_vatid'] != 'reduced') {
+        if ($aData['itm_vatid'] !== 'reduced') {
             $aData['itm_vatid'] = 'full';
         }
 
@@ -211,8 +213,7 @@ class Items
             $aPrice["netto_list"] = $aData['itm_price'];
             $aPrice['brutto_list'] = $this->addVat($aPrice['netto_list'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
             if (
-                isset($aData["itm_data"]["sale"]["start"]) && isset($aData["itm_data"]["sale"]["end"])
-                && isset($aData["itm_data"]["sale"]["price"])
+                isset($aData["itm_data"]["sale"]["start"], $aData["itm_data"]["sale"]["end"], $aData["itm_data"]["sale"]["price"])
             ) {
                 $iToday = date("Ymd");
                 if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
@@ -268,6 +269,5 @@ class Items
                 ),
                 $price
             );
-
     }
 }

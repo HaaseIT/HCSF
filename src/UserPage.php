@@ -24,9 +24,28 @@ namespace HaaseIT\HCSF;
 use HaaseIT\Toolbox\DBTools;
 use Zend\ServiceManager\ServiceManager;
 
+/**
+ * Class UserPage
+ * @package HaaseIT\HCSF
+ */
 class UserPage extends Page
 {
+    /**
+     * @var bool
+     */
     protected $bReturnRaw;
+    /**
+     * @var string
+     */
+    /**
+     * @var string
+     */
+    /**
+     * @var string
+     */
+    /**
+     * @var string
+     */
     public $cb_id, $cb_key, $cb_group, $purifier;
 
     /**
@@ -34,6 +53,12 @@ class UserPage extends Page
      */
     protected $dbal;
 
+    /**
+     * UserPage constructor.
+     * @param ServiceManager $serviceManager
+     * @param $sPagekey
+     * @param bool $bReturnRaw
+     */
     public function __construct(ServiceManager $serviceManager, $sPagekey, $bReturnRaw = false) {
         //if (!$bReturnRaw) $this->container = $container;
         $this->serviceManager = $serviceManager;
@@ -62,17 +87,25 @@ class UserPage extends Page
                 $hResult->fetch();
 
                 if ($this->cb_pagetype !== 'shorturl') {
-                    if (!$bReturnRaw) $this->cb_pageconfig = json_decode($this->cb_pageconfig);
+                    if (!$bReturnRaw) {
+                        $this->cb_pageconfig = json_decode($this->cb_pageconfig);
+                    }
                     $this->oPayload = $this->getPayload();
                 }
             }
         }
     }
 
+    /**
+     * @return UserPagePayload
+     */
     protected function getPayload() {
         return new UserPagePayload($this->serviceManager, $this->cb_id, $this->bReturnRaw);
     }
 
+    /**
+     * @return bool
+     */
     public function write() {
         $aData = [
             'cb_pagetype' => filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -91,6 +124,10 @@ class UserPage extends Page
         return $hResult->execute();
     }
 
+    /**
+     * @param string $sPagekeytoadd
+     * @return mixed
+     */
     public function insert($sPagekeytoadd) {
         $aData = [
             'cb_key' => $sPagekeytoadd,
@@ -99,6 +136,9 @@ class UserPage extends Page
         return $hResult = $this->serviceManager->get('db')->exec($sql);
     }
 
+    /**
+     * @return \Doctrine\DBAL\Driver\Statement|int
+     */
     public function remove() {
         // delete children
         $this->oPayload->remove($this->cb_id);

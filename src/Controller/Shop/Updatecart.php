@@ -118,7 +118,7 @@ class Updatecart extends Base
     }
 
     /**
-     * @param $sReply
+     * @param string $sReply
      * @param array $aMore
      */
     private function replyToCartUpdate($sReply, $aMore = []) {
