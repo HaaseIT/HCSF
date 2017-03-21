@@ -1,4 +1,11 @@
-[![Build Status](https://travis-ci.org/HaaseIT/HCSF.svg?branch=master)](https://travis-ci.org/HaaseIT/HCSF) [![Latest Stable Version](https://poser.pugx.org/haaseit/hcsf/version)](https://packagist.org/packages/haaseit/hcsf) [![License](https://poser.pugx.org/haaseit/hcsf/license)](https://packagist.org/packages/haaseit/hcsf) [![composer.lock available](https://poser.pugx.org/haaseit/hcsf/composerlock)](https://packagist.org/packages/haaseit/hcsf)
+[![Build Status](https://travis-ci.org/HaaseIT/HCSF.svg?branch=master)](https://travis-ci.org/HaaseIT/HCSF)
+[![Latest Stable Version](https://poser.pugx.org/haaseit/hcsf/version)](https://packagist.org/packages/haaseit/hcsf)
+[![License](https://poser.pugx.org/haaseit/hcsf/license)](https://packagist.org/packages/haaseit/hcsf)
+[![composer.lock available](https://poser.pugx.org/haaseit/hcsf/composerlock)](https://packagist.org/packages/haaseit/hcsf)
+[![Code Climate](https://codeclimate.com/github/HaaseIT/HCSF/badges/gpa.svg)](https://codeclimate.com/github/HaaseIT/HCSF)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/e0829327-0c57-41a6-8b72-ded8870bcfe3/mini.png)](https://insight.sensiolabs.com/projects/e0829327-0c57-41a6-8b72-ded8870bcfe3)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/HaaseIT/HCSF/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/HaaseIT/HCSF/?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b3d0bd22543c430898c73a599825c255)](https://www.codacy.com/app/HaaseIT/HCSF?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HaaseIT/HCSF&amp;utm_campaign=Badge_Grade)
 
 HCSF - A multilingual CMS and Shopsystem
 Copyright (C) 2014-2015  Marcus Haase - mail@marcus.haase.name
