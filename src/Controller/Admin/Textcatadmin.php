@@ -64,8 +64,8 @@ class Textcatadmin extends Base
                 ],
             ];
             $return .= Tools::makeListtable($aListSetting, $aData, $this->serviceManager->get('twig'));
-        } elseif ($_GET["action"] == 'edit' || $_GET["action"] == 'delete') {
-            if ($_GET["action"] == 'delete' && isset($_POST["delete"]) && $_POST["delete"] == 'do') {
+        } elseif ($_GET["action"] === 'edit' || $_GET["action"] === 'delete') {
+            if ($_GET["action"] === 'delete' && isset($_POST["delete"]) && $_POST["delete"] === 'do') {
                 $this->textcats->deleteText($_GET["id"]);
                 $this->P->cb_customdata["deleted"] = true;
             } else {
@@ -74,7 +74,7 @@ class Textcatadmin extends Base
                 $this->textcats->initTextIfVoid($_GET["id"]);
 
                 // if post:edit is set, update
-                if (isset($_POST["edit"]) && $_POST["edit"] == 'do') {
+                if (isset($_POST["edit"]) && $_POST["edit"] === 'do') {
                     if (HelperConfig::$core['textcat_enable_purifier']) {
                         $this->textcats->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
                     } else {
@@ -94,24 +94,35 @@ class Textcatadmin extends Base
                 ];
 
                 // show archived versions of this textcat
-                /** @var \PDOStatement $hResult */
-                $hResult = $this->serviceManager->get('db')->query(
-                    'SELECT * FROM textcat_lang_archive WHERE tcl_id = '.$aData["tcl_id"]." AND tcl_lang = '".HelperConfig::$lang."' ORDER BY tcla_timestamp DESC"
-                );
-                $iArchivedRows = $hResult->rowCount();
+                $dbal = $this->serviceManager->get('dbal');
+
+                /** @var \Doctrine\DBAL\Query\QueryBuilder $queryBuilder */
+                $queryBuilder = $dbal->createQueryBuilder();
+                $queryBuilder
+                    ->select('*')
+                    ->from('textcat_lang_archive')
+                    ->where('tcl_id = ?')
+                    ->andWhere('tcl_lang = ?')
+                    ->setParameter(0, $aData["tcl_id"])
+                    ->setParameter(1, HelperConfig::$lang)
+                    ->orderBy('tcla_timestamp', 'DESC')
+                ;
+                $statement = $queryBuilder->execute();
+                $iArchivedRows = $statement->rowCount();
+
                 if ($iArchivedRows > 0) {
                     $aListSetting = [
                         ['title' => 'tcla_timestamp', 'key' => 'tcla_timestamp', 'width' => '15%', 'linked' => false,],
                         ['title' => 'tcl_text', 'key' => 'tcl_text', 'width' => '85%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                     ];
-                    $aData = $hResult->fetchAll();
+                    $aData = $statement->fetchAll();
                     $this->P->cb_customdata['archived_list'] = Tools::makeListtable($aListSetting,
                         $aData, $this->serviceManager->get('twig'));
                 }
             }
-        } elseif ($_GET["action"] == 'add') {
+        } elseif ($_GET["action"] === 'add') {
             $this->P->cb_customdata["add"] = true;
-            if (isset($_POST["add"]) && $_POST["add"] == 'do') {
+            if (isset($_POST["add"]) && $_POST["add"] === 'do') {
                 $this->P->cb_customdata["err"] = $this->textcats->verifyAddTextKey($_POST["key"]);
 
                 if (count($this->P->cb_customdata["err"]) == 0) {
