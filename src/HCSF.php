@@ -121,7 +121,7 @@ class HCSF
     protected function setupDB()
     {
         $this->serviceManager->setFactory('dbal', function () {
-            $config = \Doctrine\DBAL\Configuration::class();
+            $config = new \Doctrine\DBAL\Configuration();
 
             $connectionParams = [
                 'url' =>
@@ -142,7 +142,7 @@ class HCSF
         });
 
         $this->serviceManager->setFactory('db', function (ServiceManager $serviceManager) {
-            return $serviceManager->get('dbal')->getConnection()->getWrappedConnection();
+            return $serviceManager->get('dbal')->getWrappedConnection();
         });
     }
 
