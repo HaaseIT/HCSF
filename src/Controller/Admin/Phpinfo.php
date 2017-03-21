@@ -40,13 +40,12 @@ class Phpinfo extends Base
         preg_match ('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);
         $html = '<div class=\'phpinfodisplay\'><style type=\'text/css\'>';
 
-        $html .= join( "\n",
+        $html .= implode( "\n",
             array_map(
-                create_function(
-                    '$i',
-                    'return ".phpinfodisplay " . preg_replace( "/,/", ",.phpinfodisplay ", $i );'
-                ),
-                preg_split( '/\n/', $matches[1] )
+                function ($i) {
+                    return ".phpinfodisplay " . preg_replace( "/,/", ",.phpinfodisplay ", $i );
+                },
+                preg_split('/\n/', $matches[1])
             )
         );
         $html .= '</style>'.$matches[2];
