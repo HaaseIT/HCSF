@@ -426,7 +426,7 @@ class Helper
         return $suggestions['default'];
     }
 
-    public static function handleItemPage(ServiceManager $serviceManager, $P, $aP)
+    public static function handleItemPage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P, $aP)
     {
         $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
@@ -455,7 +455,7 @@ class Helper
         return $aP;
     }
 
-    public static function seekItem($P, $aP, Items $oItem)
+    public static function seekItem(\HaaseIT\HCSF\Page $P, $aP, Items $oItem)
     {
         // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
         // if it is not found, we will show the overview
