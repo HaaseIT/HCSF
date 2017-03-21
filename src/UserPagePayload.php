@@ -27,10 +27,17 @@ class UserPagePayload extends PagePayload
 {
     public $cl_id, $cl_cb, $cl_lang, $purifier;
 
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $dbal;
+
     public function __construct(ServiceManager $serviceManager, $iParentID, $bReturnRaw = false) {
         parent::__construct($serviceManager);
 
-        if ($iParentID != '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
+        $this->dbal = $this->serviceManager->get('dbal');
+
+        if ($iParentID !== '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
             $sql = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
             $sql .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
 
@@ -56,7 +63,7 @@ class UserPagePayload extends PagePayload
                 $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
                 $hResult->execute();
 
-                if ($hResult->rowCount() == 1) {
+                if ($hResult->rowCount() === 1) {
                     $hResult->fetch();
                 }
             }
@@ -91,7 +98,12 @@ class UserPagePayload extends PagePayload
     }
 
     public function remove($sParentID) {
-        $sql = "DELETE FROM content_lang WHERE cl_cb = '".$sParentID."'";
-        return $this->serviceManager->get('db')->exec($sql);
+        $queryBuilder = $this->dbal->createQueryBuilder();
+        $queryBuilder
+            ->delete('content_lang')
+            ->where('cl_cb = '.$queryBuilder->createNamedParameter($sParentID))
+        ;
+
+        return $queryBuilder->execute();
     }
 }

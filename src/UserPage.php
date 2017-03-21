@@ -29,11 +29,17 @@ class UserPage extends Page
     protected $bReturnRaw;
     public $cb_id, $cb_key, $cb_group, $purifier;
 
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    protected $dbal;
+
     public function __construct(ServiceManager $serviceManager, $sPagekey, $bReturnRaw = false) {
         //if (!$bReturnRaw) $this->container = $container;
         $this->serviceManager = $serviceManager;
         $this->iStatus = 200;
         $this->bReturnRaw = $bReturnRaw;
+        $this->dbal = $this->serviceManager->get('dbal');
 
         if ($sPagekey === '/_misc/index.html') {
             $this->cb_id = $sPagekey;
@@ -98,7 +104,12 @@ class UserPage extends Page
         $this->oPayload->remove($this->cb_id);
 
         // then delete base row
-        $sql = "DELETE FROM content_base WHERE cb_id = '".$this->cb_id."'";
-        return $this->serviceManager->get('db')->exec($sql);
+        $queryBuilder = $this->dbal->createQueryBuilder();
+        $queryBuilder
+            ->delete('content_base')
+            ->where('cb_id = '.$queryBuilder->createNamedParameter($this->cb_id))
+        ;
+
+        return $queryBuilder->execute();
     }
 }
