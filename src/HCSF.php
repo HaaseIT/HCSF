@@ -11,6 +11,13 @@ class HCSF
     public function __construct()
     {
         define('HCSF_BASEDIR', dirname(__DIR__).DIRECTORY_SEPARATOR);
+        define("DB_ADDRESSFIELDS", 'cust_id, cust_no, cust_email, cust_corp, cust_name, cust_street, cust_zip, cust_town, cust_phone, cust_cellphone, cust_fax, cust_country, cust_group, cust_active, cust_emailverified, cust_tosaccepted, cust_cancellationdisclaimeraccepted');
+        define("DB_ITEMFIELDS", 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itm_weight, itml_name_override, itml_text1, itml_text2, itm_index');
+        define("DB_ITEMGROUPFIELDS", 'itmg_no, itmg_name, itmg_img, itmgt_shorttext, itmgt_details');
+        define("FILE_PAYPALLOG", 'ipnlog.txt');
+
+        // set scale for bcmath
+        bcscale(6);
     }
 
     public function init()
