@@ -32,7 +32,7 @@ class PagePayload
         $this->serviceManager = $serviceManager;
     }
 
-    function getTitle()
+    public function getTitle()
     {
         if (isset($this->cl_title) && trim($this->cl_title) != '') {
             return $this->cl_title;
