@@ -202,6 +202,7 @@ class HCSF
             $twig->addFunction(new \Twig_SimpleFunction('ImgURL', '\HaaseIT\HCSF\Helper::getSignedGlideURL'));
             $twig->addFunction(new \Twig_SimpleFunction('callback', 'HaaseIT\HCSF\Helper::twigCallback'));
             $twig->addFunction(new \Twig_SimpleFunction('makeLinkHRefWithAddedGetVars', '\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
+            $twig->addFilter(new \Twig_SimpleFilter('decodehtmlentity', 'html_entity_decode'));
 
             return $twig;
         });
