@@ -319,7 +319,9 @@ class Helper
                 $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$aSuggestionsValue["itm_index"]];
             }
         }
-        shuffle($suggestions);
+        if (HelperConfig::$shop["itemdetail_suggestions_shuffle"]) {
+            shuffle($suggestions);
+        }
 
         return $suggestions;
     }
