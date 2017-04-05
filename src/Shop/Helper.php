@@ -319,26 +319,29 @@ class Helper
                 $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$aSuggestionsValue["itm_index"]];
             }
         }
-        shuffle($suggestions);
+        if (HelperConfig::$shop["itemdetail_suggestions_shuffle"]) {
+            shuffle($suggestions);
+        }
 
         return $suggestions;
     }
 
     /**
-     * @param string $sSetSuggestions
-     * @param array $aPossibleSuggestions
+     * @param string $sSetSuggestions - Items defined as Suggestions in Item config
+     * @param array $aPossibleSuggestions - Items from the same category
      * @param Items $oItem
      * @return array
      */
-    public static function prepareSuggestions($sSetSuggestions, $aPossibleSuggestions, Items $oItem)
+    public static function prepareSuggestions($sSetSuggestions, array $aPossibleSuggestions, Items $oItem)
     {
+        // prepare defined suggestions
         $sSetSuggestions = trim($sSetSuggestions);
-
         $aDefinedSuggestions = [];
         if (!empty($sSetSuggestions)) {
             $aDefinedSuggestions = explode('|', $sSetSuggestions);
         }
 
+        // see, which suggestions are not loaded through the current item category yet
         $aSuggestionsToLoad = [];
         // iterate all defined suggestions and put those not loaded yet into array
         foreach ($aDefinedSuggestions as $defisugsval) {
@@ -357,17 +360,29 @@ class Helper
             }
         }
 
+        // default = configured suggestions, additional = possible suggestions to fill up to configured maximum
         $suggestions = [
             'default' => [],
             'additional' => [],
         ];
-        foreach ($aPossibleSuggestions as $posssugskey => $posssugsval) { // iterate through all possible suggestions
+        // iterate through all possible suggestions
+        foreach ($aPossibleSuggestions as $posssugskey => $posssugsval) {
             if (in_array($posssugskey, $aDefinedSuggestions)) { // if this suggestion is a defined one, put into this array
                 $suggestions['default'][$posssugskey] = $posssugsval;
                 continue;
             }
             // if not, put into this one
             $suggestions['additional'][$posssugskey] = $posssugsval;
+        }
+
+        // now we see, that the configured suggestions are ordered as configured
+        $aDefinedSuggestions = array_reverse($aDefinedSuggestions, true);
+        foreach ($aDefinedSuggestions as $aDefinedSuggestion) {
+            if (isset($suggestions['default'][$aDefinedSuggestion])) {
+                $tmp = $suggestions['default'][$aDefinedSuggestion];
+                unset($suggestions['default'][$aDefinedSuggestion]);
+                $suggestions['default'] = [$aDefinedSuggestion => $tmp] + $suggestions['default'];
+            }
         }
 
         return $suggestions;
