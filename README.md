@@ -23,37 +23,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-HCSF has moved to a package format, please clone [HCSF-Skeleton](https://github.com/HaaseIT/HCSF-Skeleton) and composer install to set up a new installation.
-
-Requirements:
-- Apache 2.x with mod_rewrite enabled, runs with mod_php and also php5-fpm/fastcgi. I'm pretty sure, it will run on other platforms as well.
-- PHP 5.5.x and up with gd (for image processing on the fly), filter and bcmath extension enabled
-
-Dependencies will be installed with composer.
-
-In the setup directory you will find scripts for setting up the database.
-
-In the config directory you will find the default config files.
-To override the default config, create a copy of the respective file and name it like this:
--  secrets.yml -> secrets.local.yml
-
-You only need to add the values you want to override in these files.
-
-Put the required libraries into their configured paths.
-Run the db-scripts.sql on your configured database to init the database.
-
-For production use turn of display_errors at the beginning of app/init.php
-
-The following directories must be writable by the webserver:
-- hcsflogs (log directory)
-- cache
-at http://www.yourhost.tld/_admin/ you will find an info if these directories exist
-and are writable
-
-Set your encrypted admin password in secrets.local.yml.
-
-You will find a tool to encrypt it at /_admin/index.html - As long as there are no users set
-in config.scrts.yml, you can access this page (but not the other pages in the admin area)
-without authenticating.
-
-Add your custom views (templates) to /customviews (get default views at /src/views)
+HCSF has moved to a package format, please see the [Documentation](./documentation/README.md) on [How To Get Started](./documentation/GettingStarted.md). 

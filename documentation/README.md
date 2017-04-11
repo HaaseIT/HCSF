@@ -1,0 +1,4 @@
+- [Getting Started](./GettingStarted.md)
+- [Requirements](./Requirements.md)
+- [Configuration files](./configfiles/)
+- [Admin panel](./administration/)
