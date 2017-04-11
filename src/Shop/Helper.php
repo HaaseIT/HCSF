@@ -526,7 +526,9 @@ class Helper
 
     public static function renderItemStatusIcon($itemindex)
     {
-        if (trim($itemindex) === '' || mb_substr($itemindex, 0, 1) === '!') {
+        if (trim($itemindex) === '') {
+            return '0';
+        } elseif (mb_substr($itemindex, 0, 1) === '!') {
             return 'X';
         }
         return 'I';
