@@ -50,7 +50,7 @@ class Updatecart extends Base
                 $iAmount = $_REQUEST["amount"];
             }
 
-            if (!isset($_REQUEST["itemno"]) || $_REQUEST["itemno"] == '' || !is_numeric($iAmount)) {
+            if (empty($_REQUEST["itemno"]) || !is_numeric($iAmount)) {
                 $this->replyToCartUpdate('noitemnooramount');
             } else {
                 $iAmount = floor($iAmount);
@@ -60,6 +60,23 @@ class Updatecart extends Base
                 if (!isset($aData)) {
                     $this->replyToCartUpdate('itemnotfound');
                 } else {
+                    // are there additional items to this item, if so, check if they are valid, too.
+                    if (!empty($_POST['additionalitems'])) {
+                        $additionalitems = filter_input(INPUT_POST, 'additionalitems', FILTER_SANITIZE_SPECIAL_CHARS);
+
+                        if (strpos($additionalitems, '~') !== false) {
+                            $additionalitems = explode('~', $additionalitems);
+                        } else {
+                            $additionalitems = [$additionalitems];
+                        }
+
+                        $additionaldata = $this->serviceManager->get('oItem')->sortItems('', $additionalitems);
+
+                        if (count($additionalitems) != count($additionaldata['item'])) {
+                            $this->replyToCartUpdate('itemnotfound');
+                        }
+                    }
+
                     // build the key for this item for the shoppingcart
                     $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
                     $sCartKey = $sItemno;
@@ -96,19 +113,28 @@ class Updatecart extends Base
                         'name' => $aData["item"][$sItemno]['itm_name'],
                         'img' => $aData["item"][$sItemno]['itm_img'],
                     ];
-                    if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
-                        if ($iAmount == 0) { // new amount == 0 -> remove from cart
-                            unset($_SESSION["cart"][$sCartKey]);
-                            if (count($_SESSION["cart"]) == 0) { // once the last cart item is unset, we no longer need cartpricesums
-                                unset($_SESSION["cartpricesums"]);
-                            }
-                            $this->replyToCartUpdate('removed', ['cartkey' => $sCartKey]);
-                        } else { // update amount
-                            $_SESSION["cart"][$sCartKey]["amount"] = $iAmount;
-                            $this->replyToCartUpdate('updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
+                    if (!empty($_POST['action']) && $_POST['action'] === 'add') {
+                        if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, add to amount
+                            $_SESSION["cart"][$sCartKey]['amount'] += $iAmount;
+                        } else {
+                            $_SESSION["cart"][$sCartKey] = $aItem;
                         }
-                    } else { // if this item is not in the cart yet, add it
-                        $_SESSION["cart"][$sCartKey] = $aItem;
+                        // todo: add additional items
+                    } else {
+                        if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
+                            if ($iAmount == 0) { // new amount == 0 -> remove from cart
+                                unset($_SESSION["cart"][$sCartKey]);
+                                if (count($_SESSION["cart"]) == 0) { // once the last cart item is unset, we no longer need cartpricesums
+                                    unset($_SESSION["cartpricesums"]);
+                                }
+                                $this->replyToCartUpdate('removed', ['cartkey' => $sCartKey]);
+                            } else { // update amount
+                                $_SESSION["cart"][$sCartKey]["amount"] = $iAmount;
+                                $this->replyToCartUpdate('updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
+                            }
+                        } else { // if this item is not in the cart yet, add it
+                            $_SESSION["cart"][$sCartKey] = $aItem;
+                        }
                     }
                     $this->replyToCartUpdate('added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
