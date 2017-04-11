@@ -133,7 +133,7 @@ class Helper
      * @param array $aP
      * @param Page $P
      */
-    private static function getDebug($aP, $P)
+    public static function getDebug($aP, $P)
     {
         if (!empty($_POST)) {
             Tools::debug($_POST, '$_POST');

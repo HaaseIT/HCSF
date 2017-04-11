@@ -325,7 +325,7 @@ class HCSF
         $aP['lang_by_domain'] = HelperConfig::$core['lang_by_domain'];
 
         if (HelperConfig::$core['debug']) {
-            self::getDebug($aP, $P);
+            \HaaseIT\HCSF\Helper::getDebug($aP, $P);
             $aP['debugdata'] = \HaaseIT\Toolbox\Tools::$sDebug;
         }
 
