@@ -1,4 +1,6 @@
 V3.0.0
+In the progress of writing 3.0.0, the skeleton has changed serveral times, make sure, you have the current skeleton!
+
 ALTER TABLE `item_base` CHANGE COLUMN `itm_no` `itm_no` VARCHAR(32) NOT NULL AFTER `itm_id`;
 
 ALTER TABLE `orders_items` CHANGE COLUMN `oi_img` `oi_img` MEDIUMTEXT NULL AFTER `oi_price_brutto_use`;
