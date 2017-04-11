@@ -114,11 +114,11 @@ class Updatecart extends Base
                         'img' => $aData['item'][$sItemno]['itm_img'],
                     ];
                     if (!empty($_POST['action']) && $_POST['action'] === 'add') {
-                        \HaaseIT\HCSF\Shop\Helper::addItemToCart($sCartKey, $aItem);
+                        $this->addItemToCart($sCartKey, $aItem);
 
                         if (!empty($additionalitems)) {
                             foreach ($additionalitems as $additionalitem) {
-                                \HaaseIT\HCSF\Shop\Helper::addItemToCart(
+                                $this->addItemToCart(
                                     $additionalitem,
                                     [
                                         'amount' => $iAmount,
@@ -183,4 +183,14 @@ class Updatecart extends Base
         die();
     }
 
+    protected function addItemToCart($cartkey, $item)
+    {
+        if (isset($_SESSION['cart'][$cartkey])) { // if this item is already in cart, add to amount
+            $_SESSION['cart'][$cartkey]['amount'] += $item['amount'];
+        } else {
+            $_SESSION['cart'][$cartkey] = $item;
+        }
+
+        return true;
+    }
 }

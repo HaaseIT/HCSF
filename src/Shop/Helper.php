@@ -565,15 +565,4 @@ class Helper
     {
         return '<input type="checkbox" name="id[]" value="'.$id.'">';
     }
-
-    public static function addItemToCart($cartkey, $item)
-    {
-        if (isset($_SESSION['cart'][$cartkey])) { // if this item is already in cart, add to amount
-            $_SESSION['cart'][$cartkey]['amount'] += $item['amount'];
-        } else {
-            $_SESSION['cart'][$cartkey] = $item;
-        }
-
-        return true;
-    }
 }
