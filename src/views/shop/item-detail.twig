@@ -8,7 +8,7 @@
                     data: $( "#addtoshoppingcart" ).serialize(),
                     success : function( resp ) {
                         infoboxhtml = $('#infobox_new' , resp);
-                        if (infoboxhtml[0].innerHTML == 'REQUIRED FIELD MISSING' || infoboxhtml[0].innerHTML == 'NO ACTION TAKEN' || infoboxhtml[0].innerHTML == 'ITEMNOTFOUND' || infoboxhtml[0].innerHTML == 'NO ITEMNO OR AMOUNT') {
+                        if (infoboxhtml[0].innerHTML === 'REQUIRED FIELD MISSING' || infoboxhtml[0].innerHTML === 'NO ACTION TAKEN' || infoboxhtml[0].innerHTML === 'ITEMNOTFOUND' || infoboxhtml[0].innerHTML === 'NO ITEMNO OR AMOUNT') {
                             $('#item-detail-infobox').html("{{ T("itemdetail_submit_error") }}");
                             $('#item-detail-infobox-buttons').html('<button type="button" class="pure-button button-orange" data-dismiss="modal">{{ T("itemdetail_continue_shopping") }}!</button>');
                         } else {
