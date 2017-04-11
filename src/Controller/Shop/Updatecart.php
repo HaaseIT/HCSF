@@ -114,12 +114,23 @@ class Updatecart extends Base
                         'img' => $aData['item'][$sItemno]['itm_img'],
                     ];
                     if (!empty($_POST['action']) && $_POST['action'] === 'add') {
-                        if (isset($_SESSION['cart'][$sCartKey])) { // if this item is already in cart, add to amount
-                            $_SESSION['cart'][$sCartKey]['amount'] += $iAmount;
-                        } else {
-                            $_SESSION['cart'][$sCartKey] = $aItem;
+                        \HaaseIT\HCSF\Shop\Helper::addItemToCart($sCartKey, $aItem);
+
+                        if (!empty($additionalitems)) {
+                            foreach ($additionalitems as $additionalitem) {
+                                \HaaseIT\HCSF\Shop\Helper::addItemToCart(
+                                    $additionalitem,
+                                    [
+                                        'amount' => $iAmount,
+                                        'price' => $this->serviceManager->get('oItem')->calcPrice($additionaldata['item'][$additionalitem]),
+                                        'rg' => $additionaldata['item'][$additionalitem]['itm_rg'],
+                                        'vat' => $additionaldata['item'][$additionalitem]['itm_vatid'],
+                                        'name' => $additionaldata['item'][$additionalitem]['itm_name'],
+                                        'img' => $additionaldata['item'][$additionalitem]['itm_img'],
+                                    ]
+                                );
+                            }
                         }
-                        // todo: add additional items
                     } else {
                         if (isset($_SESSION['cart'][$sCartKey])) { // if this item is already in cart, update amount
                             if ($iAmount == 0) { // new amount == 0 -> remove from cart

@@ -25,8 +25,17 @@ use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 
+/**
+ * Class Helper
+ * @package HaaseIT\HCSF\Shop
+ */
 class Helper
 {
+    /**
+     * @param \HaaseIT\Toolbox\Textcat $textcats
+     * @param string $sStatusShort
+     * @return bool|string
+     */
     public static function showOrderStatusText(\HaaseIT\Toolbox\Textcat $textcats, $sStatusShort)
     {
         $mapping = [
@@ -44,6 +53,10 @@ class Helper
         return '';
     }
 
+    /**
+     * @param array $aOrder
+     * @return float
+     */
     public static function calculateTotalFromDB($aOrder)
     {
         $fGesamtnetto = $aOrder['o_sumnettoall'];
@@ -64,6 +77,12 @@ class Helper
         return $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
+    /**
+     * @param array $aSumme
+     * @param int $iVATfull
+     * @param int $iVATreduced
+     * @return array
+     */
     public static function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
     {
         $fGesamtnetto = $aSumme['sumvoll'] + $aSumme['sumerm'];
@@ -135,6 +154,9 @@ class Helper
         return $aOrder;
     }
 
+    /**
+     * @return mixed
+     */
     public static function getShippingcost()
     {
         $fShippingcost = HelperConfig::$shop['shippingcoststandardrate'];
@@ -158,6 +180,10 @@ class Helper
         return $fShippingcost;
     }
 
+    /**
+     * @param array $aCart
+     * @return array
+     */
     public static function calculateCartItems($aCart)
     {
         $fErm = 0;
@@ -168,7 +194,7 @@ class Helper
             // Hmmmkay, so, if vat is not disabled and there is no vat id or none as vat id set to this item, then
             // use the full vat as default. Only use reduced if it is set. Gotta use something as default or item
             // will not add up to total price
-            if ($aValue['vat'] != 'reduced') {
+            if ($aValue['vat'] !== 'reduced') {
                 $fVoll += ($aValue['amount'] * $aValue['price']['netto_use']);
                 $fTaxVoll += ($aValue['amount'] * $aValue['price']['netto_use'] * (HelperConfig::$shop['vat']['full'] / 100));
                 continue;
@@ -538,5 +564,16 @@ class Helper
     public static function shopadminMakeCheckbox($id)
     {
         return '<input type="checkbox" name="id[]" value="'.$id.'">';
+    }
+
+    public static function addItemToCart($cartkey, $item)
+    {
+        if (isset($_SESSION['cart'][$cartkey])) { // if this item is already in cart, add to amount
+            $_SESSION['cart'][$cartkey]['amount'] += $item['amount'];
+        } else {
+            $_SESSION['cart'][$cartkey] = $item;
+        }
+
+        return true;
     }
 }
