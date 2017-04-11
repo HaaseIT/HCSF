@@ -51,20 +51,20 @@ class Items
         while ($aRow = $oQuery->fetch()) {
             $aItemoverviewpages[] = [
                 'path' => $aRow['cb_key'],
-                'pageconfig' => json_decode($aRow["cb_pageconfig"]),
+                'pageconfig' => json_decode($aRow['cb_pageconfig']),
             ];
         }
         foreach ($aItemoverviewpages as $aValue) {
-            if (isset($aValue["pageconfig"]->itemindex)) {
-                if (is_array($aValue["pageconfig"]->itemindex)) {
-                    foreach ($aValue["pageconfig"]->itemindex as $sIndexValue) {
+            if (isset($aValue['pageconfig']->itemindex)) {
+                if (is_array($aValue['pageconfig']->itemindex)) {
+                    foreach ($aValue['pageconfig']->itemindex as $sIndexValue) {
                         if (!isset($itemindexpathtree[$sIndexValue])) {
-                            $itemindexpathtree[$sIndexValue] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                            $itemindexpathtree[$sIndexValue] = mb_substr($aValue['path'], 0, mb_strlen($aValue['path']) - 10).'item/';
                         }
                     }
                 } else {
-                    if (!isset($itemindexpathtree[$aValue["pageconfig"]->itemindex])) {
-                        $itemindexpathtree[$aValue["pageconfig"]->itemindex] = mb_substr($aValue["path"], 0, mb_strlen($aValue["path"]) - 10).'item/';
+                    if (!isset($itemindexpathtree[$aValue['pageconfig']->itemindex])) {
+                        $itemindexpathtree[$aValue['pageconfig']->itemindex] = mb_substr($aValue['path'], 0, mb_strlen($aValue['path']) - 10).'item/';
                     }
                 }
             }
@@ -78,7 +78,7 @@ class Items
         $sql = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
         $sql .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
         $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop["items_orderdirection_default"];
+        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop['items_orderdirection_default'];
 
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
@@ -86,9 +86,9 @@ class Items
             if (!is_array($mItemno)) {
                 $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
             }
-        } elseif (isset($_REQUEST["searchtext"]) && strlen($_REQUEST["searchtext"]) > 2) {
-            $sSearchtext = filter_var(trim($_REQUEST["searchtext"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            if (isset($_REQUEST["artnoexact"])) {
+        } elseif (isset($_REQUEST['searchtext']) && strlen($_REQUEST['searchtext']) > 2) {
+            $sSearchtext = filter_var(trim($_REQUEST['searchtext']), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if (isset($_REQUEST['artnoexact'])) {
                 $hResult->bindValue(':searchtext', $sSearchtext, \PDO::PARAM_STR);
             }
             $hResult->bindValue(':searchtextwild1', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
@@ -104,16 +104,16 @@ class Items
 
     public function queryItemWhereClause($mItemIndex = '', $mItemno = '')
     {
-        $sql = " WHERE ";
+        $sql = ' WHERE ';
         if ($mItemno != '') {
-            if (\is_array($mItemno)) {
+            if (is_array($mItemno)) {
                 $sItemno = "'".\implode("','", \filter_var_array($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
                 $sql .= 'item_base.itm_no IN ('.$sItemno.')';
             } else {
                 $sql .= 'item_base.itm_no = :itemno';
             }
-        } elseif (isset($_REQUEST["searchtext"]) && \strlen($_REQUEST["searchtext"]) > 2) {
-            if (isset($_REQUEST["artnoexact"])) {
+        } elseif (isset($_REQUEST['searchtext']) && \strlen($_REQUEST['searchtext']) > 2) {
+            if (isset($_REQUEST['artnoexact'])) {
                 $sql .= 'item_base.itm_no = :searchtext';
             } else {
                 $sql .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';
@@ -122,12 +122,12 @@ class Items
             }
         } else {
             if (is_array($mItemIndex)) {
-                $sql .= "(";
+                $sql .= '(';
                 foreach ($mItemIndex as $sAIndex) {
                     $sql .= "itm_index LIKE '%".filter_var($sAIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%' OR ";
                 }
                 $sql = \HaaseIT\Toolbox\Tools::cutStringend($sql, 4);
-                $sql .= ")";
+                $sql .= ')';
             } else {
                 $sql .= "itm_index LIKE '%".filter_var($mItemIndex, FILTER_SANITIZE_SPECIAL_CHARS)."%'";
             }
@@ -158,26 +158,26 @@ class Items
             if (isset($aRow['itm_data'])) {
                 $aRow['itm_data'] = \json_decode($aRow['itm_data'], true);
             }
-            $aRow["pricedata"] = $this->calcPrice($aRow);
+            $aRow['pricedata'] = $this->calcPrice($aRow);
 
-            if (\trim($aRow['itm_group']) == 0 || !$bEnableItemGroups) {
-                $aAssembly["item"][$aRow['itm_no']] = $aRow;
+            if (!$bEnableItemGroups || \trim($aRow['itm_group']) == 0) {
+                $aAssembly['item'][$aRow['itm_no']] = $aRow;
             } else {
-                if (isset($aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']])) {
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']][$aRow['itm_no']] = $aRow;
+                if (isset($aAssembly['groups']['ITEMGROUP-' .$aRow['itm_group']])) {
+                    $aAssembly['groups']['ITEMGROUP-' .$aRow['itm_group']][$aRow['itm_no']] = $aRow;
                 } else {
-                    $aAssembly["item"]["ITEMGROUP-".$aRow['itm_group']]["group"] = "ITEMGROUP-".$aRow['itm_group'];
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']]["ITEMGROUP-DATA"] = $this->getGroupdata($aRow['itm_group']);
-                    $aAssembly["groups"]["ITEMGROUP-".$aRow['itm_group']][$aRow['itm_no']] = $aRow;
+                    $aAssembly['item']['ITEMGROUP-' .$aRow['itm_group']]['group'] = 'ITEMGROUP-' .$aRow['itm_group'];
+                    $aAssembly['groups']['ITEMGROUP-' .$aRow['itm_group']]['ITEMGROUP-DATA'] = $this->getGroupdata($aRow['itm_group']);
+                    $aAssembly['groups']['ITEMGROUP-' .$aRow['itm_group']][$aRow['itm_no']] = $aRow;
                 }
             }
         }
 
         if (isset($aAssembly)) {
-            $aAssembly["totalitems"] = \count($aAssembly["item"]);
-            $aAssembly["itemkeys"] = \array_keys($aAssembly["item"]);
-            $aAssembly["firstitem"] = $aAssembly["itemkeys"][0];
-            $aAssembly["lastitem"] = $aAssembly["itemkeys"][$aAssembly["totalitems"] - 1];
+            $aAssembly['totalitems'] = \count($aAssembly['item']);
+            $aAssembly['itemkeys'] = \array_keys($aAssembly['item']);
+            $aAssembly['firstitem'] = $aAssembly['itemkeys'][0];
+            $aAssembly['lastitem'] = $aAssembly['itemkeys'][$aAssembly['totalitems'] - 1];
 
             return $aAssembly;
         }
@@ -198,7 +198,7 @@ class Items
         $hResult->execute();
 
         $aRow = $hResult->fetch();
-        $aRow["type"] = 'itemgroupdata';
+        $aRow['type'] = 'itemgroupdata';
         return $aRow;
     }
 
@@ -210,28 +210,28 @@ class Items
         }
 
         if(is_numeric($aData['itm_price']) && (float) $aData['itm_price'] > 0) {
-            $aPrice["netto_list"] = $aData['itm_price'];
+            $aPrice['netto_list'] = $aData['itm_price'];
             $aPrice['brutto_list'] = $this->addVat($aPrice['netto_list'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
             if (
-                isset($aData["itm_data"]["sale"]["start"], $aData["itm_data"]["sale"]["end"], $aData["itm_data"]["sale"]["price"])
+                isset($aData['itm_data']['sale']['start'], $aData['itm_data']['sale']['end'], $aData['itm_data']['sale']['price'])
             ) {
-                $iToday = date("Ymd");
-                if ($iToday >= $aData["itm_data"]["sale"]["start"] && $iToday <= $aData["itm_data"]["sale"]["end"]) {
-                    $aPrice["netto_sale"] = $aData["itm_data"]["sale"]["price"];
+                $iToday = date('Ymd');
+                if ($iToday >= $aData['itm_data']['sale']['start'] && $iToday <= $aData['itm_data']['sale']['end']) {
+                    $aPrice['netto_sale'] = $aData['itm_data']['sale']['price'];
                     $aPrice['brutto_sale'] = $this->addVat($aPrice['netto_sale'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
                 }
             }
             if (
                 $aData['itm_rg'] != ''
-                && isset(HelperConfig::$shop["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')])
+                && isset(HelperConfig::$shop['rebate_groups'][$aData['itm_rg']][CHelper::getUserData('cust_group')])
             ) {
-                $aPrice["netto_rebated"] =
+                $aPrice['netto_rebated'] =
                     bcmul(
                         $aData['itm_price'],
                         bcdiv(
                             bcsub(
                                 '100',
-                                (string)HelperConfig::$shop["rebate_groups"][$aData['itm_rg']][CHelper::getUserData('cust_group')]
+                                (string)HelperConfig::$shop['rebate_groups'][$aData['itm_rg']][CHelper::getUserData('cust_group')]
                             ),
                             '100'
                         )
@@ -242,16 +242,16 @@ class Items
             return false;
         }
 
-        $aPrice["netto_use"] = $aPrice["netto_list"];
+        $aPrice['netto_use'] = $aPrice['netto_list'];
 
-        if (isset($aPrice["netto_rebated"]) && $aPrice["netto_rebated"] < $aPrice["netto_use"]) {
-            $aPrice["netto_use"] = $aPrice["netto_rebated"];
+        if (isset($aPrice['netto_rebated']) && $aPrice['netto_rebated'] < $aPrice['netto_use']) {
+            $aPrice['netto_use'] = $aPrice['netto_rebated'];
         }
-        if (isset($aPrice["netto_sale"]) && $aPrice["netto_sale"] < $aPrice["netto_use"]) {
-            $aPrice["netto_use"] = $aPrice["netto_sale"];
+        if (isset($aPrice['netto_sale']) && $aPrice['netto_sale'] < $aPrice['netto_use']) {
+            $aPrice['netto_use'] = $aPrice['netto_sale'];
         }
 
-        $aPrice["brutto_use"] = $this->addVat($aPrice["netto_use"], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
+        $aPrice['brutto_use'] = $this->addVat($aPrice['netto_use'], HelperConfig::$shop['vat'][$aData['itm_vatid']]);
 
         return $aPrice;
     }

@@ -32,17 +32,17 @@ class Register extends Base
         $this->P->cb_pagetype = 'content';
 
         if (CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 
             $aErr = [];
-            if (isset($_POST["doRegister"]) && $_POST["doRegister"] == 'yes') {
+            if (isset($_POST['doRegister']) && $_POST['doRegister'] == 'yes') {
                 $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr);
                 if (count($aErr) == 0) {
                     $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
 
-                    $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+                    $sEmail = filter_var(trim(Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
 
                     /** @var \PDOStatement $hResult */
                     $hResult = $this->serviceManager->get('db')->prepare($sql);
@@ -51,33 +51,33 @@ class Register extends Base
                     $iRows = $hResult->rowCount();
 
                     if ($iRows == 0) {
-                        $sEmailVerificationcode = md5($_POST["email"] . time());
+                        $sEmailVerificationcode = md5($_POST['email'] . time());
                         $aData = [
                             'cust_email' => $sEmail,
-                            'cust_corp' => filter_var(trim(Tools::getFormfield("corpname")),
+                            'cust_corp' => filter_var(trim(Tools::getFormfield('corpname')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_name' => filter_var(trim(Tools::getFormfield("name")),
+                            'cust_name' => filter_var(trim(Tools::getFormfield('name')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_street' => filter_var(trim(Tools::getFormfield("street")),
+                            'cust_street' => filter_var(trim(Tools::getFormfield('street')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_zip' => filter_var(trim(Tools::getFormfield("zip")), FILTER_SANITIZE_STRING,
+                            'cust_zip' => filter_var(trim(Tools::getFormfield('zip')), FILTER_SANITIZE_STRING,
                                 FILTER_FLAG_STRIP_LOW),
-                            'cust_town' => filter_var(trim(Tools::getFormfield("town")),
+                            'cust_town' => filter_var(trim(Tools::getFormfield('town')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_phone' => filter_var(trim(Tools::getFormfield("phone")),
+                            'cust_phone' => filter_var(trim(Tools::getFormfield('phone')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_cellphone' => filter_var(trim(Tools::getFormfield("cellphone")),
+                            'cust_cellphone' => filter_var(trim(Tools::getFormfield('cellphone')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_fax' => filter_var(trim(Tools::getFormfield("fax")), FILTER_SANITIZE_STRING,
+                            'cust_fax' => filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING,
                                 FILTER_FLAG_STRIP_LOW),
-                            'cust_country' => filter_var(trim(Tools::getFormfield("country")),
+                            'cust_country' => filter_var(trim(Tools::getFormfield('country')),
                                 FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_password' => password_hash($_POST["pwd"], PASSWORD_DEFAULT),
-                            'cust_tosaccepted' => ((isset($_POST["tos"]) && $_POST["tos"] == 'y') ? 'y' : 'n'),
-                            'cust_cancellationdisclaimeraccepted' => ((isset($_POST["cancellationdisclaimer"]) && $_POST["cancellationdisclaimer"] == 'y') ? 'y' : 'n'),
+                            'cust_password' => password_hash($_POST['pwd'], PASSWORD_DEFAULT),
+                            'cust_tosaccepted' => (isset($_POST['tos']) && $_POST['tos'] == 'y') ? 'y' : 'n',
+                            'cust_cancellationdisclaimeraccepted' => (isset($_POST['cancellationdisclaimer']) && $_POST['cancellationdisclaimer'] == 'y') ? 'y' : 'n',
                             'cust_emailverified' => 'n',
                             'cust_emailverificationcode' => $sEmailVerificationcode,
-                            'cust_active' => ((HelperConfig::$customer["register_require_manual_activation"]) ? 'n' : 'y'),
+                            'cust_active' => HelperConfig::$customer['register_require_manual_activation'] ? 'n' : 'y',
                             'cust_registrationtimestamp' => time(),
                         ];
                         $sql = \HaaseIT\Toolbox\DBTools::buildPSInsertQuery($aData, 'customer');
@@ -89,30 +89,30 @@ class Register extends Base
                         $hResult->execute();
 
                         CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->serviceManager, true);
-                        $aPData["showsuccessmessage"] = true;
+                        $aPData['showsuccessmessage'] = true;
                     } else {
-                        $aErr["emailalreadytaken"] = true;
-                        $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                        $aErr['emailalreadytaken'] = true;
+                        $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                             HelperConfig::$lang,
                             'register',
                             $aErr
                         );
                     }
                 } else {
-                    $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                    $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                         HelperConfig::$lang,
                         'register',
                         $aErr
                     );
                 }
             } else {
-                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                     HelperConfig::$lang,
                     'register'
                 );
             }
             if (isset($aPData) && count($aPData)) {
-                $this->P->cb_customdata["register"] = $aPData;
+                $this->P->cb_customdata['register'] = $aPData;
             }
         }
     }

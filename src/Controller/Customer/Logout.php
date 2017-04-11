@@ -36,10 +36,10 @@ class Logout extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        unset($_SESSION["user"]);
-        if (HelperConfig::$core["enable_module_shop"] && isset($_SESSION["cart"])) {
+        unset($_SESSION['user']);
+        if (isset($_SESSION['cart']) && HelperConfig::$core['enable_module_shop']) {
             \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
         }
-        $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("logout_message");
+        $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('logout_message');
     }
 }

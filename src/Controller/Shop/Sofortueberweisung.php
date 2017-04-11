@@ -68,20 +68,20 @@ class Sofortueberweisung extends Base
 
             $sPURL =
                 'https://www.sofortueberweisung.de/payment/start?user_id='
-                .HelperConfig::$shop["sofortueberweisung"]["user_id"]
-                .'&amp;project_id='.HelperConfig::$shop["sofortueberweisung"]["project_id"].'&amp;amount='
+                .HelperConfig::$shop['sofortueberweisung']['user_id']
+                .'&amp;project_id='.HelperConfig::$shop['sofortueberweisung']['project_id'].'&amp;amount='
                 .number_format($fGesamtbrutto, 2, '.', '')
-                .'&amp;currency_id='.HelperConfig::$shop["sofortueberweisung"]["currency_id"].'&amp;reason_1='
-                .urlencode($this->textcats->T("misc_paysofortueberweisung_ueberweisungsbetreff") . ' ').$iId;
-            if (HelperConfig::$shop["interactive_paymentmethods_redirect_immediately"]) {
+                .'&amp;currency_id='.HelperConfig::$shop['sofortueberweisung']['currency_id'].'&amp;reason_1='
+                .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff') . ' ').$iId;
+            if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
                 header('Location: ' . $sPURL);
                 die();
             }
 
-            $this->P->oPayload->cl_html = $this->textcats->T("misc_paysofortueberweisung_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . $this->textcats->T("misc_paysofortueberweisung") . '</a>';
+            $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_greeting') . '<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . $this->textcats->T('misc_paysofortueberweisung') . '</a>';
         } else {
-            $this->P->oPayload->cl_html = $this->textcats->T("misc_paysofortueberweisung_paymentnotavailable");
+            $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_paymentnotavailable');
         }
     }
 }

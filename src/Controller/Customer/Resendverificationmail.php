@@ -30,14 +30,14 @@ class Resendverificationmail extends Base
         $this->P->cb_pagetype = 'content';
 
         if (CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
             $sql = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
             $sql .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
 
             /** @var \PDOStatement $hResult */
             $hResult = $this->serviceManager->get('db')->prepare($sql);
-            $hResult->bindValue(':email', trim($_GET["email"]), \PDO::PARAM_STR);
+            $hResult->bindValue(':email', trim($_GET['email']), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
             if ($iRows == 1) {
@@ -46,7 +46,7 @@ class Resendverificationmail extends Base
 
                 CHelper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->serviceManager, true);
 
-                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("register_verificationmailresent");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('register_verificationmailresent');
             }
         }
     }

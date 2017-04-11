@@ -74,8 +74,8 @@ class UserPage extends Page
             $this->cb_pageconfig = (object) [];
         } else {
             // first get base data
-            $sql = "SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ";
-            $sql .= "FROM content_base WHERE cb_key = :key ";
+            $sql = 'SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ';
+            $sql .= 'FROM content_base WHERE cb_key = :key ';
 
             /** @var \PDOStatement $hResult */
             $hResult = $this->serviceManager->get('db')->prepare($sql);

@@ -38,25 +38,25 @@ class Updatecart extends Base
 
         if (
             (
-                HelperConfig::$shop["show_pricesonlytologgedin"]
+                HelperConfig::$shop['show_pricesonlytologgedin']
                 && !\HaaseIT\HCSF\Customer\Helper::getUserData()
             )
-            || !isset($_SERVER["HTTP_REFERER"])
+            || !isset($_SERVER['HTTP_REFERER'])
         ) {
-            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_default");
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
             $iAmount = '';
-            if (isset($_REQUEST["amount"])) {
-                $iAmount = $_REQUEST["amount"];
+            if (isset($_REQUEST['amount'])) {
+                $iAmount = $_REQUEST['amount'];
             }
 
-            if (empty($_REQUEST["itemno"]) || !is_numeric($iAmount)) {
+            if (empty($_REQUEST['itemno']) || !is_numeric($iAmount)) {
                 $this->replyToCartUpdate('noitemnooramount');
             } else {
                 $iAmount = floor($iAmount);
 
                 // Check if this item exists
-                $aData = $this->serviceManager->get('oItem')->sortItems('', $_REQUEST["itemno"]);
+                $aData = $this->serviceManager->get('oItem')->sortItems('', $_REQUEST['itemno']);
                 if (!isset($aData)) {
                     $this->replyToCartUpdate('itemnotfound');
                 } else {
@@ -78,14 +78,14 @@ class Updatecart extends Base
                     }
 
                     // build the key for this item for the shoppingcart
-                    $sItemno = $aData["item"][$_REQUEST["itemno"]]['itm_no'];
+                    $sItemno = $aData['item'][$_REQUEST['itemno']]['itm_no'];
                     $sCartKey = $sItemno;
 
-                    if (isset(HelperConfig::$shop["custom_order_fields"])) {
-                        foreach (HelperConfig::$shop["custom_order_fields"] as $sValue) {
-                            if (isset($aData["item"][$sItemno]["itm_data"][$sValue])) {
+                    if (isset(HelperConfig::$shop['custom_order_fields'])) {
+                        foreach (HelperConfig::$shop['custom_order_fields'] as $sValue) {
+                            if (isset($aData['item'][$sItemno]['itm_data'][$sValue])) {
                                 $aOptions = [];
-                                $TMP = explode('|', $aData["item"][$sItemno]["itm_data"][$sValue]);
+                                $TMP = explode('|', $aData['item'][$sItemno]['itm_data'][$sValue]);
                                 foreach ($TMP as $sTMPValue) {
                                     if (trim($sTMPValue) != '') {
                                         $aOptions[] = $sTMPValue;
@@ -102,38 +102,38 @@ class Updatecart extends Base
                         }
                     }
                     // if this Items is not in cart and amount is 0, no need to do anything, return to referer
-                    if (!isset($_SESSION["cart"][$sCartKey]) && $iAmount == 0) {
+                    if ($iAmount == 0 && !isset($_SESSION['cart'][$sCartKey])) {
                         $this->replyToCartUpdate('noactiontaken');
                     }
                     $aItem = [
                         'amount' => $iAmount,
-                        'price' => $this->serviceManager->get('oItem')->calcPrice($aData["item"][$sItemno]),
-                        'rg' => $aData["item"][$sItemno]['itm_rg'],
-                        'vat' => $aData["item"][$sItemno]['itm_vatid'],
-                        'name' => $aData["item"][$sItemno]['itm_name'],
-                        'img' => $aData["item"][$sItemno]['itm_img'],
+                        'price' => $this->serviceManager->get('oItem')->calcPrice($aData['item'][$sItemno]),
+                        'rg' => $aData['item'][$sItemno]['itm_rg'],
+                        'vat' => $aData['item'][$sItemno]['itm_vatid'],
+                        'name' => $aData['item'][$sItemno]['itm_name'],
+                        'img' => $aData['item'][$sItemno]['itm_img'],
                     ];
                     if (!empty($_POST['action']) && $_POST['action'] === 'add') {
-                        if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, add to amount
-                            $_SESSION["cart"][$sCartKey]['amount'] += $iAmount;
+                        if (isset($_SESSION['cart'][$sCartKey])) { // if this item is already in cart, add to amount
+                            $_SESSION['cart'][$sCartKey]['amount'] += $iAmount;
                         } else {
-                            $_SESSION["cart"][$sCartKey] = $aItem;
+                            $_SESSION['cart'][$sCartKey] = $aItem;
                         }
                         // todo: add additional items
                     } else {
-                        if (isset($_SESSION["cart"][$sCartKey])) { // if this item is already in cart, update amount
+                        if (isset($_SESSION['cart'][$sCartKey])) { // if this item is already in cart, update amount
                             if ($iAmount == 0) { // new amount == 0 -> remove from cart
-                                unset($_SESSION["cart"][$sCartKey]);
-                                if (count($_SESSION["cart"]) == 0) { // once the last cart item is unset, we no longer need cartpricesums
-                                    unset($_SESSION["cartpricesums"]);
+                                unset($_SESSION['cart'][$sCartKey]);
+                                if (count($_SESSION['cart']) == 0) { // once the last cart item is unset, we no longer need cartpricesums
+                                    unset($_SESSION['cartpricesums']);
                                 }
                                 $this->replyToCartUpdate('removed', ['cartkey' => $sCartKey]);
                             } else { // update amount
-                                $_SESSION["cart"][$sCartKey]["amount"] = $iAmount;
+                                $_SESSION['cart'][$sCartKey]['amount'] = $iAmount;
                                 $this->replyToCartUpdate('updated', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                             }
                         } else { // if this item is not in the cart yet, add it
-                            $_SESSION["cart"][$sCartKey] = $aItem;
+                            $_SESSION['cart'][$sCartKey] = $aItem;
                         }
                     }
                     $this->replyToCartUpdate('added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
@@ -148,12 +148,12 @@ class Updatecart extends Base
      * @param array $aMore
      */
     private function replyToCartUpdate($sReply, $aMore = []) {
-        if (isset($_REQUEST["ajax"])) {
+        if (isset($_REQUEST['ajax'])) {
             $aAR = [
-                'cart' => $_SESSION["cart"],
+                'cart' => $_SESSION['cart'],
                 'reply' => $sReply,
-                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION["cart"]),
-                'currency' => HelperConfig::$shop["waehrungssymbol"],
+                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']),
+                'currency' => HelperConfig::$shop['waehrungssymbol'],
                 'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
                 'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
                 'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
@@ -163,11 +163,11 @@ class Updatecart extends Base
             }
             echo $this->serviceManager->get('twig')->render('shop/update-cart.twig', $aAR);
         } else {
-            $aMSG["msg"] =  $sReply;
+            $aMSG['msg'] =  $sReply;
             if (count($aMore)) {
                 $aMSG = array_merge($aMSG, $aMore);
             }
-            header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER["HTTP_REFERER"], $aMSG, true, false));
+            header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER['HTTP_REFERER'], $aMSG, true, false));
         }
         die();
     }

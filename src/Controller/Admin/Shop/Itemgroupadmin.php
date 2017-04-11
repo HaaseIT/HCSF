@@ -59,22 +59,22 @@ class Itemgroupadmin extends Base
         $this->P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
         $return = '';
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'insert_lang') {
+        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'insert_lang') {
             $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
             $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':gid', $_REQUEST["gid"]);
+            $hResult->bindValue(':gid', $_REQUEST['gid']);
             $hResult->execute();
             $iNumRowsBasis = $hResult->rowCount();
 
             $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
             $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':gid', $_REQUEST["gid"]);
+            $hResult->bindValue(':gid', $_REQUEST['gid']);
             $hResult->bindValue(':lang', HelperConfig::$lang);
             $hResult->execute();
             $iNumRowsLang = $hResult->rowCount();
 
             if ($iNumRowsBasis == 1 && $iNumRowsLang == 0) {
-                $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
+                $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
                 $aData = [
                     'itmgt_pid' => $iGID,
                     'itmgt_lang' => HelperConfig::$lang,
@@ -90,30 +90,30 @@ class Itemgroupadmin extends Base
             }
         }
 
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'editgroup') {
-            if (isset($_REQUEST["do"]) && $_REQUEST["do"] === 'true') {
-                $this->P->cb_customdata["updatestatus"] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
+        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'editgroup') {
+            if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
+                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
             }
 
-            $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
+            $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
             $aGroup = $this->admin_getItemgroups($iGID);
-            if (isset($_REQUEST["added"])) {
-                $this->P->cb_customdata["groupjustadded"] = true;
+            if (isset($_REQUEST['added'])) {
+                $this->P->cb_customdata['groupjustadded'] = true;
             }
-            $this->P->cb_customdata["showform"] = 'edit';
-            $this->P->cb_customdata["group"] = $this->admin_prepareGroup('edit', $aGroup[0]);
-        } elseif (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'addgroup') {
+            $this->P->cb_customdata['showform'] = 'edit';
+            $this->P->cb_customdata['group'] = $this->admin_prepareGroup('edit', $aGroup[0]);
+        } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] === 'addgroup') {
             $aErr = [];
-            if (isset($_REQUEST["do"]) && $_REQUEST["do"] === 'true') {
-                $sName = filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                $sImg = filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
+                $sName = filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $sImg = filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
                 if (strlen($sName) < 3) {
-                    $aErr["nametooshort"] = true;
+                    $aErr['nametooshort'] = true;
                 }
                 if (strlen($sGNo) < 3) {
-                    $aErr["grouptooshort"] = true;
+                    $aErr['grouptooshort'] = true;
                 }
                 if (count($aErr) == 0) {
                     $sql = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
@@ -121,7 +121,7 @@ class Itemgroupadmin extends Base
                     $hResult->bindValue(':no', $sGNo);
                     $hResult->execute();
                     if ($hResult->rowCount() > 0) {
-                        $aErr["duplicateno"] = true;
+                        $aErr['duplicateno'] = true;
                     }
                 }
                 if (count($aErr) == 0) {
@@ -140,17 +140,17 @@ class Itemgroupadmin extends Base
                     header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
                     die();
                 } else {
-                    $this->P->cb_customdata["err"] = $aErr;
-                    $this->P->cb_customdata["showform"] = 'add';
-                    $this->P->cb_customdata["group"] = $this->admin_prepareGroup('add');
+                    $this->P->cb_customdata['err'] = $aErr;
+                    $this->P->cb_customdata['showform'] = 'add';
+                    $this->P->cb_customdata['group'] = $this->admin_prepareGroup('add');
                 }
             } else {
-                $this->P->cb_customdata["showform"] = 'add';
-                $this->P->cb_customdata["group"] = $this->admin_prepareGroup('add');
+                $this->P->cb_customdata['showform'] = 'add';
+                $this->P->cb_customdata['group'] = $this->admin_prepareGroup('add');
             }
         } else {
             if (!$return .= $this->admin_showItemgroups($this->admin_getItemgroups(''))) {
-                $this->P->cb_customdata["err"]["nogroupsavaliable"] = true;
+                $this->P->cb_customdata['err']['nogroupsavaliable'] = true;
             }
         }
         $this->P->oPayload->cl_html = $return;
@@ -164,8 +164,8 @@ class Itemgroupadmin extends Base
     {
         $sql = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
         $hResult = $this->db->prepare($sql);
-        $iGID = filter_var($_REQUEST["gid"], FILTER_SANITIZE_NUMBER_INT);
-        $sGNo = filter_var($_REQUEST["no"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
+        $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $hResult->bindValue(':id', $iGID);
         $hResult->bindValue(':gno', $sGNo);
         $hResult->execute();
@@ -176,9 +176,9 @@ class Itemgroupadmin extends Base
         }
 
         $aData = [
-            'itmg_name' => filter_var($_REQUEST["name"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itmg_name' => filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'itmg_no' => $sGNo,
-            'itmg_img' => filter_var($_REQUEST["img"], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+            'itmg_img' => filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'itmg_id'=> $iGID,
         ];
 
@@ -200,8 +200,8 @@ class Itemgroupadmin extends Base
         if ($iNumRows == 1) {
             $aRow = $hResult->fetch();
             $aData = [
-                'itmgt_shorttext' => $purifier->purify($_REQUEST["shorttext"]),
-                'itmgt_details' => $purifier->purify($_REQUEST["details"]),
+                'itmgt_shorttext' => $purifier->purify($_REQUEST['shorttext']),
+                'itmgt_details' => $purifier->purify($_REQUEST['details']),
                 'itmgt_id' => $aRow['itmgt_id'],
             ];
             $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
@@ -232,7 +232,7 @@ class Itemgroupadmin extends Base
 
         if ($sPurpose === 'edit') {
             if ($aData['itmgt_id'] != '') {
-                $aGData["lang"] = [
+                $aGData['lang'] = [
                     'shorttext' => isset($aData['itmgt_shorttext']) ? $aData['itmgt_shorttext'] : '',
                     'details' => isset($aData['itmgt_details']) ? $aData['itmgt_details'] : '',
                 ];

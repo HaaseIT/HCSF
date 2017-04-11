@@ -71,19 +71,19 @@ class Pageadmin extends Base
         $this->P->cb_customcontenttemplate = 'pageadmin';
 
         // adding language to page here
-        if (isset($_REQUEST["action"]) && $_REQUEST["action"] === 'insert_lang') {
+        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'insert_lang') {
             $this->insertLang();
         }
 
-        if (!isset($this->get["action"])) {
-            $this->P->cb_customdata["pageselect"] = $this->showPageselect();
-        } elseif (($this->get["action"] === 'edit' || $this->get["action"] === 'delete') && isset($_REQUEST["page_key"]) && $_REQUEST["page_key"] != '') {
-            if ($this->get["action"] === 'delete' && isset($this->post["delete"]) && $this->post["delete"] === 'do') {
+        if (!isset($this->get['action'])) {
+            $this->P->cb_customdata['pageselect'] = $this->showPageselect();
+        } elseif (isset($_REQUEST['page_key']) && $_REQUEST['page_key'] != '' && ($this->get['action'] === 'edit' || $this->get['action'] === 'delete')) {
+            if ($this->get['action'] === 'delete' && isset($this->post['delete']) && $this->post['delete'] === 'do') {
                 $this->handleDeletePage();
             } else { // edit or update page
                 $this->handleEditPage();
             }
-        } elseif ($this->get["action"] === 'addpage') {
+        } elseif ($this->get['action'] === 'addpage') {
             $this->handleAddPage();
         }
     }
@@ -91,25 +91,25 @@ class Pageadmin extends Base
     protected function handleDeletePage()
     {
         // delete and put message in customdata
-        $Ptodelete = new UserPage($this->serviceManager, $this->get["page_key"], true);
+        $Ptodelete = new UserPage($this->serviceManager, $this->get['page_key'], true);
         if ($Ptodelete->cb_id != NULL) {
             $Ptodelete->remove();
         } else {
             die(HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
         }
-        $this->P->cb_customdata["deleted"] = true;
+        $this->P->cb_customdata['deleted'] = true;
     }
 
     protected function handleAddPage()
     {
         $aErr = [];
-        if (isset($this->post["addpage"]) && $this->post["addpage"] === 'do') {
+        if (isset($this->post['addpage']) && $this->post['addpage'] === 'do') {
             $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
 
             if (mb_substr($sPagekeytoadd, 0, 2) === '/_') {
-                $aErr["reservedpath"] = true;
+                $aErr['reservedpath'] = true;
             } elseif (strlen($sPagekeytoadd) < 4) {
-                $aErr["keytooshort"] = true;
+                $aErr['keytooshort'] = true;
             } else {
                 $Ptoadd = new UserPage($this->serviceManager, $sPagekeytoadd, true);
                 if ($Ptoadd->cb_id == NULL) {
@@ -120,13 +120,13 @@ class Pageadmin extends Base
                         die(HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
                     }
                 } else {
-                    $aErr["keyalreadyinuse"] = true;
+                    $aErr['keyalreadyinuse'] = true;
                 }
             }
-            $this->P->cb_customdata["err"] = $aErr;
+            $this->P->cb_customdata['err'] = $aErr;
             unset($aErr);
         }
-        $this->P->cb_customdata["showaddform"] = true;
+        $this->P->cb_customdata['showaddform'] = true;
     }
 
     /**
@@ -134,7 +134,7 @@ class Pageadmin extends Base
      */
     protected function showPageselect() {
         $aGroups = [];
-        foreach (HelperConfig::$core["admin_page_groups"] as $sValue) {
+        foreach (HelperConfig::$core['admin_page_groups'] as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }
@@ -151,10 +151,10 @@ class Pageadmin extends Base
         $statement = $queryBuilder->execute();
 
         while ($aResult = $statement->fetch()) {
-            if (isset($aGroups[$aResult["cb_group"]])) {
-                $aTree[$aResult["cb_group"]][] = $aResult;
+            if (isset($aGroups[$aResult['cb_group']])) {
+                $aTree[$aResult['cb_group']][] = $aResult;
             } else {
-                $aTree["_"][] = $aResult;
+                $aTree['_'][] = $aResult;
             }
         }
 
@@ -172,7 +172,7 @@ class Pageadmin extends Base
 
     protected function insertLang()
     {
-        $Ptoinsertlang = new UserPage($this->serviceManager, $_REQUEST["page_key"], true);
+        $Ptoinsertlang = new UserPage($this->serviceManager, $_REQUEST['page_key'], true);
 
         if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
             $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
@@ -185,13 +185,13 @@ class Pageadmin extends Base
 
     protected function handleEditPage()
     {
-        if (isset($_REQUEST["page_key"]) && $Ptoedit = new UserPage($this->serviceManager, $_REQUEST["page_key"], true)) {
-            if (isset($_REQUEST["action_a"]) && $_REQUEST["action_a"] === 'true') {
+        if (isset($_REQUEST['page_key']) && $Ptoedit = new UserPage($this->serviceManager, $_REQUEST['page_key'], true)) {
+            if (isset($_REQUEST['action_a']) && $_REQUEST['action_a'] === 'true') {
                 $Ptoedit = $this->updatePage($Ptoedit);
             }
-            $this->P->cb_customdata["page"] = $Ptoedit;
-            $this->P->cb_customdata["admin_page_types"] = HelperConfig::$core["admin_page_types"];
-            $this->P->cb_customdata["admin_page_groups"] = HelperConfig::$core["admin_page_groups"];
+            $this->P->cb_customdata['page'] = $Ptoedit;
+            $this->P->cb_customdata['admin_page_types'] = HelperConfig::$core['admin_page_types'];
+            $this->P->cb_customdata['admin_page_groups'] = HelperConfig::$core['admin_page_groups'];
             $aOptions = [''];
             foreach (HelperConfig::$navigation as $sKey => $aValue) {
                 if ($sKey === 'admin') {
@@ -199,7 +199,7 @@ class Pageadmin extends Base
                 }
                 $aOptions[] = $sKey;
             }
-            $this->P->cb_customdata["subnavarea_options"] = $aOptions;
+            $this->P->cb_customdata['subnavarea_options'] = $aOptions;
             unset($aOptions);
 
             // show archived versions of this page
@@ -266,8 +266,8 @@ class Pageadmin extends Base
             $Ptoedit->oPayload->write();
         }
 
-        $Ptoedit = new UserPage($this->serviceManager, $_REQUEST["page_key"], true);
-        $this->P->cb_customdata["updated"] = true;
+        $Ptoedit = new UserPage($this->serviceManager, $_REQUEST['page_key'], true);
+        $this->P->cb_customdata['updated'] = true;
 
         return $Ptoedit;
     }

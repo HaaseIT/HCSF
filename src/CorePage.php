@@ -32,6 +32,7 @@ class CorePage extends Page
     /**
      * CorePage constructor.
      * @param ServiceManager $serviceManager
+     * @param array $headers
      * @param string $customroottemplate
      */
     public function __construct(ServiceManager $serviceManager, $headers = [], $customroottemplate = '')

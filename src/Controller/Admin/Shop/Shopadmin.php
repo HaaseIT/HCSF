@@ -57,17 +57,17 @@ class Shopadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/shopadmin';
 
-        if (isset($_POST["change"])) {
-            $iID = filter_var(trim(Tools::getFormfield("id")), FILTER_SANITIZE_NUMBER_INT);
+        if (isset($_POST['change'])) {
+            $iID = filter_var(trim(Tools::getFormfield('id')), FILTER_SANITIZE_NUMBER_INT);
             $aData = [
                 'o_lastedit_timestamp' => time(),
-                'o_remarks_internal' => filter_var(trim(Tools::getFormfield("remarks_internal")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_transaction_no' => filter_var(trim(Tools::getFormfield("transaction_no")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_paymentcompleted' => filter_var(trim(Tools::getFormfield("order_paymentcompleted")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_ordercompleted' => filter_var(trim(Tools::getFormfield("order_completed")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_lastedit_user' => ((isset($_SERVER["PHP_AUTH_USER"])) ? $_SERVER["PHP_AUTH_USER"] : ''),
-                'o_shipping_service' => filter_var(trim(Tools::getFormfield("order_shipping_service")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_shipping_trackingno' => filter_var(trim(Tools::getFormfield("order_shipping_trackingno")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_remarks_internal' => filter_var(trim(Tools::getFormfield('remarks_internal')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_transaction_no' => filter_var(trim(Tools::getFormfield('transaction_no')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_paymentcompleted' => filter_var(trim(Tools::getFormfield('order_paymentcompleted')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_ordercompleted' => filter_var(trim(Tools::getFormfield('order_completed')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_lastedit_user' => isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '',
+                'o_shipping_service' => filter_var(trim(Tools::getFormfield('order_shipping_service')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                'o_shipping_trackingno' => filter_var(trim(Tools::getFormfield('order_shipping_trackingno')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                 'o_id' => $iID,
             ];
 
@@ -86,9 +86,9 @@ class Shopadmin extends Base
             'searchform_fromday' => Tools::getFormfield('fromday', '01'),
             'searchform_frommonth' => Tools::getFormfield('frommonth', '01'),
             'searchform_fromyear' => Tools::getFormfield('fromyear', '2014'),
-            'searchform_today' => Tools::getFormfield('today', date("d")),
-            'searchform_tomonth' => Tools::getFormfield('tomonth', date("m")),
-            'searchform_toyear' => Tools::getFormfield('toyear', date("Y")),
+            'searchform_today' => Tools::getFormfield('today', date('d')),
+            'searchform_tomonth' => Tools::getFormfield('tomonth', date('m')),
+            'searchform_toyear' => Tools::getFormfield('toyear', date('Y')),
         ];
 
         $CSA = [
@@ -134,12 +134,12 @@ class Shopadmin extends Base
     {
         $aSData = [];
         $aData = [];
-        if (!isset($_GET["action"])) {
+        if (!isset($_GET['action'])) {
             $bIgnoreStorno = false;
             $sql = 'SELECT * FROM orders WHERE ';
 
-            if (isset($_REQUEST["type"])) {
-                switch ($_REQUEST["type"]) {
+            if (isset($_REQUEST['type'])) {
+                switch ($_REQUEST['type']) {
                     case 'closed':
                         $sql .= "o_ordercompleted = 'y' ";
                         break;
@@ -170,17 +170,17 @@ class Shopadmin extends Base
             $bFromTo = false;
             $sFrom = null;
             $sTo = null;
-            if (isset($_REQUEST["type"]) && ($_REQUEST["type"] === 'deleted' || $_REQUEST["type"] === 'all' || $_REQUEST["type"] === 'closed')) {
-                $sql .= "AND ";
-                $sFrom = \filter_var($_REQUEST["fromyear"], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["frommonth"], FILTER_SANITIZE_NUMBER_INT));
-                $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["fromday"], FILTER_SANITIZE_NUMBER_INT));
-                $sTo = \filter_var($_REQUEST["toyear"], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["tomonth"], FILTER_SANITIZE_NUMBER_INT));
-                $sTo .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST["today"], FILTER_SANITIZE_NUMBER_INT));
-                $sql .= "o_orderdate >= :from ";
-                $sql .= "AND o_orderdate <= :to ";
+            if (isset($_REQUEST['type']) && ($_REQUEST['type'] === 'deleted' || $_REQUEST['type'] === 'all' || $_REQUEST['type'] === 'closed')) {
+                $sql .= 'AND ';
+                $sFrom = \filter_var($_REQUEST['fromyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['frommonth'], FILTER_SANITIZE_NUMBER_INT));
+                $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['fromday'], FILTER_SANITIZE_NUMBER_INT));
+                $sTo = \filter_var($_REQUEST['toyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['tomonth'], FILTER_SANITIZE_NUMBER_INT));
+                $sTo .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['today'], FILTER_SANITIZE_NUMBER_INT));
+                $sql .= 'o_orderdate >= :from ';
+                $sql .= 'AND o_orderdate <= :to ';
                 $bFromTo = true;
             }
-            $sql .= "ORDER BY o_ordertimestamp DESC";
+            $sql .= 'ORDER BY o_ordertimestamp DESC';
 
             $hResult = $this->db->prepare($sql);
             if ($bFromTo) {
@@ -195,7 +195,7 @@ class Shopadmin extends Base
                 $k = 0;
                 $fGesamtnetto = 0.0;
                 while ($aRow = $hResult->fetch()) {
-                    switch ($aRow["o_ordercompleted"]) {
+                    switch ($aRow['o_ordercompleted']) {
                         case 'y':
                             $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
                             break;
@@ -215,63 +215,63 @@ class Shopadmin extends Base
                             $sStatus = '';
                     }
 
-                    if ($aRow["o_paymentcompleted"] === 'y') {
+                    if ($aRow['o_paymentcompleted'] === 'y') {
                         $sZahlungsmethode = '<span style="color: green;">';
                     } else {
                         $sZahlungsmethode = '<span style="color: red;">';
                     }
-                    $mZahlungsmethode = $this->serviceManager->get('textcats')->T("order_paymentmethod_".$aRow["o_paymentmethod"], true);
+                    $mZahlungsmethode = $this->serviceManager->get('textcats')->T('order_paymentmethod_' .$aRow['o_paymentmethod'], true);
                     if ($mZahlungsmethode ) {
                         $sZahlungsmethode .= $mZahlungsmethode;
                     } else {
-                        $sZahlungsmethode .= ucwords($aRow["o_paymentmethod"]);
+                        $sZahlungsmethode .= ucwords($aRow['o_paymentmethod']);
                     }
                     $sZahlungsmethode .= '</span>';
 
-                    if (trim($aRow["o_corpname"]) == '') {
-                        $sName = $aRow["o_name"];
+                    if (trim($aRow['o_corpname']) == '') {
+                        $sName = $aRow['o_name'];
                     } else {
-                        $sName = $aRow["o_corpname"];
+                        $sName = $aRow['o_corpname'];
                     }
 
                     $aData[] = [
-                        'o_id' => $aRow["o_id"],
-                        'o_account_no' => $aRow["o_custno"],
-                        'o_email' => $aRow["o_email"],
-                        'o_cust' => $sName.'<br>'.$aRow["o_zip"].' '.$aRow["o_town"],
-                        'o_authed' => $aRow["o_authed"],
+                        'o_id' => $aRow['o_id'],
+                        'o_account_no' => $aRow['o_custno'],
+                        'o_email' => $aRow['o_email'],
+                        'o_cust' => $sName.'<br>'.$aRow['o_zip'].' '.$aRow['o_town'],
+                        'o_authed' => $aRow['o_authed'],
                         'o_sumnettoall' => number_format(
-                            $aRow["o_sumnettoall"],
+                            $aRow['o_sumnettoall'],
                                 HelperConfig::$core['numberformat_decimals'],
                                 HelperConfig::$core['numberformat_decimal_point'],
                                 HelperConfig::$core['numberformat_thousands_seperator']
                             )
-                            .' '.HelperConfig::$shop["waehrungssymbol"]
+                            .' '.HelperConfig::$shop['waehrungssymbol']
                             .(
-                                ($aRow["o_mindermenge"] != 0 && $aRow["o_mindermenge"] != '')
+                                ($aRow['o_mindermenge'] != 0 && $aRow['o_mindermenge'] != '')
                                     ? '<br>+'.number_format(
-                                        $aRow["o_mindermenge"],
+                                        $aRow['o_mindermenge'],
                                         HelperConfig::$core['numberformat_decimals'],
                                         HelperConfig::$core['numberformat_decimal_point'],
                                         HelperConfig::$core['numberformat_thousands_seperator']
-                                    ).' '.HelperConfig::$shop["waehrungssymbol"] : ''),
-                        'o_order_status' => $sStatus.((trim($aRow["o_lastedit_user"]) != '') ? '<br>'.$aRow["o_lastedit_user"] : ''),
+                                    ).' '.HelperConfig::$shop['waehrungssymbol'] : ''),
+                        'o_order_status' => $sStatus.((trim($aRow['o_lastedit_user']) != '') ? '<br>'.$aRow['o_lastedit_user'] : ''),
                         'o_ordertime_number' => date(
                                 HelperConfig::$core['locale_format_date_time'],
-                                $aRow["o_ordertimestamp"]
+                                $aRow['o_ordertimestamp']
                             )
-                            .((trim($aRow["o_transaction_no"]) != '') ? '<br>'.$aRow["o_transaction_no"] : ''),
-                        'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow["o_srv_hostname"],
+                            .((trim($aRow['o_transaction_no']) != '') ? '<br>'.$aRow['o_transaction_no'] : ''),
+                        'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow['o_srv_hostname'],
                     ];
-                    if (!($aRow["o_ordercompleted"] == 's' && $bIgnoreStorno)) {
-                        $fGesamtnetto += $aRow["o_sumnettoall"];
+                    if (!($bIgnoreStorno && $aRow['o_ordercompleted'] === 's')) {
+                        $fGesamtnetto += $aRow['o_sumnettoall'];
                         $j ++;
                     } else {
                         $k++;
                     }
                     $i++;
                 }
-                $aSData['listtable_orders'] = Tools::makeListtable($CSA["list_orders"], $aData, $this->serviceManager->get('twig'));
+                $aSData['listtable_orders'] = Tools::makeListtable($CSA['list_orders'], $aData, $this->serviceManager->get('twig'));
                 $aSData['listtable_i'] = $i;
                 $aSData['listtable_j'] = $j;
                 $aSData['listtable_k'] = $k;
@@ -279,7 +279,7 @@ class Shopadmin extends Base
             } else {
                 $aSData['nomatchingordersfound'] = true;
             }
-        } elseif (isset($_GET["action"]) && $_GET["action"] === 'edit') {
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $sql = 'SELECT * FROM orders WHERE o_id = :id';
 
@@ -288,7 +288,7 @@ class Shopadmin extends Base
             $hResult->bindValue(':id', $iId);
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
-                $aSData["orderdata"] = $hResult->fetch();
+                $aSData['orderdata'] = $hResult->fetch();
                 $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
                 $hResult = $this->db->prepare($sql);
                 $hResult->bindValue(':id', $iId);
@@ -296,49 +296,49 @@ class Shopadmin extends Base
                 $aItems = $hResult->fetchAll();
 
                 $aUserdata = [
-                    'cust_no' => $aSData["orderdata"]["o_custno"],
-                    'cust_email' => $aSData["orderdata"]["o_email"],
-                    'cust_corp' => $aSData["orderdata"]["o_corpname"],
-                    'cust_name' => $aSData["orderdata"]["o_name"],
-                    'cust_street' => $aSData["orderdata"]["o_street"],
-                    'cust_zip' => $aSData["orderdata"]["o_zip"],
-                    'cust_town' => $aSData["orderdata"]["o_town"],
-                    'cust_phone' => $aSData["orderdata"]["o_phone"],
-                    'cust_cellphone' => $aSData["orderdata"]["o_cellphone"],
-                    'cust_fax' => $aSData["orderdata"]["o_fax"],
-                    'cust_country' => $aSData["orderdata"]["o_country"],
-                    'cust_group' => $aSData["orderdata"]["o_group"],
+                    'cust_no' => $aSData['orderdata']['o_custno'],
+                    'cust_email' => $aSData['orderdata']['o_email'],
+                    'cust_corp' => $aSData['orderdata']['o_corpname'],
+                    'cust_name' => $aSData['orderdata']['o_name'],
+                    'cust_street' => $aSData['orderdata']['o_street'],
+                    'cust_zip' => $aSData['orderdata']['o_zip'],
+                    'cust_town' => $aSData['orderdata']['o_town'],
+                    'cust_phone' => $aSData['orderdata']['o_phone'],
+                    'cust_cellphone' => $aSData['orderdata']['o_cellphone'],
+                    'cust_fax' => $aSData['orderdata']['o_fax'],
+                    'cust_country' => $aSData['orderdata']['o_country'],
+                    'cust_group' => $aSData['orderdata']['o_group'],
                 ];
-                $aSData["customerform"] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                $aSData['customerform'] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
                     HelperConfig::$lang,
                     'shopadmin',
                     '',
                     $aUserdata
                 );
 
-                $aSData["orderdata"]["options_shippingservices"] = [''];
-                foreach (HelperConfig::$shop["shipping_services"] as $sValue) {
-                    $aSData["orderdata"]["options_shippingservices"][] = $sValue;
+                $aSData['orderdata']['options_shippingservices'] = [''];
+                foreach (HelperConfig::$shop['shipping_services'] as $sValue) {
+                    $aSData['orderdata']['options_shippingservices'][] = $sValue;
                 }
 
                 $aItemsCarttable = [];
                 foreach ($aItems as $aValue) {
                     $aPrice = [
-                        'netto_list' => $aValue["oi_price_netto_list"],
-                        'netto_sale' => $aValue["oi_price_netto_sale"],
-                        'netto_rebated' => $aValue["oi_price_netto_rebated"],
-                        'netto_use' => $aValue["oi_price_netto_use"],
-                        'brutto_use' => $aValue["oi_price_brutto_use"],
+                        'netto_list' => $aValue['oi_price_netto_list'],
+                        'netto_sale' => $aValue['oi_price_netto_sale'],
+                        'netto_rebated' => $aValue['oi_price_netto_rebated'],
+                        'netto_use' => $aValue['oi_price_netto_use'],
+                        'brutto_use' => $aValue['oi_price_brutto_use'],
                     ];
 
-                    $aItemsCarttable[$aValue["oi_cartkey"]] = [
-                        'amount' => $aValue["oi_amount"],
+                    $aItemsCarttable[$aValue['oi_cartkey']] = [
+                        'amount' => $aValue['oi_amount'],
                         'price' => $aPrice,
-                        'vat' => $aValue["oi_vat"],
-                        'rg' => $aValue["oi_rg"],
-                        'rg_rebate' => $aValue["oi_rg_rebate"],
-                        'name' => $aValue["oi_itemname"],
-                        'img' => $aValue["oi_img"],
+                        'vat' => $aValue['oi_vat'],
+                        'rg' => $aValue['oi_rg'],
+                        'rg_rebate' => $aValue['oi_rg_rebate'],
+                        'name' => $aValue['oi_itemname'],
+                        'img' => $aValue['oi_img'],
                     ];
                 }
 
@@ -346,10 +346,10 @@ class Shopadmin extends Base
                     \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
                         $aItemsCarttable,
                         true,
-                        $aSData["orderdata"]["o_group"],
+                        $aSData['orderdata']['o_group'],
                         '',
-                        $aSData["orderdata"]["o_vatfull"],
-                        $aSData["orderdata"]["o_vatreduced"]
+                        $aSData['orderdata']['o_vatfull'],
+                        $aSData['orderdata']['o_vatreduced']
                     ),
                     $aSData);
             } else {

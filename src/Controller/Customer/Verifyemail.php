@@ -58,13 +58,13 @@ class Verifyemail extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
+            $this->P->oPayload->cl_html = $this->textcats->T('denied_default');
         } else {
             $sql = 'SELECT cust_email, cust_id FROM customer '
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
             /** @var \PDOStatement $hResult */
             $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':key', $_GET["key"], \PDO::PARAM_STR);
+            $hResult->bindValue(':key', $_GET['key'], \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
 
@@ -78,9 +78,9 @@ class Verifyemail extends Base
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }
                 $hResult->execute();
-                $this->P->oPayload->cl_html = $this->textcats->T("register_emailverificationsuccess");
+                $this->P->oPayload->cl_html = $this->textcats->T('register_emailverificationsuccess');
             } else {
-                $this->P->oPayload->cl_html = $this->textcats->T("register_emailverificationfail");
+                $this->P->oPayload->cl_html = $this->textcats->T('register_emailverificationfail');
             }
         }
     }

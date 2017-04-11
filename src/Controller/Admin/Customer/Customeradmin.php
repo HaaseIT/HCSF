@@ -74,7 +74,7 @@ class Customeradmin extends Base
         ];
         $aPData = $this->handleCustomerAdmin($CUA, $this->serviceManager->get('twig'));
         $this->P->cb_customcontenttemplate = 'customer/customeradmin';
-        $this->P->oPayload->cl_html = $aPData["customeradmin"]["text"];
+        $this->P->oPayload->cl_html = $aPData['customeradmin']['text'];
         $this->P->cb_customdata = $aPData;
     }
 
@@ -86,15 +86,15 @@ class Customeradmin extends Base
     private function handleCustomerAdmin($CUA, $twig)
     {
         $sType = 'all';
-        if (isset($_REQUEST["type"])) {
-            if ($_REQUEST["type"] === 'active') {
+        if (isset($_REQUEST['type'])) {
+            if ($_REQUEST['type'] === 'active') {
                 $sType = 'active';
-            } elseif ($_REQUEST["type"] === 'inactive') {
+            } elseif ($_REQUEST['type'] === 'inactive') {
                 $sType = 'inactive';
             }
         }
         $return = '';
-        if (!isset($_GET["action"])) {
+        if (!isset($_GET['action'])) {
             $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
             if ($sType === 'active') {
                 $sql .= ' WHERE cust_active = \'y\'';
@@ -107,15 +107,15 @@ class Customeradmin extends Base
                 $aData = $hResult->fetchAll();
                 $return .= \HaaseIT\Toolbox\Tools::makeListtable($CUA, $aData, $twig);
             } else {
-                $aInfo["nodatafound"] = true;
+                $aInfo['nodatafound'] = true;
             }
-        } elseif (isset($_GET["action"]) && $_GET["action"] === 'edit') {
+        } elseif (isset($_GET['action']) && $_GET['action'] === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $aErr = [];
-            if (isset($_POST["doEdit"]) && $_POST["doEdit"] === 'yes') {
-                $sCustno = filter_var(trim($_POST["custno"]), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                if (strlen($sCustno) < HelperConfig::$customer["minimum_length_custno"]) {
-                    $aErr["custnoinvalid"] = true;
+            if (isset($_POST['doEdit']) && $_POST['doEdit'] === 'yes') {
+                $sCustno = filter_var(trim($_POST['custno']), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                if (strlen($sCustno) < HelperConfig::$customer['minimum_length_custno']) {
+                    $aErr['custnoinvalid'] = true;
                 } else {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
                     $hResult = $this->db->prepare($sql);
@@ -123,8 +123,8 @@ class Customeradmin extends Base
                     $hResult->bindValue(':custno', $sCustno);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
-                    if ($iRows == 1) {
-                        $aErr["custnoalreadytaken"] = true;
+                    if ($iRows === 1) {
+                        $aErr['custnoalreadytaken'] = true;
                     }
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
                     $hResult = $this->db->prepare($sql);
@@ -133,7 +133,7 @@ class Customeradmin extends Base
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
-                        $aErr["emailalreadytaken"] = true;
+                        $aErr['emailalreadytaken'] = true;
                     }
                     $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
                     if (count($aErr) == 0) {
@@ -150,13 +150,13 @@ class Customeradmin extends Base
                             'cust_fax' => trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                             'cust_country' => trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
                             'cust_group' => trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_emailverified' => ((isset($_POST["emailverified"]) && $_POST["emailverified"] === 'y') ? 'y' : 'n'),
-                            'cust_active' => ((isset($_POST["active"]) && $_POST["active"] === 'y') ? 'y' : 'n'),
+                            'cust_emailverified' => (isset($_POST['emailverified']) && $_POST['emailverified'] === 'y') ? 'y' : 'n',
+                            'cust_active' => (isset($_POST['active']) && $_POST['active'] === 'y') ? 'y' : 'n',
                             'cust_id' => $iId,
                         ];
-                        if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
-                            $aInfo["passwordchanged"] = true;
+                        if (isset($_POST['pwd']) && $_POST['pwd'] != '') {
+                            $aData['cust_password'] = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
+                            $aInfo['passwordchanged'] = true;
                         }
                         $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                         $hResult = $this->db->prepare($sql);
@@ -164,7 +164,7 @@ class Customeradmin extends Base
                             $hResult->bindValue(':' . $sKey, $sValue);
                         }
                         $hResult->execute();
-                        $aInfo["changeswritten"] = true;
+                        $aInfo['changeswritten'] = true;
                     }
                 }
             }
@@ -174,15 +174,15 @@ class Customeradmin extends Base
             $hResult->execute();
             if ($hResult->rowCount() == 1) {
                 $aUser = $hResult->fetch();
-                $aPData["customerform"] = CHelper::buildCustomerForm(HelperConfig::$lang, 'admin', $aErr, $aUser);
+                $aPData['customerform'] = CHelper::buildCustomerForm(HelperConfig::$lang, 'admin', $aErr, $aUser);
             } else {
-                $aInfo["nosuchuserfound"] = true;
+                $aInfo['nosuchuserfound'] = true;
             }
         }
-        $aPData["customeradmin"]["text"] = $return;
-        $aPData["customeradmin"]["type"] = $sType;
+        $aPData['customeradmin']['text'] = $return;
+        $aPData['customeradmin']['type'] = $sType;
         if (isset($aInfo)) {
-            $aPData["customeradmin"]["info"] = $aInfo;
+            $aPData['customeradmin']['info'] = $aInfo;
         }
         return $aPData;
     }

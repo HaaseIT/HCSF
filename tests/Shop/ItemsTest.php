@@ -97,8 +97,8 @@ class ItemsTest extends TestCase
             'itm_vatid' => 'full',
             'itm_data' => [
                 'sale' => [
-                    'start' => date("Ymd") - 1,
-                    'end' => date("Ymd") + 1,
+                    'start' => date('Ymd') - 1,
+                    'end' => date('Ymd') + 1,
                     'price' => '9.10',
                 ],
             ],
@@ -119,8 +119,8 @@ class ItemsTest extends TestCase
             'itm_vatid' => 'full',
             'itm_data' => [
                 'sale' => [
-                    'start' => date("Ymd") - 5,
-                    'end' => date("Ymd") - 1,
+                    'start' => date('Ymd') - 5,
+                    'end' => date('Ymd') - 1,
                     'price' => '9.10',
                 ],
             ],
@@ -141,8 +141,8 @@ class ItemsTest extends TestCase
             'itm_vatid' => 'full',
             'itm_data' => [
                 'sale' => [
-                    'start' => date("Ymd") + 1,
-                    'end' => date("Ymd") + 5,
+                    'start' => date('Ymd') + 1,
+                    'end' => date('Ymd') + 5,
                     'price' => '9.10',
                 ],
             ],
@@ -157,7 +157,7 @@ class ItemsTest extends TestCase
         $this->assertArrayNotHasKey('netto_rebated', $aPrice);
 
         // init session for rebate testing
-        $_SESSION["user"] = [
+        $_SESSION['user'] = [
             'cust_group' => 'grosskunde',
         ];
 
@@ -184,8 +184,8 @@ class ItemsTest extends TestCase
             'itm_vatid' => 'full',
             'itm_data' => [
                 'sale' => [
-                    'start' => date("Ymd") - 1,
-                    'end' => date("Ymd") + 1,
+                    'start' => date('Ymd') - 1,
+                    'end' => date('Ymd') + 1,
                     'price' => '10.99',
                 ],
             ],
@@ -205,8 +205,8 @@ class ItemsTest extends TestCase
             'itm_vatid' => 'full',
             'itm_data' => [
                 'sale' => [
-                    'start' => date("Ymd") - 1,
-                    'end' => date("Ymd") + 1,
+                    'start' => date('Ymd') - 1,
+                    'end' => date('Ymd') + 1,
                     'price' => '9.10',
                 ],
             ],

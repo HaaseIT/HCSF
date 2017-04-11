@@ -43,7 +43,7 @@ class Phpinfo extends Base
         $html .= implode("\n",
             array_map(
                 function($i) {
-                    return ".phpinfodisplay " . preg_replace( "/,/", ",.phpinfodisplay ", $i );
+                    return '.phpinfodisplay ' . preg_replace( '/,/', ',.phpinfodisplay ', $i );
                 },
                 preg_split('/\n/', $matches[1])
             )

@@ -76,11 +76,11 @@ class HelperConfig
 
         static::loadSecrets();
 
-        if (static::$core["enable_module_customer"]) {
+        if (static::$core['enable_module_customer']) {
             static::loadCustomer();
         }
 
-        if (static::$core["enable_module_shop"]) {
+        if (static::$core['enable_module_shop']) {
             static::loadShop();
         }
     }
@@ -98,17 +98,17 @@ class HelperConfig
         $core['directory_images'] = trim($core['directory_images'], " \t\n\r\0\x0B/"); // trim this
 
         if (!empty($core['maintenancemode']) && $core['maintenancemode']) {
-            $core["enable_module_customer"] = false;
-            $core["enable_module_shop"] = false;
-            $core["templatecache_enable"] = false;
-            $core["debug"] = false;
+            $core['enable_module_customer'] = false;
+            $core['enable_module_shop'] = false;
+            $core['templatecache_enable'] = false;
+            $core['debug'] = false;
             $core['textcatsverbose'] = false;
         } else {
             $core['maintenancemode'] = false;
         }
 
-        if ($core["enable_module_shop"]) {
-            $core["enable_module_customer"] = true;
+        if ($core['enable_module_shop']) {
+            $core['enable_module_customer'] = true;
         }
 
         static::$core = $core;
@@ -162,8 +162,8 @@ class HelperConfig
         if (is_file(PATH_BASEDIR.'config/shop.yml')) {
             $shop = array_merge($shop, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/shop.yml')));
         }
-        if (isset($shop["vat_disable"]) && $shop["vat_disable"]) {
-            $shop["vat"] = ["full" => 0, "reduced" => 0];
+        if (isset($shop['vat_disable']) && $shop['vat_disable']) {
+            $shop['vat'] = ['full' => 0, 'reduced' => 0];
         }
 
         static::$shop = $shop;
@@ -197,28 +197,28 @@ class HelperConfig
             unset($TMP);
         }
 
-        if (isset($navstruct["admin"])) {
-            unset($navstruct["admin"]);
+        if (isset($navstruct['admin'])) {
+            unset($navstruct['admin']);
         }
 
-        $navstruct["admin"][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
 
-        if (static::$core["enable_module_shop"]) {
-            $navstruct["admin"][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
-            $navstruct["admin"][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
-            $navstruct["admin"][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
+        if (static::$core['enable_module_shop']) {
+            $navstruct['admin'][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
+            $navstruct['admin'][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
+            $navstruct['admin'][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
         }
 
-        if (static::$core["enable_module_customer"]) {
-            $navstruct["admin"][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
+        if (static::$core['enable_module_customer']) {
+            $navstruct['admin'][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
         }
 
-        $navstruct["admin"][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
-        $navstruct["admin"][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
+        $navstruct['admin'][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
 
         static::$navigation = $navstruct;
     }

@@ -89,8 +89,8 @@ class Helper
             }
         }
 
-        $mail->From = HelperConfig::$core["email_sender"];
-        $mail->FromName = HelperConfig::$core["email_sendername"];
+        $mail->From = HelperConfig::$core['email_sender'];
+        $mail->FromName = HelperConfig::$core['email_sendername'];
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -156,81 +156,81 @@ class Helper
             'customroottemplate' => $P->getCustomRootTemplate(),
             'headers' => $P->getHeaders(),
         ];
-        if (HelperConfig::$core["enable_module_customer"]) {
-            $aP["isloggedin"] = \HaaseIT\HCSF\Customer\Helper::getUserData();
-            $aP["enable_module_customer"] = true;
+        if (HelperConfig::$core['enable_module_customer']) {
+            $aP['isloggedin'] = \HaaseIT\HCSF\Customer\Helper::getUserData();
+            $aP['enable_module_customer'] = true;
         }
-        if (HelperConfig::$core["enable_module_shop"]) {
-            $aP["currency"] = HelperConfig::$shop["waehrungssymbol"];
-            $aP["orderamounts"] = HelperConfig::$shop["orderamounts"];
-            if (isset(HelperConfig::$shop["vat"]["full"])) {
-                $aP["vatfull"] = HelperConfig::$shop["vat"]["full"];
+        if (HelperConfig::$core['enable_module_shop']) {
+            $aP['currency'] = HelperConfig::$shop['waehrungssymbol'];
+            $aP['orderamounts'] = HelperConfig::$shop['orderamounts'];
+            if (isset(HelperConfig::$shop['vat']['full'])) {
+                $aP['vatfull'] = HelperConfig::$shop['vat']['full'];
             }
-            if (isset(HelperConfig::$shop["vat"]["reduced"])) {
-                $aP["vatreduced"] = HelperConfig::$shop["vat"]["reduced"];
+            if (isset(HelperConfig::$shop['vat']['reduced'])) {
+                $aP['vatreduced'] = HelperConfig::$shop['vat']['reduced'];
             }
-            if (isset(HelperConfig::$shop["custom_order_fields"])) {
-                $aP["custom_order_fields"] = HelperConfig::$shop["custom_order_fields"];
+            if (isset(HelperConfig::$shop['custom_order_fields'])) {
+                $aP['custom_order_fields'] = HelperConfig::$shop['custom_order_fields'];
             }
-            $aP["enable_module_shop"] = true;
+            $aP['enable_module_shop'] = true;
         }
         if (isset($P->cb_key)) {
-            $aP["path"] = pathinfo($P->cb_key);
+            $aP['path'] = pathinfo($P->cb_key);
         } else {
-            $aP["path"] = pathinfo($aP["requesturi"]);
+            $aP['path'] = pathinfo($aP['requesturi']);
         }
         if ($P->cb_customcontenttemplate != NULL) {
-            $aP["customcontenttemplate"] = $P->cb_customcontenttemplate;
+            $aP['customcontenttemplate'] = $P->cb_customcontenttemplate;
         }
         if ($P->cb_customdata != NULL) {
-            $aP["customdata"] = $P->cb_customdata;
+            $aP['customdata'] = $P->cb_customdata;
         }
-        if (isset($_SERVER["HTTP_REFERER"])) {
-            $aP["referer"] = $_SERVER["HTTP_REFERER"];
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $aP['referer'] = $_SERVER['HTTP_REFERER'];
         }
 
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
-        if ((!isset($aP["subnavkey"]) || $aP["subnavkey"] == '') && HelperConfig::$core["subnav_default"] != '') {
-            $aP["subnavkey"] = HelperConfig::$core["subnav_default"];
-            $P->cb_subnav = HelperConfig::$core["subnav_default"];
+        if ((!isset($aP['subnavkey']) || $aP['subnavkey'] == '') && HelperConfig::$core['subnav_default'] != '') {
+            $aP['subnavkey'] = HelperConfig::$core['subnav_default'];
+            $P->cb_subnav = HelperConfig::$core['subnav_default'];
         }
         if ($P->cb_subnav != NULL && isset(HelperConfig::$navigation[$P->cb_subnav])) {
-            $aP["subnav"] = HelperConfig::$navigation[$P->cb_subnav];
+            $aP['subnav'] = HelperConfig::$navigation[$P->cb_subnav];
         }
 
         // Get page title, meta-keywords, meta-description
-        $aP["pagetitle"] = $P->oPayload->getTitle();
-        $aP["keywords"] = $P->oPayload->cl_keywords;
-        $aP["description"] = $P->oPayload->cl_description;
+        $aP['pagetitle'] = $P->oPayload->getTitle();
+        $aP['keywords'] = $P->oPayload->cl_keywords;
+        $aP['description'] = $P->oPayload->cl_description;
 
         // TODO: Add head scripts to DB
         //if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
 
         // Shopping cart infos
-        if (HelperConfig::$core["enable_module_shop"]) {
-            $aP["cartinfo"] = SHelper::getShoppingcartData();
+        if (HelperConfig::$core['enable_module_shop']) {
+            $aP['cartinfo'] = SHelper::getShoppingcartData();
         }
 
-        $aP["countrylist"][] = ' | ';
-        foreach (HelperConfig::$countries["countries_".HelperConfig::$lang] as $sKey => $sValue) {
-            $aP["countrylist"][] = $sKey.'|'.$sValue;
+        $aP['countrylist'][] = ' | ';
+        foreach (HelperConfig::$countries['countries_' .HelperConfig::$lang] as $sKey => $sValue) {
+            $aP['countrylist'][] = $sKey.'|'.$sValue;
         }
 
         if (
-            HelperConfig::$core["enable_module_shop"]
+            HelperConfig::$core['enable_module_shop']
             && (
-                $aP["pagetype"] === 'itemoverview'
-                || $aP["pagetype"] === 'itemoverviewgrpd'
-                || $aP["pagetype"] === 'itemdetail'
+                $aP['pagetype'] === 'itemoverview'
+                || $aP['pagetype'] === 'itemoverviewgrpd'
+                || $aP['pagetype'] === 'itemdetail'
             )
         ) {
             $aP = SHelper::handleItemPage($serviceManager, $P, $aP);
         }
 
-        $aP["content"] = $P->oPayload->cl_html;
+        $aP['content'] = $P->oPayload->cl_html;
 
-        $aP["content"] = str_replace("@", "&#064;", $aP["content"]); // Change @ to HTML Entity -> maybe less spam mails
+        $aP['content'] = str_replace('@', '&#064;', $aP['content']); // Change @ to HTML Entity -> maybe less spam mails
 
         $aP['lang_available'] = HelperConfig::$core['lang_available'];
         $aP['lang_detection_method'] = HelperConfig::$core['lang_detection_method'];
@@ -238,7 +238,7 @@ class Helper
 
         if (HelperConfig::$core['debug']) {
             self::getDebug($aP, $P);
-            $aP["debugdata"] = Tools::$sDebug;
+            $aP['debugdata'] = Tools::$sDebug;
         }
 
         return $aP;
@@ -267,27 +267,27 @@ class Helper
      */
     public static function getLanguage()
     {
-        $langavailable = HelperConfig::$core["lang_available"];
+        $langavailable = HelperConfig::$core['lang_available'];
         if (
-            HelperConfig::$core["lang_detection_method"] === 'domain'
-            && isset(HelperConfig::$core["lang_by_domain"])
-            && is_array(HelperConfig::$core["lang_by_domain"])
+            HelperConfig::$core['lang_detection_method'] === 'domain'
+            && isset(HelperConfig::$core['lang_by_domain'])
+            && is_array(HelperConfig::$core['lang_by_domain'])
         ) { // domain based language detection
-            foreach (HelperConfig::$core["lang_by_domain"] as $sKey => $sValue) {
-                if ($_SERVER["SERVER_NAME"] == $sValue || $_SERVER["SERVER_NAME"] == 'www.'.$sValue) {
+            foreach (HelperConfig::$core['lang_by_domain'] as $sKey => $sValue) {
+                if ($_SERVER['SERVER_NAME'] == $sValue || $_SERVER['SERVER_NAME'] == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }
             }
-        } elseif (HelperConfig::$core["lang_detection_method"] === 'legacy') { // legacy language detection
+        } elseif (HelperConfig::$core['lang_detection_method'] === 'legacy') { // legacy language detection
             $sLang = key($langavailable);
-            if (isset($_GET["language"]) && array_key_exists($_GET["language"], $langavailable)) {
-                $sLang = strtolower($_GET["language"]);
-                setcookie('language', strtolower($_GET["language"]), 0, '/');
-            } elseif (isset($_COOKIE["language"]) && array_key_exists($_COOKIE["language"], $langavailable)) {
-                $sLang = strtolower($_COOKIE["language"]);
-            } elseif (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"]) && array_key_exists(substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2), $langavailable)) {
-                $sLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
+            if (isset($_GET['language']) && array_key_exists($_GET['language'], $langavailable)) {
+                $sLang = strtolower($_GET['language']);
+                setcookie('language', strtolower($_GET['language']), 0, '/');
+            } elseif (isset($_COOKIE['language']) && array_key_exists($_COOKIE['language'], $langavailable)) {
+                $sLang = strtolower($_COOKIE['language']);
+            } elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && array_key_exists(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2), $langavailable)) {
+                $sLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
             }
         }
         if (!isset($sLang)) {

@@ -37,27 +37,27 @@ class Updateshippingcost extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        $_SESSION["formsave_addrform"]["country"] = $_POST["country"];
-        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION["cart"]);
+        $_SESSION['formsave_addrform']['country'] = $_POST['country'];
+        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION['cart']);
 
-        header("Content-Type: text/html; charset=UTF-8");
+        header('Content-Type: text/html; charset=UTF-8');
         $return = '<div>';
-        $return .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostenbrutto"],
+        $return .= '<div id="shippingcostbrutto_new">' . number_format($_SESSION['cartpricesums']['fVersandkostenbrutto'],
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
-        $return .= '<div id="vatfull_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuervoll"], 2),
+        $return .= '<div id="vatfull_new">' . number_format(round($_SESSION['cartpricesums']['fSteuervoll'], 2),
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
-        $return .= '<div id="totalbrutto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtbrutto"], 2),
+        $return .= '<div id="totalbrutto_new">' . number_format(round($_SESSION['cartpricesums']['fGesamtbrutto'], 2),
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
-        $return .= '<div id="shippingcostnetto_new">' . number_format($_SESSION["cartpricesums"]["fVersandkostennetto"],
+        $return .= '<div id="shippingcostnetto_new">' . number_format($_SESSION['cartpricesums']['fVersandkostennetto'],
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
-        $return .= '<div id="vatreduced_new">' . number_format(round($_SESSION["cartpricesums"]["fSteuererm"], 2),
+        $return .= '<div id="vatreduced_new">' . number_format(round($_SESSION['cartpricesums']['fSteuererm'], 2),
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
-        $return .= '<div id="totalnetto_new">' . number_format(round($_SESSION["cartpricesums"]["fGesamtnetto"], 2),
+        $return .= '<div id="totalnetto_new">' . number_format(round($_SESSION['cartpricesums']['fGesamtnetto'], 2),
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
         $return .= '</div>';

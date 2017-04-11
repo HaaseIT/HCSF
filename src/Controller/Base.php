@@ -45,8 +45,8 @@ class Base
         if (
             $this->requireModuleCustomer
             && (
-                empty(HelperConfig::$core["enable_module_customer"])
-                || !HelperConfig::$core["enable_module_customer"]
+                empty(HelperConfig::$core['enable_module_customer'])
+                || !HelperConfig::$core['enable_module_customer']
             )
         ) {
             throw new \Exception(404);
@@ -54,8 +54,8 @@ class Base
         if (
             $this->requireModuleShop
             && (
-                empty(HelperConfig::$core["enable_module_shop"])
-                || !HelperConfig::$core["enable_module_shop"])
+                empty(HelperConfig::$core['enable_module_shop'])
+                || !HelperConfig::$core['enable_module_shop'])
         ) {
             throw new \Exception(404);
         }
@@ -70,11 +70,11 @@ class Base
 
     private function requireAdminAuth() {
         if (
-            (
+            $this->requireAdminAuthAdminHome
+            && (
                 empty(HelperConfig::$secrets['admin_users'])
                 || !count(HelperConfig::$secrets['admin_users'])
             )
-            && $this->requireAdminAuthAdminHome
         ) {
             return true;
         } elseif (count(HelperConfig::$secrets['admin_users'])) {
@@ -83,7 +83,7 @@ class Base
                 list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
             }
 
-            if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+            if (isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
                 $user = $_SERVER['PHP_AUTH_USER'];
                 $pass = $_SERVER['PHP_AUTH_PW'];
 
@@ -98,7 +98,7 @@ class Base
             if (!$validated) {
                 header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');
                 header('HTTP/1.0 401 Unauthorized');
-                die("Not authorized");
+                die('Not authorized');
             }
         } else {
             header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');

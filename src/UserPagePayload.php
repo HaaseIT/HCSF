@@ -38,8 +38,8 @@ class UserPagePayload extends PagePayload
         $this->dbal = $this->serviceManager->get('dbal');
 
         if ($iParentID !== '/_misc/index.html') { // no need to fetch from db if this is the itemsearch page
-            $sql = "SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ";
-            $sql .= "FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang";
+            $sql = 'SELECT cl_id, cl_cb, cl_lang, cl_html, cl_keywords, cl_description, cl_title ';
+            $sql .= 'FROM content_lang WHERE cl_cb = :ppkey AND cl_lang = :lang';
 
             /** @var \PDOStatement $hResult */
             $hResult = $this->serviceManager->get('db')->prepare($sql);
@@ -58,7 +58,7 @@ class UserPagePayload extends PagePayload
                 /** @var \PDOStatement $hResult */
                 $hResult = $this->serviceManager->get('db')->prepare($sql);
                 $hResult->bindValue(':ppkey', $iParentID, \PDO::PARAM_STR);
-                $lang_available = HelperConfig::$core["lang_available"];
+                $lang_available = HelperConfig::$core['lang_available'];
                 $hResult->bindValue(':lang', key($lang_available), \PDO::PARAM_STR);
                 $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
                 $hResult->execute();
@@ -72,7 +72,7 @@ class UserPagePayload extends PagePayload
 
     public function write() {
         $aData = [
-            'cl_html' => (!empty($this->purifier) ? $this->purifier->purify($this->cl_html) : $this->cl_html),
+            'cl_html' => !empty($this->purifier) ? $this->purifier->purify($this->cl_html) : $this->cl_html,
             'cl_title' => filter_var($this->cl_title, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_description' => filter_var($this->cl_description, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'cl_keywords' => filter_var($this->cl_keywords, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),

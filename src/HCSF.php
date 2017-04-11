@@ -11,10 +11,10 @@ class HCSF
     public function __construct()
     {
         define('HCSF_BASEDIR', dirname(__DIR__).DIRECTORY_SEPARATOR);
-        define("DB_ADDRESSFIELDS", 'cust_id, cust_no, cust_email, cust_corp, cust_name, cust_street, cust_zip, cust_town, cust_phone, cust_cellphone, cust_fax, cust_country, cust_group, cust_active, cust_emailverified, cust_tosaccepted, cust_cancellationdisclaimeraccepted');
-        define("DB_ITEMFIELDS", 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itm_weight, itml_name_override, itml_text1, itml_text2, itm_index');
-        define("DB_ITEMGROUPFIELDS", 'itmg_no, itmg_name, itmg_img, itmgt_shorttext, itmgt_details');
-        define("FILE_PAYPALLOG", 'ipnlog.txt');
+        define('DB_ADDRESSFIELDS', 'cust_id, cust_no, cust_email, cust_corp, cust_name, cust_street, cust_zip, cust_town, cust_phone, cust_cellphone, cust_fax, cust_country, cust_group, cust_active, cust_emailverified, cust_tosaccepted, cust_cancellationdisclaimeraccepted');
+        define('DB_ITEMFIELDS', 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itm_weight, itml_name_override, itml_text1, itml_text2, itm_index');
+        define('DB_ITEMGROUPFIELDS', 'itmg_no, itmg_name, itmg_img, itmgt_shorttext, itmgt_details');
+        define('FILE_PAYPALLOG', 'ipnlog.txt');
 
         // set scale for bcmath
         bcscale(6);
@@ -33,7 +33,7 @@ class HCSF
 
         $this->setupSession();
 
-        date_default_timezone_set(HelperConfig::$core["defaulttimezone"]);
+        date_default_timezone_set(HelperConfig::$core['defaulttimezone']);
 
         $this->setupHardcodedTextcats();
 
@@ -49,7 +49,7 @@ class HCSF
 
         $this->setupTwig();
 
-        if (HelperConfig::$core["enable_module_shop"]) {
+        if (HelperConfig::$core['enable_module_shop']) {
             $this->serviceManager->setFactory('oItem', function (ServiceManager $serviceManager) {
                 return new \HaaseIT\HCSF\Shop\Items($serviceManager);
             });
@@ -78,7 +78,7 @@ class HCSF
 
     protected function setupSession()
     {
-        if (HelperConfig::$core["enable_module_customer"] && isset($_COOKIE["acceptscookies"]) && $_COOKIE["acceptscookies"] == 'yes') {
+        if (isset($_COOKIE['acceptscookies']) && HelperConfig::$core['enable_module_customer'] && $_COOKIE['acceptscookies'] === 'yes') {
 // Session handling
 // session.use_trans_sid wenn nötig aktivieren
             ini_set('session.use_only_cookies', 0);
@@ -115,8 +115,8 @@ class HCSF
         if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php')) {
             $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php';
         } else {
-            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php')) {
-                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core["lang_available"]).'.php';
+            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core['lang_available']).'.php')) {
+                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core['lang_available']).'.php';
             } else {
                 $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/de.php';
             }
@@ -156,7 +156,7 @@ class HCSF
     protected function setupTextcats()
     {
         $this->serviceManager->setFactory('textcats', function (ServiceManager $serviceManager) {
-            $langavailable = HelperConfig::$core["lang_available"];
+            $langavailable = HelperConfig::$core['lang_available'];
             $textcats = new \HaaseIT\Toolbox\Textcat(
                 HelperConfig::$lang,
                 $serviceManager->get('db'),
@@ -177,11 +177,11 @@ class HCSF
 
             $twig_options = [
                 'autoescape' => false,
-                'debug' => (HelperConfig::$core["debug"] ? true : false),
+                'debug' => HelperConfig::$core['debug'] ? true : false,
             ];
-            if (HelperConfig::$core["templatecache_enable"] &&
+            if (HelperConfig::$core['templatecache_enable'] &&
                 is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
-                $twig_options["cache"] = PATH_TEMPLATECACHE;
+                $twig_options['cache'] = PATH_TEMPLATECACHE;
             }
             $twig = new \Twig_Environment($loader, $twig_options);
 

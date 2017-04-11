@@ -45,7 +45,7 @@ class Textcatadmin extends Base
 
         $return = '';
 
-        if (!isset($_REQUEST["action"]) || $_REQUEST["action"] == '') {
+        if (!isset($_REQUEST['action']) || $_REQUEST['action'] == '') {
             $aData = $this->textcats->getCompleteTextcatForCurrentLang();
 
             $aListSetting = [
@@ -64,33 +64,33 @@ class Textcatadmin extends Base
                 ],
             ];
             $return .= Tools::makeListtable($aListSetting, $aData, $this->serviceManager->get('twig'));
-        } elseif ($_GET["action"] === 'edit' || $_GET["action"] === 'delete') {
-            if ($_GET["action"] === 'delete' && isset($_POST["delete"]) && $_POST["delete"] === 'do') {
-                $this->textcats->deleteText($_GET["id"]);
-                $this->P->cb_customdata["deleted"] = true;
+        } elseif ($_GET['action'] === 'edit' || $_GET['action'] === 'delete') {
+            if ($_GET['action'] === 'delete' && isset($_POST['delete']) && $_POST['delete'] === 'do') {
+                $this->textcats->deleteText($_GET['id']);
+                $this->P->cb_customdata['deleted'] = true;
             } else {
-                $this->P->cb_customdata["edit"] = true;
+                $this->P->cb_customdata['edit'] = true;
 
-                $this->textcats->initTextIfVoid($_GET["id"]);
+                $this->textcats->initTextIfVoid($_GET['id']);
 
                 // if post:edit is set, update
-                if (isset($_POST["edit"]) && $_POST["edit"] === 'do') {
+                if (isset($_POST['edit']) && $_POST['edit'] === 'do') {
                     if (HelperConfig::$core['textcat_enable_purifier']) {
                         $this->textcats->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
                     } else {
                         $this->textcats->purifier = false;
                     }
-                    $this->textcats->saveText($_POST["lid"], $_POST["text"]);
-                    $this->P->cb_customdata["updated"] = true;
+                    $this->textcats->saveText($_POST['lid'], $_POST['text']);
+                    $this->P->cb_customdata['updated'] = true;
                 }
 
-                $aData = $this->textcats->getSingleTextByID($_GET["id"]);
-                $this->P->cb_customdata["editform"] = [
-                    'id' => $aData["tc_id"],
-                    'lid' => $aData["tcl_id"],
-                    'key' => $aData["tc_key"],
-                    'lang' => $aData["tcl_lang"],
-                    'text' => $aData["tcl_text"],
+                $aData = $this->textcats->getSingleTextByID($_GET['id']);
+                $this->P->cb_customdata['editform'] = [
+                    'id' => $aData['tc_id'],
+                    'lid' => $aData['tcl_id'],
+                    'key' => $aData['tc_key'],
+                    'lang' => $aData['tcl_lang'],
+                    'text' => $aData['tcl_text'],
                 ];
 
                 // show archived versions of this textcat
@@ -103,7 +103,7 @@ class Textcatadmin extends Base
                     ->from('textcat_lang_archive')
                     ->where('tcl_id = ?')
                     ->andWhere('tcl_lang = ?')
-                    ->setParameter(0, $aData["tcl_id"])
+                    ->setParameter(0, $aData['tcl_id'])
                     ->setParameter(1, HelperConfig::$lang)
                     ->orderBy('tcla_timestamp', 'DESC')
                 ;
@@ -120,15 +120,15 @@ class Textcatadmin extends Base
                         $aData, $this->serviceManager->get('twig'));
                 }
             }
-        } elseif ($_GET["action"] === 'add') {
-            $this->P->cb_customdata["add"] = true;
-            if (isset($_POST["add"]) && $_POST["add"] === 'do') {
-                $this->P->cb_customdata["err"] = $this->textcats->verifyAddTextKey($_POST["key"]);
+        } elseif ($_GET['action'] === 'add') {
+            $this->P->cb_customdata['add'] = true;
+            if (isset($_POST['add']) && $_POST['add'] === 'do') {
+                $this->P->cb_customdata['err'] = $this->textcats->verifyAddTextKey($_POST['key']);
 
-                if (count($this->P->cb_customdata["err"]) == 0) {
-                    $this->P->cb_customdata["addform"] = [
-                        'key' => $_POST["key"],
-                        'id' => $this->textcats->addTextKey($_POST["key"]),
+                if (count($this->P->cb_customdata['err']) == 0) {
+                    $this->P->cb_customdata['addform'] = [
+                        'key' => $_POST['key'],
+                        'id' => $this->textcats->addTextKey($_POST['key']),
                     ];
                 }
             }

@@ -67,21 +67,21 @@ class Paypal extends Base
             $aOrder = $hResult->fetch();
             $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
 
-            $sPaypalURL = HelperConfig::$shop["paypal"]["url"]
+            $sPaypalURL = HelperConfig::$shop['paypal']['url']
                 .'?cmd=_xclick&rm=2&custom='
-                .$iId . '&business='.HelperConfig::$shop["paypal"]["business"];
-            $sPaypalURL .= '&notify_url=http://' . $_SERVER["SERVER_NAME"] . '/_misc/paypal_notify.html&item_name=' . $this->textcats->T("misc_paypaypal_paypaltitle") . ' ' . $iId;
-            $sPaypalURL .= '&currency_code=' . HelperConfig::$shop["paypal"]["currency_id"]
+                .$iId . '&business='.HelperConfig::$shop['paypal']['business'];
+            $sPaypalURL .= '&notify_url=http://' . $_SERVER['SERVER_NAME'] . '/_misc/paypal_notify.html&item_name=' . $this->textcats->T('misc_paypaypal_paypaltitle') . ' ' . $iId;
+            $sPaypalURL .= '&currency_code=' . HelperConfig::$shop['paypal']['currency_id']
                 .'&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
-            if (HelperConfig::$shop["interactive_paymentmethods_redirect_immediately"]) {
+            if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
                 header('Location: ' . $sPaypalURL);
                 die();
             }
 
-            $this->P->oPayload->cl_html = $this->textcats->T("misc_paypaypal_greeting") . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . $this->textcats->T("misc_paypaypal") . '</a>';
+            $this->P->oPayload->cl_html = $this->textcats->T('misc_paypaypal_greeting') . '<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="' . $sPaypalURL . '">' . $this->textcats->T('misc_paypaypal') . '</a>';
         } else {
-            $this->P->oPayload->cl_html = $this->textcats->T("misc_paypaypal_paymentnotavailable");
+            $this->P->oPayload->cl_html = $this->textcats->T('misc_paypaypal_paymentnotavailable');
         }
     }
 }

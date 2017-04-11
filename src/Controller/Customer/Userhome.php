@@ -61,52 +61,52 @@ class Userhome extends Base
         $this->P->cb_pagetype = 'content';
 
         if (!CHelper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->textcats->T("denied_notloggedin");
+            $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
 
-            $aPData["display_logingreeting"] = false;
-            if (isset($_GET["login"]) && $_GET["login"]) {
-                $aPData["display_logingreeting"] = true;
+            $aPData['display_logingreeting'] = false;
+            if (isset($_GET['login']) && $_GET['login']) {
+                $aPData['display_logingreeting'] = true;
             }
-            if (isset($_GET["editprofile"])) {
+            if (isset($_GET['editprofile'])) {
                 $sErr = '';
 
-                if (isset($_POST["doEdit"]) && $_POST["doEdit"] === 'yes') {
+                if (isset($_POST['doEdit']) && $_POST['doEdit'] === 'yes') {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
-                    $sEmail = filter_var(trim(Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+                    $sEmail = filter_var(trim(Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
 
                     $hResult = $this->db->prepare($sql);
-                    $hResult->bindValue(':id', $_SESSION["user"]['cust_id'], \PDO::PARAM_INT);
+                    $hResult->bindValue(':id', $_SESSION['user']['cust_id'], \PDO::PARAM_INT);
                     $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
-                        $sErr .= $this->textcats->T("userprofile_emailalreadyinuse") . '<br>';
+                        $sErr .= $this->textcats->T('userprofile_emailalreadyinuse') . '<br>';
                     }
                     $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
 
                     if ($sErr == '') {
-                        if (HelperConfig::$customer["allow_edituserprofile"]) {
+                        if (HelperConfig::$customer['allow_edituserprofile']) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
-                                'cust_corp' => filter_var(trim(Tools::getFormfield("corpname")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_name' => filter_var(trim(Tools::getFormfield("name")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_street' => filter_var(trim(Tools::getFormfield("street")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_zip' => filter_var(trim(Tools::getFormfield("zip")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_town' => filter_var(trim(Tools::getFormfield("town")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_phone' => filter_var(trim(Tools::getFormfield("phone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_cellphone' => filter_var(trim(Tools::getFormfield("cellphone")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_fax' => filter_var(trim(Tools::getFormfield("fax")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                                'cust_country' => filter_var(trim(Tools::getFormfield("country")), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_corp' => filter_var(trim(Tools::getFormfield('corpname')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_name' => filter_var(trim(Tools::getFormfield('name')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_street' => filter_var(trim(Tools::getFormfield('street')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_zip' => filter_var(trim(Tools::getFormfield('zip')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_town' => filter_var(trim(Tools::getFormfield('town')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_phone' => filter_var(trim(Tools::getFormfield('phone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_cellphone' => filter_var(trim(Tools::getFormfield('cellphone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_fax' => filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
+                                'cust_country' => filter_var(trim(Tools::getFormfield('country')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             ];
                         }
-                        if (isset($_POST["pwd"]) && $_POST["pwd"] != '') {
-                            $aData['cust_password'] = password_hash($_POST["pwd"], PASSWORD_DEFAULT);
-                            $aPData["infopasswordchanged"] = true;
+                        if (isset($_POST['pwd']) && $_POST['pwd'] != '') {
+                            $aData['cust_password'] = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
+                            $aPData['infopasswordchanged'] = true;
                         }
-                        $aData['cust_id'] = $_SESSION["user"]['cust_id'];
+                        $aData['cust_id'] = $_SESSION['user']['cust_id'];
 
                         if (count($aData) > 1) {
                             $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
@@ -115,30 +115,30 @@ class Userhome extends Base
                                 $hResult->bindValue(':' . $sKey, $sValue);
                             }
                             $hResult->execute();
-                            $aPData["infochangessaved"] = true;
+                            $aPData['infochangessaved'] = true;
                         } else {
-                            $aPData["infonothingchanged"] = true;
+                            $aPData['infonothingchanged'] = true;
                         }
                     }
                 }
-                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                     HelperConfig::$lang,
                     'editprofile',
                     $sErr
                 );
                 //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->textcats->T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata["customerform"] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                     HelperConfig::$lang,
                     'userhome'
                 );
             }
-            $aPData["showprofilelinks"] = false;
-            if (!isset($_GET["editprofile"])) {
-                $aPData["showprofilelinks"] = true;
+            $aPData['showprofilelinks'] = false;
+            if (!isset($_GET['editprofile'])) {
+                $aPData['showprofilelinks'] = true;
             }
             if (isset($aPData) && count($aPData)) {
-                $this->P->cb_customdata["userhome"] = $aPData;
+                $this->P->cb_customdata['userhome'] = $aPData;
             }
         }
     }

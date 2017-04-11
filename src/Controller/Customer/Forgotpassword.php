@@ -58,17 +58,17 @@ class Forgotpassword extends Base
         $this->P->cb_pagetype = 'content';
 
         if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->textcats->T("denied_default");
+            $this->P->oPayload->cl_html = $this->textcats->T('denied_default');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
 
             $aErr = [];
-            if (isset($_POST["doSend"]) && $_POST["doSend"] === 'yes') {
+            if (isset($_POST['doSend']) && $_POST['doSend'] === 'yes') {
                 $aErr = $this->handleForgotPassword($aErr);
                 if (count($aErr) == 0) {
-                    $this->P->cb_customdata["forgotpw"]["showsuccessmessage"] = true;
+                    $this->P->cb_customdata['forgotpw']['showsuccessmessage'] = true;
                 } else {
-                    $this->P->cb_customdata["forgotpw"]["errors"] = $aErr;
+                    $this->P->cb_customdata['forgotpw']['errors'] = $aErr;
                 }
             }
         }
@@ -79,12 +79,12 @@ class Forgotpassword extends Base
      * @return array
      */
     private function handleForgotPassword($aErr) {
-        if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $aErr[] = 'emailinvalid';
         } else {
             $sql = 'SELECT * FROM customer WHERE cust_email = :email';
 
-            $sEmail = filter_var(trim(\HaaseIT\Toolbox\Tools::getFormfield("email")), FILTER_SANITIZE_EMAIL);
+            $sEmail = filter_var(trim(\HaaseIT\Toolbox\Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
 
             $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
@@ -111,13 +111,13 @@ class Forgotpassword extends Base
                     $hResult->execute();
 
                     $sTargetAddress = $aResult['cust_email'];
-                    $sSubject = $this->textcats->T("forgotpw_mail_subject");
-                    $sMessage = $this->textcats->T("forgotpw_mail_text1");
-                    $sMessage .= "<br><br>".'<a href="http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on' ? 's' : '').'://';
-                    $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
-                    $sMessage .= 'http'.(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === 'on' ? 's' : '').'://';
-                    $sMessage .= $_SERVER["SERVER_NAME"].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
-                    $sMessage .= '<br><br>'.$this->textcats->T("forgotpw_mail_text2");
+                    $sSubject = $this->textcats->T('forgotpw_mail_subject');
+                    $sMessage = $this->textcats->T('forgotpw_mail_text1');
+                    $sMessage .= '<br><br>' .'<a href="http'.(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 's' : '').'://';
+                    $sMessage .= $_SERVER['SERVER_NAME'].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'">';
+                    $sMessage .= 'http'.(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 's' : '').'://';
+                    $sMessage .= $_SERVER['SERVER_NAME'].'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
+                    $sMessage .= '<br><br>'.$this->textcats->T('forgotpw_mail_text2');
 
                     \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
                 }

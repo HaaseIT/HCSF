@@ -78,7 +78,7 @@ class Paypalnotify extends Base
                 $postdata .= $i . '=' . urlencode($v) . '&';
             }
             $postdata .= 'cmd=_notify-validate';
-            $web = parse_url(HelperConfig::$shop["paypal"]["url"]);
+            $web = parse_url(HelperConfig::$shop['paypal']['url']);
 
             if ($web['scheme'] === 'https') {
                 $web['port'] = 443;
@@ -90,10 +90,10 @@ class Paypalnotify extends Base
             $fp = @fsockopen($ssl . $web['host'], $web['port'], $errnum, $errstr, 30);
 
             if ($fp) {
-                fwrite($fp, "POST " . $web['path'] . " HTTP/1.1\r\n");
-                fwrite($fp, "Host: " . $web['host'] . "\r\n");
+                fwrite($fp, 'POST ' . $web['path'] . " HTTP/1.1\r\n");
+                fwrite($fp, 'Host: ' . $web['host'] . "\r\n");
                 fwrite($fp, "Content-type: application/x-www-form-urlencoded\r\n");
-                fwrite($fp, "Content-length: " . strlen($postdata) . "\r\n");
+                fwrite($fp, 'Content-length: ' . strlen($postdata) . "\r\n");
                 fwrite($fp, "Connection: close\r\n\r\n");
                 fwrite($fp, $postdata . "\r\n\r\n");
 
@@ -105,7 +105,7 @@ class Paypalnotify extends Base
                 $info = implode(',', $info);
                 if (!(strpos($info, 'VERIFIED') === false)) {
 
-                    $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\n";
+                    $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
                     $sLogData .= \HaaseIT\Toolbox\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
@@ -115,47 +115,47 @@ class Paypalnotify extends Base
                         ->select('o_paypal_tx')
                         ->from('orders')
                         ->where('o_paypal_tx = ?')
-                        ->setParameter(0, $_REQUEST["txn_id"])
+                        ->setParameter(0, $_REQUEST['txn_id'])
                     ;
                     $statement = $queryBuilder->execute();
 
                     if ($statement->rowCount() == 0) {
                         if (
-                            $_REQUEST["mc_gross"] == number_format($fGesamtbrutto, 2, '.', '')
-                            && $_REQUEST["custom"] == $aOrder['o_id']
-                            && $_REQUEST["payment_status"] === "Completed"
-                            && $_REQUEST["mc_currency"] == HelperConfig::$shop["paypal"]["currency_id"]
-                            && $_REQUEST["business"] == HelperConfig::$shop["paypal"]["business"]
+                            $_REQUEST['mc_gross'] == number_format($fGesamtbrutto, 2, '.', '')
+                            && $_REQUEST['custom'] == $aOrder['o_id']
+                            && $_REQUEST['payment_status'] === 'Completed'
+                            && $_REQUEST['mc_currency'] == HelperConfig::$shop['paypal']['currency_id']
+                            && $_REQUEST['business'] == HelperConfig::$shop['paypal']['business']
                         ) {
                             $queryBuilder = $this->dbal->createQueryBuilder();
                             $queryBuilder
                                 ->update('orders')
                                 ->set('o_paypal_tx', '?')
                                 ->set('o_paymentcompleted', 'y')
-                                ->setParameter(0, $_REQUEST["txn_id"])
+                                ->setParameter(0, $_REQUEST['txn_id'])
                                 ->where('o_id = ?')
                                 ->setParameter(1, $iId)
                             ;
                             $queryBuilder->execute();
 
-                            $sLogData .= "-- Alles ok. Zahlung erfolgreich. TXNID: " . $_REQUEST["txn_id"] . " --\n\n";
+                            $sLogData .= '-- Alles ok. Zahlung erfolgreich. TXNID: ' . $_REQUEST['txn_id'] . " --\n\n";
                         } else {
                             $sLogData .= "-- In my country we have problem; Problem is evaluation. Throw the data down the log!\n";
-                            $sLogData .= "mc_gross: " . $_REQUEST["mc_gross"] . ' - number_format($fGesamtbrutto, 2, \'.\', \'\'): ' . number_format($fGesamtbrutto,
+                            $sLogData .= 'mc_gross: ' . $_REQUEST['mc_gross'] . ' - number_format($fGesamtbrutto, 2, \'.\', \'\'): ' . number_format($fGesamtbrutto,
                                     2, '.', '') . "\n";
-                            $sLogData .= "custom: " . $_REQUEST["custom"] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
-                            $sLogData .= "payment_status: " . $_REQUEST["payment_status"] . "\n";
-                            $sLogData .= "mc_currency: " . $_REQUEST["mc_currency"] . ' - HelperConfig::$shop["paypal"]["currency_id"]: ' . HelperConfig::$shop["paypal"]["currency_id"] . "\n";
-                            $sLogData .= "business: " . $_REQUEST["receiver_email"] . ' - HelperConfig::$shop["paypal"]["business"]: ' . HelperConfig::$shop["paypal"]["business"] . "\n\n";
+                            $sLogData .= 'custom: ' . $_REQUEST['custom'] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
+                            $sLogData .= 'payment_status: ' . $_REQUEST['payment_status'] . "\n";
+                            $sLogData .= 'mc_currency: ' . $_REQUEST['mc_currency'] . ' - HelperConfig::$shop["paypal"]["currency_id"]: ' . HelperConfig::$shop['paypal']['currency_id'] . "\n";
+                            $sLogData .= 'business: ' . $_REQUEST['receiver_email'] . ' - HelperConfig::$shop["paypal"]["business"]: ' . HelperConfig::$shop['paypal']['business'] . "\n\n";
                         }
                     } else {
                         // INVALID LOGGING ERROR
-                        $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL\n\n";
-                        $sLogData .= "!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: " . $_REQUEST["txn_id"] . " !!!\n\n";
+                        $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL\n\n";
+                        $sLogData .= '!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: ' . $_REQUEST['txn_id'] . " !!!\n\n";
                         $sLogData .= "!!! INVALID !!!\n\n";
                     }
                 } else {
-                    $sLogData .= "-- new entry - " . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST["txn_id"] . "\n" . $info . "\n\n";
+                    $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST['txn_id'] . "\n" . $info . "\n\n";
                 }
 
                 file_put_contents(PATH_LOGS . FILE_PAYPALLOG, $sLogData, FILE_APPEND);

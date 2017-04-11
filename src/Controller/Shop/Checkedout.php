@@ -37,8 +37,8 @@ class Checkedout extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (HelperConfig::$shop["show_pricesonlytologgedin"] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
-            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("denied_notloggedin");
+        if (HelperConfig::$shop['show_pricesonlytologgedin'] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+            $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'shop/checkedout';
 
@@ -51,9 +51,9 @@ class Checkedout extends Base
 
             $hResult->execute();
 
-            if ($hResult->rowCount() == 1) {
-                $this->P->cb_customdata["order"] = $hResult->fetch();
-                $this->P->cb_customdata["gesamtbrutto"] = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($this->P->cb_customdata["order"]);
+            if ($hResult->rowCount() === 1) {
+                $this->P->cb_customdata['order'] = $hResult->fetch();
+                $this->P->cb_customdata['gesamtbrutto'] = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($this->P->cb_customdata['order']);
             }
         }
     }

@@ -46,90 +46,90 @@ class Helper
 
     public static function calculateTotalFromDB($aOrder)
     {
-        $fGesamtnetto = $aOrder["o_sumnettoall"];
-        $fVoll = $aOrder["o_sumvoll"];
-        $fSteuererm = $aOrder["o_taxerm"];
+        $fGesamtnetto = $aOrder['o_sumnettoall'];
+        $fVoll = $aOrder['o_sumvoll'];
+        $fSteuererm = $aOrder['o_taxerm'];
 
-        if ($aOrder["o_mindermenge"] > 0) {
-            $fVoll += $aOrder["o_mindermenge"];
-            $fGesamtnetto += $aOrder["o_mindermenge"];
+        if ($aOrder['o_mindermenge'] > 0) {
+            $fVoll += $aOrder['o_mindermenge'];
+            $fGesamtnetto += $aOrder['o_mindermenge'];
         }
-        if ($aOrder["o_shippingcost"] > 0) {
-            $fVoll += $aOrder["o_shippingcost"];
-            $fGesamtnetto += $aOrder["o_shippingcost"];
+        if ($aOrder['o_shippingcost'] > 0) {
+            $fVoll += $aOrder['o_shippingcost'];
+            $fGesamtnetto += $aOrder['o_shippingcost'];
         }
 
-        $fSteuervoll = ($fVoll * $aOrder["o_vatfull"] / 100);
+        $fSteuervoll = ($fVoll * $aOrder['o_vatfull'] / 100);
 
         return $fGesamtnetto + $fSteuervoll + $fSteuererm;
     }
 
     public static function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
     {
-        $fGesamtnetto = $aSumme["sumvoll"] + $aSumme["sumerm"];
-        $fSteuervoll = $aSumme["sumvoll"] * $iVATfull / 100;
-        $fSteuererm = $aSumme["sumerm"] * $iVATreduced / 100;
+        $fGesamtnetto = $aSumme['sumvoll'] + $aSumme['sumerm'];
+        $fSteuervoll = $aSumme['sumvoll'] * $iVATfull / 100;
+        $fSteuererm = $aSumme['sumerm'] * $iVATreduced / 100;
         $fGesamtbrutto = $fGesamtnetto + $fSteuervoll + $fSteuererm;
 
         $aOrder = [
-            'sumvoll' => $aSumme["sumvoll"],
-            'sumerm' => $aSumme["sumerm"],
+            'sumvoll' => $aSumme['sumvoll'],
+            'sumerm' => $aSumme['sumerm'],
             'sumnettoall' => $fGesamtnetto,
             'taxvoll' => $fSteuervoll,
             'taxerm' => $fSteuererm,
             'sumbruttoall' => $fGesamtbrutto,
         ];
 
-        $fGesamtnettoitems = $aOrder["sumnettoall"];
-        $aOrder["fVoll"] = $aOrder["sumvoll"];
-        $aOrder["fErm"] = $aOrder["sumerm"];
-        $aOrder["fGesamtnetto"] = $aOrder["sumnettoall"];
-        $aOrder["fSteuervoll"] = $aOrder["taxvoll"];
-        $aOrder["fSteuererm"] = $aOrder["taxerm"];
-        $aOrder["fGesamtbrutto"] = $aOrder["sumbruttoall"];
+        $fGesamtnettoitems = $aOrder['sumnettoall'];
+        $aOrder['fVoll'] = $aOrder['sumvoll'];
+        $aOrder['fErm'] = $aOrder['sumerm'];
+        $aOrder['fGesamtnetto'] = $aOrder['sumnettoall'];
+        $aOrder['fSteuervoll'] = $aOrder['taxvoll'];
+        $aOrder['fSteuererm'] = $aOrder['taxerm'];
+        $aOrder['fGesamtbrutto'] = $aOrder['sumbruttoall'];
 
-        $aOrder["bMindesterreicht"] = true;
-        $aOrder["fMindergebuehr"] = 0;
-        $aOrder["iMindergebuehr_id"] = 0;
-        if ($fGesamtnettoitems < HelperConfig::$shop["minimumorderamountnet"]) {
-            $aOrder["bMindesterreicht"] = false;
-            $aOrder["iMindergebuehr_id"] = 0;
-        } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet1"]) {
-            $aOrder["iMindergebuehr_id"] = 1;
+        $aOrder['bMindesterreicht'] = true;
+        $aOrder['fMindergebuehr'] = 0;
+        $aOrder['iMindergebuehr_id'] = 0;
+        if ($fGesamtnettoitems < HelperConfig::$shop['minimumorderamountnet']) {
+            $aOrder['bMindesterreicht'] = false;
+            $aOrder['iMindergebuehr_id'] = 0;
+        } elseif ($fGesamtnettoitems < HelperConfig::$shop['reducedorderamountnet1']) {
+            $aOrder['iMindergebuehr_id'] = 1;
 
-        } elseif ($fGesamtnettoitems < HelperConfig::$shop["reducedorderamountnet2"]) {
-            $aOrder["iMindergebuehr_id"] = 2;
+        } elseif ($fGesamtnettoitems < HelperConfig::$shop['reducedorderamountnet2']) {
+            $aOrder['iMindergebuehr_id'] = 2;
         }
 
-        if ($aOrder["iMindergebuehr_id"] > 0) {
-            $aOrder["fVoll"] += HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
-            $aOrder["fGesamtnetto"] += HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
-            $aOrder["fSteuervoll"] = $aOrder["fVoll"] * $iVATfull / 100;
-            $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
-            $aOrder["fMindergebuehr"] = HelperConfig::$shop["reducedorderamountfee" . $aOrder["iMindergebuehr_id"]];
+        if ($aOrder['iMindergebuehr_id'] > 0) {
+            $aOrder['fVoll'] += HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
+            $aOrder['fGesamtnetto'] += HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
+            $aOrder['fSteuervoll'] = $aOrder['fVoll'] * $iVATfull / 100;
+            $aOrder['fGesamtbrutto'] = $aOrder['fGesamtnetto'] + $aOrder['fSteuervoll'] + $aOrder['fSteuererm'];
+            $aOrder['fMindergebuehr'] = HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
         }
 
-        $aOrder["fVersandkosten"] = 0;
+        $aOrder['fVersandkosten'] = 0;
         if (
-            isset(HelperConfig::$shop["shippingcoststandardrate"])
-            && HelperConfig::$shop["shippingcoststandardrate"] != 0
+            isset(HelperConfig::$shop['shippingcoststandardrate'])
+            && HelperConfig::$shop['shippingcoststandardrate'] != 0
             &&
             (
                 (
-                    !isset(HelperConfig::$shop["mindestbetragversandfrei"])
-                    || !HelperConfig::$shop["mindestbetragversandfrei"]
+                    !isset(HelperConfig::$shop['mindestbetragversandfrei'])
+                    || !HelperConfig::$shop['mindestbetragversandfrei']
                 )
-                || $fGesamtnettoitems < HelperConfig::$shop["mindestbetragversandfrei"]
+                || $fGesamtnettoitems < HelperConfig::$shop['mindestbetragversandfrei']
             )
         ) {
-            $aOrder["fVersandkostennetto"] = self::getShippingcost();
-            $aOrder["fVersandkostenvat"] = $aOrder["fVersandkostennetto"] * $iVATfull / 100;
-            $aOrder["fVersandkostenbrutto"] = $aOrder["fVersandkostennetto"] + $aOrder["fVersandkostenvat"];
+            $aOrder['fVersandkostennetto'] = self::getShippingcost();
+            $aOrder['fVersandkostenvat'] = $aOrder['fVersandkostennetto'] * $iVATfull / 100;
+            $aOrder['fVersandkostenbrutto'] = $aOrder['fVersandkostennetto'] + $aOrder['fVersandkostenvat'];
 
-            $aOrder["fSteuervoll"] = ($aOrder["fVoll"] * $iVATfull / 100) + $aOrder["fVersandkostenvat"];
-            $aOrder["fVoll"] += $aOrder["fVersandkostennetto"];
-            $aOrder["fGesamtnetto"] += $aOrder["fVersandkostennetto"];
-            $aOrder["fGesamtbrutto"] = $aOrder["fGesamtnetto"] + $aOrder["fSteuervoll"] + $aOrder["fSteuererm"];
+            $aOrder['fSteuervoll'] = ($aOrder['fVoll'] * $iVATfull / 100) + $aOrder['fVersandkostenvat'];
+            $aOrder['fVoll'] += $aOrder['fVersandkostennetto'];
+            $aOrder['fGesamtnetto'] += $aOrder['fVersandkostennetto'];
+            $aOrder['fGesamtbrutto'] = $aOrder['fGesamtnetto'] + $aOrder['fSteuervoll'] + $aOrder['fSteuererm'];
         }
 
         return $aOrder;
@@ -137,20 +137,20 @@ class Helper
 
     public static function getShippingcost()
     {
-        $fShippingcost = HelperConfig::$shop["shippingcoststandardrate"];
+        $fShippingcost = HelperConfig::$shop['shippingcoststandardrate'];
 
         $sCountry = CHelper::getDefaultCountryByConfig(HelperConfig::$lang);
-        if (isset($_SESSION["user"]["cust_country"])) {
-            $sCountry = $_SESSION["user"]["cust_country"];
-        } elseif (isset($_POST["doCheckout"]) && $_POST["doCheckout"] == 'yes' && isset($_POST["country"])) {
-            $sCountry = trim(\HaaseIT\Toolbox\Tools::getFormfield("country"));
-        } elseif (isset($_SESSION["formsave_addrform"]["country"])) {
-            $sCountry = $_SESSION["formsave_addrform"]["country"];
+        if (isset($_SESSION['user']['cust_country'])) {
+            $sCountry = $_SESSION['user']['cust_country'];
+        } elseif (isset($_POST['doCheckout'], $_POST['country']) && $_POST['doCheckout'] === 'yes') {
+            $sCountry = trim(\HaaseIT\Toolbox\Tools::getFormfield('country'));
+        } elseif (isset($_SESSION['formsave_addrform']['country'])) {
+            $sCountry = $_SESSION['formsave_addrform']['country'];
         }
 
-        foreach (HelperConfig::$shop["shippingcosts"] as $aValue) {
-            if (isset($aValue["countries"][$sCountry])) {
-                $fShippingcost = $aValue["cost"];
+        foreach (HelperConfig::$shop['shippingcosts'] as $aValue) {
+            if (isset($aValue['countries'][$sCountry])) {
+                $fShippingcost = $aValue['cost'];
                 break;
             }
         }
@@ -168,14 +168,14 @@ class Helper
             // Hmmmkay, so, if vat is not disabled and there is no vat id or none as vat id set to this item, then
             // use the full vat as default. Only use reduced if it is set. Gotta use something as default or item
             // will not add up to total price
-            if ($aValue["vat"] != "reduced") {
-                $fVoll += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-                $fTaxVoll += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["full"] / 100));
+            if ($aValue['vat'] != 'reduced') {
+                $fVoll += ($aValue['amount'] * $aValue['price']['netto_use']);
+                $fTaxVoll += ($aValue['amount'] * $aValue['price']['netto_use'] * (HelperConfig::$shop['vat']['full'] / 100));
                 continue;
             }
 
-            $fErm += ($aValue["amount"] * $aValue["price"]["netto_use"]);
-            $fTaxErm += ($aValue["amount"] * $aValue["price"]["netto_use"] * (HelperConfig::$shop["vat"]["reduced"] / 100));
+            $fErm += ($aValue['amount'] * $aValue['price']['netto_use']);
+            $fTaxErm += ($aValue['amount'] * $aValue['price']['netto_use'] * (HelperConfig::$shop['vat']['reduced'] / 100));
         }
 
         return [
@@ -188,16 +188,16 @@ class Helper
 
     public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
-        if (isset($_SESSION["cart"]) && is_array($_SESSION["cart"])) {
-            foreach ($_SESSION["cart"] as $sKey => $aValue) {
+        if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+            foreach ($_SESSION['cart'] as $sKey => $aValue) {
                 $sItemkey = $sKey;
-                if (!empty(HelperConfig::$shop["custom_order_fields"])) {
+                if (!empty(HelperConfig::$shop['custom_order_fields'])) {
                     $TMP = explode('|', $sKey);
                     $sItemkey = $TMP[0];
                     unset($TMP);
                 }
                 $aData = $serviceManager->get('oItem')->sortItems('', $sItemkey);
-                $_SESSION["cart"][$sKey]["price"] = $aData["item"][$sItemkey]["pricedata"];
+                $_SESSION['cart'][$sKey]['price'] = $aData['item'][$sItemkey]['pricedata'];
             }
         }
     }
@@ -205,31 +205,31 @@ class Helper
     public static function buildShoppingCartTable($aCart, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
     {
         if ($iVATfull == '' && $iVATreduced == '') {
-            $iVATfull = HelperConfig::$shop["vat"]["full"];
-            $iVATreduced = HelperConfig::$shop["vat"]["reduced"];
+            $iVATfull = HelperConfig::$shop['vat']['full'];
+            $iVATreduced = HelperConfig::$shop['vat']['reduced'];
         }
         $aSumme = self::calculateCartItems($aCart);
-        $aData["shoppingcart"] = [
+        $aData['shoppingcart'] = [
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
-            'rebategroups' => HelperConfig::$shop["rebate_groups"],
+            'rebategroups' => HelperConfig::$shop['rebate_groups'],
             'additionalcoststoitems' => self::addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced),
-            'minimumorderamountnet' => HelperConfig::$shop["minimumorderamountnet"],
-            'reducedorderamountnet1' => HelperConfig::$shop["reducedorderamountnet1"],
-            'reducedorderamountnet2' => HelperConfig::$shop["reducedorderamountnet2"],
-            'reducedorderamountfee1' => HelperConfig::$shop["reducedorderamountfee1"],
-            'reducedorderamountfee2' => HelperConfig::$shop["reducedorderamountfee2"],
-            'minimumamountforfreeshipping' => HelperConfig::$shop["minimumamountforfreeshipping"],
+            'minimumorderamountnet' => HelperConfig::$shop['minimumorderamountnet'],
+            'reducedorderamountnet1' => HelperConfig::$shop['reducedorderamountnet1'],
+            'reducedorderamountnet2' => HelperConfig::$shop['reducedorderamountnet2'],
+            'reducedorderamountfee1' => HelperConfig::$shop['reducedorderamountfee1'],
+            'reducedorderamountfee2' => HelperConfig::$shop['reducedorderamountfee2'],
+            'minimumamountforfreeshipping' => HelperConfig::$shop['minimumamountforfreeshipping'],
         ];
 
         if (!$bReadonly) {
-            $aCartpricesums = $aData["shoppingcart"]["additionalcoststoitems"];
-            $_SESSION["cartpricesums"] = $aCartpricesums;
+            $aCartpricesums = $aData['shoppingcart']['additionalcoststoitems'];
+            $_SESSION['cartpricesums'] = $aCartpricesums;
         }
 
-        if ($aData["shoppingcart"]["additionalcoststoitems"]["bMindesterreicht"] && !$bReadonly) {
-            $aData["customerform"] = CHelper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
+        if (!$bReadonly && $aData['shoppingcart']['additionalcoststoitems']['bMindesterreicht']) {
+            $aData['customerform'] = CHelper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
         }
 
         return $aData;
@@ -243,22 +243,22 @@ class Helper
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         ];
-        if ((!HelperConfig::$shop["show_pricesonlytologgedin"] || CHelper::getUserData()) && isset($_SESSION["cart"]) && count($_SESSION["cart"])) {
-            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION["cart"]);
+        if (isset($_SESSION['cart']) && (!HelperConfig::$shop['show_pricesonlytologgedin'] || CHelper::getUserData()) && count($_SESSION['cart'])) {
+            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']);
             $aCartinfo = [
-                'numberofitems' => count($_SESSION["cart"]),
+                'numberofitems' => count($_SESSION['cart']),
                 'cartsums' => $aCartsums,
-                'cartsumnetto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"],
-                'cartsumbrutto' => $aCartsums["sumvoll"] + $aCartsums["sumerm"] + $aCartsums["taxerm"] + $aCartsums["taxvoll"],
+                'cartsumnetto' => $aCartsums['sumvoll'] + $aCartsums['sumerm'],
+                'cartsumbrutto' => $aCartsums['sumvoll'] + $aCartsums['sumerm'] + $aCartsums['taxerm'] + $aCartsums['taxvoll'],
             ];
             unset($aCartsums);
-            foreach ($_SESSION["cart"] as $sKey => $aValue) {
-                $aCartinfo["cartitems"][$sKey] = [
+            foreach ($_SESSION['cart'] as $sKey => $aValue) {
+                $aCartinfo['cartitems'][$sKey] = [
                     'cartkey' => $sKey,
-                    'name' => $aValue["name"],
-                    'amount' => $aValue["amount"],
-                    'img' => $aValue["img"],
-                    'price' => $aValue["price"],
+                    'name' => $aValue['name'],
+                    'amount' => $aValue['amount'],
+                    'img' => $aValue['img'],
+                    'price' => $aValue['price'],
                 ];
             }
         }
@@ -292,8 +292,8 @@ class Helper
         $suggestions = static::fillSuggestions($suggestions);
 
         foreach ($suggestions as $aSuggestionsKey => $aSuggestionsValue) { // build the paths to the suggested items
-            if (mb_strpos($aSuggestionsValue["itm_index"], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
-                $aSuggestionIndexes = explode('|', $aSuggestionsValue["itm_index"]);
+            if (mb_strpos($aSuggestionsValue['itm_index'], '|') !== false) { // check if the suggestions itemindex contains multiple indexes, if so explode an array
+                $aSuggestionIndexes = explode('|', $aSuggestionsValue['itm_index']);
 
                 // iterate through these indexes
                 foreach ($aSuggestionIndexes as $suggestionindexval) {
@@ -301,25 +301,25 @@ class Helper
                     if (isset($mItemindex)) {
                         // check if it is an array and if the suggestions index is in that array, set path to empty string
                         if (is_array($mItemindex) && in_array($suggestionindexval, $mItemindex)) {
-                            $suggestions[$aSuggestionsKey]["path"] = '';
+                            $suggestions[$aSuggestionsKey]['path'] = '';
                             // path to suggestion set, continue with next suggestion
                             continue 2;
                         // if the suggestion index is on this page, set path to empty string
                         } elseif ($mItemindex == $suggestionindexval) {
-                            $suggestions[$aSuggestionsKey]["path"] = '';
+                            $suggestions[$aSuggestionsKey]['path'] = '';
                             continue 2; // path to suggestion set, continue with next suggestion
                         }
                     }
                     if (isset($itemindexpathtree[$suggestionindexval])) {
-                        $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$suggestionindexval];
+                        $suggestions[$aSuggestionsKey]['path'] = $itemindexpathtree[$suggestionindexval];
                         continue 2;
                     }
                 }
-            } elseif (isset($itemindexpathtree[$aSuggestionsValue["itm_index"]])) {
-                $suggestions[$aSuggestionsKey]["path"] = $itemindexpathtree[$aSuggestionsValue["itm_index"]];
+            } elseif (isset($itemindexpathtree[$aSuggestionsValue['itm_index']])) {
+                $suggestions[$aSuggestionsKey]['path'] = $itemindexpathtree[$aSuggestionsValue['itm_index']];
             }
         }
-        if (HelperConfig::$shop["itemdetail_suggestions_shuffle"]) {
+        if (HelperConfig::$shop['itemdetail_suggestions_shuffle']) {
             shuffle($suggestions);
         }
 
@@ -356,7 +356,7 @@ class Helper
 
             // merge loaded and newly loaded items
             if (!empty($aItemsNotInCategory)) {
-                $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory["item"]);
+                $aPossibleSuggestions = array_merge($aPossibleSuggestions, $aItemsNotInCategory['item']);
             }
         }
 
@@ -395,8 +395,8 @@ class Helper
     public static function fillSuggestions($suggestions)
     {
         $iNumberOfSuggestions = count($suggestions['default']);
-        if ($iNumberOfSuggestions > HelperConfig::$shop["itemdetail_suggestions"]) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
-            $aKeysSuggestions = array_rand($suggestions['default'], HelperConfig::$shop["itemdetail_suggestions"]); // get the array keys that will stay
+        if ($iNumberOfSuggestions > HelperConfig::$shop['itemdetail_suggestions']) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
+            $aKeysSuggestions = array_rand($suggestions['default'], HelperConfig::$shop['itemdetail_suggestions']); // get the array keys that will stay
             foreach ($suggestions['default'] as $aSuggestionsKey => $aSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
                 if (!in_array($aSuggestionsKey, $aKeysSuggestions)) {
                     unset($suggestions['default'][$aSuggestionsKey]);
@@ -409,11 +409,11 @@ class Helper
         // if less or equal continue here
         $numAdditionalSuggs = count($suggestions['additional']);
         if (
-            $iNumberOfSuggestions < HelperConfig::$shop["itemdetail_suggestions"]
-            && $numAdditionalSuggs > 0
+            $numAdditionalSuggs > 0
+            && $iNumberOfSuggestions < HelperConfig::$shop['itemdetail_suggestions']
         ) { // if there are less suggestions than should be displayed and there are additional available
             // how many more are needed?
-            $addSuggsRequired = HelperConfig::$shop["itemdetail_suggestions"] - $iNumberOfSuggestions;
+            $addSuggsRequired = HelperConfig::$shop['itemdetail_suggestions'] - $iNumberOfSuggestions;
             // see if there are more available than required, if so, pick as many as needed
             if ($numAdditionalSuggs > $addSuggsRequired) {
                 // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
@@ -450,16 +450,16 @@ class Helper
 
         $oItem = $serviceManager->get('oItem');
 
-        $aP["items"] = $oItem->sortItems($mItemIndex, '', ($aP["pagetype"] === 'itemoverviewgrpd' ? true : false));
-        if ($aP["pagetype"] === 'itemdetail') {
+        $aP['items'] = $oItem->sortItems($mItemIndex, '', ($aP['pagetype'] === 'itemoverviewgrpd'));
+        if ($aP['pagetype'] === 'itemdetail') {
 
-            $aP["itemindexpathtreeforsuggestions"] = $oItem->getItemPathTree();
+            $aP['itemindexpathtreeforsuggestions'] = $oItem->getItemPathTree();
 
-            if (isset($aP["pageconfig"]->itemindex)) {
-                $aP["itemindexpathtreeforsuggestions"][$aP["pageconfig"]->itemindex] = '';
-                if (is_array($aP["pageconfig"]->itemindex)) {
-                    foreach ($aP["pageconfig"]->itemindex as $sItemIndexValue) {
-                        $aP["itemindexpathtreeforsuggestions"][$sItemIndexValue] = '';
+            if (isset($aP['pageconfig']->itemindex)) {
+                $aP['itemindexpathtreeforsuggestions'][$aP['pageconfig']->itemindex] = '';
+                if (is_array($aP['pageconfig']->itemindex)) {
+                    foreach ($aP['pageconfig']->itemindex as $sItemIndexValue) {
+                        $aP['itemindexpathtreeforsuggestions'][$sItemIndexValue] = '';
                     }
                 }
             }
@@ -474,46 +474,46 @@ class Helper
     {
         // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
         // if it is not found, we will show the overview
-        $aP["pagetype"] = 'itemoverview';
-        if (count($aP["items"]["item"])) {
-            foreach ($aP["items"]["item"] as $sKey => $aValue) {
+        $aP['pagetype'] = 'itemoverview';
+        if (count($aP['items']['item'])) {
+            foreach ($aP['items']['item'] as $sKey => $aValue) {
                 if ($aValue['itm_no'] != $P->cb_pageconfig->itemno) {
                     continue;
                 }
 
-                $aP["pagetype"] = 'itemdetail';
-                $aP["item"]["data"] = $aValue;
-                $aP["item"]["key"] = $sKey;
+                $aP['pagetype'] = 'itemdetail';
+                $aP['item']['data'] = $aValue;
+                $aP['item']['key'] = $sKey;
 
-                if ($aP["items"]["totalitems"] > 1) {
-                    $iPositionInItems = array_search($sKey, $aP["items"]["itemkeys"]);
-                    $aP["item"]["currentitem"] = $iPositionInItems + 1;
+                if ($aP['items']['totalitems'] > 1) {
+                    $iPositionInItems = array_search($sKey, $aP['items']['itemkeys']);
+                    $aP['item']['currentitem'] = $iPositionInItems + 1;
 
                     if ($iPositionInItems === 0) {
-                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$aP["items"]["totalitems"] - 1];
+                        $aP['item']['previtem'] = $aP['items']['itemkeys'][$aP['items']['totalitems'] - 1];
                     } else {
-                        $aP["item"]["previtem"] = $aP["items"]["itemkeys"][$iPositionInItems - 1];
+                        $aP['item']['previtem'] = $aP['items']['itemkeys'][$iPositionInItems - 1];
                     }
 
-                    $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][$iPositionInItems + 1];
-                    if ($iPositionInItems == $aP["items"]["totalitems"] - 1) {
-                        $aP["item"]["nextitem"] = $aP["items"]["itemkeys"][0];
+                    $aP['item']['nextitem'] = $aP['items']['itemkeys'][$iPositionInItems + 1];
+                    if ($iPositionInItems == $aP['items']['totalitems'] - 1) {
+                        $aP['item']['nextitem'] = $aP['items']['itemkeys'][0];
                     }
                 } else {
-                    $aP["item"]["currentitem"] = 1;
-                    $aP["item"]["previtem"] = 1;
-                    $aP["item"]["nextitem"] = 1;
+                    $aP['item']['currentitem'] = 1;
+                    $aP['item']['previtem'] = 1;
+                    $aP['item']['nextitem'] = 1;
                 }
 
                 // build item suggestions if needed
-                if (HelperConfig::$shop["itemdetail_suggestions"] > 0) {
-                    $aP["item"]["suggestions"] = self::getItemSuggestions(
+                if (HelperConfig::$shop['itemdetail_suggestions'] > 0) {
+                    $aP['item']['suggestions'] = self::getItemSuggestions(
                         $oItem,
-                        $aP["items"]["item"],
-                        (!empty($aValue['itm_data']["suggestions"]) ? $aValue['itm_data']["suggestions"] : ''),
+                        $aP['items']['item'],
+                        (!empty($aValue['itm_data']['suggestions']) ? $aValue['itm_data']['suggestions'] : ''),
                         $sKey,
-                        (!empty($aP["pageconfig"]->itemindex) ? $aP["pageconfig"]->itemindex : ''),
-                        (!empty($aP["itemindexpathtreeforsuggestions"]) ? $aP["itemindexpathtreeforsuggestions"] : [])
+                        (!empty($aP['pageconfig']->itemindex) ? $aP['pageconfig']->itemindex : ''),
+                        (!empty($aP['itemindexpathtreeforsuggestions']) ? $aP['itemindexpathtreeforsuggestions'] : [])
                     );
                 }
                 // Wenn der Artikel gefunden wurde können wir das Ausführen der Suche beenden.

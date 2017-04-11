@@ -82,14 +82,14 @@ class Router
             }
             $this->P = 404;
             $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
-            $this->sPath = $aURL["path"];
+            $this->sPath = $aURL['path'];
 
             $aPath = explode('/', $this->sPath);
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
             } else {
                 if ($aPath[1] == HelperConfig::$core['directory_images']) {
-                    $class = '\\HaaseIT\\HCSF\\Controller\\Glide';
+                    $class = Controller\Glide::class;
                 }
             }
 
@@ -104,7 +104,7 @@ class Router
 
                 }
             } else {
-                if (HelperConfig::$core["enable_module_shop"]) {
+                if (HelperConfig::$core['enable_module_shop']) {
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
@@ -137,8 +137,8 @@ class Router
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {
-                        $this->P->cb_pagetype = $aRoutingoverride["cb_pagetype"];
-                        $this->P->cb_pageconfig->itemno = $aRoutingoverride["itemno"];
+                        $this->P->cb_pagetype = $aRoutingoverride['cb_pagetype'];
+                        $this->P->cb_pageconfig->itemno = $aRoutingoverride['itemno'];
                     }
                 }
             }
@@ -148,15 +148,15 @@ class Router
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
-                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_page_not_found");
-                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_found');
+                header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
             } elseif (!is_object($this->P) && $this->P == 500) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
-                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_server_error");
-                header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_server_error');
+                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
                     !(
@@ -165,11 +165,11 @@ class Router
                         || $this->P->cb_pagetype === 'itemdetail'
                     )
                 ) { // no payload is fine if page is one of these
-                    $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_content_not_found");
-                    header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
+                    $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
+                    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
                 }
             } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
-                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T("misc_page_not_available_lang") . '<br><br>' . $this->P->oPayload->cl_html;
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang') . '<br><br>' . $this->P->oPayload->cl_html;
             }
         }
         return $this->P;
@@ -179,28 +179,28 @@ class Router
     {
         $aRoutingoverride = [];
         // /xxxx/item/0010.html
-        $aTMP["parts_in_path"] = count($aPath);
+        $aTMP['parts_in_path'] = count($aPath);
         // if the last dir in path is 'item' and the last part of the path is not empty
-        if ($aPath[$aTMP["parts_in_path"] - 2] === 'item' && $aPath[$aTMP["parts_in_path"] - 1] != '') {
+        if ($aPath[$aTMP['parts_in_path'] - 2] === 'item' && $aPath[$aTMP['parts_in_path'] - 1] != '') {
 
             // explode the filename by .
-            $aTMP["exploded_request_file"] = explode('.', $aPath[$aTMP["parts_in_path"] - 1]);
+            $aTMP['exploded_request_file'] = explode('.', $aPath[$aTMP['parts_in_path'] - 1]);
 
             // if the filename ends in '.html', get the requested itemno
-            if ($aTMP["exploded_request_file"][count($aTMP["exploded_request_file"]) - 1] === 'html') {
+            if ($aTMP['exploded_request_file'][count($aTMP['exploded_request_file']) - 1] === 'html') {
                 // to allow dots in the filename, we have to iterate through all parts of the filename
-                $aRoutingoverride["itemno"] = '';
-                for ($i = 0; $i < count($aTMP["exploded_request_file"]) - 1; $i++) {
-                    $aRoutingoverride["itemno"] .= $aTMP["exploded_request_file"][$i] . '.';
+                $aRoutingoverride['itemno'] = '';
+                for ($i = 0; $i < count($aTMP['exploded_request_file']) - 1; $i++) {
+                    $aRoutingoverride['itemno'] .= $aTMP['exploded_request_file'][$i] . '.';
                 }
                 // remove the trailing dot
-                $aRoutingoverride["itemno"] = \HaaseIT\Toolbox\Tools::cutStringend($aRoutingoverride["itemno"], 1);
+                $aRoutingoverride['itemno'] = \HaaseIT\Toolbox\Tools::cutStringend($aRoutingoverride['itemno'], 1);
 
-                $aRoutingoverride["cb_pagetype"] = 'itemdetail';
+                $aRoutingoverride['cb_pagetype'] = 'itemdetail';
 
                 // rebuild the path string without the trailing '/item/itemno.html'
                 $this->sPath = '';
-                for ($i = 0; $i < $aTMP["parts_in_path"] - 2; $i++) {
+                for ($i = 0; $i < $aTMP['parts_in_path'] - 2; $i++) {
                     $this->sPath .= $aPath[$i] . '/';
                 }
             }
