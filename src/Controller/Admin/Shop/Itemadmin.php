@@ -34,11 +34,6 @@ use Zend\ServiceManager\ServiceManager;
 class Itemadmin extends Base
 {
     /**
-     * @var \PDO
-     */
-    protected $db;
-
-    /**
      * @var \Doctrine\DBAL\Connection
      */
     protected $dbal;
@@ -65,7 +60,6 @@ class Itemadmin extends Base
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        $this->db = $serviceManager->get('db');
         $this->dbal = $serviceManager->get('dbal');
         $this->request = $serviceManager->get('request');
         $this->get = $this->request->getQueryParams();
