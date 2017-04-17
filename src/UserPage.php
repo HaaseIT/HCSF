@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF;
 
 
-use HaaseIT\Toolbox\DBTools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -34,19 +33,26 @@ class UserPage extends Page
      * @var bool
      */
     protected $bReturnRaw;
+
+    /**
+     * @var int|string
+     */
+    public $cb_id;
+
     /**
      * @var string
      */
+    public $cb_key;
+
     /**
-     * @var string
+     * @var int
      */
+    public $cb_group;
+
     /**
-     * @var string
+     * @var \HTMLPurifier
      */
-    /**
-     * @var string
-     */
-    public $cb_id, $cb_key, $cb_group, $purifier;
+    public $purifier;
 
     /**
      * @var \Doctrine\DBAL\Connection
@@ -59,7 +65,8 @@ class UserPage extends Page
      * @param $sPagekey
      * @param bool $bReturnRaw
      */
-    public function __construct(ServiceManager $serviceManager, $sPagekey, $bReturnRaw = false) {
+    public function __construct(ServiceManager $serviceManager, $sPagekey, $bReturnRaw = false)
+    {
         //if (!$bReturnRaw) $this->container = $container;
         $this->serviceManager = $serviceManager;
         $this->iStatus = 200;
@@ -74,17 +81,18 @@ class UserPage extends Page
             $this->cb_pageconfig = (object) [];
         } else {
             // first get base data
-            $sql = 'SELECT cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav ';
-            $sql .= 'FROM content_base WHERE cb_key = :key ';
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav')
+                ->from('content_base')
+                ->where('cb_key = ?')
+                ->setParameter(0, $sPagekey)
+            ;
+            $stmt = $querybuilder->execute();
+            $stmt->setFetchMode(\PDO::FETCH_INTO, $this);
 
-            /** @var \PDOStatement $hResult */
-            $hResult = $this->serviceManager->get('db')->prepare($sql);
-            $hResult->bindValue(':key', $sPagekey, \PDO::PARAM_STR);
-            $hResult->setFetchMode(\PDO::FETCH_INTO, $this);
-            $hResult->execute();
-
-            if ($hResult->rowCount() == 1) {
-                $hResult->fetch();
+            if ($stmt->rowCount() === 1) {
+                $stmt->fetch();
 
                 if ($this->cb_pagetype !== 'shorturl') {
                     if (!$bReturnRaw) {
@@ -99,47 +107,55 @@ class UserPage extends Page
     /**
      * @return UserPagePayload
      */
-    protected function getPayload() {
+    protected function getPayload()
+    {
         return new UserPagePayload($this->serviceManager, $this->cb_id, $this->bReturnRaw);
     }
 
     /**
      * @return bool
      */
-    public function write() {
-        $aData = [
-            'cb_pagetype' => filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'cb_group' => filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'cb_pageconfig' => $this->cb_pageconfig,
-            'cb_subnav' => filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'cb_key' => $this->cb_key,
-        ];
-        $sql = DBTools::buildPSUpdateQuery($aData, 'content_base', 'cb_key');
+    public function write()
+    {
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->update('content_base')
+            ->set('cb_pagetype', '?')
+            ->set('cb_group', '?')
+            ->set('cb_pageconfig', '?')
+            ->set('cb_subnav', '?')
+            ->where('cb_key = ?')
+            ->setParameter(0, filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(1, filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(2, $this->cb_pageconfig)
+            ->setParameter(3, filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(4, $this->cb_key)
+        ;
 
-        /** @var \PDOStatement $hResult */
-        $hResult = $this->serviceManager->get('db')->prepare($sql);
-        foreach ($aData as $sKey => $sValue) {
-            $hResult->bindValue(':'.$sKey, $sValue);
-        }
-        return $hResult->execute();
+        return $querybuilder->execute();
     }
 
     /**
      * @param string $sPagekeytoadd
      * @return mixed
      */
-    public function insert($sPagekeytoadd) {
-        $aData = [
-            'cb_key' => $sPagekeytoadd,
-        ];
-        $sql = DBTools::buildInsertQuery($aData, 'content_base');
-        return $hResult = $this->serviceManager->get('db')->exec($sql);
+    public function insert($sPagekeytoadd)
+    {
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->insert('content_base')
+            ->setValue('cb_key', '?')
+            ->setParameter(0, $sPagekeytoadd)
+        ;
+
+        return $querybuilder->execute();
     }
 
     /**
      * @return \Doctrine\DBAL\Driver\Statement|int
      */
-    public function remove() {
+    public function remove()
+    {
         // delete children
         $this->oPayload->remove($this->cb_id);
 
