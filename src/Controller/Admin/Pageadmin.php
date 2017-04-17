@@ -244,10 +244,9 @@ class Pageadmin extends Base
 
     protected function updatePage(UserPage $Ptoedit)
     {
+        $purifier = false;
         if (HelperConfig::$core['pagetext_enable_purifier']) {
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
-        } else {
-            $purifier = false;
         }
 
         $Ptoedit->cb_pagetype = $this->post['page_type'];

@@ -113,7 +113,7 @@ class Itemadmin extends Base
                     }
                 }
             } elseif (isset($this->post['doaction']) && $this->post['doaction'] === 'edititem') {
-                $this->admin_updateItem(\HaaseIT\HCSF\Helper::getPurifier('item'));
+                $this->admin_updateItem();
                 $this->P->cb_customdata['itemupdated'] = true;
 
                 $aItemdata = $this->admin_getItem();
@@ -349,11 +349,15 @@ class Itemadmin extends Base
     }
 
     /**
-     * @param $purifier
      * @return bool
      */
-    private function admin_updateItem($purifier)
+    private function admin_updateItem()
     {
+        $purifier = false;
+        if (HelperConfig::$shop['pagetext_enable_purifier']) {
+            $purifier = \HaaseIT\HCSF\Helper::getPurifier('item');
+        }
+
         $aData = [
             'itm_name' => filter_var($this->post['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'itm_group' => filter_var($this->post['group'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -379,8 +383,8 @@ class Itemadmin extends Base
         $hResult->execute();
         if (isset($this->post['textid'])) {
             $aData = [
-                'itml_text1' => $purifier->purify($this->post['text1']),
-                'itml_text2' => $purifier->purify($this->post['text2']),
+                'itml_text1' => !empty($this->purifier) ? $purifier->purify($this->post['text1']) : $this->post['text1'],
+                'itml_text2' => !empty($this->purifier) ? $purifier->purify($this->post['text2']) : $this->post['text2'],
                 'itml_name_override' => filter_var($this->post['name_override'], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
                 'itml_id' => filter_var($this->post['textid'], FILTER_SANITIZE_NUMBER_INT),
             ];
