@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
+
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
@@ -32,9 +33,9 @@ use Zend\ServiceManager\ServiceManager;
 class Shopadmin extends Base
 {
     /**
-     * @var \PDO
+     * @var \Doctrine\DBAL\Connection
      */
-    private $db;
+    protected $dbal;
 
     /**
      * Shopadmin constructor.
@@ -43,7 +44,7 @@ class Shopadmin extends Base
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
     }
 
     /**
@@ -59,24 +60,30 @@ class Shopadmin extends Base
 
         if (isset($_POST['change'])) {
             $iID = filter_var(trim(Tools::getFormfield('id')), FILTER_SANITIZE_NUMBER_INT);
-            $aData = [
-                'o_lastedit_timestamp' => time(),
-                'o_remarks_internal' => filter_var(trim(Tools::getFormfield('remarks_internal')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_transaction_no' => filter_var(trim(Tools::getFormfield('transaction_no')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_paymentcompleted' => filter_var(trim(Tools::getFormfield('order_paymentcompleted')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_ordercompleted' => filter_var(trim(Tools::getFormfield('order_completed')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_lastedit_user' => isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '',
-                'o_shipping_service' => filter_var(trim(Tools::getFormfield('order_shipping_service')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_shipping_trackingno' => filter_var(trim(Tools::getFormfield('order_shipping_trackingno')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                'o_id' => $iID,
-            ];
 
-            $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'orders', 'o_id');
-            $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) {
-                $hResult->bindValue(':'.$sKey, $sValue);
-            }
-            $hResult->execute();
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->update('orders')
+                ->set('o_lastedit_timestamp', ':o_lastedit_timestamp')
+                ->set('o_remarks_internal', ':o_remarks_internal')
+                ->set('o_transaction_no', ':o_transaction_no')
+                ->set('o_paymentcompleted', ':o_paymentcompleted')
+                ->set('o_ordercompleted', ':o_ordercompleted')
+                ->set('o_lastedit_user', ':o_lastedit_user')
+                ->set('o_shipping_service', ':o_shipping_service')
+                ->set('o_shipping_trackingno', ':o_shipping_trackingno')
+                ->where('o_id = :o_id')
+                ->setParameter(':o_lastedit_timestamp', time())
+                ->setParameter(':o_remarks_internal', filter_var(trim(Tools::getFormfield('remarks_internal')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_transaction_no', filter_var(trim(Tools::getFormfield('transaction_no')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_paymentcompleted', filter_var(trim(Tools::getFormfield('order_paymentcompleted')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_ordercompleted', filter_var(trim(Tools::getFormfield('order_completed')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_lastedit_user', isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '')
+                ->setParameter(':o_shipping_service', filter_var(trim(Tools::getFormfield('order_shipping_service')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_shipping_trackingno', filter_var(trim(Tools::getFormfield('order_shipping_trackingno')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':o_id', $iID)
+            ;
+            $querybuilder->execute();
             \HaaseIT\HCSF\Helper::redirectToPage('/_admin/shopadmin.html?action=edit&id='.$iID);
         }
 
@@ -135,65 +142,77 @@ class Shopadmin extends Base
         $aData = [];
         if (!isset($_GET['action'])) {
             $bIgnoreStorno = false;
-            $sql = 'SELECT * FROM orders WHERE ';
 
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('*')
+                ->from('orders')
+                ->orderBy('o_ordertimestamp', 'DESC')
+            ;
+
+            $querybuilder->where('o_ordercompleted = ?');
             if (isset($_REQUEST['type'])) {
                 switch ($_REQUEST['type']) {
                     case 'closed':
-                        $sql .= "o_ordercompleted = 'y' ";
+                        $querybuilder->setParameter(0, 'y');
                         break;
                     case 'open':
-                        $sql .= "o_ordercompleted = 'n' ";
+                        $querybuilder->setParameter(0, 'n');
                         break;
                     case 'inwork':
-                        $sql .= "o_ordercompleted = 'i' ";
+                        $querybuilder->setParameter(0, 'i');
                         break;
                     case 'storno':
-                        $sql .= "o_ordercompleted = 's' ";
+                        $querybuilder->setParameter(0, 's');
                         break;
                     case 'deleted':
-                        $sql .= "o_ordercompleted = 'd' ";
+                        $querybuilder->setParameter(0, 'd');
                         break;
                     case 'all':
-                        $sql .= "o_ordercompleted != 'd' ";
+                        $querybuilder
+                            ->where('o_ordercompleted != ?')
+                            ->setParameter(0, 'd')
+                        ;
                         $bIgnoreStorno = true;
                         break;
                     case 'openinwork':
                     default:
-                        $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
+                    $querybuilder
+                        ->where('o_ordercompleted = ? OR o_ordercompleted = ?')
+                        ->setParameter(0, 'n')
+                        ->setParameter(0, 'i')
+                    ;
                 }
             } else {
-                $sql .= "(o_ordercompleted = 'n' OR o_ordercompleted = 'i') ";
+                $querybuilder
+                    ->where('o_ordercompleted = ? OR o_ordercompleted = ?')
+                    ->setParameter(0, 'n')
+                    ->setParameter(0, 'i')
+                ;
             }
 
-            $bFromTo = false;
             $sFrom = null;
             $sTo = null;
             if (isset($_REQUEST['type']) && ($_REQUEST['type'] === 'deleted' || $_REQUEST['type'] === 'all' || $_REQUEST['type'] === 'closed')) {
-                $sql .= 'AND ';
                 $sFrom = \filter_var($_REQUEST['fromyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['frommonth'], FILTER_SANITIZE_NUMBER_INT));
                 $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['fromday'], FILTER_SANITIZE_NUMBER_INT));
                 $sTo = \filter_var($_REQUEST['toyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['tomonth'], FILTER_SANITIZE_NUMBER_INT));
                 $sTo .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['today'], FILTER_SANITIZE_NUMBER_INT));
-                $sql .= 'o_orderdate >= :from ';
-                $sql .= 'AND o_orderdate <= :to ';
-                $bFromTo = true;
-            }
-            $sql .= 'ORDER BY o_ordertimestamp DESC';
 
-            $hResult = $this->db->prepare($sql);
-            if ($bFromTo) {
-                $hResult->bindValue(':from', $sFrom);
-                $hResult->bindValue(':to', $sTo);
+                $querybuilder
+                    ->andWhere('o_orderdate >= :from AND o_orderdate <= :to')
+                    ->setParameter(':from', $sFrom)
+                    ->setParameter(':to', $sTo)
+                ;
             }
-            $hResult->execute();
+            $stmt = $querybuilder->execute();
 
-            if ($hResult->rowCount() != 0) {
+            if ($stmt->rowCount() !== 0) {
                 $i = 0;
                 $j = 0;
                 $k = 0;
                 $fGesamtnetto = 0.0;
-                while ($aRow = $hResult->fetch()) {
+                while ($aRow = $stmt->fetch()) {
                     switch ($aRow['o_ordercompleted']) {
                         case 'y':
                             $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
@@ -280,19 +299,26 @@ class Shopadmin extends Base
             }
         } elseif (isset($_GET['action']) && $_GET['action'] === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-            $sql = 'SELECT * FROM orders WHERE o_id = :id';
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('*')
+                ->from('orders')
+                ->where('o_id = ?')
+                ->setParameter(0, $iId)
+            ;
+            $stmt = $querybuilder->execute();
+            if ($stmt->rowCount() === 1) {
+                $aSData['orderdata'] = $stmt->fetch();
 
-            /** @var \PDOStatement $hResult */
-            $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':id', $iId);
-            $hResult->execute();
-            if ($hResult->rowCount() == 1) {
-                $aSData['orderdata'] = $hResult->fetch();
-                $sql = 'SELECT * FROM orders_items WHERE oi_o_id = :id';
-                $hResult = $this->db->prepare($sql);
-                $hResult->bindValue(':id', $iId);
-                $hResult->execute();
-                $aItems = $hResult->fetchAll();
+                $querybuilder = $this->dbal->createQueryBuilder();
+                $querybuilder
+                    ->select('*')
+                    ->from('orders_items')
+                    ->where('oi_o_id = ?')
+                    ->setParameter(0, $iId)
+                ;
+                $stmt = $querybuilder->execute();
+                $aItems = $stmt->fetchAll();
 
                 $aUserdata = [
                     'cust_no' => $aSData['orderdata']['o_custno'],
