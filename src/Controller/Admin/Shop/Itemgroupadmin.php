@@ -20,10 +20,12 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
+
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
+use Zend\Diactoros\ServerRequest;
 
 /**
  * Class Itemgroupadmin
@@ -37,6 +39,16 @@ class Itemgroupadmin extends Base
     private $dbal;
 
     /**
+     * @var array
+     */
+    protected $post;
+
+    /**
+     * @var ServerRequest;
+     */
+    protected $request;
+
+    /**
      * Itemgroupadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -44,6 +56,8 @@ class Itemgroupadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
+        $this->request = $serviceManager->get('request');
+        $this->post = $this->request->getParsedBody();
     }
 
     /**
@@ -99,7 +113,7 @@ class Itemgroupadmin extends Base
 
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'editgroup') {
             if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
-                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
+                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup();
             }
 
             $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
@@ -168,11 +182,15 @@ class Itemgroupadmin extends Base
     }
 
     /**
-     * @param $purifier
      * @return string
      */
-    private function admin_updateGroup( $purifier)
+    private function admin_updateGroup()
     {
+        $purifier = false;
+        if (HelperConfig::$shop['itemgrouptext_enable_purifier']) {
+            $purifier = \HaaseIT\HCSF\Helper::getPurifier('itemgroup');
+        }
+
         $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
         $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
@@ -222,8 +240,8 @@ class Itemgroupadmin extends Base
                 ->set('itmgt_shorttext', '?')
                 ->set('itmgt_details', '?')
                 ->where('itmgt_id = ?')
-                ->setParameter(0, $purifier->purify($_REQUEST['shorttext']))
-                ->setParameter(1, $purifier->purify($_REQUEST['details']))
+                ->setParameter(0, !empty($this->purifier) ? $purifier->purify($this->post['shorttext']) : $this->post['shorttext'])
+                ->setParameter(1, !empty($this->purifier) ? $purifier->purify($this->post['details']) : $this->post['details'])
                 ->setParameter(2, $aRow['itmgt_id'])
             ;
             $querybuilder->execute();
