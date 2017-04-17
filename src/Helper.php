@@ -28,6 +28,16 @@ use HaaseIT\Toolbox\Tools;
  */
 class Helper
 {
+    public static function redirectToPage($target = '')
+    {
+        if (empty($target)) {
+            return false;
+        }
+
+        header('Location: '.$target);
+        die();
+    }
+
     /**
      * @param $file
      * @param int $width

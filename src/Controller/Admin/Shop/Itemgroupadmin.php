@@ -85,8 +85,7 @@ class Itemgroupadmin extends Base
                     $hResult->bindValue(':'.$sKey, $sValue);
                 }
                 $hResult->execute();
-                header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
-                die();
+                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
             }
         }
 
@@ -137,8 +136,7 @@ class Itemgroupadmin extends Base
                     }
                     $hResult->execute();
                     $iLastInsertID = $this->db->lastInsertId();
-                    header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
-                    die();
+                    \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID));
                 } else {
                     $this->P->cb_customdata['err'] = $aErr;
                     $this->P->cb_customdata['showform'] = 'add';

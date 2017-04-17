@@ -77,8 +77,7 @@ class Shopadmin extends Base
                 $hResult->bindValue(':'.$sKey, $sValue);
             }
             $hResult->execute();
-            header('Location: /_admin/shopadmin.html?action=edit&id='.$iID);
-            die();
+            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/shopadmin.html?action=edit&id='.$iID);
         }
 
         $aPData = [

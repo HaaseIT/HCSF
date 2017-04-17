@@ -74,8 +74,7 @@ class Sofortueberweisung extends Base
                 .'&amp;currency_id='.HelperConfig::$shop['sofortueberweisung']['currency_id'].'&amp;reason_1='
                 .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff') . ' ').$iId;
             if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
-                header('Location: ' . $sPURL);
-                die();
+                \HaaseIT\HCSF\Helper::redirectToPage($sPURL);
             }
 
             $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_greeting') . '<br><br>';

@@ -95,8 +95,7 @@ class Itemadmin extends Base
                 $sql = DBTools::buildInsertQuery($aData, 'item_lang');
                 $this->db->exec($sql);
 
-                header('Location: /_admin/itemadmin.html?itemno='.$this->get['itemno'].'&action=showitem');
-                die();
+                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$this->get['itemno'].'&action=showitem');
             }
         }
         $this->P->cb_customdata['searchform'] = $this->admin_prepareItemlistsearchform();
@@ -148,8 +147,7 @@ class Itemadmin extends Base
                             $statement = $queryBuilder->execute();
                             $row = $statement->fetch();
 
-                            header('Location: /_admin/itemadmin.html?itemno='.$row['itm_no'].'&action=showitem');
-                            die();
+                            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$row['itm_no'].'&action=showitem');
                         }
                     }
                 }

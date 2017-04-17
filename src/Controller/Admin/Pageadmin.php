@@ -114,8 +114,7 @@ class Pageadmin extends Base
                 $Ptoadd = new UserPage($this->serviceManager, $sPagekeytoadd, true);
                 if ($Ptoadd->cb_id == NULL) {
                     if ($Ptoadd->insert($sPagekeytoadd)) {
-                        header('Location: /_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
-                        die();
+                        \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                     } else {
                         die(HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
                     }
@@ -176,8 +175,7 @@ class Pageadmin extends Base
 
         if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
             $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
-            header('Location: /_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
-            die();
+            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
         } else {
             die(HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
         }
