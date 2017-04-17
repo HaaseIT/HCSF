@@ -20,8 +20,8 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
+
 use HaaseIT\HCSF\HardcodedText;
-use HaaseIT\Toolbox\DBTools;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\Diactoros\ServerRequest;
@@ -87,13 +87,15 @@ class Itemadmin extends Base
             $aItemdata = $this->admin_getItem();
 
             if (isset($aItemdata['base']) && !isset($aItemdata['text'])) {
-                $aData = [
-                    'itml_pid' => $aItemdata['base']['itm_id'],
-                    'itml_lang' => HelperConfig::$lang,
-                ];
-
-                $sql = DBTools::buildInsertQuery($aData, 'item_lang');
-                $this->db->exec($sql);
+                $querybuilder = $this->dbal->createQueryBuilder();
+                $querybuilder
+                    ->insert('item_lang')
+                    ->setValue('itml_pid', '?')
+                    ->setValue('itml_lang', '?')
+                    ->setParameter(0, $aItemdata['base']['itm_id'])
+                    ->setParameter(1, HelperConfig::$lang)
+                ;
+                $querybuilder->execute();
 
                 \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$this->get['itemno'].'&action=showitem');
             }
@@ -126,17 +128,27 @@ class Itemadmin extends Base
                     if (strlen($this->post['itemno']) < 4) {
                         $aErr['itemnotooshort'] = true;
                     } else {
-                        $sql = 'SELECT itm_no FROM item_base WHERE itm_no = \'';
-                        $sql .= \trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS))."'";
-                        $hResult = $this->db->query($sql);
-                        $iRows = $hResult->rowCount();
-                        if ($iRows > 0) {
+                        $querybuilder = $this->dbal->createQueryBuilder();
+                        $querybuilder
+                            ->select('itm_no')
+                            ->from('item_base')
+                            ->where('itm_no = ?')
+                            ->setParameter(0, trim(filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)))
+                        ;
+                        $stmt = $querybuilder->execute();
+
+                        if ($stmt->rowCount() > 0) {
                             $aErr['itemnoalreadytaken'] = true;
                         } else {
-                            $aData = ['itm_no' => trim(\filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)),];
-                            $sql = DBTools::buildInsertQuery($aData, 'item_base');
-                            $this->db->exec($sql);
-                            $iInsertID = $this->db->lastInsertId();
+                            $querybuilder = $this->dbal->createQueryBuilder();
+                            $querybuilder
+                                ->insert('item_base')
+                                ->setValue('itm_no', '?')
+                                ->setParameter(0, trim(filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)))
+                            ;
+
+                            $querybuilder->execute();
+                            $iInsertID = $this->dbal->lastInsertId();
 
                             $queryBuilder = $this->dbal->createQueryBuilder();
                             $queryBuilder
@@ -194,37 +206,43 @@ class Itemadmin extends Base
      */
     private function admin_getItemlist()
     {
-        $sSearchstring = \filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
+        $sSearchstring = filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
         $sSearchstring = str_replace('*', '%', $sSearchstring);
 
-        $sql = 'SELECT itm_no, itm_name, itm_index FROM item_base'
-            . ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND item_lang.itml_lang = :lang'
-            . ' WHERE ';
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('itm_no, itm_name, itm_index')
+            ->from('item_base', 'b')
+            ->leftJoin('b', 'item_lang', 'l', 'b.itm_id = l.itml_pid AND l.itml_lang = :lang')
+        ;
+
         if ($this->get['searchcat'] === 'name') {
-            $sql .= 'itm_name LIKE :searchstring ';
+            $querybuilder->where('itm_name LIKE :searchstring');
         } elseif ($this->get['searchcat'] === 'nummer') {
-            $sql .= 'itm_no LIKE :searchstring ';
+            $querybuilder->where('itm_no LIKE :searchstring');
         } elseif ($this->get['searchcat'] === 'index') {
-            $sql .= 'itm_index LIKE :searchstring ';
+            $querybuilder->where('itm_index LIKE :searchstring');
         } else {
             exit;
         }
 
         if ($this->get['orderby'] === 'name') {
-            $sql .= 'ORDER BY itm_name';
+            $querybuilder->orderBy('itm_name');
         } elseif ($this->get['orderby'] === 'nummer') {
-            $sql .= ' ORDER BY itm_no';
+            $querybuilder->orderBy('itm_no');
         }
 
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':searchstring', $sSearchstring);
-        $hResult->bindValue(':lang', HelperConfig::$lang);
-        $hResult->execute();
+        $querybuilder
+            ->setParameter(':searchstring', $sSearchstring)
+            ->setParameter(':lang', HelperConfig::$lang)
+        ;
 
-        $aItemlist['numrows'] = $hResult->rowCount();
+        $stmt = $querybuilder->execute();
 
-        if ($aItemlist['numrows'] != 0) {
-            while ($aRow = $hResult->fetch()) {
+        $aItemlist['numrows'] = $stmt->rowCount();
+
+        if ($aItemlist['numrows'] !== 0) {
+            while ($aRow = $stmt->fetch()) {
                 $aItemlist['data'][] = $aRow;
             }
             return $aItemlist;
@@ -273,20 +291,29 @@ class Itemadmin extends Base
             $sItemno = filter_var($this->get['itemno'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         }
 
-        $sql = 'SELECT * FROM item_base WHERE itm_no = :itemno';
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':itemno', $sItemno);
-        $hResult->execute();
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('*')
+            ->from('item_base')
+            ->where('itm_no = ?')
+            ->setParameter(0, $sItemno)
+        ;
+        $stmt = $querybuilder->execute();
 
-        $aItemdata['base'] = $hResult->fetch();
+        $aItemdata['base'] = $stmt->fetch();
 
-        $sql = 'SELECT * FROM item_lang WHERE itml_pid = :parentpkey AND itml_lang = :lang';
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':parentpkey', $aItemdata['base']['itm_id']);
-        $hResult->bindValue(':lang', HelperConfig::$lang);
-        $hResult->execute();
-        if ($hResult->rowCount() != 0) {
-            $aItemdata['text'] = $hResult->fetch();
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('*')
+            ->from('item_lang')
+            ->where('itml_pid = ? AND itml_lang = ?')
+            ->setParameter(0, $aItemdata['base']['itm_id'])
+            ->setParameter(1, HelperConfig::$lang)
+        ;
+        $stmt = $querybuilder->execute();
+
+        if ($stmt->rowCount() != 0) {
+            $aItemdata['text'] = $stmt->fetch();
         }
 
         return $aItemdata;
@@ -352,46 +379,57 @@ class Itemadmin extends Base
     private function admin_updateItem()
     {
         $purifier = false;
-        if (HelperConfig::$shop['pagetext_enable_purifier']) {
+        if (HelperConfig::$shop['itemtext_enable_purifier']) {
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('item');
         }
 
-        $aData = [
-            'itm_name' => filter_var($this->post['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_group' => filter_var($this->post['group'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_img' => filter_var($this->post['bild'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_index' => filter_var($this->post['index'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_order' => filter_var($this->post['prio'], FILTER_SANITIZE_NUMBER_INT),
-            'itm_price' => filter_var($this->post['price'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
-            'itm_rg' => filter_var($this->post['rg'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itm_data' => filter_var($this->post['data'], FILTER_UNSAFE_RAW),
-            'itm_weight' => filter_var($this->post['weight'], FILTER_SANITIZE_NUMBER_INT),
-            'itm_id' => filter_var($this->post['id'], FILTER_SANITIZE_NUMBER_INT),
-        ];
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->update('item_base')
+            ->set('itm_name', ':itm_name')
+            ->set('itm_group', ':itm_group')
+            ->set('itm_img', ':itm_img')
+            ->set('itm_index', ':itm_index')
+            ->set('itm_order', ':itm_order')
+            ->set('itm_price', ':itm_price')
+            ->set('itm_rg', ':itm_rg')
+            ->set('itm_data', ':itm_data')
+            ->set('itm_weight', ':itm_weight')
+            ->set('itm_vatid', ':itm_vatid')
+            ->where('itm_id = :itm_id')
+            ->setParameter(':itm_name', filter_var($this->post['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_group', filter_var($this->post['group'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_img', filter_var($this->post['bild'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_index', filter_var($this->post['index'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_order', filter_var($this->post['prio'], FILTER_SANITIZE_NUMBER_INT))
+            ->setParameter(':itm_price', filter_var($this->post['price'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION))
+            ->setParameter(':itm_rg', filter_var($this->post['rg'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_data', filter_var($this->post['data'], FILTER_UNSAFE_RAW))
+            ->setParameter(':itm_weight', filter_var($this->post['weight'], FILTER_SANITIZE_NUMBER_INT))
+            ->setParameter(':itm_id', filter_var($this->post['id'], FILTER_SANITIZE_NUMBER_INT))
+        ;
+
         if (!HelperConfig::$shop['vat_disable']) {
-            $aData['itm_vatid'] = filter_var($this->post['vatid'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $querybuilder->setParameter(':itm_vatid', filter_var($this->post['vatid'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
         } else {
-            $aData['itm_vatid'] = 'full';
+            $querybuilder->setParameter(':itm_vatid', 'full');
         }
-        $sql = DBTools::buildPSUpdateQuery($aData, 'item_base', 'itm_id');
-        $hResult = $this->db->prepare($sql);
-        foreach ($aData as $sKey => $sValue) {
-            $hResult->bindValue(':' . $sKey, $sValue);
-        }
-        $hResult->execute();
+        $querybuilder->execute();
+
         if (isset($this->post['textid'])) {
-            $aData = [
-                'itml_text1' => !empty($this->purifier) ? $purifier->purify($this->post['text1']) : $this->post['text1'],
-                'itml_text2' => !empty($this->purifier) ? $purifier->purify($this->post['text2']) : $this->post['text2'],
-                'itml_name_override' => filter_var($this->post['name_override'], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW),
-                'itml_id' => filter_var($this->post['textid'], FILTER_SANITIZE_NUMBER_INT),
-            ];
-            $sql = DBTools::buildPSUpdateQuery($aData, 'item_lang', 'itml_id');
-            $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) {
-                $hResult->bindValue(':' . $sKey, $sValue);
-            }
-            $hResult->execute();
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->update('item_lang')
+                ->set('itml_text1', ':itml_text1')
+                ->set('itml_text2', ':itml_text2')
+                ->set('itml_name_override', ':itml_name_override')
+                ->where('itml_id = :itml_id')
+                ->setParameter(':itml_text1', !empty($this->purifier) ? $purifier->purify($this->post['text1']) : $this->post['text1'])
+                ->setParameter(':itml_text2', !empty($this->purifier) ? $purifier->purify($this->post['text2']) : $this->post['text2'])
+                ->setParameter(':itml_name_override', filter_var($this->post['name_override'], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':itml_id', filter_var($this->post['textid'], FILTER_SANITIZE_NUMBER_INT))
+            ;
+            $querybuilder->execute();
         }
 
         return true;
@@ -403,21 +441,23 @@ class Itemadmin extends Base
      */
     private function admin_getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
     {
-        $sql = 'SELECT * FROM itemgroups_base'
-            . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
-            . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') {
-            $sql .= ' WHERE itmg_id = :gid';
-        }
-        $sql .= ' ORDER BY itmg_no';
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':lang', HelperConfig::$lang);
-        if ($iGID != '') {
-            $hResult->bindValue(':gid', $iGID);
-        }
-        $hResult->execute();
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('*')
+            ->from('itemgroups_base', 'b')
+            ->leftJoin('b', 'itemgroups_text', 't', 'b.itmg_id = t.itmgt_pid AND t.itmgt_lang = ?')
+            ->setParameter(0, HelperConfig::$lang)
+            ->orderBy('itmg_no')
+        ;
 
-        return $hResult->fetchAll();
+        if ($iGID != '') {
+            $querybuilder
+                ->where('itmg_id = :gid')
+                ->setParameter(1, $iGID)
+            ;
+        }
+        $stmt = $querybuilder->execute();
+
+        return $stmt->fetchAll();
     }
-
 }
