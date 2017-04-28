@@ -9,7 +9,7 @@ cb_id int(11) NOT NULL,
   cb_pagetype varchar(16) NOT NULL DEFAULT 'content',
   cb_pageconfig text NOT NULL,
   cb_subnav varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS content_lang;
 CREATE TABLE IF NOT EXISTS content_lang (
@@ -22,7 +22,7 @@ cl_id int(11) NOT NULL,
   cl_title varchar(255) NOT NULL,
   cl_background varchar(80) NOT NULL,
   cl_pdf text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 DROP TRIGGER IF EXISTS content_lang_update;
 DELIMITER //
 CREATE TRIGGER content_lang_update AFTER UPDATE ON content_lang
@@ -44,7 +44,7 @@ cla_id int(11) NOT NULL,
   cl_background varchar(80) NOT NULL,
   cl_pdf text NOT NULL,
   cla_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS customer;
 CREATE TABLE IF NOT EXISTS customer (
@@ -70,7 +70,7 @@ cust_id int(11) NOT NULL,
   cust_registrationtimestamp int(11) NOT NULL,
   cust_pwresetcode varchar(32) NOT NULL,
   cust_pwresettimestamp int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS itemgroups_base;
 CREATE TABLE IF NOT EXISTS itemgroups_base (
@@ -78,7 +78,7 @@ itmg_id int(11) NOT NULL,
   itmg_no varchar(64) NOT NULL,
   itmg_name varchar(128) NOT NULL,
   itmg_img varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS itemgroups_text;
 CREATE TABLE IF NOT EXISTS itemgroups_text (
@@ -87,7 +87,7 @@ itmgt_id int(11) NOT NULL,
   itmgt_lang char(2) NOT NULL,
   itmgt_shorttext text NOT NULL,
   itmgt_details text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS item_base;
 CREATE TABLE IF NOT EXISTS item_base (
@@ -103,7 +103,7 @@ itm_id int(11) NOT NULL,
   itm_order int(11) NOT NULL,
   itm_data text NOT NULL,
   itm_weight int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS item_lang;
 CREATE TABLE IF NOT EXISTS item_lang (
@@ -113,7 +113,7 @@ itml_id int(11) NOT NULL,
   itml_name_override varchar(128) NOT NULL,
   itml_text1 text NOT NULL,
   itml_text2 text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS orders;
 CREATE TABLE IF NOT EXISTS orders (
@@ -160,7 +160,7 @@ o_id int(11) NOT NULL,
   o_shipping_trackingno varchar(64) NOT NULL,
   o_vatfull int(11) NOT NULL,
   o_vatreduced int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS orders_items;
 CREATE TABLE IF NOT EXISTS orders_items (
@@ -178,14 +178,14 @@ oi_id int(11) NOT NULL,
   oi_price_netto_use varchar(12) NOT NULL,
   oi_price_brutto_use varchar(12) NOT NULL,
   oi_img mediumtext NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS textcat_base;
 CREATE TABLE IF NOT EXISTS textcat_base (
 tc_id int(11) NOT NULL,
   tc_key varchar(64) NOT NULL,
   tcl_group varchar(16) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS textcat_lang;
 CREATE TABLE IF NOT EXISTS textcat_lang (
@@ -193,7 +193,7 @@ tcl_id int(11) NOT NULL,
   tcl_tcid int(11) NOT NULL,
   tcl_lang varchar(2) NOT NULL,
   tcl_text text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 DROP TRIGGER IF EXISTS textcat_lang_update;
 DELIMITER //
 CREATE TRIGGER textcat_lang_update AFTER UPDATE ON textcat_lang
@@ -210,7 +210,7 @@ tcla_id int(11) NOT NULL,
   tcl_lang varchar(2) NOT NULL,
   tcl_text text NOT NULL,
   tcla_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 ALTER TABLE content_base
