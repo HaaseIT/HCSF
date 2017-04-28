@@ -33,9 +33,9 @@ use Zend\ServiceManager\ServiceManager;
 class Customeradmin extends Base
 {
     /**
-     * @var \PDO
+     * @var \Doctrine\DBAL\Connection
      */
-    private $db;
+    private $dbal;
 
     /**
      * Customeradmin constructor.
@@ -44,7 +44,7 @@ class Customeradmin extends Base
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
     }
 
     /**
@@ -95,16 +95,27 @@ class Customeradmin extends Base
         }
         $return = '';
         if (!isset($_GET['action'])) {
-            $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer';
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select(DB_ADDRESSFIELDS)
+                ->from('customer')
+                ->orderBy('cust_no', 'ASC')
+            ;
+
             if ($sType === 'active') {
-                $sql .= ' WHERE cust_active = \'y\'';
+                $querybuilder
+                    ->where('cust_active = ?')
+                    ->setParameter(0, 'y')
+                ;
             } elseif ($sType === 'inactive') {
-                $sql .= ' WHERE cust_active = \'n\'';
+                $querybuilder
+                    ->where('cust_active = ?')
+                    ->setParameter(0, 'n')
+                ;
             }
-            $sql .= ' ORDER BY cust_no ASC';
-            $hResult = $this->db->query($sql);
-            if ($hResult->rowCount() != 0) {
-                $aData = $hResult->fetchAll();
+            $stmt = $querybuilder->execute();
+            if ($stmt->rowCount() !== 0) {
+                $aData = $stmt->fetchAll();
                 $return .= \HaaseIT\Toolbox\Tools::makeListtable($CUA, $aData, $twig);
             } else {
                 $aInfo['nodatafound'] = true;
@@ -117,63 +128,94 @@ class Customeradmin extends Base
                 if (strlen($sCustno) < HelperConfig::$customer['minimum_length_custno']) {
                     $aErr['custnoinvalid'] = true;
                 } else {
-                    $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_no = :custno';
-                    $hResult = $this->db->prepare($sql);
-                    $hResult->bindValue(':id', $iId);
-                    $hResult->bindValue(':custno', $sCustno);
-                    $hResult->execute();
-                    $iRows = $hResult->rowCount();
-                    if ($iRows === 1) {
+                    $querybuilder = $this->dbal->createQueryBuilder();
+                    $querybuilder
+                        ->select(DB_ADDRESSFIELDS)
+                        ->from('customer')
+                        ->where('cust_id != ?')
+                        ->andWhere('cust_no = ?')
+                        ->setParameter(0, $iId)
+                        ->setParameter(1, $sCustno)
+                    ;
+                    $stmt = $querybuilder->execute();
+
+                    if ($stmt->rowCount() === 1) {
                         $aErr['custnoalreadytaken'] = true;
                     }
-                    $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
-                    $hResult = $this->db->prepare($sql);
-                    $hResult->bindValue(':id', $iId);
-                    $hResult->bindValue(':email', filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
-                    $hResult->execute();
-                    $iRows = $hResult->rowCount();
-                    if ($iRows == 1) {
+
+                    $querybuilder = $this->dbal->createQueryBuilder();
+                    $querybuilder
+                        ->select(DB_ADDRESSFIELDS)
+                        ->from('customer')
+                        ->where('cust_id != ?')
+                        ->andWhere('cust_email = ?')
+                        ->setParameter(0, $iId)
+                        ->setParameter(1, filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL))
+                    ;
+                    $stmt = $querybuilder->execute();
+                    if ($stmt->rowCount() === 1) {
                         $aErr['emailalreadytaken'] = true;
                     }
                     $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
-                    if (count($aErr) == 0) {
-                        $aData = [
-                            'cust_no' => $sCustno,
-                            'cust_email' => trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)),
-                            'cust_corp' => trim(filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_name' => trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_street' => trim(filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_zip' => trim(filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_town' => trim(filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_phone' => trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_cellphone' => trim(filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_fax' => trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_country' => trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_group' => trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),
-                            'cust_emailverified' => (isset($_POST['emailverified']) && $_POST['emailverified'] === 'y') ? 'y' : 'n',
-                            'cust_active' => (isset($_POST['active']) && $_POST['active'] === 'y') ? 'y' : 'n',
-                            'cust_id' => $iId,
-                        ];
+                    if (count($aErr) === 0) {
+                        $querybuilder = $this->dbal->createQueryBuilder();
+                        $querybuilder
+                            ->update('customer')
+                            ->set('cust_no', ':cust_no')
+                            ->set('cust_email', ':cust_email')
+                            ->set('cust_corp', ':cust_corp')
+                            ->set('cust_name', ':cust_name')
+                            ->set('cust_street', ':cust_street')
+                            ->set('cust_zip', ':cust_zip')
+                            ->set('cust_town', ':cust_town')
+                            ->set('cust_phone', ':cust_phone')
+                            ->set('cust_cellphone', ':cust_cellphone')
+                            ->set('cust_fax', ':cust_fax')
+                            ->set('cust_country', ':cust_country')
+                            ->set('cust_group', ':cust_group')
+                            ->set('cust_emailverified', ':cust_emailverified')
+                            ->set('cust_active', ':cust_active')
+                            ->where('cust_id = :cust_id')
+                            ->setParameter(':cust_no', $sCustno)
+                            ->setParameter(':cust_email', trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)))
+                            ->setParameter(':cust_corp', trim(filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_name', trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_street', trim(filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_zip', trim(filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_town', trim(filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_phone', trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_cellphone', trim(filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_fax', trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_country', trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_group', trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
+                            ->setParameter(':cust_emailverified', (isset($_POST['emailverified']) && $_POST['emailverified'] === 'y') ? 'y' : 'n')
+                            ->setParameter(':cust_active', (isset($_POST['active']) && $_POST['active'] === 'y') ? 'y' : 'n')
+                            ->setParameter(':cust_id', $iId)
+                        ;
+
                         if (isset($_POST['pwd']) && $_POST['pwd'] != '') {
-                            $aData['cust_password'] = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
+                            $querybuilder
+                                ->set('cust_password', ':cust_password')
+                                ->setParameter(':cust_password', password_hash($_POST['pwd'], PASSWORD_DEFAULT))
+                            ;
                             $aInfo['passwordchanged'] = true;
                         }
-                        $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                        $hResult = $this->db->prepare($sql);
-                        foreach ($aData as $sKey => $sValue) {
-                            $hResult->bindValue(':' . $sKey, $sValue);
-                        }
-                        $hResult->execute();
+
+                        $querybuilder->execute();
                         $aInfo['changeswritten'] = true;
                     }
                 }
             }
-            $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id = :id';
-            $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':id', $iId);
-            $hResult->execute();
-            if ($hResult->rowCount() == 1) {
-                $aUser = $hResult->fetch();
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select(DB_ADDRESSFIELDS)
+                ->from('customer')
+                ->where('cust_id = ?')
+                ->setParameter(0, $iId)
+            ;
+            $stmt = $querybuilder->execute();
+            if ($stmt->rowCount() === 1) {
+                $aUser = $stmt->fetch();
                 $aPData['customerform'] = CHelper::buildCustomerForm(HelperConfig::$lang, 'admin', $aErr, $aUser);
             } else {
                 $aInfo['nosuchuserfound'] = true;

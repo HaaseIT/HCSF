@@ -20,11 +20,12 @@
 
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
-use HaaseIT\Toolbox\DBTools;
+
 use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
+use Zend\Diactoros\ServerRequest;
 
 /**
  * Class Itemgroupadmin
@@ -33,9 +34,19 @@ use Zend\ServiceManager\ServiceManager;
 class Itemgroupadmin extends Base
 {
     /**
-     * @var \PDO
+     * @var \Doctrine\DBAL\Connection
      */
-    private $db;
+    private $dbal;
+
+    /**
+     * @var array
+     */
+    protected $post;
+
+    /**
+     * @var ServerRequest;
+     */
+    protected $request;
 
     /**
      * Itemgroupadmin constructor.
@@ -44,7 +55,9 @@ class Itemgroupadmin extends Base
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
+        $this->request = $serviceManager->get('request');
+        $this->post = $this->request->getParsedBody();
     }
 
     /**
@@ -60,39 +73,47 @@ class Itemgroupadmin extends Base
 
         $return = '';
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'insert_lang') {
-            $sql = 'SELECT itmg_id FROM itemgroups_base WHERE itmg_id = :gid';
-            $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':gid', $_REQUEST['gid']);
-            $hResult->execute();
-            $iNumRowsBasis = $hResult->rowCount();
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('itmg_id')
+                ->from('itemgroups_base')
+                ->where('itmg_id = ?')
+                ->setParameter(0, $_REQUEST['gid'])
+            ;
+            $stmt = $querybuilder->execute();
 
-            $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-            $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':gid', $_REQUEST['gid']);
-            $hResult->bindValue(':lang', HelperConfig::$lang);
-            $hResult->execute();
-            $iNumRowsLang = $hResult->rowCount();
+            $iNumRowsBasis = $stmt->rowCount();
 
-            if ($iNumRowsBasis == 1 && $iNumRowsLang == 0) {
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('itmgt_id')
+                ->from('itemgroups_text')
+                ->where('itmgt_pid = ? AND itmgt_lang = ?')
+                ->setParameter(0, $_REQUEST['gid'])
+                ->setParameter(1, HelperConfig::$lang)
+            ;
+            $stmt = $querybuilder->execute();
+
+            $iNumRowsLang = $stmt->rowCount();
+
+            if ($iNumRowsBasis === 1 && $iNumRowsLang === 0) {
                 $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
-                $aData = [
-                    'itmgt_pid' => $iGID,
-                    'itmgt_lang' => HelperConfig::$lang,
-                ];
-                $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_text');
-                $hResult = $this->db->prepare($sql);
-                foreach ($aData as $sKey => $sValue) {
-                    $hResult->bindValue(':'.$sKey, $sValue);
-                }
-                $hResult->execute();
-                header('Location: /_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
-                die();
+                $querybuilder = $this->dbal->createQueryBuilder();
+                $querybuilder
+                    ->insert('itemgroups_text')
+                    ->setValue('itmgt_pid', '?')
+                    ->setValue('itmgt_lang', '?')
+                    ->setParameter(0, $iGID)
+                    ->setParameter(1, HelperConfig::$lang)
+                ;
+                $querybuilder->execute();
+                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
             }
         }
 
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'editgroup') {
             if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
-                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup(\HaaseIT\HCSF\Helper::getPurifier('itemgroup'));
+                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup();
             }
 
             $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
@@ -116,29 +137,33 @@ class Itemgroupadmin extends Base
                     $aErr['grouptooshort'] = true;
                 }
                 if (count($aErr) == 0) {
-                    $sql = 'SELECT itmg_no FROM itemgroups_base WHERE itmg_no = :no';
-                    $hResult = $this->db->prepare($sql);
-                    $hResult->bindValue(':no', $sGNo);
-                    $hResult->execute();
-                    if ($hResult->rowCount() > 0) {
+                    $querybuilder = $this->dbal->createQueryBuilder();
+                    $querybuilder
+                        ->select('itmg_no')
+                        ->from('itemgroups_base')
+                        ->where('itmg_no = ?')
+                        ->setParameter(0, $sGNo)
+                    ;
+                    $stmt = $querybuilder->execute();
+
+                    if ($stmt->rowCount() > 0) {
                         $aErr['duplicateno'] = true;
                     }
                 }
-                if (count($aErr) == 0) {
-                    $aData = [
-                        'itmg_name' => $sName,
-                        'itmg_no' => $sGNo,
-                        'itmg_img' => $sImg,
-                    ];
-                    $sql = DBTools::buildPSInsertQuery($aData, 'itemgroups_base');
-                    $hResult = $this->db->prepare($sql);
-                    foreach ($aData as $sKey => $sValue) {
-                        $hResult->bindValue(':'.$sKey, $sValue);
-                    }
-                    $hResult->execute();
-                    $iLastInsertID = $this->db->lastInsertId();
-                    header('Location: /_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
-                    die();
+                if (count($aErr) === 0) {
+                    $querybuilder = $this->dbal->createQueryBuilder();
+                    $querybuilder
+                        ->insert('itemgroups_base')
+                        ->setValue('itmg_name', '?')
+                        ->setValue('itmg_no', '?')
+                        ->setValue('itmg_img', '?')
+                        ->setParameter(0, $sName)
+                        ->setParameter(1, $sGNo)
+                        ->setParameter(2, $sImg)
+                    ;
+                    $querybuilder->execute();
+                    $iLastInsertID = $this->dbal->lastInsertId();
+                    \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
                 } else {
                     $this->P->cb_customdata['err'] = $aErr;
                     $this->P->cb_customdata['showform'] = 'add';
@@ -157,59 +182,69 @@ class Itemgroupadmin extends Base
     }
 
     /**
-     * @param $purifier
      * @return string
      */
-    private function admin_updateGroup( $purifier)
+    private function admin_updateGroup()
     {
-        $sql = 'SELECT * FROM itemgroups_base WHERE itmg_id != :id AND itmg_no = :gno';
-        $hResult = $this->db->prepare($sql);
+        $purifier = false;
+        if (HelperConfig::$shop['itemgrouptext_enable_purifier']) {
+            $purifier = \HaaseIT\HCSF\Helper::getPurifier('itemgroup');
+        }
+
         $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
         $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        $hResult->bindValue(':id', $iGID);
-        $hResult->bindValue(':gno', $sGNo);
-        $hResult->execute();
-        $iNumRows = $hResult->rowCount();
 
-        if ($iNumRows > 0) {
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('*')
+            ->from('itemgroups_base')
+            ->where('itmg_id != ? AND itmg_no = ?')
+            ->setParameter(0, $iGID)
+            ->setParameter(1, $sGNo)
+        ;
+        $stmt = $querybuilder->execute();
+
+        if ($stmt->rowCount() > 0) {
             return 'duplicateno';
         }
 
-        $aData = [
-            'itmg_name' => filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itmg_no' => $sGNo,
-            'itmg_img' => filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'itmg_id'=> $iGID,
-        ];
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->update('itemgroups_base')
+            ->set('itmg_name', '?')
+            ->set('itmg_no', '?')
+            ->set('itmg_img', '?')
+            ->where('itmg_id = ?')
+            ->setParameter(0, filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(1, $sGNo)
+            ->setParameter(2, filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(3, $iGID)
+        ;
+        $querybuilder->execute();
 
-        $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_base', 'itmg_id');
-        $hResult = $this->db->prepare($sql);
-        foreach ($aData as $sKey => $sValue) {
-            $hResult->bindValue(':' . $sKey, $sValue);
-        }
-        $hResult->execute();
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('itmgt_id')
+            ->from('itemgroups_text')
+            ->where('itmgt_pid = ? AND itmgt_lang = ?')
+            ->setParameter(0, $iGID)
+            ->setParameter(1, HelperConfig::$lang)
+        ;
+        $stmt = $querybuilder->execute();
 
-        $sql = 'SELECT itmgt_id FROM itemgroups_text WHERE itmgt_pid = :gid AND itmgt_lang = :lang';
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':gid', $iGID);
-        $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
-        $hResult->execute();
-
-        $iNumRows = $hResult->rowCount();
-
-        if ($iNumRows == 1) {
-            $aRow = $hResult->fetch();
-            $aData = [
-                'itmgt_shorttext' => $purifier->purify($_REQUEST['shorttext']),
-                'itmgt_details' => $purifier->purify($_REQUEST['details']),
-                'itmgt_id' => $aRow['itmgt_id'],
-            ];
-            $sql = DBTools::buildPSUpdateQuery($aData, 'itemgroups_text', 'itmgt_id');
-            $hResult = $this->db->prepare($sql);
-            foreach ($aData as $sKey => $sValue) {
-                $hResult->bindValue(':' . $sKey, $sValue);
-            }
-            $hResult->execute();
+        if ($stmt->rowCount() === 1) {
+            $aRow = $stmt->fetch();
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->update('itemgroups_text')
+                ->set('itmgt_shorttext', '?')
+                ->set('itmgt_details', '?')
+                ->where('itmgt_id = ?')
+                ->setParameter(0, !empty($this->purifier) ? $purifier->purify($this->post['shorttext']) : $this->post['shorttext'])
+                ->setParameter(1, !empty($this->purifier) ? $purifier->purify($this->post['details']) : $this->post['details'])
+                ->setParameter(2, $aRow['itmgt_id'])
+            ;
+            $querybuilder->execute();
         }
 
         return 'success';
@@ -248,21 +283,24 @@ class Itemgroupadmin extends Base
      */
     private function admin_getItemgroups($iGID = '')
     {
-        $sql = 'SELECT * FROM itemgroups_base '
-            . 'LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
-            . ' AND itemgroups_text.itmgt_lang = :lang';
-        if ($iGID != '') {
-            $sql .= ' WHERE itmg_id = :gid';
-        }
-        $sql .= ' ORDER BY itmg_no';
-        $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':lang', HelperConfig::$lang);
-        if ($iGID != '') {
-            $hResult->bindValue(':gid', $iGID);
-        }
-        $hResult->execute();
+        $querybuilder = $this->dbal->createQueryBuilder();
+        $querybuilder
+            ->select('*')
+            ->from('itemgroups_base', 'b')
+            ->leftJoin('b', 'itemgroups_text', 't', 'b.itmg_id = t.itmgt_pid AND t.itmgt_lang = ?')
+            ->setParameter(0, HelperConfig::$lang)
+            ->orderBy('itmg_no')
+        ;
 
-        return $hResult->fetchAll();
+        if ($iGID != '') {
+            $querybuilder
+                ->where('itmg_id = ?')
+                ->setParameter(1, $iGID)
+            ;
+        }
+        $stmt = $querybuilder->execute();
+
+        return $stmt->fetchAll();
     }
 
     /**
@@ -286,8 +324,8 @@ class Itemgroupadmin extends Base
                 ];
             }
             return Tools::makeListtable($aList, $aData, $this->serviceManager->get('twig'));
-        } else {
-            return false;
         }
+
+        return false;
     }
 }

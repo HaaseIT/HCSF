@@ -20,12 +20,32 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
+use Zend\ServiceManager\ServiceManager;
+use Zend\Diactoros\ServerRequest;
 
 class Register extends Base
 {
+    /**
+     * @var array
+     */
+    protected $post;
+
+    /**
+     * @var ServerRequest;
+     */
+    protected $request;
+
+    public function __construct(ServiceManager $serviceManager)
+    {
+        parent::__construct($serviceManager);
+        $this->request = $serviceManager->get('request');
+        $this->post = $this->request->getParsedBody();
+    }
+
     public function preparePage()
     {
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
@@ -37,56 +57,59 @@ class Register extends Base
             $this->P->cb_customcontenttemplate = 'customer/register';
 
             $aErr = [];
-            if (isset($_POST['doRegister']) && $_POST['doRegister'] == 'yes') {
+            if (isset($this->post['doRegister']) && $this->post['doRegister'] === 'yes') {
                 $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr);
                 if (count($aErr) == 0) {
-                    $sql = 'SELECT cust_email FROM customer WHERE cust_email = :email';
+                    $sEmail = filter_var(trim($this->post['email']), FILTER_SANITIZE_EMAIL);
 
-                    $sEmail = filter_var(trim(Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
+                    /** @var \Doctrine\DBAL\Connection $dbal */
+                    $dbal = $this->serviceManager->get('dbal');
 
-                    /** @var \PDOStatement $hResult */
-                    $hResult = $this->serviceManager->get('db')->prepare($sql);
-                    $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
-                    $hResult->execute();
-                    $iRows = $hResult->rowCount();
+                    $querybuilder = $dbal->createQueryBuilder();
+                    $querybuilder
+                        ->select('cust_email')
+                        ->from('customer')
+                        ->where('cust_email = ?')
+                        ->setParameter(0, $sEmail)
+                    ;
+                    $stmt = $querybuilder->execute();
 
-                    if ($iRows == 0) {
-                        $sEmailVerificationcode = md5($_POST['email'] . time());
-                        $aData = [
-                            'cust_email' => $sEmail,
-                            'cust_corp' => filter_var(trim(Tools::getFormfield('corpname')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_name' => filter_var(trim(Tools::getFormfield('name')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_street' => filter_var(trim(Tools::getFormfield('street')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_zip' => filter_var(trim(Tools::getFormfield('zip')), FILTER_SANITIZE_STRING,
-                                FILTER_FLAG_STRIP_LOW),
-                            'cust_town' => filter_var(trim(Tools::getFormfield('town')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_phone' => filter_var(trim(Tools::getFormfield('phone')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_cellphone' => filter_var(trim(Tools::getFormfield('cellphone')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_fax' => filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING,
-                                FILTER_FLAG_STRIP_LOW),
-                            'cust_country' => filter_var(trim(Tools::getFormfield('country')),
-                                FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-                            'cust_password' => password_hash($_POST['pwd'], PASSWORD_DEFAULT),
-                            'cust_tosaccepted' => (isset($_POST['tos']) && $_POST['tos'] == 'y') ? 'y' : 'n',
-                            'cust_cancellationdisclaimeraccepted' => (isset($_POST['cancellationdisclaimer']) && $_POST['cancellationdisclaimer'] == 'y') ? 'y' : 'n',
-                            'cust_emailverified' => 'n',
-                            'cust_emailverificationcode' => $sEmailVerificationcode,
-                            'cust_active' => HelperConfig::$customer['register_require_manual_activation'] ? 'n' : 'y',
-                            'cust_registrationtimestamp' => time(),
-                        ];
-                        $sql = \HaaseIT\Toolbox\DBTools::buildPSInsertQuery($aData, 'customer');
+                    if ($stmt->rowCount() === 0) {
+                        $sEmailVerificationcode = md5($this->post['email'].mt_rand().time());
 
-                        $hResult = $this->serviceManager->get('db')->prepare($sql);
-                        foreach ($aData as $sKey => $sValue) {
-                            $hResult->bindValue(':' . $sKey, $sValue, \PDO::PARAM_STR);
-                        }
-                        $hResult->execute();
+                        $querybuilder = $dbal->createQueryBuilder();
+                        $querybuilder
+                            ->insert('customer')
+                            ->setValue('cust_email', ':cust_email')
+                            ->setValue('cust_corp', ':cust_corp')
+                            ->setValue('cust_name', ':cust_name')
+                            ->setValue('cust_street', ':cust_street')
+                            ->setValue('cust_zip', ':cust_zip')
+                            ->setValue('cust_town', ':cust_town')
+                            ->setValue('cust_phone', ':cust_phone')
+                            ->setValue('cust_cellphone', ':cust_cellphone')
+                            ->setValue('cust_fax', ':cust_fax')
+                            ->setValue('cust_country', ':cust_country')
+                            ->setValue('cust_password', ':cust_password')
+                            ->setValue('cust_tosaccepted', (isset($this->post['tos']) && $this->post['tos'] === 'y') ? 'y' : 'n')
+                            ->setValue('cust_cancellationdisclaimeraccepted', (isset($this->post['cancellationdisclaimer']) && $this->post['cancellationdisclaimer'] === 'y') ? 'y' : 'n')
+                            ->setValue('cust_emailverified', 'n')
+                            ->setValue('cust_emailverificationcode', $sEmailVerificationcode)
+                            ->setValue('cust_active', HelperConfig::$customer['register_require_manual_activation'] ? 'n' : 'y')
+                            ->setValue('cust_registrationtimestamp', time())
+                            ->setParameter(':cust_email', $sEmail)
+                            ->setParameter(':cust_corp', filter_var(trim(Tools::getFormfield('corpname')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_name', filter_var(trim(Tools::getFormfield('name')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_street', filter_var(trim(Tools::getFormfield('street')),FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_zip', filter_var(trim(Tools::getFormfield('zip')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_town', filter_var(trim(Tools::getFormfield('town')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_phone', filter_var(trim(Tools::getFormfield('phone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_cellphone', filter_var(trim(Tools::getFormfield('cellphone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_fax', filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_country', filter_var(trim(Tools::getFormfield('country')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+                            ->setParameter(':cust_password', password_hash($this->post['pwd'], PASSWORD_DEFAULT))
+                        ;
+                        $querybuilder->execute();
 
                         CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->serviceManager, true);
                         $aPData['showsuccessmessage'] = true;

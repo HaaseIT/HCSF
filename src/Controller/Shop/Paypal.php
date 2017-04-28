@@ -74,8 +74,7 @@ class Paypal extends Base
             $sPaypalURL .= '&currency_code=' . HelperConfig::$shop['paypal']['currency_id']
                 .'&amount=' . str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
             if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
-                header('Location: ' . $sPaypalURL);
-                die();
+                \HaaseIT\HCSF\Helper::redirectToPage($sPaypalURL);
             }
 
             $this->P->oPayload->cl_html = $this->textcats->T('misc_paypaypal_greeting') . '<br><br>';

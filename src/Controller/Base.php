@@ -26,17 +26,49 @@ use Zend\ServiceManager\ServiceManager;
 
 class Base
 {
-    protected $P, $serviceManager,
-        $requireAdminAuth = false,
-        $requireAdminAuthAdminHome = false,
-        $requireModuleCustomer = false,
-        $requireModuleShop = false;
+    /**
+     * @var \HaaseIT\HCSF\Page
+     */
+    protected $P;
 
+    /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    /**
+     * @var bool
+     */
+    protected $requireAdminAuth = false;
+
+    /**
+     * @var bool
+     */
+    protected $requireAdminAuthAdminHome = false;
+
+    /**
+     * @var bool
+     */
+    protected $requireModuleCustomer = false;
+
+    /**
+     * @var bool
+     */
+    protected $requireModuleShop = false;
+
+    /**
+     * Base constructor.
+     * @param ServiceManager $serviceManager
+     */
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
     }
 
+    /**
+     * @return \HaaseIT\HCSF\Page
+     * @throws \Exception
+     */
     public function getPage()
     {
         if ($this->requireAdminAuth) {
@@ -68,6 +100,9 @@ class Base
 
     }
 
+    /**
+     * @return bool
+     */
     private function requireAdminAuth() {
         if (
             $this->requireAdminAuthAdminHome

@@ -223,9 +223,6 @@ class Shoppingcart extends Base
         ];
     }
 
-    /**
-     * @return bool
-     */
     private function doCheckout()
     {
         if (empty($_SESSION['cart'])) {
@@ -315,17 +312,17 @@ class Shoppingcart extends Base
             && array_search('paypal', HelperConfig::$shop['paymentmethods']) !== false
             && HelperConfig::$shop['paypal_interactive']
         ) {
-            header('Location: /_misc/paypal.html?id=' . $iInsertID);
+            $redirectto = '/_misc/paypal.html?id=' . $iInsertID;
         } elseif (
             isset($this->post['paymentmethod'])
             && $this->post['paymentmethod'] === 'sofortueberweisung'
             && array_search('sofortueberweisung', HelperConfig::$shop['paymentmethods']) !== false
         ) {
-            header('Location: /_misc/sofortueberweisung.html?id=' . $iInsertID);
+            $redirectto = '/_misc/sofortueberweisung.html?id=' . $iInsertID;
         } else {
-            header('Location: /_misc/checkedout.html?id=' . $iInsertID);
+            $redirectto = '/_misc/checkedout.html?id=' . $iInsertID;
         }
-        die();
+        \HaaseIT\HCSF\Helper::redirectToPage($redirectto);
     }
 
     /**

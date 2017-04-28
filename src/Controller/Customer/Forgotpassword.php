@@ -20,6 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
+
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -34,9 +35,9 @@ class Forgotpassword extends Base
     private $textcats;
 
     /**
-     * @var \PDO
+     * @var \Doctrine\DBAL\Connection
      */
-    private $db;
+    protected $dbal;
 
     /**
      * Forgotpassword constructor.
@@ -46,7 +47,7 @@ class Forgotpassword extends Base
     {
         parent::__construct($serviceManager);
         $this->textcats = $serviceManager->get('textcats');
-        $this->db = $serviceManager->get('db');
+        $this->dbal = $serviceManager->get('dbal');
     }
 
     /**
@@ -82,33 +83,35 @@ class Forgotpassword extends Base
         if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $aErr[] = 'emailinvalid';
         } else {
-            $sql = 'SELECT * FROM customer WHERE cust_email = :email';
+            $querybuilder = $this->dbal->createQueryBuilder();
+            $querybuilder
+                ->select('*')
+                ->from('customer')
+                ->where('cust_email = ?')
+                ->setParameter(0, filter_var(trim(\HaaseIT\Toolbox\Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL))
+            ;
+            $stmt = $querybuilder->execute();
 
-            $sEmail = filter_var(trim(\HaaseIT\Toolbox\Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
-
-            $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':email', $sEmail, \PDO::PARAM_STR);
-            $hResult->execute();
-            if ($hResult->rowCount() != 1) {
+            if ($stmt->rowCount() != 1) {
                 $aErr[] = 'emailunknown';
             } else {
-                $aResult = $hResult->fetch();
+                $aResult = $stmt->fetch();
                 $iTimestamp = time();
                 if ($iTimestamp - strtotime('1 Hour', 0) < $aResult['cust_pwresettimestamp']) { // 1 hour delay between requests
                     $aErr[] = 'pwresetstilllocked';
                 } else {
-                    $sResetCode = md5($aResult['cust_email'].$iTimestamp);
-                    $aData = [
-                        'cust_pwresetcode' => $sResetCode,
-                        'cust_pwresettimestamp' => $iTimestamp,
-                        'cust_id' => $aResult['cust_id'],
-                    ];
-                    $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
-                    $hResult = $this->db->prepare($sql);
-                    foreach ($aData as $sKey => $sValue) {
-                        $hResult->bindValue(':'.$sKey, $sValue);
-                    }
-                    $hResult->execute();
+                    $sResetCode = md5($aResult['cust_email'].mt_rand().$iTimestamp);
+                    $querybuilder = $this->dbal->createQueryBuilder();
+                    $querybuilder
+                        ->update('customer')
+                        ->set('cust_pwresetcode', '?')
+                        ->set('cust_pwresettimestamp', '?')
+                        ->where('cust_id = ?')
+                        ->setParameter(0, $sResetCode)
+                        ->setParameter(1, $iTimestamp)
+                        ->setParameter(2, $aResult['cust_id'])
+                    ;
+                    $querybuilder->execute();
 
                     $sTargetAddress = $aResult['cust_email'];
                     $sSubject = $this->textcats->T('forgotpw_mail_subject');
@@ -126,5 +129,4 @@ class Forgotpassword extends Base
 
         return $aErr;
     }
-
 }
