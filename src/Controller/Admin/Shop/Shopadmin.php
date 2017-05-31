@@ -180,14 +180,14 @@ class Shopadmin extends Base
                     $querybuilder
                         ->where('o_ordercompleted = ? OR o_ordercompleted = ?')
                         ->setParameter(0, 'n')
-                        ->setParameter(0, 'i')
+                        ->setParameter(1, 'i')
                     ;
                 }
             } else {
                 $querybuilder
                     ->where('o_ordercompleted = ? OR o_ordercompleted = ?')
                     ->setParameter(0, 'n')
-                    ->setParameter(0, 'i')
+                    ->setParameter(1, 'i')
                 ;
             }
 
