@@ -86,15 +86,16 @@ class Customeradmin extends Base
     private function handleCustomerAdmin($CUA, $twig)
     {
         $sType = 'all';
-        if (isset($_REQUEST['type'])) {
-            if ($_REQUEST['type'] === 'active') {
+        $type = filter_input(INPUT_REQUEST, 'type');
+        if ($type !== null) {
+            if ($type === 'active') {
                 $sType = 'active';
-            } elseif ($_REQUEST['type'] === 'inactive') {
+            } elseif ($type === 'inactive') {
                 $sType = 'inactive';
             }
         }
         $return = '';
-        if (!isset($_GET['action'])) {
+        if (filter_input(INPUT_GET, 'action') === null) {
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
                 ->select(DB_ADDRESSFIELDS)
@@ -120,11 +121,11 @@ class Customeradmin extends Base
             } else {
                 $aInfo['nodatafound'] = true;
             }
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'edit') {
+        } elseif (filter_input(INPUT_GET, 'action') === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $aErr = [];
-            if (isset($_POST['doEdit']) && $_POST['doEdit'] === 'yes') {
-                $sCustno = filter_var(trim($_POST['custno']), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if (filter_input(INPUT_POST, 'doEdit') === 'yes') {
+                $sCustno = trim(filter_input(INPUT_POST, 'custno', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
                 if (strlen($sCustno) < HelperConfig::$customer['minimum_length_custno']) {
                     $aErr['custnoinvalid'] = true;
                 } else {
@@ -188,15 +189,15 @@ class Customeradmin extends Base
                             ->setParameter(':cust_fax', trim(filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
                             ->setParameter(':cust_country', trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
                             ->setParameter(':cust_group', trim(filter_input(INPUT_POST, 'custgroup', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)))
-                            ->setParameter(':cust_emailverified', (isset($_POST['emailverified']) && $_POST['emailverified'] === 'y') ? 'y' : 'n')
-                            ->setParameter(':cust_active', (isset($_POST['active']) && $_POST['active'] === 'y') ? 'y' : 'n')
+                            ->setParameter(':cust_emailverified', (filter_input(INPUT_POST, 'emailverified') === 'y') ? 'y' : 'n')
+                            ->setParameter(':cust_active', (filter_input(INPUT_POST, 'active') === 'y') ? 'y' : 'n')
                             ->setParameter(':cust_id', $iId)
                         ;
 
-                        if (isset($_POST['pwd']) && $_POST['pwd'] != '') {
+                        if (!empty(filter_input(INPUT_POST, 'pwd'))) {
                             $querybuilder
                                 ->set('cust_password', ':cust_password')
-                                ->setParameter(':cust_password', password_hash($_POST['pwd'], PASSWORD_DEFAULT))
+                                ->setParameter(':cust_password', password_hash(filter_input(INPUT_POST, 'pwd'), PASSWORD_DEFAULT))
                             ;
                             $aInfo['passwordchanged'] = true;
                         }

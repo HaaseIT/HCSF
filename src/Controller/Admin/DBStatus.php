@@ -80,7 +80,7 @@ class DBStatus extends Base
      */
     private function handleTextcats()
     {
-        if (isset($_GET['clearorphanedtextcats'])) {
+        if (filter_input(INPUT_GET, 'clearorphanedtextcats') !== null) {
             $this->db->exec('DELETE FROM textcat_lang WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -107,7 +107,7 @@ class DBStatus extends Base
      */
     private function handleTextcatArchive()
     {
-        if (isset($_GET['clearorphanedtextcatsarchive'])) {
+        if (filter_input(INPUT_GET, 'clearorphanedtextcatsarchive') !== null) {
             $this->db->exec('DELETE FROM textcat_lang_archive WHERE tcl_tcid NOT IN (SELECT tc_id FROM textcat_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -133,7 +133,7 @@ class DBStatus extends Base
      */
     private function handleContent()
     {
-        if (isset($_GET['clearorphanedcontent'])) {
+        if (filter_input(INPUT_GET, 'clearorphanedcontent') !== null) {
             $this->db->exec('DELETE FROM content_lang WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -160,7 +160,7 @@ class DBStatus extends Base
      */
     private function handleContentArchive()
     {
-        if (isset($_GET['clearorphanedcontentarchive'])) {
+        if (filter_input(INPUT_GET, 'clearorphanedcontentarchive') !== null) {
             $this->db->exec('DELETE FROM content_lang_archive WHERE cl_cb NOT IN (SELECT cb_id FROM content_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -189,7 +189,7 @@ class DBStatus extends Base
      */
     private function handleItems()
     {
-        if (isset($_GET['clearorphaneditems'])) {
+        if (filter_input(INPUT_GET, 'clearorphaneditems') !== null) {
             $this->db->exec('DELETE FROM item_lang WHERE itml_pid NOT IN (SELECT itm_id FROM item_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -233,7 +233,7 @@ class DBStatus extends Base
      */
     private function handleItemGroups()
     {
-        if (isset($_GET['clearorphaneditemgroups'])) {
+        if (filter_input(INPUT_GET, 'clearorphaneditemgroups') !== null) {
             $this->db->exec('DELETE FROM itemgroups_text WHERE itmgt_pid NOT IN (SELECT itmg_id FROM itemgroups_base)');
         }
         /** @var \PDOStatement $hResult */
@@ -270,7 +270,7 @@ class DBStatus extends Base
      */
     private function handleOrderItems()
     {
-        if (isset($_GET['clearorphanedorderitems'])) {
+        if (filter_input(INPUT_GET, 'clearorphanedorderitems') !== null) {
             $this->db->exec('DELETE FROM orders_items WHERE oi_o_id  NOT IN (SELECT o_id FROM orders)');
         }
         /** @var \PDOStatement $hResult */

@@ -69,8 +69,9 @@ class Index extends Base
             $this->P->cb_customdata['mod_rewrite_available'] = (array_search('mod_rewrite', $aApacheModules) !== false);
             unset($aApacheModules);
         }
-        if (isset($_POST['string']) && trim($_POST['string']) != '') {
-            $this->P->cb_customdata['encrypted_string'] = password_hash($_POST['string'], PASSWORD_DEFAULT);
+        $string = filter_input(INPUT_POST, 'string');
+        if (!empty($string)) {
+            $this->P->cb_customdata['encrypted_string'] = password_hash($string, PASSWORD_DEFAULT);
         }
     }
 }

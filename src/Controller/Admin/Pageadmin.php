@@ -32,31 +32,12 @@ use Zend\ServiceManager\ServiceManager;
 class Pageadmin extends Base
 {
     /**
-     * @var \Zend\Diactoros\ServerRequest
-     */
-    private $request;
-
-    /**
-     * @var null|array|object
-     */
-    private $post;
-
-    /**
-     * @var array
-     */
-    private $get;
-
-    /**
      * Pageadmin constructor.
      * @param ServiceManager $serviceManager
      */
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
-        /** @var \Zend\Diactoros\ServerRequest request */
-        $this->request = $serviceManager->get('request');
-        $this->post = $this->request->getParsedBody();
-        $this->get = $this->request->getQueryParams();
     }
 
     /**
@@ -71,19 +52,20 @@ class Pageadmin extends Base
         $this->P->cb_customcontenttemplate = 'pageadmin';
 
         // adding language to page here
-        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'insert_lang') {
+        if (filter_input(INPUT_REQUEST, 'action') === 'insert_lang') {
             $this->insertLang();
         }
 
-        if (!isset($this->get['action'])) {
+        $getaction = filter_input(INPUT_GET, 'action');
+        if ($getaction === null) {
             $this->P->cb_customdata['pageselect'] = $this->showPageselect();
-        } elseif (isset($_REQUEST['page_key']) && $_REQUEST['page_key'] != '' && ($this->get['action'] === 'edit' || $this->get['action'] === 'delete')) {
-            if ($this->get['action'] === 'delete' && isset($this->post['delete']) && $this->post['delete'] === 'do') {
+        } elseif (!empty(filter_input(INPUT_REQUEST, 'page_key')) && ($getaction === 'edit' || $getaction === 'delete')) {
+            if ($getaction === 'delete' && filter_input(INPUT_POST, 'delete') === 'do') {
                 $this->handleDeletePage();
             } else { // edit or update page
                 $this->handleEditPage();
             }
-        } elseif ($this->get['action'] === 'addpage') {
+        } elseif ($getaction === 'addpage') {
             $this->handleAddPage();
         }
     }
@@ -91,7 +73,7 @@ class Pageadmin extends Base
     protected function handleDeletePage()
     {
         // delete and put message in customdata
-        $Ptodelete = new UserPage($this->serviceManager, $this->get['page_key'], true);
+        $Ptodelete = new UserPage($this->serviceManager, filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH), true);
         if ($Ptodelete->cb_id != NULL) {
             $Ptodelete->remove();
         } else {
@@ -103,8 +85,8 @@ class Pageadmin extends Base
     protected function handleAddPage()
     {
         $aErr = [];
-        if (isset($this->post['addpage']) && $this->post['addpage'] === 'do') {
-            $sPagekeytoadd = \trim(\filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
+        if (filter_input(INPUT_POST, 'addpage') === 'do') {
+            $sPagekeytoadd = trim(filter_input(INPUT_POST, 'pagekey', FILTER_SANITIZE_SPECIAL_CHARS));
 
             if (mb_substr($sPagekeytoadd, 0, 2) === '/_') {
                 $aErr['reservedpath'] = true;
@@ -171,7 +153,11 @@ class Pageadmin extends Base
 
     protected function insertLang()
     {
-        $Ptoinsertlang = new UserPage($this->serviceManager, $_REQUEST['page_key'], true);
+        $Ptoinsertlang = new UserPage(
+            $this->serviceManager,
+            filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            true)
+        ;
 
         if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
             $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
@@ -183,8 +169,9 @@ class Pageadmin extends Base
 
     protected function handleEditPage()
     {
-        if (isset($_REQUEST['page_key']) && $Ptoedit = new UserPage($this->serviceManager, $_REQUEST['page_key'], true)) {
-            if (isset($_REQUEST['action_a']) && $_REQUEST['action_a'] === 'true') {
+        $requestpagekey = filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        if ($requestpagekey !== null && $Ptoedit = new UserPage($this->serviceManager, $requestpagekey, true)) {
+            if (filter_input(INPUT_REQUEST, 'action_a') === 'true') {
                 $Ptoedit = $this->updatePage($Ptoedit);
             }
             $this->P->cb_customdata['page'] = $Ptoedit;
@@ -247,23 +234,27 @@ class Pageadmin extends Base
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
         }
 
-        $Ptoedit->cb_pagetype = $this->post['page_type'];
-        $Ptoedit->cb_group = $this->post['page_group'];
-        $Ptoedit->cb_pageconfig = $this->post['page_config'];
-        $Ptoedit->cb_subnav = $this->post['page_subnav'];
+        $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $Ptoedit->cb_group = filter_input(INPUT_POST, 'page_group', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $Ptoedit->cb_pageconfig = filter_input(INPUT_POST, 'page_config', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $Ptoedit->cb_subnav = filter_input(INPUT_POST, 'page_subnav', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         $Ptoedit->purifier = $purifier;
         $Ptoedit->write();
 
         if ($Ptoedit->oPayload->cl_id != NULL) {
-            $Ptoedit->oPayload->cl_html = $this->post['page_html'];
-            $Ptoedit->oPayload->cl_title = $this->post['page_title'];
-            $Ptoedit->oPayload->cl_description = $this->post['page_description'];
-            $Ptoedit->oPayload->cl_keywords = $this->post['page_keywords'];
+            $Ptoedit->oPayload->cl_html = filter_input(INPUT_POST, 'page_html');
+            $Ptoedit->oPayload->cl_title = filter_input(INPUT_POST, 'page_title', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+            $Ptoedit->oPayload->cl_description = filter_input(INPUT_POST, 'page_description', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+            $Ptoedit->oPayload->cl_keywords = filter_input(INPUT_POST, 'page_keywords', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
             $Ptoedit->oPayload->purifier = $purifier;
             $Ptoedit->oPayload->write();
         }
 
-        $Ptoedit = new UserPage($this->serviceManager, $_REQUEST['page_key'], true);
+        $Ptoedit = new UserPage(
+            $this->serviceManager,
+            filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            true
+        );
         $this->P->cb_customdata['updated'] = true;
 
         return $Ptoedit;
