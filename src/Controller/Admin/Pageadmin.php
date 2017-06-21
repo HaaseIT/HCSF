@@ -52,14 +52,14 @@ class Pageadmin extends Base
         $this->P->cb_customcontenttemplate = 'pageadmin';
 
         // adding language to page here
-        if (filter_input(INPUT_REQUEST, 'action') === 'insert_lang') {
+        if (filter_input(INPUT_GET, 'action') === 'insert_lang') {
             $this->insertLang();
         }
 
         $getaction = filter_input(INPUT_GET, 'action');
         if ($getaction === null) {
             $this->P->cb_customdata['pageselect'] = $this->showPageselect();
-        } elseif (!empty(filter_input(INPUT_REQUEST, 'page_key')) && ($getaction === 'edit' || $getaction === 'delete')) {
+        } elseif (!empty(filter_input(INPUT_GET, 'page_key')) && ($getaction === 'edit' || $getaction === 'delete')) {
             if ($getaction === 'delete' && filter_input(INPUT_POST, 'delete') === 'do') {
                 $this->handleDeletePage();
             } else { // edit or update page
@@ -155,7 +155,7 @@ class Pageadmin extends Base
     {
         $Ptoinsertlang = new UserPage(
             $this->serviceManager,
-            filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
             true)
         ;
 
@@ -169,9 +169,9 @@ class Pageadmin extends Base
 
     protected function handleEditPage()
     {
-        $requestpagekey = filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $requestpagekey = filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
         if ($requestpagekey !== null && $Ptoedit = new UserPage($this->serviceManager, $requestpagekey, true)) {
-            if (filter_input(INPUT_REQUEST, 'action_a') === 'true') {
+            if (filter_input(INPUT_POST, 'action_a') === 'true') {
                 $Ptoedit = $this->updatePage($Ptoedit);
             }
             $this->P->cb_customdata['page'] = $Ptoedit;
@@ -252,7 +252,7 @@ class Pageadmin extends Base
 
         $Ptoedit = new UserPage(
             $this->serviceManager,
-            filter_input(INPUT_REQUEST, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
             true
         );
         $this->P->cb_customdata['updated'] = true;

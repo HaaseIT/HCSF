@@ -86,7 +86,7 @@ class Customeradmin extends Base
     private function handleCustomerAdmin($CUA, $twig)
     {
         $sType = 'all';
-        $type = filter_input(INPUT_REQUEST, 'type');
+        $type = filter_input(INPUT_GET, 'type');
         if ($type !== null) {
             if ($type === 'active') {
                 $sType = 'active';
