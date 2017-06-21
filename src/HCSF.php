@@ -85,11 +85,7 @@ class HCSF
         if (isset($_COOKIE['acceptscookies']) && HelperConfig::$core['enable_module_customer'] && $_COOKIE['acceptscookies'] === 'yes') {
             // Session handling
             // session.use_trans_sid wenn nötig aktivieren
-            ini_set('session.use_only_cookies', 0);
             session_name('sid');
-            if(ini_get('session.use_trans_sid') == 1) {
-                ini_set('session.use_trans_sid', 0);
-            }
             // Session wenn nötig starten
             if (session_id() == '') {
                 session_start();
