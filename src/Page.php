@@ -72,7 +72,7 @@ class Page
     public $cb_customdata;
 
     /**
-     * @var array
+     * @var array|string
      */
     public $cb_pageconfig;
 
