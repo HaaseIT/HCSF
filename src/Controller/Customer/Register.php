@@ -24,28 +24,9 @@ namespace HaaseIT\HCSF\Controller\Customer;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Diactoros\ServerRequest;
 
 class Register extends Base
 {
-    /**
-     * @var array
-     */
-    protected $post;
-
-    /**
-     * @var ServerRequest;
-     */
-    protected $request;
-
-    public function __construct(ServiceManager $serviceManager)
-    {
-        parent::__construct($serviceManager);
-        $this->request = $serviceManager->get('request');
-        $this->post = $this->request->getParsedBody();
-    }
-
     public function preparePage()
     {
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
@@ -57,10 +38,10 @@ class Register extends Base
             $this->P->cb_customcontenttemplate = 'customer/register';
 
             $aErr = [];
-            if (isset($this->post['doRegister']) && $this->post['doRegister'] === 'yes') {
+            if (filter_input(INPUT_POST, 'doRegister') === 'yes') {
                 $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr);
                 if (count($aErr) == 0) {
-                    $sEmail = filter_var(trim($this->post['email']), FILTER_SANITIZE_EMAIL);
+                    $sEmail = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
 
                     /** @var \Doctrine\DBAL\Connection $dbal */
                     $dbal = $this->serviceManager->get('dbal');
@@ -75,7 +56,7 @@ class Register extends Base
                     $stmt = $querybuilder->execute();
 
                     if ($stmt->rowCount() === 0) {
-                        $sEmailVerificationcode = md5($this->post['email'].mt_rand().time());
+                        $sEmailVerificationcode = md5($sEmail.mt_rand().time());
 
                         $querybuilder = $dbal->createQueryBuilder();
                         $querybuilder
@@ -91,8 +72,8 @@ class Register extends Base
                             ->setValue('cust_fax', ':cust_fax')
                             ->setValue('cust_country', ':cust_country')
                             ->setValue('cust_password', ':cust_password')
-                            ->setValue('cust_tosaccepted', (isset($this->post['tos']) && $this->post['tos'] === 'y') ? 'y' : 'n')
-                            ->setValue('cust_cancellationdisclaimeraccepted', (isset($this->post['cancellationdisclaimer']) && $this->post['cancellationdisclaimer'] === 'y') ? 'y' : 'n')
+                            ->setValue('cust_tosaccepted', (filter_input(INPUT_POST, 'tos') === 'y') ? 'y' : 'n')
+                            ->setValue('cust_cancellationdisclaimeraccepted', (filter_input(INPUT_POST, 'cancellationdisclaimer') === 'y') ? 'y' : 'n')
                             ->setValue('cust_emailverified', 'n')
                             ->setValue('cust_emailverificationcode', $sEmailVerificationcode)
                             ->setValue('cust_active', HelperConfig::$customer['register_require_manual_activation'] ? 'n' : 'y')
@@ -107,7 +88,7 @@ class Register extends Base
                             ->setParameter(':cust_cellphone', filter_var(trim(Tools::getFormfield('cellphone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                             ->setParameter(':cust_fax', filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                             ->setParameter(':cust_country', filter_var(trim(Tools::getFormfield('country')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-                            ->setParameter(':cust_password', password_hash($this->post['pwd'], PASSWORD_DEFAULT))
+                            ->setParameter(':cust_password', password_hash(filter_input(INPUT_POST, 'pwd'), PASSWORD_DEFAULT))
                         ;
                         $querybuilder->execute();
 
