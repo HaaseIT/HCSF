@@ -66,12 +66,10 @@ class ShopadminExportCSV extends Base
         $this->P->cb_subnav = 'admin';
 
         // filter input
-        $ids = [];
-        foreach ($_POST['id'] as $item) {
-            $item = (int) $item;
-            if ($item > 0) {
-                $ids[$item] = $item;
-            }
+        $ids = filter_input_array(INPUT_POST, ['id' => ['filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_ARRAY]]);
+
+        if ($ids['id'] === false) {
+            \HaaseIT\HCSF\Helper::terminateScript('Invalid input.');
         }
 
         // fetch orders from db and add to $this->P->cb_customdata
@@ -80,12 +78,12 @@ class ShopadminExportCSV extends Base
             ->select('*')
             ->from('orders', 'o')
             ->innerJoin('o', 'orders_items', 'oi', 'o.o_id = oi.oi_o_id')
-            ->where('o.o_id IN ('.substr(str_repeat('?,', count($ids)), 0, -1).')')
+            ->where('o.o_id IN ('.substr(str_repeat('?,', count($ids['id'])), 0, -1).')')
             ->orderBy('oi.oi_o_id')
             ->addOrderBy('oi.oi_id')
         ;
         $i = 0;
-        foreach ($ids as $id) {
+        foreach ($ids['id'] as $id) {
             $queryBuilder->setParameter($i, $id);
             $i++;
         }

@@ -40,7 +40,7 @@ class Login extends Base
         /** @var \HaaseIT\Toolbox\Textcat $textcats */
         $textcats = $this->serviceManager->get('textcats');
 
-        if (!isset($_POST['sAction']) || $_POST['sAction'] !== 'login') {
+        if (filter_input(INPUT_POST, 'sAction') !== 'login') {
             $this->P->cb_customcontenttemplate = 'customer/login';
         } else {
             $mLogin = $this->getLogin();
@@ -113,7 +113,7 @@ class Login extends Base
         if($iRows == 1) {
             $aRow = $hResult->fetch();
 
-            if (password_verify($_POST['password'], $aRow['cust_password'])) {
+            if (password_verify(filter_input(INPUT_POST, 'password'), $aRow['cust_password'])) {
                 if ($aRow['cust_active'] === 'y' && $aRow['cust_emailverified'] === 'y' && $aRow['cust_tosaccepted'] === 'y') {
                     $_SESSION['user'] = $aRow;
                     return ['status' => 'success'];

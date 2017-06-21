@@ -37,7 +37,7 @@ class Resendverificationmail extends Base
 
             /** @var \PDOStatement $hResult */
             $hResult = $this->serviceManager->get('db')->prepare($sql);
-            $hResult->bindValue(':email', trim($_GET['email']), \PDO::PARAM_STR);
+            $hResult->bindValue(':email', trim(filter_input(INPUT_GET, 'email', FILTER_SANITIZE_EMAIL)), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
             if ($iRows == 1) {
