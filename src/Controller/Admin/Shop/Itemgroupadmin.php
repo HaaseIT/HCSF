@@ -113,16 +113,16 @@ class Itemgroupadmin extends Base
 
         if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'editgroup') {
             if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
-                $this->P->cb_customdata['updatestatus'] = $this->admin_updateGroup();
+                $this->P->cb_customdata['updatestatus'] = $this->updateGroup();
             }
 
             $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
-            $aGroup = $this->admin_getItemgroups($iGID);
+            $aGroup = $this->getItemgroups($iGID);
             if (isset($_REQUEST['added'])) {
                 $this->P->cb_customdata['groupjustadded'] = true;
             }
             $this->P->cb_customdata['showform'] = 'edit';
-            $this->P->cb_customdata['group'] = $this->admin_prepareGroup('edit', $aGroup[0]);
+            $this->P->cb_customdata['group'] = $this->prepareGroup('edit', $aGroup[0]);
         } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] === 'addgroup') {
             $aErr = [];
             if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
@@ -167,14 +167,14 @@ class Itemgroupadmin extends Base
                 } else {
                     $this->P->cb_customdata['err'] = $aErr;
                     $this->P->cb_customdata['showform'] = 'add';
-                    $this->P->cb_customdata['group'] = $this->admin_prepareGroup('add');
+                    $this->P->cb_customdata['group'] = $this->prepareGroup('add');
                 }
             } else {
                 $this->P->cb_customdata['showform'] = 'add';
-                $this->P->cb_customdata['group'] = $this->admin_prepareGroup('add');
+                $this->P->cb_customdata['group'] = $this->prepareGroup('add');
             }
         } else {
-            if (!$return .= $this->admin_showItemgroups($this->admin_getItemgroups(''))) {
+            if (!$return .= $this->showItemgroups($this->getItemgroups(''))) {
                 $this->P->cb_customdata['err']['nogroupsavaliable'] = true;
             }
         }
@@ -184,7 +184,7 @@ class Itemgroupadmin extends Base
     /**
      * @return string
      */
-    private function admin_updateGroup()
+    private function updateGroup()
     {
         $purifier = false;
         if (HelperConfig::$shop['itemgrouptext_enable_purifier']) {
@@ -255,7 +255,7 @@ class Itemgroupadmin extends Base
      * @param array $aData
      * @return array
      */
-    private function admin_prepareGroup($sPurpose = 'none', $aData = [])
+    private function prepareGroup($sPurpose = 'none', $aData = [])
     {
         $aGData = [
             'formaction' => Tools::makeLinkHRefWithAddedGetVars('/_admin/itemgroupadmin.html'),
@@ -281,7 +281,7 @@ class Itemgroupadmin extends Base
      * @param string $iGID
      * @return mixed
      */
-    private function admin_getItemgroups($iGID = '')
+    private function getItemgroups($iGID = '')
     {
         $querybuilder = $this->dbal->createQueryBuilder();
         $querybuilder
@@ -307,7 +307,7 @@ class Itemgroupadmin extends Base
      * @param $aGroups
      * @return bool|mixed
      */
-    private function admin_showItemgroups($aGroups)
+    private function showItemgroups($aGroups)
     {
         $aList = [
             ['title' => HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],

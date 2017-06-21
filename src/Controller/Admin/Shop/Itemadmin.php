@@ -78,7 +78,7 @@ class Itemadmin extends Base
         $this->P->cb_customcontenttemplate = 'shop/itemadmin';
 
         if (isset($this->get['action']) && $this->get['action'] === 'insert_lang') {
-            $aItemdata = $this->admin_getItem();
+            $aItemdata = $this->getItem();
 
             if (isset($aItemdata['base']) && !isset($aItemdata['text'])) {
                 $querybuilder = $this->dbal->createQueryBuilder();
@@ -94,28 +94,28 @@ class Itemadmin extends Base
                 \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$this->get['itemno'].'&action=showitem');
             }
         }
-        $this->P->cb_customdata['searchform'] = $this->admin_prepareItemlistsearchform();
+        $this->P->cb_customdata['searchform'] = $this->prepareItemlistsearchform();
 
         if (isset($this->get['action'])) {
             if ($this->get['action'] === 'search') {
                 $this->P->cb_customdata['searchresult'] = true;
-                if ($aItemlist = $this->admin_getItemlist()) {
+                if ($aItemlist = $this->getItemlist()) {
                     if (count($aItemlist['data']) == 1) {
-                        $aItemdata = $this->admin_getItem($aItemlist['data'][0]['itm_no']);
-                        $this->P->cb_customdata['item'] = $this->admin_prepareItem($aItemdata);
+                        $aItemdata = $this->getItem($aItemlist['data'][0]['itm_no']);
+                        $this->P->cb_customdata['item'] = $this->prepareItem($aItemdata);
                     } else {
-                        $this->P->cb_customdata['itemlist'] = $this->admin_prepareItemlist($aItemlist);
+                        $this->P->cb_customdata['itemlist'] = $this->prepareItemlist($aItemlist);
                     }
                 }
             } elseif (isset($this->post['doaction']) && $this->post['doaction'] === 'edititem') {
-                $this->admin_updateItem();
+                $this->updateItem();
                 $this->P->cb_customdata['itemupdated'] = true;
 
-                $aItemdata = $this->admin_getItem();
-                $this->P->cb_customdata['item'] = $this->admin_prepareItem($aItemdata);
+                $aItemdata = $this->getItem();
+                $this->P->cb_customdata['item'] = $this->prepareItem($aItemdata);
             } elseif ($this->get['action'] === 'showitem') {
-                $aItemdata = $this->admin_getItem();
-                $this->P->cb_customdata['item'] = $this->admin_prepareItem($aItemdata);
+                $aItemdata = $this->getItem();
+                $this->P->cb_customdata['item'] = $this->prepareItem($aItemdata);
             } elseif ($this->get['action'] === 'additem') {
                 $aErr = [];
                 if (isset($this->post['additem']) && $this->post['additem'] === 'do') {
@@ -166,7 +166,7 @@ class Itemadmin extends Base
     /**
      * @return mixed
      */
-    private function admin_prepareItemlistsearchform()
+    private function prepareItemlistsearchform()
     {
         $aData['searchcats'] = [
             'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
@@ -198,7 +198,7 @@ class Itemadmin extends Base
     /**
      * @return bool
      */
-    private function admin_getItemlist()
+    private function getItemlist()
     {
         $sSearchstring = filter_input(INPUT_GET, 'searchstring', FILTER_SANITIZE_SPECIAL_CHARS);
         $sSearchstring = str_replace('*', '%', $sSearchstring);
@@ -249,7 +249,7 @@ class Itemadmin extends Base
      * @param $aItemlist
      * @return array
      */
-    private function admin_prepareItemlist($aItemlist)
+    private function prepareItemlist($aItemlist)
     {
         $aList = [
             ['title' => HardcodedText::get('itemadmin_list_active'), 'key' => 'itemindex', 'width' => 30, 'linked' => false, 'callback' => 'renderItemStatusIcon',],
@@ -276,7 +276,7 @@ class Itemadmin extends Base
      * @param string $sItemno
      * @return bool
      */
-    private function admin_getItem($sItemno = '')
+    private function getItem($sItemno = '')
     {
         if ($sItemno === '') {
             if (empty($this->get['itemno'])) {
@@ -317,7 +317,7 @@ class Itemadmin extends Base
      * @param $aItemdata
      * @return array
      */
-    private function admin_prepareItem($aItemdata)
+    private function prepareItem($aItemdata)
     {
         $aData = [
             'form' => ['action' => Tools::makeLinkHRefWithAddedGetVars('/_admin/itemadmin.html', ['action' => 'showitem', 'itemno' => $aItemdata['base']['itm_no']]),],
@@ -348,7 +348,7 @@ class Itemadmin extends Base
             $aData['rgoptions'][] = $sKey;
         }
 
-        $aGroups = $this->admin_getItemgroups('');
+        $aGroups = $this->getItemgroups('');
         $aData['groupoptions'][] = '';
         foreach ($aGroups as $aValue) {
             $aData['groupoptions'][] = $aValue['itmg_id'] . '|' . $aValue['itmg_no'] . ' - ' . $aValue['itmg_name'];
@@ -370,7 +370,7 @@ class Itemadmin extends Base
     /**
      * @return bool
      */
-    private function admin_updateItem()
+    private function updateItem()
     {
         $purifier = false;
         if (HelperConfig::$shop['itemtext_enable_purifier']) {
@@ -433,7 +433,7 @@ class Itemadmin extends Base
      * @param string $iGID
      * @return mixed
      */
-    private function admin_getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
+    private function getItemgroups($iGID = '') // this function should be outsourced, a duplicate is used in admin itemgroups!
     {
         $querybuilder = $this->dbal->createQueryBuilder();
         $querybuilder
