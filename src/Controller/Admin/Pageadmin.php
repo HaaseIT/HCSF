@@ -73,7 +73,7 @@ class Pageadmin extends Base
     protected function handleDeletePage()
     {
         // delete and put message in customdata
-        $Ptodelete = new UserPage($this->serviceManager, filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH), true);
+        $Ptodelete = new UserPage($this->serviceManager, filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), true);
         if ($Ptodelete->cb_id != NULL) {
             $Ptodelete->remove();
         } else {
@@ -155,7 +155,7 @@ class Pageadmin extends Base
     {
         $Ptoinsertlang = new UserPage(
             $this->serviceManager,
-            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             true)
         ;
 
@@ -169,7 +169,7 @@ class Pageadmin extends Base
 
     protected function handleEditPage()
     {
-        $requestpagekey = filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $requestpagekey = filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if ($requestpagekey !== null && $Ptoedit = new UserPage($this->serviceManager, $requestpagekey, true)) {
             if (filter_input(INPUT_POST, 'action_a') === 'true') {
                 $Ptoedit = $this->updatePage($Ptoedit);
@@ -234,25 +234,25 @@ class Pageadmin extends Base
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
         }
 
-        $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $Ptoedit->cb_group = filter_input(INPUT_POST, 'page_group', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $Ptoedit->cb_pageconfig = filter_input(INPUT_POST, 'page_config', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-        $Ptoedit->cb_subnav = filter_input(INPUT_POST, 'page_subnav', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+        $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $Ptoedit->cb_group = filter_input(INPUT_POST, 'page_group', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $Ptoedit->cb_pageconfig = filter_input(INPUT_POST, 'page_config', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $Ptoedit->cb_subnav = filter_input(INPUT_POST, 'page_subnav', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $Ptoedit->purifier = $purifier;
         $Ptoedit->write();
 
         if ($Ptoedit->oPayload->cl_id != NULL) {
             $Ptoedit->oPayload->cl_html = filter_input(INPUT_POST, 'page_html');
-            $Ptoedit->oPayload->cl_title = filter_input(INPUT_POST, 'page_title', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-            $Ptoedit->oPayload->cl_description = filter_input(INPUT_POST, 'page_description', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-            $Ptoedit->oPayload->cl_keywords = filter_input(INPUT_POST, 'page_keywords', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+            $Ptoedit->oPayload->cl_title = filter_input(INPUT_POST, 'page_title', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $Ptoedit->oPayload->cl_description = filter_input(INPUT_POST, 'page_description', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $Ptoedit->oPayload->cl_keywords = filter_input(INPUT_POST, 'page_keywords', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             $Ptoedit->oPayload->purifier = $purifier;
             $Ptoedit->oPayload->write();
         }
 
         $Ptoedit = new UserPage(
             $this->serviceManager,
-            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),
+            filter_input(INPUT_GET, 'page_key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             true
         );
         $this->P->cb_customdata['updated'] = true;

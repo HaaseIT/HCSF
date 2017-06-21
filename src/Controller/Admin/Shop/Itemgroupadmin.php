@@ -39,16 +39,6 @@ class Itemgroupadmin extends Base
     private $dbal;
 
     /**
-     * @var array
-     */
-    protected $post;
-
-    /**
-     * @var ServerRequest;
-     */
-    protected $request;
-
-    /**
      * Itemgroupadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -56,8 +46,6 @@ class Itemgroupadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
-        $this->request = $serviceManager->get('request');
-        $this->post = $this->request->getParsedBody();
     }
 
     /**
@@ -72,13 +60,15 @@ class Itemgroupadmin extends Base
         $this->P->cb_customcontenttemplate = 'shop/itemgroupadmin';
 
         $return = '';
-        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'insert_lang') {
+        $iGID = filter_input(INPUT_GET, 'gid', FILTER_SANITIZE_NUMBER_INT);
+        $getaction = filter_input(INPUT_GET, 'action');
+        if ($getaction === 'insert_lang') {
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
                 ->select('itmg_id')
                 ->from('itemgroups_base')
                 ->where('itmg_id = ?')
-                ->setParameter(0, $_REQUEST['gid'])
+                ->setParameter(0, $iGID)
             ;
             $stmt = $querybuilder->execute();
 
@@ -89,7 +79,7 @@ class Itemgroupadmin extends Base
                 ->select('itmgt_id')
                 ->from('itemgroups_text')
                 ->where('itmgt_pid = ? AND itmgt_lang = ?')
-                ->setParameter(0, $_REQUEST['gid'])
+                ->setParameter(0, $iGID)
                 ->setParameter(1, HelperConfig::$lang)
             ;
             $stmt = $querybuilder->execute();
@@ -97,7 +87,6 @@ class Itemgroupadmin extends Base
             $iNumRowsLang = $stmt->rowCount();
 
             if ($iNumRowsBasis === 1 && $iNumRowsLang === 0) {
-                $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
                 $querybuilder = $this->dbal->createQueryBuilder();
                 $querybuilder
                     ->insert('itemgroups_text')
@@ -111,24 +100,24 @@ class Itemgroupadmin extends Base
             }
         }
 
-        if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'editgroup') {
-            if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
+        $postdo = filter_input(INPUT_POST, 'do');
+        if ($getaction === 'editgroup') {
+            if ($postdo === 'true') {
                 $this->P->cb_customdata['updatestatus'] = $this->updateGroup();
             }
 
-            $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
             $aGroup = $this->getItemgroups($iGID);
-            if (isset($_REQUEST['added'])) {
+            if (filter_input(INPUT_GET, 'added') !== null) {
                 $this->P->cb_customdata['groupjustadded'] = true;
             }
             $this->P->cb_customdata['showform'] = 'edit';
             $this->P->cb_customdata['group'] = $this->prepareGroup('edit', $aGroup[0]);
-        } elseif (isset($_REQUEST['action']) && $_REQUEST['action'] === 'addgroup') {
+        } elseif ($getaction === 'addgroup') {
             $aErr = [];
-            if (isset($_REQUEST['do']) && $_REQUEST['do'] === 'true') {
-                $sName = filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-                $sImg = filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if ($postdo === 'true') {
+                $sName = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $sGNo = filter_input(INPUT_POST, 'no', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $sImg = filter_input(INPUT_POST, 'img', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
                 if (strlen($sName) < 3) {
                     $aErr['nametooshort'] = true;
@@ -191,8 +180,8 @@ class Itemgroupadmin extends Base
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('itemgroup');
         }
 
-        $iGID = filter_var($_REQUEST['gid'], FILTER_SANITIZE_NUMBER_INT);
-        $sGNo = filter_var($_REQUEST['no'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $iGID = filter_input(INPUT_GET, 'gid', FILTER_SANITIZE_NUMBER_INT);
+        $sGNo = filter_input(INPUT_POST, 'no', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
         $querybuilder = $this->dbal->createQueryBuilder();
         $querybuilder
@@ -215,9 +204,9 @@ class Itemgroupadmin extends Base
             ->set('itmg_no', '?')
             ->set('itmg_img', '?')
             ->where('itmg_id = ?')
-            ->setParameter(0, filter_var($_REQUEST['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(0, filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
             ->setParameter(1, $sGNo)
-            ->setParameter(2, filter_var($_REQUEST['img'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(2, filter_input(INPUT_POST, 'img', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
             ->setParameter(3, $iGID)
         ;
         $querybuilder->execute();
@@ -233,6 +222,9 @@ class Itemgroupadmin extends Base
         $stmt = $querybuilder->execute();
 
         if ($stmt->rowCount() === 1) {
+            $shorttext = filter_input(INPUT_POST, 'shorttext', FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
+            $details = filter_input(INPUT_POST, 'details', FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
+
             $aRow = $stmt->fetch();
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
@@ -240,8 +232,8 @@ class Itemgroupadmin extends Base
                 ->set('itmgt_shorttext', '?')
                 ->set('itmgt_details', '?')
                 ->where('itmgt_id = ?')
-                ->setParameter(0, !empty($this->purifier) ? $purifier->purify($this->post['shorttext']) : $this->post['shorttext'])
-                ->setParameter(1, !empty($this->purifier) ? $purifier->purify($this->post['details']) : $this->post['details'])
+                ->setParameter(0, !empty($this->purifier) ? $purifier->purify($shorttext) : $shorttext)
+                ->setParameter(1, !empty($this->purifier) ? $purifier->purify($details) : $details)
                 ->setParameter(2, $aRow['itmgt_id'])
             ;
             $querybuilder->execute();

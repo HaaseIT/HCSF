@@ -58,8 +58,9 @@ class Shopadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/shopadmin';
 
-        if (isset($_POST['change'])) {
+        if (filter_input(INPUT_POST, 'change') !== null) {
             $iID = filter_var(trim(Tools::getFormfield('id')), FILTER_SANITIZE_NUMBER_INT);
+            $serverauthuser = filter_input(INPUT_SERVER, 'PHP_AUTH_USER', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
@@ -78,7 +79,7 @@ class Shopadmin extends Base
                 ->setParameter(':o_transaction_no', filter_var(trim(Tools::getFormfield('transaction_no')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                 ->setParameter(':o_paymentcompleted', filter_var(trim(Tools::getFormfield('order_paymentcompleted')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                 ->setParameter(':o_ordercompleted', filter_var(trim(Tools::getFormfield('order_completed')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-                ->setParameter(':o_lastedit_user', isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '')
+                ->setParameter(':o_lastedit_user', !empty($serverauthuser) ? $serverauthuser : '')
                 ->setParameter(':o_shipping_service', filter_var(trim(Tools::getFormfield('order_shipping_service')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                 ->setParameter(':o_shipping_trackingno', filter_var(trim(Tools::getFormfield('order_shipping_trackingno')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
                 ->setParameter(':o_id', $iID)
@@ -140,7 +141,8 @@ class Shopadmin extends Base
     {
         $aSData = [];
         $aData = [];
-        if (!isset($_GET['action'])) {
+        $getaction = filter_input(INPUT_GET, 'action');
+        if ($getaction === null) {
             $bIgnoreStorno = false;
 
             $querybuilder = $this->dbal->createQueryBuilder();
@@ -150,9 +152,10 @@ class Shopadmin extends Base
                 ->orderBy('o_ordertimestamp', 'DESC')
             ;
 
+            $posttype = filter_input(INPUT_POST, 'type');
             $querybuilder->where('o_ordercompleted = ?');
-            if (isset($_REQUEST['type'])) {
-                switch ($_REQUEST['type']) {
+            if ($posttype !== null) {
+                switch ($posttype) {
                     case 'closed':
                         $querybuilder->setParameter(0, 'y');
                         break;
@@ -193,11 +196,14 @@ class Shopadmin extends Base
 
             $sFrom = null;
             $sTo = null;
-            if (isset($_REQUEST['type']) && ($_REQUEST['type'] === 'deleted' || $_REQUEST['type'] === 'all' || $_REQUEST['type'] === 'closed')) {
-                $sFrom = \filter_var($_REQUEST['fromyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['frommonth'], FILTER_SANITIZE_NUMBER_INT));
-                $sFrom .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['fromday'], FILTER_SANITIZE_NUMBER_INT));
-                $sTo = \filter_var($_REQUEST['toyear'], FILTER_SANITIZE_NUMBER_INT).'-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['tomonth'], FILTER_SANITIZE_NUMBER_INT));
-                $sTo .= '-'.Tools::dateAddLeadingZero(\filter_var($_REQUEST['today'], FILTER_SANITIZE_NUMBER_INT));
+            if ($posttype === 'deleted' || $posttype === 'all' || $posttype === 'closed') {
+                $sFrom = filter_input(INPUT_POST, 'fromyear', FILTER_SANITIZE_NUMBER_INT).'-'
+                    .Tools::dateAddLeadingZero(filter_input(INPUT_POST, 'frommonth', FILTER_SANITIZE_NUMBER_INT)).'-'
+                    .Tools::dateAddLeadingZero(filter_input(INPUT_POST, 'fromday', FILTER_SANITIZE_NUMBER_INT))
+                ;
+                $sTo = filter_input(INPUT_POST, 'toyear', FILTER_SANITIZE_NUMBER_INT).'-'
+                    .Tools::dateAddLeadingZero(filter_input(INPUT_POST, 'tomonth', FILTER_SANITIZE_NUMBER_INT)).'-'
+                    .Tools::dateAddLeadingZero(filter_input(INPUT_POST, 'today', FILTER_SANITIZE_NUMBER_INT));
 
                 $querybuilder
                     ->andWhere('o_orderdate >= :from AND o_orderdate <= :to')
@@ -297,7 +303,7 @@ class Shopadmin extends Base
             } else {
                 $aSData['nomatchingordersfound'] = true;
             }
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'edit') {
+        } elseif ($getaction === 'edit') {
             $iId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder

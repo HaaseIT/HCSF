@@ -45,7 +45,8 @@ class Textcatadmin extends Base
 
         $return = '';
 
-        if (!isset($_REQUEST['action']) || $_REQUEST['action'] == '') {
+        $getaction = filter_input(INPUT_GET, 'action');
+        if (empty($getaction)) {
             $aData = $this->textcats->getCompleteTextcatForCurrentLang();
 
             $aListSetting = [
@@ -64,26 +65,30 @@ class Textcatadmin extends Base
                 ],
             ];
             $return .= Tools::makeListtable($aListSetting, $aData, $this->serviceManager->get('twig'));
-        } elseif ($_GET['action'] === 'edit' || $_GET['action'] === 'delete') {
-            if ($_GET['action'] === 'delete' && isset($_POST['delete']) && $_POST['delete'] === 'do') {
-                $this->textcats->deleteText($_GET['id']);
+        } elseif ($getaction === 'edit' || $getaction === 'delete') {
+            $getid = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+            if ($getaction === 'delete' && filter_input(INPUT_POST, 'delete') === 'do') {
+                $this->textcats->deleteText($getid);
                 $this->P->cb_customdata['deleted'] = true;
             } else {
                 $this->P->cb_customdata['edit'] = true;
 
-                $this->textcats->initTextIfVoid($_GET['id']);
+                $this->textcats->initTextIfVoid($getid);
 
                 // if post:edit is set, update
-                if (isset($_POST['edit']) && $_POST['edit'] === 'do') {
+                if (filter_input(INPUT_POST, 'edit') === 'do') {
                     $this->textcats->purifier = false;
                     if (HelperConfig::$core['textcat_enable_purifier']) {
                         $this->textcats->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
                     }
-                    $this->textcats->saveText($_POST['lid'], $_POST['text']);
+                    $this->textcats->saveText(
+                        filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_NUMBER_INT),
+                        filter_input(INPUT_POST, 'text')
+                    );
                     $this->P->cb_customdata['updated'] = true;
                 }
 
-                $aData = $this->textcats->getSingleTextByID($_GET['id']);
+                $aData = $this->textcats->getSingleTextByID($getid);
                 $this->P->cb_customdata['editform'] = [
                     'id' => $aData['tc_id'],
                     'lid' => $aData['tcl_id'],
@@ -119,15 +124,16 @@ class Textcatadmin extends Base
                         $aData, $this->serviceManager->get('twig'));
                 }
             }
-        } elseif ($_GET['action'] === 'add') {
+        } elseif ($getaction === 'add') {
             $this->P->cb_customdata['add'] = true;
-            if (isset($_POST['add']) && $_POST['add'] === 'do') {
-                $this->P->cb_customdata['err'] = $this->textcats->verifyAddTextKey($_POST['key']);
+            if (filter_input(INPUT_POST, 'add') === 'do') {
+                $postkey = filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $this->P->cb_customdata['err'] = $this->textcats->verifyAddTextKey($postkey);
 
                 if (count($this->P->cb_customdata['err']) == 0) {
                     $this->P->cb_customdata['addform'] = [
-                        'key' => $_POST['key'],
-                        'id' => $this->textcats->addTextKey($_POST['key']),
+                        'key' => $postkey,
+                        'id' => $this->textcats->addTextKey($postkey),
                     ];
                 }
             }

@@ -114,14 +114,13 @@ class Base
             return true;
         } elseif (count(HelperConfig::$secrets['admin_users'])) {
 
-            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
-                list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':' , base64_decode(substr($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], 6)));
+            $user = filter_input(INPUT_SERVER, 'PHP_AUTH_USER');
+            $pass = filter_input(INPUT_SERVER, 'PHP_AUTH_PW');
+            if (filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION') !== null) { // fix for php cgi mode
+                list($user, $pass) = explode(':' , base64_decode(substr(filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION'), 6)));
             }
 
-            if (isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-                $user = $_SERVER['PHP_AUTH_USER'];
-                $pass = $_SERVER['PHP_AUTH_PW'];
-
+            if (!empty($user) && !empty($pass)) {
                 $validated = !empty(
                     HelperConfig::$secrets['admin_users'][$user])
                     && password_verify($pass, HelperConfig::$secrets['admin_users'][$user]
