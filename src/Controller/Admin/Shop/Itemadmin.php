@@ -39,21 +39,6 @@ class Itemadmin extends Base
     protected $dbal;
 
     /**
-     * @var array
-     */
-    protected $get;
-
-    /**
-     * @var array
-     */
-    protected $post;
-
-    /**
-     * @var ServerRequest;
-     */
-    protected $request;
-
-    /**
      * Itemadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -61,9 +46,6 @@ class Itemadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
-        $this->request = $serviceManager->get('request');
-        $this->get = $this->request->getQueryParams();
-        $this->post = $this->request->getParsedBody();
     }
 
     /**
@@ -77,7 +59,8 @@ class Itemadmin extends Base
 
         $this->P->cb_customcontenttemplate = 'shop/itemadmin';
 
-        if (isset($this->get['action']) && $this->get['action'] === 'insert_lang') {
+        $getaction = filter_input(INPUT_GET, 'action');
+        if ($getaction === 'insert_lang') {
             $aItemdata = $this->getItem();
 
             if (isset($aItemdata['base']) && !isset($aItemdata['text'])) {
@@ -91,13 +74,13 @@ class Itemadmin extends Base
                 ;
                 $querybuilder->execute();
 
-                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$this->get['itemno'].'&action=showitem');
+                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.filter_input(INPUT_GET, 'itemno').'&action=showitem');
             }
         }
         $this->P->cb_customdata['searchform'] = $this->prepareItemlistsearchform();
 
-        if (isset($this->get['action'])) {
-            if ($this->get['action'] === 'search') {
+        if ($getaction !== null) {
+            if ($getaction === 'search') {
                 $this->P->cb_customdata['searchresult'] = true;
                 if ($aItemlist = $this->getItemlist()) {
                     if (count($aItemlist['data']) == 1) {
@@ -107,19 +90,20 @@ class Itemadmin extends Base
                         $this->P->cb_customdata['itemlist'] = $this->prepareItemlist($aItemlist);
                     }
                 }
-            } elseif (isset($this->post['doaction']) && $this->post['doaction'] === 'edititem') {
+            } elseif (filter_input(INPUT_POST, 'doaction') === 'edititem') {
                 $this->updateItem();
                 $this->P->cb_customdata['itemupdated'] = true;
 
                 $aItemdata = $this->getItem();
                 $this->P->cb_customdata['item'] = $this->prepareItem($aItemdata);
-            } elseif ($this->get['action'] === 'showitem') {
+            } elseif ($getaction === 'showitem') {
                 $aItemdata = $this->getItem();
                 $this->P->cb_customdata['item'] = $this->prepareItem($aItemdata);
-            } elseif ($this->get['action'] === 'additem') {
+            } elseif ($getaction === 'additem') {
                 $aErr = [];
-                if (isset($this->post['additem']) && $this->post['additem'] === 'do') {
-                    if (strlen($this->post['itemno']) < 4) {
+                if (filter_input(INPUT_POST, 'additem') === 'do') {
+                    $postitemno = trim(filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS));
+                    if (strlen($postitemno) < 4) {
                         $aErr['itemnotooshort'] = true;
                     } else {
                         $querybuilder = $this->dbal->createQueryBuilder();
@@ -127,7 +111,7 @@ class Itemadmin extends Base
                             ->select('itm_no')
                             ->from('item_base')
                             ->where('itm_no = ?')
-                            ->setParameter(0, trim(filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)))
+                            ->setParameter(0, $postitemno)
                         ;
                         $stmt = $querybuilder->execute();
 
@@ -138,7 +122,7 @@ class Itemadmin extends Base
                             $querybuilder
                                 ->insert('item_base')
                                 ->setValue('itm_no', '?')
-                                ->setParameter(0, trim(filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS)))
+                                ->setParameter(0, $postitemno)
                             ;
 
                             $querybuilder->execute();
@@ -168,26 +152,30 @@ class Itemadmin extends Base
      */
     private function prepareItemlistsearchform()
     {
-        $aData['searchcats'] = [
-            'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
-            'name|'.HardcodedText::get('itemadmin_search_itemname'),
-            'index|'.HardcodedText::get('itemadmin_search_itemindex'),
-        ];
-        $aData['orderbys'] = [
-            'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
-            'name|'.HardcodedText::get('itemadmin_search_itemname'),
+        $aData = [
+            'searchcats' => [
+                'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
+                'name|'.HardcodedText::get('itemadmin_search_itemname'),
+                'index|'.HardcodedText::get('itemadmin_search_itemindex'),
+            ],
+            'orderbys' => [
+                'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
+                'name|'.HardcodedText::get('itemadmin_search_itemname'),
+            ],
         ];
 
-        if (isset($this->get['searchcat'])) {
-            $aData['searchcat'] = $this->get['searchcat'];
-            $_SESSION['itemadmin_searchcat'] = $this->get['searchcat'];
+        $getsearchcat = filter_input(INPUT_GET, 'searchcat');
+        if (isset($getsearchcat)) {
+            $aData['searchcat'] = $getsearchcat;
+            $_SESSION['itemadmin_searchcat'] = $getsearchcat;
         } elseif (isset($_SESSION['itemadmin_searchcat'])) {
             $aData['searchcat'] = $_SESSION['itemadmin_searchcat'];
         }
 
-        if (isset($this->get['orderby'])) {
-            $aData['orderby'] = $this->get['orderby'];
-            $_SESSION['itemadmin_orderby'] = $this->get['orderby'];
+        $getorderby = filter_input(INPUT_GET, 'orderby');
+        if (isset($getorderby)) {
+            $aData['orderby'] = $getorderby;
+            $_SESSION['itemadmin_orderby'] = $getorderby;
         } elseif (isset($_SESSION['itemadmin_orderby'])) {
             $aData['orderby'] = $_SESSION['itemadmin_orderby'];
         }
@@ -210,19 +198,21 @@ class Itemadmin extends Base
             ->leftJoin('b', 'item_lang', 'l', 'b.itm_id = l.itml_pid AND l.itml_lang = :lang')
         ;
 
-        if ($this->get['searchcat'] === 'name') {
+        $getsearchcat = filter_input(INPUT_GET, 'searchcat');
+        if ($getsearchcat === 'name') {
             $querybuilder->where('itm_name LIKE :searchstring');
-        } elseif ($this->get['searchcat'] === 'nummer') {
+        } elseif ($getsearchcat === 'nummer') {
             $querybuilder->where('itm_no LIKE :searchstring');
-        } elseif ($this->get['searchcat'] === 'index') {
+        } elseif ($getsearchcat === 'index') {
             $querybuilder->where('itm_index LIKE :searchstring');
         } else {
             \HaaseIT\HCSF\Helper::terminateScript();
         }
 
-        if ($this->get['orderby'] === 'name') {
+        $getorderby = filter_input(INPUT_GET, 'orderby');
+        if ($getorderby === 'name') {
             $querybuilder->orderBy('itm_name');
-        } elseif ($this->get['orderby'] === 'nummer') {
+        } elseif ($getorderby === 'nummer') {
             $querybuilder->orderBy('itm_no');
         }
 
@@ -233,7 +223,7 @@ class Itemadmin extends Base
 
         $stmt = $querybuilder->execute();
 
-        $aItemlist['numrows'] = $stmt->rowCount();
+        $aItemlist = ['numrows' => $stmt->rowCount()];
 
         if ($aItemlist['numrows'] !== 0) {
             while ($aRow = $stmt->fetch()) {
@@ -274,15 +264,15 @@ class Itemadmin extends Base
 
     /**
      * @param string $sItemno
-     * @return bool
+     * @return bool|array
      */
     private function getItem($sItemno = '')
     {
         if ($sItemno === '') {
-            if (empty($this->get['itemno'])) {
+            $sItemno = filter_input(INPUT_GET, 'itemno', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if (empty($sItemno)) {
                 return false;
             }
-            $sItemno = filter_var($this->get['itemno'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         }
 
         $querybuilder = $this->dbal->createQueryBuilder();
@@ -294,7 +284,7 @@ class Itemadmin extends Base
         ;
         $stmt = $querybuilder->execute();
 
-        $aItemdata['base'] = $stmt->fetch();
+        $aItemdata = ['base' => $stmt->fetch()];
 
         $querybuilder = $this->dbal->createQueryBuilder();
         $querybuilder
@@ -391,26 +381,30 @@ class Itemadmin extends Base
             ->set('itm_weight', ':itm_weight')
             ->set('itm_vatid', ':itm_vatid')
             ->where('itm_id = :itm_id')
-            ->setParameter(':itm_name', filter_var($this->post['name'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(':itm_group', filter_var($this->post['group'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(':itm_img', filter_var($this->post['bild'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(':itm_index', filter_var($this->post['index'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(':itm_order', filter_var($this->post['prio'], FILTER_SANITIZE_NUMBER_INT))
-            ->setParameter(':itm_price', filter_var($this->post['price'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION))
-            ->setParameter(':itm_rg', filter_var($this->post['rg'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(':itm_data', filter_var($this->post['data'], FILTER_UNSAFE_RAW))
-            ->setParameter(':itm_weight', filter_var($this->post['weight'], FILTER_SANITIZE_NUMBER_INT))
-            ->setParameter(':itm_id', filter_var($this->post['id'], FILTER_SANITIZE_NUMBER_INT))
+            ->setParameter(':itm_name', filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_group', filter_input(INPUT_POST, 'group', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_img', filter_input(INPUT_POST, 'bild', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_index', filter_input(INPUT_POST, 'index', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_order', filter_input(INPUT_POST, 'prio', FILTER_SANITIZE_NUMBER_INT))
+            ->setParameter(':itm_price', filter_input(INPUT_POST, 'price', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION))
+            ->setParameter(':itm_rg', filter_input(INPUT_POST, 'rg', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
+            ->setParameter(':itm_data', filter_input(INPUT_POST, 'data', FILTER_UNSAFE_RAW))
+            ->setParameter(':itm_weight', filter_input(INPUT_POST, 'weight', FILTER_SANITIZE_NUMBER_INT))
+            ->setParameter(':itm_id', filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT))
         ;
 
         if (!HelperConfig::$shop['vat_disable']) {
-            $querybuilder->setParameter(':itm_vatid', filter_var($this->post['vatid'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
+            $querybuilder->setParameter(':itm_vatid', filter_input(INPUT_POST, 'vatid', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
         } else {
             $querybuilder->setParameter(':itm_vatid', 'full');
         }
         $querybuilder->execute();
 
-        if (isset($this->post['textid'])) {
+        $posttextid = filter_input(INPUT_POST, 'textid', FILTER_SANITIZE_NUMBER_INT);
+        if ($posttextid !== null) {
+            $posttext1 = filter_input(INPUT_POST, 'text1');
+            $posttext2 = filter_input(INPUT_POST, 'text2');
+
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
                 ->update('item_lang')
@@ -418,10 +412,10 @@ class Itemadmin extends Base
                 ->set('itml_text2', ':itml_text2')
                 ->set('itml_name_override', ':itml_name_override')
                 ->where('itml_id = :itml_id')
-                ->setParameter(':itml_text1', !empty($this->purifier) ? $purifier->purify($this->post['text1']) : $this->post['text1'])
-                ->setParameter(':itml_text2', !empty($this->purifier) ? $purifier->purify($this->post['text2']) : $this->post['text2'])
-                ->setParameter(':itml_name_override', filter_var($this->post['name_override'], FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW))
-                ->setParameter(':itml_id', filter_var($this->post['textid'], FILTER_SANITIZE_NUMBER_INT))
+                ->setParameter(':itml_text1', !empty($purifier) ? $purifier->purify($posttext1) : $posttext1)
+                ->setParameter(':itml_text2', !empty($purifier) ? $purifier->purify($posttext2) : $posttext2)
+                ->setParameter(':itml_name_override', filter_input(INPUT_POST, 'name_override', FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW))
+                ->setParameter(':itml_id', $posttextid)
             ;
             $querybuilder->execute();
         }
