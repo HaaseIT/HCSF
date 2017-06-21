@@ -25,7 +25,6 @@ use Zend\ServiceManager\ServiceManager;
 
 class Sandbox extends Base
 {
-
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);

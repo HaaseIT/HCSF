@@ -288,9 +288,6 @@ class HCSF
         $aP['keywords'] = $P->oPayload->cl_keywords;
         $aP['description'] = $P->oPayload->cl_description;
 
-        // TODO: Add head scripts to DB
-        //if (isset($P["head_scripts"]) && $P["head_scripts"] != '') $aP["head_scripts"] = $P["head_scripts"];
-
         // Shopping cart infos
         if (HelperConfig::$core['enable_module_shop']) {
             $aP['cartinfo'] = SHelper::getShoppingcartData();

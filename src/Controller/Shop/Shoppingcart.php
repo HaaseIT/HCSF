@@ -283,7 +283,6 @@ class Shoppingcart extends Base
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
-            //print $e;
             error_log($e);
             $db->rollBack();
         }

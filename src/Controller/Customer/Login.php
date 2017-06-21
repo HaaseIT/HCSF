@@ -129,5 +129,4 @@ class Login extends Base
 
         return false;
     }
-
 }

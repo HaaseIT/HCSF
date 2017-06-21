@@ -124,7 +124,6 @@ class Helper
             }
         }
 
-        //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
         return $mail->send();
     }
 
