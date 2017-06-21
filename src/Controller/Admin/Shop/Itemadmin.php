@@ -217,7 +217,7 @@ class Itemadmin extends Base
         } elseif ($this->get['searchcat'] === 'index') {
             $querybuilder->where('itm_index LIKE :searchstring');
         } else {
-            exit;
+            \HaaseIT\HCSF\Helper::terminateScript();
         }
 
         if ($this->get['orderby'] === 'name') {

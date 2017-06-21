@@ -95,7 +95,7 @@ class Pageadmin extends Base
         if ($Ptodelete->cb_id != NULL) {
             $Ptodelete->remove();
         } else {
-            die(HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
+            \HaaseIT\HCSF\Helper::terminateScript(HardcodedText::get('pageadmin_exception_pagetodeletenotfound'));
         }
         $this->P->cb_customdata['deleted'] = true;
     }
@@ -116,7 +116,7 @@ class Pageadmin extends Base
                     if ($Ptoadd->insert($sPagekeytoadd)) {
                         \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                     } else {
-                        die(HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
+                        \HaaseIT\HCSF\Helper::terminateScript(HardcodedText::get('pageadmin_exception_couldnotinsertpage'));
                     }
                 } else {
                     $aErr['keyalreadyinuse'] = true;
@@ -177,7 +177,7 @@ class Pageadmin extends Base
             $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
             \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
         } else {
-            die(HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
+            \HaaseIT\HCSF\Helper::terminateScript(HardcodedText::get('pageadmin_exception_couldnotinsertlang'));
         }
     }
 
@@ -236,7 +236,7 @@ class Pageadmin extends Base
                 }
             }
         } else {
-            die(HardcodedText::get('pageadmin_exception_pagenotfound'));
+            \HaaseIT\HCSF\Helper::terminateScript(HardcodedText::get('pageadmin_exception_pagenotfound'));
         }
     }
 

@@ -150,7 +150,7 @@ class Updatecart extends Base
                     $this->replyToCartUpdate('added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
             }
-            die();
+            \HaaseIT\HCSF\Helper::terminateScript();
         }
     }
 
@@ -180,7 +180,7 @@ class Updatecart extends Base
             }
             header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER['HTTP_REFERER'], $aMSG, true, false));
         }
-        die();
+        \HaaseIT\HCSF\Helper::terminateScript();
     }
 
     protected function addItemToCart($cartkey, $item)

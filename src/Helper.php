@@ -28,14 +28,19 @@ use HaaseIT\Toolbox\Tools;
  */
 class Helper
 {
-    public static function redirectToPage($target = '')
+    public static function redirectToPage($target = '', $replace = false, $http_response_header = 302)
     {
         if (empty($target)) {
             return false;
         }
 
-        header('Location: '.$target);
+        header('Location: '.$target, $replace, $http_response_header);
         die();
+    }
+
+    public static function terminateScript($message = '')
+    {
+        die($message);
     }
 
     /**

@@ -61,6 +61,6 @@ class Updateshippingcost extends Base
                 HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
                 HelperConfig::$core['numberformat_thousands_seperator']) . '</div>';
         $return .= '</div>';
-        die($return);
+        \HaaseIT\HCSF\Helper::terminateScript($return);
     }
 }

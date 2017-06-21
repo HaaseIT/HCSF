@@ -132,8 +132,7 @@ class Router
                 } else { // if it is found, go on
                     // Support for shorturls
                     if ($this->P->cb_pagetype === 'shorturl') {
-                        header('Location: ' . $this->P->cb_pageconfig, true, 302);
-                        exit();
+                        \HaaseIT\HCSF\Helper::redirectToPage('Location: ' . $this->P->cb_pageconfig, true);
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {

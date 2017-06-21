@@ -162,6 +162,6 @@ class Paypalnotify extends Base
             }
         }
 
-        die();
+        \HaaseIT\HCSF\Helper::terminateScript();
     }
 }

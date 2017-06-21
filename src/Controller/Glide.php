@@ -55,7 +55,7 @@ class Glide extends Base
                 // Validate HTTP signature
                 \League\Glide\Signatures\SignatureFactory::create(HelperConfig::$secrets['glide_signkey'])->validateRequest($sPath, $_GET);
                 $glideserver->outputImage($sPath, $_GET);
-                die();
+                \HaaseIT\HCSF\Helper::terminateScript();
 
             } catch (\League\Glide\Signatures\SignatureException $e) {
                 $this->P = 404;
