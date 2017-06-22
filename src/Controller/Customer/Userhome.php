@@ -66,13 +66,13 @@ class Userhome extends Base
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
 
             $aPData['display_logingreeting'] = false;
-            if (isset($_GET['login']) && $_GET['login']) {
+            if (filter_input(INPUT_GET, 'login') !== null) {
                 $aPData['display_logingreeting'] = true;
             }
-            if (isset($_GET['editprofile'])) {
+            if (filter_input(INPUT_GET, 'editprofile') !== null) {
                 $sErr = '';
 
-                if (isset($_POST['doEdit']) && $_POST['doEdit'] === 'yes') {
+                if (filter_input(INPUT_POST, 'doEdit') === 'yes') {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
 
                     $sEmail = filter_var(trim(Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL);
@@ -102,8 +102,9 @@ class Userhome extends Base
                                 'cust_country' => filter_var(trim(Tools::getFormfield('country')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
                             ];
                         }
-                        if (isset($_POST['pwd']) && $_POST['pwd'] != '') {
-                            $aData['cust_password'] = password_hash($_POST['pwd'], PASSWORD_DEFAULT);
+                        $postpwd = filter_input(INPUT_POST, 'pwd');
+                        if (!empty($postpwd)) {
+                            $aData['cust_password'] = password_hash($postpwd, PASSWORD_DEFAULT);
                             $aPData['infopasswordchanged'] = true;
                         }
                         $aData['cust_id'] = $_SESSION['user']['cust_id'];
@@ -134,7 +135,7 @@ class Userhome extends Base
                 );
             }
             $aPData['showprofilelinks'] = false;
-            if (!isset($_GET['editprofile'])) {
+            if (filter_input(INPUT_GET, 'editprofile') === null) {
                 $aPData['showprofilelinks'] = true;
             }
             if (isset($aPData) && count($aPData)) {

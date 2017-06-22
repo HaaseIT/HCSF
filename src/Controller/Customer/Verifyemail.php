@@ -64,7 +64,7 @@ class Verifyemail extends Base
                 . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
             /** @var \PDOStatement $hResult */
             $hResult = $this->db->prepare($sql);
-            $hResult->bindValue(':key', $_GET['key'], \PDO::PARAM_STR);
+            $hResult->bindValue(':key', filter_input(INPUT_GET, 'key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
             $hResult->execute();
             $iRows = $hResult->rowCount();
 
