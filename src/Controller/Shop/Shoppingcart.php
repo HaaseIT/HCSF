@@ -204,10 +204,9 @@ class Shoppingcart extends Base
      * @param int $orderid
      * @param string $cartkey
      * @param array $values
-     * @param string $image
      * @return array
      */
-    private function buildOrderItemRow($orderid, $cartkey, array $values, $image)
+    private function buildOrderItemRow($orderid, $cartkey, array $values)
     {
         return [
             'oi_o_id' => $orderid,
@@ -226,11 +225,16 @@ class Shoppingcart extends Base
                 ? HelperConfig::$shop['rebate_groups'][$values['rg']][trim(CHelper::getUserData('cust_group'))]
                 : '',
             'oi_itemname' => $values['name'],
-            'oi_img' => $image,
+            'oi_img' => $this->imagestosend[$values['img']]['base64img'],
         ];
     }
 
-    private function doCheckout()
+    /**
+     * @var array
+     */
+    private $imagestosend = [];
+
+    private function writeCheckoutToDB()
     {
         /** @var \Doctrine\DBAL\Connection $dbal */
         $dbal = $this->serviceManager->get('dbal');
@@ -242,23 +246,35 @@ class Shoppingcart extends Base
 
             $iInsertID = \HaaseIT\HCSF\Helper::autoInsert($dbal, 'orders', $aDataOrder);
 
-            $aImagesToSend = [];
             foreach ($_SESSION['cart'] as $sK => $aV) {
-                $aImagesToSend[$aV['img']] = $this->getItemImage($aV);
+                $this->imagestosend[$aV['img']] = $this->getItemImage($aV);
 
                 \HaaseIT\HCSF\Helper::autoInsert(
                     $dbal,
                     'orders_items',
-                    $this->buildOrderItemRow($iInsertID, $sK, $aV, $aImagesToSend[$aV['img']]['base64img'])
+                    $this->buildOrderItemRow($iInsertID, $sK, $aV)
                 );
             }
             $dbal->commit();
+
+            return $iInsertID;
         } catch (\Exception $e) {
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
             error_log($e);
             $dbal->rollBack();
+
+            throw new \Exception('Unable to submit order!');
+        }
+    }
+
+    private function doCheckout()
+    {
+        try {
+            $iInsertID = $this->writeCheckoutToDB();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
         $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
@@ -267,7 +283,7 @@ class Shoppingcart extends Base
         $this->writeCheckoutToFile($sMailbody_us);
 
         // Send Mails
-        $this->sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend);
+        $this->sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they);
 
         unset($_SESSION['cart'], $_SESSION['cartpricesums'], $_SESSION['sondercart']);
 
@@ -296,9 +312,8 @@ class Shoppingcart extends Base
      * @param int $iInsertID
      * @param string $sMailbody_us
      * @param string $sMailbody_they
-     * @param array $aImagesToSend
      */
-    private function sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend)
+    private function sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they)
     {
         if (
             isset(HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_' .HelperConfig::$lang])
@@ -319,14 +334,14 @@ class Shoppingcart extends Base
             filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL),
             $this->textcats->T('shoppingcart_mail_subject') . ' ' . $iInsertID,
             $sMailbody_they,
-            $aImagesToSend,
+            $this->imagestosend,
             $aFilesToSend
         );
         Helper::mailWrapper(
             HelperConfig::$core['email_sender'],
             'Bestellung im Webshop Nr: ' . $iInsertID,
             $sMailbody_us,
-            $aImagesToSend
+            $this->imagestosend
         );
     }
 
