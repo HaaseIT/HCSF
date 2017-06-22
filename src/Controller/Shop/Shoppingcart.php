@@ -233,40 +233,50 @@ class Shoppingcart extends Base
 
     private function doCheckout()
     {
-        /** @var \PDO $db */
-        $db = $this->serviceManager->get('db');
+        /** @var \Doctrine\DBAL\Connection $dbal */
+        $dbal = $this->serviceManager->get('dbal');
 
         try {
-            $db->beginTransaction();
+            $dbal->beginTransaction();
 
             $aDataOrder = $this->prepareDataOrder();
-            $sql = DBTools::buildPSInsertQuery($aDataOrder, 'orders');
-            $hResult = $db->prepare($sql);
-            foreach ($aDataOrder as $sKey => $sValue) {
-                $hResult->bindValue(':' . $sKey, $sValue);
+
+            /** @var \Doctrine\DBAL\Query\QueryBuilder $querybuilder */
+            $querybuilder = $dbal->createQueryBuilder();
+            $querybuilder->insert('orders');
+
+            foreach ($aDataOrder as $colname => $col) {
+                $querybuilder
+                    ->setValue($colname, ':'.$colname)
+                    ->setParameter(':'.$colname, $col);
             }
-            $hResult->execute();
-            $iInsertID = $db->lastInsertId();
+
+            $querybuilder->execute();
+            $iInsertID = $dbal->lastInsertId();
 
             $aImagesToSend = [];
             foreach ($_SESSION['cart'] as $sK => $aV) {
                 $aImagesToSend[$aV['img']] = $this->getItemImage($aV);
                 $aDataOrderItem = $this->buildOrderItemRow($iInsertID, $sK, $aV, $aImagesToSend[$aV['img']]['base64img']);
 
-                $sql = DBTools::buildPSInsertQuery($aDataOrderItem, 'orders_items');
-                $hResult = $db->prepare($sql);
-                foreach ($aDataOrderItem as $sKey => $sValue) {
-                    $hResult->bindValue(':' . $sKey, $sValue);
+                $querybuilder = $dbal->createQueryBuilder();
+                $querybuilder->insert('orders_items');
+
+                foreach ($aDataOrderItem as $colname => $col) {
+                    $querybuilder
+                        ->setValue($colname, ':'.$colname)
+                        ->setParameter(':'.$colname, $col);
                 }
-                $hResult->execute();
+
+                $querybuilder->execute();
             }
-            $db->commit();
+            $dbal->commit();
         } catch (\Exception $e) {
             // If something raised an exception in our transaction block of statements,
             // roll back any work performed in the transaction
             print '<p>Unable to complete transaction!</p>';
             error_log($e);
-            $db->rollBack();
+            $dbal->rollBack();
         }
         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
         $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
