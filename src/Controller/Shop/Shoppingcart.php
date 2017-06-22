@@ -25,7 +25,6 @@ use HaaseIT\Toolbox\Tools;
 use HaaseIT\HCSF\Helper;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\Shop\Helper as SHelper;
-use HaaseIT\Toolbox\DBTools;
 
 class Shoppingcart extends Base
 {

@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 /**
