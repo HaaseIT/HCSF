@@ -162,6 +162,7 @@ class Shoppingcart extends Base
      */
     private function prepareDataOrder()
     {
+        $cartpricesums = $_SESSION['cartpricesums'];
         return [
             'o_custno' => filter_var(trim(Tools::getFormfield('custno')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_email' => filter_var(trim(Tools::getFormfield('email')), FILTER_SANITIZE_EMAIL),
@@ -179,13 +180,13 @@ class Shoppingcart extends Base
             'o_tos' => (filter_input(INPUT_POST, 'tos') === 'y' || CHelper::getUserData()) ? 'y' : 'n',
             'o_cancellationdisclaimer' => (filter_input(INPUT_POST, 'cancellationdisclaimer') === 'y' || CHelper::getUserData()) ? 'y' : 'n',
             'o_paymentmethod' => filter_var(trim(Tools::getFormfield('paymentmethod')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_sumvoll' => $_SESSION['cartpricesums']['sumvoll'],
-            'o_sumerm' => $_SESSION['cartpricesums']['sumerm'],
-            'o_sumnettoall' => $_SESSION['cartpricesums']['sumnettoall'],
-            'o_taxvoll' => $_SESSION['cartpricesums']['taxvoll'],
-            'o_taxerm' => $_SESSION['cartpricesums']['taxerm'],
-            'o_sumbruttoall' => $_SESSION['cartpricesums']['sumbruttoall'],
-            'o_mindermenge' => isset($_SESSION['cartpricesums']['mindergebuehr']) ? $_SESSION['cartpricesums']['mindergebuehr'] : '',
+            'o_sumvoll' => $cartpricesums['sumvoll'],
+            'o_sumerm' => $cartpricesums['sumerm'],
+            'o_sumnettoall' => $cartpricesums['sumnettoall'],
+            'o_taxvoll' => $cartpricesums['taxvoll'],
+            'o_taxerm' => $cartpricesums['taxerm'],
+            'o_sumbruttoall' => $cartpricesums['sumbruttoall'],
+            'o_mindermenge' => isset($cartpricesums['mindergebuehr']) ? $cartpricesums['mindergebuehr'] : '',
             'o_shippingcost' => SHelper::getShippingcost(),
             'o_orderdate' => date('Y-m-d'),
             'o_ordertimestamp' => time(),
@@ -273,15 +274,7 @@ class Shoppingcart extends Base
         // Send Mails
         $this->sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend);
 
-        if (isset($_SESSION['cart'])) {
-            unset($_SESSION['cart']);
-        }
-        if (isset($_SESSION['cartpricesums'])) {
-            unset($_SESSION['cartpricesums']);
-        }
-        if (isset($_SESSION['sondercart'])) {
-            unset($_SESSION['sondercart']);
-        }
+        unset($_SESSION['cart'], $_SESSION['cartpricesums'], $_SESSION['sondercart']);
 
         $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
         if (
@@ -402,7 +395,7 @@ class Shoppingcart extends Base
             'tos' => $this->getPostValue('tos'),
             'cancellationdisclaimer' => $this->getPostValue('cancellationdisclaimer'),
             'paymentmethod' => $this->getPostValue('paymentmethod'),
-            'shippingcost' => !isset($_SESSION['shippingcost']) || $_SESSION['shippingcost'] == 0 ? false : $_SESSION['shippingcost'],
+            'shippingcost' => empty($_SESSION['shippingcost']) ? false : $_SESSION['shippingcost'],
             'paypallink' => $postpaymentmethod === 'paypal' ? $serverservername.'/_misc/paypal.html?id='.$iId : '',
             'sofortueberweisunglink' => $postpaymentmethod === 'sofortueberweisung' ?  $serverservername.'/_misc/sofortueberweisung.html?id='.$iId : '',
             'SESSION' => !$bCust ? Tools::debug($_SESSION, '$_SESSION', true, true) : '',
