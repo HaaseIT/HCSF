@@ -158,7 +158,7 @@ class Helper
             Tools::debug($_SESSION, '$_SESSION');
         }
         Tools::debug($aP, '$aP');
-        //Tools::debug($P, '$P');
+        Tools::debug($P, '$P');
     }
 
     /**
