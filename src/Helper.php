@@ -28,6 +28,12 @@ use HaaseIT\Toolbox\Tools;
  */
 class Helper
 {
+    /**
+     * @param string $target
+     * @param bool $replace
+     * @param int $http_response_header
+     * @return void|false
+     */
     public static function redirectToPage($target = '', $replace = false, $http_response_header = 302)
     {
         if (empty($target)) {
@@ -38,6 +44,9 @@ class Helper
         self::terminateScript();
     }
 
+    /**
+     * @param string $message
+     */
     public static function terminateScript($message = '')
     {
         die($message);
@@ -252,5 +261,28 @@ class Helper
         }
         
         return call_user_func($callbacks[$callback], $parameters);
+    }
+
+    /**
+     * @param \Doctrine\DBAL\Connection $dbal
+     * @param string $table
+     * @param array $data
+     * @return string
+     */
+    public static function autoInsert(\Doctrine\DBAL\Connection $dbal, $table, array $data)
+    {
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $querybuilder */
+        $querybuilder = $dbal->createQueryBuilder();
+        $querybuilder->insert($table);
+
+        foreach ($data as $colname => $col) {
+            $querybuilder
+                ->setValue($colname, ':'.$colname)
+                ->setParameter(':'.$colname, $col);
+        }
+
+        $querybuilder->execute();
+
+        return $dbal->lastInsertId();
     }
 }

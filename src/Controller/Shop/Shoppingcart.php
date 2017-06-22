@@ -240,34 +240,17 @@ class Shoppingcart extends Base
 
             $aDataOrder = $this->prepareDataOrder();
 
-            /** @var \Doctrine\DBAL\Query\QueryBuilder $querybuilder */
-            $querybuilder = $dbal->createQueryBuilder();
-            $querybuilder->insert('orders');
-
-            foreach ($aDataOrder as $colname => $col) {
-                $querybuilder
-                    ->setValue($colname, ':'.$colname)
-                    ->setParameter(':'.$colname, $col);
-            }
-
-            $querybuilder->execute();
-            $iInsertID = $dbal->lastInsertId();
+            $iInsertID = \HaaseIT\HCSF\Helper::autoInsert($dbal, 'orders', $aDataOrder);
 
             $aImagesToSend = [];
             foreach ($_SESSION['cart'] as $sK => $aV) {
                 $aImagesToSend[$aV['img']] = $this->getItemImage($aV);
-                $aDataOrderItem = $this->buildOrderItemRow($iInsertID, $sK, $aV, $aImagesToSend[$aV['img']]['base64img']);
 
-                $querybuilder = $dbal->createQueryBuilder();
-                $querybuilder->insert('orders_items');
-
-                foreach ($aDataOrderItem as $colname => $col) {
-                    $querybuilder
-                        ->setValue($colname, ':'.$colname)
-                        ->setParameter(':'.$colname, $col);
-                }
-
-                $querybuilder->execute();
+                \HaaseIT\HCSF\Helper::autoInsert(
+                    $dbal,
+                    'orders_items',
+                    $this->buildOrderItemRow($iInsertID, $sK, $aV, $aImagesToSend[$aV['img']]['base64img'])
+                );
             }
             $dbal->commit();
         } catch (\Exception $e) {
