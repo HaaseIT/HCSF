@@ -305,10 +305,10 @@ class Shoppingcart extends Base
     }
 
     /**
-     * @param $iInsertID
-     * @param $sMailbody_us
-     * @param $sMailbody_they
-     * @param $aImagesToSend
+     * @param int $iInsertID
+     * @param string $sMailbody_us
+     * @param string $sMailbody_they
+     * @param array $aImagesToSend
      */
     private function sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they, $aImagesToSend)
     {
@@ -343,7 +343,7 @@ class Shoppingcart extends Base
     }
 
     /**
-     * @param $sMailbody_us
+     * @param string $sMailbody_us
      */
     private function writeCheckoutToFile($sMailbody_us)
     {
@@ -354,7 +354,7 @@ class Shoppingcart extends Base
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return string
      */
     private function getPostValue($field)

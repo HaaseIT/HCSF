@@ -209,7 +209,7 @@ class HCSF
     }
 
     /**
-     * @return mixed
+     * @return ServiceManager
      */
     public function getServiceManager()
     {

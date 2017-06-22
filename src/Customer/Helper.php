@@ -118,7 +118,7 @@ class Helper
     }
 
     /**
-     * @param $sLang
+     * @param string $sLang
      * @param string $sPurpose
      * @param string $sErr
      * @param bool $aUserData
