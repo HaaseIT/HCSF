@@ -99,7 +99,7 @@ class Paypalnotify extends Base
 
                 $info = [];
                 while (!feof($fp)) {
-                    $info[] = @fgets($fp, 1024);
+                    $info[] = fgets($fp, 1024);
                 }
                 fclose($fp);
                 $info = implode(',', $info);
