@@ -201,6 +201,36 @@ class Shoppingcart extends Base
         ];
     }
 
+    /**
+     * @param int $orderid
+     * @param string $cartkey
+     * @param array $values
+     * @param string $image
+     * @return array
+     */
+    private function buildOrderItemRow($orderid, $cartkey, array $values, $image)
+    {
+        return [
+            'oi_o_id' => $orderid,
+            'oi_cartkey' => $cartkey,
+            'oi_amount' => $values['amount'],
+            'oi_price_netto_list' => $values['price']['netto_list'],
+            'oi_price_netto_use' => $values['price']['netto_use'],
+            'oi_price_brutto_use' => $values['price']['brutto_use'],
+            'oi_price_netto_sale' => isset($values['price']['netto_sale']) ? $values['price']['netto_sale'] : '',
+            'oi_price_netto_rebated' => isset($values['price']['netto_rebated']) ? $values['price']['netto_rebated'] : '',
+            'oi_vat' => HelperConfig::$shop['vat'][$values['vat']],
+            'oi_rg' => $values['rg'],
+            'oi_rg_rebate' => isset(
+                HelperConfig::$shop['rebate_groups'][$values['rg']][trim(CHelper::getUserData('cust_group'))]
+            )
+                ? HelperConfig::$shop['rebate_groups'][$values['rg']][trim(CHelper::getUserData('cust_group'))]
+                : '',
+            'oi_itemname' => $values['name'],
+            'oi_img' => $image,
+        ];
+    }
+
     private function doCheckout()
     {
         /** @var \PDO $db */
@@ -218,36 +248,14 @@ class Shoppingcart extends Base
             $hResult->execute();
             $iInsertID = $db->lastInsertId();
 
-            $aDataOrderItems = [];
             $aImagesToSend = [];
             foreach ($_SESSION['cart'] as $sK => $aV) {
-
                 $aImagesToSend[$aV['img']] = $this->getItemImage($aV);
+                $aDataOrderItem = $this->buildOrderItemRow($iInsertID, $sK, $aV, $aImagesToSend[$aV['img']]['base64img']);
 
-                $aDataOrderItems[] = [
-                    'oi_o_id' => $iInsertID,
-                    'oi_cartkey' => $sK,
-                    'oi_amount' => $aV['amount'],
-                    'oi_price_netto_list' => $aV['price']['netto_list'],
-                    'oi_price_netto_use' => $aV['price']['netto_use'],
-                    'oi_price_brutto_use' => $aV['price']['brutto_use'],
-                    'oi_price_netto_sale' => isset($aV['price']['netto_sale']) ? $aV['price']['netto_sale'] : '',
-                    'oi_price_netto_rebated' => isset($aV['price']['netto_rebated']) ? $aV['price']['netto_rebated'] : '',
-                    'oi_vat' => HelperConfig::$shop['vat'][$aV['vat']],
-                    'oi_rg' => $aV['rg'],
-                    'oi_rg_rebate' => isset(
-                        HelperConfig::$shop['rebate_groups'][$aV['rg']][trim(CHelper::getUserData('cust_group'))]
-                    )
-                        ? HelperConfig::$shop['rebate_groups'][$aV['rg']][trim(CHelper::getUserData('cust_group'))]
-                        : '',
-                    'oi_itemname' => $aV['name'],
-                    'oi_img' => $aImagesToSend[$aV['img']]['base64img'],
-                ];
-            }
-            foreach ($aDataOrderItems as $aV) {
-                $sql = DBTools::buildPSInsertQuery($aV, 'orders_items');
+                $sql = DBTools::buildPSInsertQuery($aDataOrderItem, 'orders_items');
                 $hResult = $db->prepare($sql);
-                foreach ($aV as $sKey => $sValue) {
+                foreach ($aDataOrderItem as $sKey => $sValue) {
                     $hResult->bindValue(':' . $sKey, $sValue);
                 }
                 $hResult->execute();
@@ -356,9 +364,15 @@ class Shoppingcart extends Base
      * @param int $iId
      * @return mixed
      */
-    private function buildOrderMailBody($bCust = true, $iId = 0)
+    private function buildOrderMailBody($bCust = true, $iId)
     {
-        $aSHC = SHelper::buildShoppingCartTable($_SESSION['cart'], true);
+        $aM = [
+            'customdata' => SHelper::buildShoppingCartTable($_SESSION['cart'], true),
+            'currency' => HelperConfig::$shop['waehrungssymbol'],
+        ];
+        if (isset(HelperConfig::$shop['custom_order_fields'])) {
+            $aM['custom_order_fields'] = HelperConfig::$shop['custom_order_fields'];
+        }
 
         $postcustno = trim(filter_input(INPUT_POST, 'custno', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
         $postcountry = trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
@@ -398,15 +412,9 @@ class Shoppingcart extends Base
             'orderid' => $iId,
         ];
 
-        $aM['customdata'] = $aSHC;
-        $aM['currency'] = HelperConfig::$shop['waehrungssymbol'];
-        if (isset(HelperConfig::$shop['custom_order_fields'])) {
-            $aM['custom_order_fields'] = HelperConfig::$shop['custom_order_fields'];
-        }
         $aM['customdata']['mail'] = $aData;
 
         return $this->serviceManager->get('twig')->render('shop/mail-order-html.twig', $aM);
-
     }
 
     /**
