@@ -52,37 +52,19 @@ class Shoppingcart extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'contentnosubnav';
 
-
         if (HelperConfig::$shop['show_pricesonlytologgedin'] && !CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
 
-            // ----------------------------------------------------------------------------
             // Check if there is a message to display above the shoppingcart
-            // ----------------------------------------------------------------------------
             $this->P->oPayload->cl_html = $this->getNotification();
 
-            // ----------------------------------------------------------------------------
             // Display the shoppingcart
-            // ----------------------------------------------------------------------------
-            $aErr = [];
             if (isset($_SESSION['cart']) && count($_SESSION['cart']) >= 1) {
+                $aErr = [];
                 if (filter_input(INPUT_POST, 'doCheckout') === 'yes') {
-                    $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
-                    if (!CHelper::getUserData() && filter_input(INPUT_POST, 'tos') !== 'y') {
-                        $aErr['tos'] = true;
-                    }
-                    if (!CHelper::getUserData() && filter_input(INPUT_POST, 'cancellationdisclaimer') !== 'y') {
-                        $aErr['cancellationdisclaimer'] = true;
-                    }
-                    $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
-                    if (
-                        $postpaymentmethod === null
-                        || in_array($postpaymentmethod, HelperConfig::$shop['paymentmethods'], true) === false
-                    ) {
-                        $aErr['paymentmethod'] = true;
-                    }
+                    $aErr = $this->validateCheckout($aErr);
                     if (count($aErr) === 0) {
                         $this->doCheckout();
                     }
@@ -95,6 +77,30 @@ class Shoppingcart extends Base
                 $this->P->oPayload->cl_html .= $this->textcats->T('shoppingcart_empty');
             }
         }
+    }
+
+    /**
+     * @param array $aErr
+     * @return array
+     */
+    private function validateCheckout($aErr = [])
+    {
+        $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
+        if (!CHelper::getUserData() && filter_input(INPUT_POST, 'tos') !== 'y') {
+            $aErr['tos'] = true;
+        }
+        if (!CHelper::getUserData() && filter_input(INPUT_POST, 'cancellationdisclaimer') !== 'y') {
+            $aErr['cancellationdisclaimer'] = true;
+        }
+        $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
+        if (
+            $postpaymentmethod === null
+            || in_array($postpaymentmethod, HelperConfig::$shop['paymentmethods'], true) === false
+        ) {
+            $aErr['paymentmethod'] = true;
+        }
+
+        return $aErr;
     }
 
     /**
