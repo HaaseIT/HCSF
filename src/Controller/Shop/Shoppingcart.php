@@ -83,23 +83,16 @@ class Shoppingcart extends Base
                     ) {
                         $aErr['paymentmethod'] = true;
                     }
+                    if (count($aErr) === 0) {
+                        $this->doCheckout();
+                    }
                 }
+
                 $aShoppingcart = SHelper::buildShoppingCartTable($_SESSION['cart'], false, '', $aErr);
-            }
 
-            // ----------------------------------------------------------------------------
-            // Checkout
-            // ----------------------------------------------------------------------------
-            if (!isset($aShoppingcart)) {
-                $this->P->oPayload->cl_html .= $this->textcats->T('shoppingcart_empty');
-            } else {
-                if (filter_input(INPUT_POST, 'doCheckout') === 'yes' && count($aErr) === 0) {
-                    $this->doCheckout();
-                }
-            }
-
-            if (isset($aShoppingcart)) {
                 $this->P->cb_customdata = $aShoppingcart;
+            } else {
+                $this->P->oPayload->cl_html .= $this->textcats->T('shoppingcart_empty');
             }
         }
     }
@@ -204,10 +197,6 @@ class Shoppingcart extends Base
 
     private function doCheckout()
     {
-        if (empty($_SESSION['cart'])) {
-            return false;
-        }
-
         /** @var \PDO $db */
         $db = $this->serviceManager->get('db');
 

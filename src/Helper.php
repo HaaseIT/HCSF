@@ -35,7 +35,7 @@ class Helper
         }
 
         header('Location: '.$target, $replace, $http_response_header);
-        die();
+        self::terminateScript();
     }
 
     public static function terminateScript($message = '')
