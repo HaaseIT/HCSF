@@ -212,6 +212,9 @@ class Helper
         ];
     }
 
+    /**
+     * @param ServiceManager $serviceManager
+     */
     public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
         if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
@@ -228,9 +231,18 @@ class Helper
         }
     }
 
-    public static function buildShoppingCartTable($aCart, $bReadonly = false, $sCustomergroup = '', $aErr = '', $iVATfull = '', $iVATreduced = '')
+    /**
+     * @param array $aCart
+     * @param bool $bReadonly
+     * @param string $sCustomergroup
+     * @param array $aErr
+     * @param string $iVATfull
+     * @param string $iVATreduced
+     * @return mixed
+     */
+    public static function buildShoppingCartTable(array $aCart, $bReadonly = false, $sCustomergroup = '', $aErr = [], $iVATfull = '', $iVATreduced = '')
     {
-        if ($iVATfull == '' && $iVATreduced == '') {
+        if ($iVATfull === '' && $iVATreduced === '') {
             $iVATfull = HelperConfig::$shop['vat']['full'];
             $iVATreduced = HelperConfig::$shop['vat']['reduced'];
         }
@@ -261,6 +273,9 @@ class Helper
         return $aData;
     }
 
+    /**
+     * @return array
+     */
     public static function getShoppingcartData()
     {
         $aCartinfo = [
@@ -467,7 +482,13 @@ class Helper
         return $suggestions['default'];
     }
 
-    public static function handleItemPage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P, $aP)
+    /**
+     * @param ServiceManager $serviceManager
+     * @param \HaaseIT\HCSF\Page $P
+     * @param array $aP
+     * @return mixed
+     */
+    public static function handleItemPage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P, array $aP)
     {
         $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
@@ -496,7 +517,13 @@ class Helper
         return $aP;
     }
 
-    public static function seekItem(\HaaseIT\HCSF\Page $P, $aP, Items $oItem)
+    /**
+     * @param \HaaseIT\HCSF\Page $P
+     * @param array $aP
+     * @param Items $oItem
+     * @return mixed
+     */
+    public static function seekItem(\HaaseIT\HCSF\Page $P, array $aP, Items $oItem)
     {
         // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
         // if it is not found, we will show the overview
@@ -550,6 +577,10 @@ class Helper
         return $aP;
     }
 
+    /**
+     * @param string $itemindex
+     * @return string
+     */
     public static function renderItemStatusIcon($itemindex)
     {
         if (trim($itemindex) === '') {
@@ -561,6 +592,11 @@ class Helper
     }
 
     // todo: when we use twig 2.x, move this to macro
+
+    /**
+     * @param $id
+     * @return string
+     */
     public static function shopadminMakeCheckbox($id)
     {
         return '<input type="checkbox" name="id[]" value="'.$id.'">';

@@ -120,11 +120,11 @@ class Helper
     /**
      * @param string $sLang
      * @param string $sPurpose
-     * @param string $sErr
+     * @param array $aErr
      * @param bool $aUserData
      * @return array
      */
-    public static function buildCustomerForm($sLang, $sPurpose = 'none', $sErr = '', $aUserData = false)
+    public static function buildCustomerForm($sLang, $sPurpose = 'none', $aErr = [], $aUserData = false)
     {
         $sDefaultCountry = self::getCustomerFormDefaultValue('cust_country', 'country', $aUserData);
 
@@ -132,7 +132,7 @@ class Helper
         // fv = field_value, fr = field_required
         $aData = [
             'purpose' => $sPurpose,
-            'errormessage' => $sErr,
+            'errormessage' => $aErr,
             'readonlycustno' => $sPurpose === 'shopadmin' ? true : false,
             'readonly' =>
                 $sPurpose === 'shopadmin'

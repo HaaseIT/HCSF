@@ -154,7 +154,7 @@ class Shoppingcart extends Base
         if (HelperConfig::$shop['email_orderconfirmation_embed_itemimages']) {
             $aImagesToSend['binimg'] = $binImg;
         }
-        if ($base64Img) {
+        if (!empty($base64Img)) {
             $aImagesToSend['base64img'] = $base64Img;
         }
         return $aImagesToSend;
@@ -305,6 +305,7 @@ class Shoppingcart extends Base
      */
     private function sendCheckoutMails($iInsertID, $sMailbody_us, $sMailbody_they)
     {
+        $aFilesToSend = [];
         if (
             isset(HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_' .HelperConfig::$lang])
             && file_exists(
@@ -316,8 +317,6 @@ class Shoppingcart extends Base
             $aFilesToSend[] =
                 PATH_DOCROOT.HelperConfig::$core['directory_emailattachments'].'/'
                 .HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_' .HelperConfig::$lang];
-        } else {
-            $aFilesToSend = [];
         }
 
         Helper::mailWrapper(
@@ -377,7 +376,6 @@ class Shoppingcart extends Base
         $serverservername = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
         $aData = [
             'customerversion' => $bCust,
-            //'shc_css' => file_get_contents(PATH_DOCROOT.'screen-shc.css'),
             'datetime' => date('d.m.Y - H:i'),
             'custno' => $postcustno !== null && strlen($postcustno) >= HelperConfig::$customer['minimum_length_custno'] ? $postcustno : '',
             'corpname' => $this->getPostValue('corpname'),
