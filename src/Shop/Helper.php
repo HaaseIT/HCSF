@@ -121,11 +121,11 @@ class Helper
         }
 
         if ($aOrder['iMindergebuehr_id'] > 0) {
-            $aOrder['fVoll'] += HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
-            $aOrder['fGesamtnetto'] += HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
+            $aOrder['fVoll'] += HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
+            $aOrder['fGesamtnetto'] += HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
             $aOrder['fSteuervoll'] = $aOrder['fVoll'] * $iVATfull / 100;
             $aOrder['fGesamtbrutto'] = $aOrder['fGesamtnetto'] + $aOrder['fSteuervoll'] + $aOrder['fSteuererm'];
-            $aOrder['fMindergebuehr'] = HelperConfig::$shop['reducedorderamountfee' . $aOrder['iMindergebuehr_id']];
+            $aOrder['fMindergebuehr'] = HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
         }
 
         $aOrder['fVersandkosten'] = 0;

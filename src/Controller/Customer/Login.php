@@ -45,18 +45,18 @@ class Login extends Base
         } else {
             $mLogin = $this->getLogin();
             if (isset($mLogin['status']) && $mLogin['status'] === 'success') {
-                $this->P->oPayload->cl_html = $textcats->T('login_success') . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T('login_success').'<br>';
                 \HaaseIT\HCSF\Helper::redirectToPage('/_misc/userhome.html?login=true');
             } elseif (isset($mLogin['status']) && $mLogin['status'] === 'tosnotaccepted') {
-                $this->P->oPayload->cl_html = $textcats->T('login_fail_tosnotaccepted') . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T('login_fail_tosnotaccepted').'<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin['status']) && $mLogin['status'] === 'emailnotverified') {
-                $this->P->oPayload->cl_html = $textcats->T('login_fail_emailnotverified') . '<br><br>';
+                $this->P->oPayload->cl_html = $textcats->T('login_fail_emailnotverified').'<br><br>';
                 $this->P->oPayload->cl_html .= '<a href="/_misc/resendverificationmail.html?email='
-                    . $mLogin['data']['cust_email'] . '">' . $textcats->T('login_fail_emailnotverifiedresend') . '</a>';
+                   .$mLogin['data']['cust_email'].'">'.$textcats->T('login_fail_emailnotverifiedresend').'</a>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } elseif (isset($mLogin['status']) && $mLogin['status'] === 'accountinactive') {
-                $this->P->oPayload->cl_html = $textcats->T('login_fail_accountinactive') . '<br>';
+                $this->P->oPayload->cl_html = $textcats->T('login_fail_accountinactive').'<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
             } else {
                 $this->P->oPayload->cl_html = $textcats->T('login_fail');
@@ -83,7 +83,7 @@ class Login extends Base
         $sUser = filter_var(trim(Tools::getFormfield('user')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
 
         $sql = 'SELECT cust_no, cust_email, cust_password, cust_active, cust_emailverified, cust_tosaccepted'
-            . ' FROM customer WHERE ';
+           .' FROM customer WHERE ';
         if ($bTryEmail) {
             $sql .= '(';
         }

@@ -340,7 +340,7 @@ class Itemadmin extends Base
         $aGroups = $this->getItemgroups('');
         $aData['groupoptions'][] = '';
         foreach ($aGroups as $aValue) {
-            $aData['groupoptions'][] = $aValue['itmg_id'] . '|' . $aValue['itmg_no'] . ' - ' . $aValue['itmg_name'];
+            $aData['groupoptions'][] = $aValue['itmg_id'].'|'.$aValue['itmg_no'].' - '.$aValue['itmg_name'];
         }
         unset($aGroups);
 

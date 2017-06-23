@@ -130,12 +130,12 @@ class Base
             }
 
             if (!$validated) {
-                header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');
+                header('WWW-Authenticate: Basic realm="'.HelperConfig::$secrets['admin_authrealm'].'"');
                 header('HTTP/1.0 401 Unauthorized');
                 \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
             }
         } else {
-            header('WWW-Authenticate: Basic realm="' . HelperConfig::$secrets['admin_authrealm'] . '"');
+            header('WWW-Authenticate: Basic realm="'.HelperConfig::$secrets['admin_authrealm'].'"');
             header('HTTP/1.0 401 Unauthorized');
             \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
         }

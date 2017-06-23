@@ -61,7 +61,7 @@ class Verifyemail extends Base
             $this->P->oPayload->cl_html = $this->textcats->T('denied_default');
         } else {
             $sql = 'SELECT cust_email, cust_id FROM customer '
-                . 'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
+               .'WHERE cust_emailverificationcode = :key AND cust_emailverified = \'n\'';
             /** @var \PDOStatement $hResult */
             $hResult = $this->db->prepare($sql);
             $hResult->bindValue(':key', filter_input(INPUT_GET, 'key', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW), \PDO::PARAM_STR);
@@ -75,7 +75,7 @@ class Verifyemail extends Base
                 /** @var \PDOStatement $hResult */
                 $hResult = $this->db->prepare($sql);
                 foreach ($aData as $sKey => $sValue) {
-                    $hResult->bindValue(':' . $sKey, $sValue);
+                    $hResult->bindValue(':'.$sKey, $sValue);
                 }
                 $hResult->execute();
                 $this->P->oPayload->cl_html = $this->textcats->T('register_emailverificationsuccess');

@@ -86,7 +86,7 @@ class Router
 
             $aPath = explode('/', $this->sPath);
             if (!empty($map[$this->sPath])) {
-                $class = '\\HaaseIT\\HCSF\\Controller\\' . $map[$this->sPath];
+                $class = '\\HaaseIT\\HCSF\\Controller\\'.$map[$this->sPath];
             } else {
                 if ($aPath[1] == HelperConfig::$core['directory_images']) {
                     $class = Controller\Glide::class;
@@ -132,7 +132,7 @@ class Router
                 } else { // if it is found, go on
                     // Support for shorturls
                     if ($this->P->cb_pagetype === 'shorturl') {
-                        \HaaseIT\HCSF\Helper::redirectToPage('Location: ' . $this->P->cb_pageconfig, true);
+                        \HaaseIT\HCSF\Helper::redirectToPage('Location: '.$this->P->cb_pageconfig, true);
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {
@@ -148,14 +148,14 @@ class Router
                 $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_found');
-                header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+                header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
             } elseif (!is_object($this->P) && $this->P == 500) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_server_error');
-                header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error');
+                header($_SERVER['SERVER_PROTOCOL'].' 500 Internal Server Error');
             } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
                 if (
                     !(
@@ -165,10 +165,10 @@ class Router
                     )
                 ) { // no payload is fine if page is one of these
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
-                    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+                    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
                 }
             } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
-                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang') . '<br><br>' . $this->P->oPayload->cl_html;
+                $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang').'<br><br>'.$this->P->oPayload->cl_html;
             }
         }
         return $this->P;
@@ -190,7 +190,7 @@ class Router
                 // to allow dots in the filename, we have to iterate through all parts of the filename
                 $aRoutingoverride['itemno'] = '';
                 for ($i = 0; $i < count($aTMP['exploded_request_file']) - 1; $i++) {
-                    $aRoutingoverride['itemno'] .= $aTMP['exploded_request_file'][$i] . '.';
+                    $aRoutingoverride['itemno'] .= $aTMP['exploded_request_file'][$i].'.';
                 }
                 // remove the trailing dot
                 $aRoutingoverride['itemno'] = \HaaseIT\Toolbox\Tools::cutStringend($aRoutingoverride['itemno'], 1);
@@ -200,7 +200,7 @@ class Router
                 // rebuild the path string without the trailing '/item/itemno.html'
                 $this->sPath = '';
                 for ($i = 0; $i < $aTMP['parts_in_path'] - 2; $i++) {
-                    $this->sPath .= $aPath[$i] . '/';
+                    $this->sPath .= $aPath[$i].'/';
                 }
             }
         }

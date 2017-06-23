@@ -48,7 +48,7 @@ class Glide extends Base
                 'cache' => PATH_GLIDECACHE,
                 'max_image_size' => HelperConfig::$core['glide_max_imagesize'],
             ]);
-            $glideserver->setBaseUrl('/' . HelperConfig::$core['directory_images'] . '/');
+            $glideserver->setBaseUrl('/'.HelperConfig::$core['directory_images'].'/');
             // Generate a URL
 
             try {

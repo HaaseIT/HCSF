@@ -188,9 +188,9 @@ class Items
     public function getGroupdata($sGroup)
     {
         $sql = 'SELECT '.DB_ITEMGROUPFIELDS.' FROM itemgroups_base'
-            . ' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
-            . ' AND itmgt_lang = :lang'
-            . ' WHERE itmg_id = :group';
+           .' LEFT OUTER JOIN itemgroups_text ON itemgroups_base.itmg_id = itemgroups_text.itmgt_pid'
+           .' AND itmgt_lang = :lang'
+           .' WHERE itmg_id = :group';
 
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);

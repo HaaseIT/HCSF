@@ -54,7 +54,7 @@ class Sofortueberweisung extends Base
 
         $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
         $sql = 'SELECT * FROM orders '
-            . "WHERE o_id = :id AND o_paymentmethod = 'sofortueberweisung' AND o_paymentcompleted = 'n'";
+           ."WHERE o_id = :id AND o_paymentmethod = 'sofortueberweisung' AND o_paymentcompleted = 'n'";
 
         /** @var \PDOStatement $hResult */
         $hResult = $this->serviceManager->get('db')->prepare($sql);
@@ -72,13 +72,13 @@ class Sofortueberweisung extends Base
                 .'&amp;project_id='.HelperConfig::$shop['sofortueberweisung']['project_id'].'&amp;amount='
                 .number_format($fGesamtbrutto, 2, '.', '')
                 .'&amp;currency_id='.HelperConfig::$shop['sofortueberweisung']['currency_id'].'&amp;reason_1='
-                .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff') . ' ').$iId;
+                .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff').' ').$iId;
             if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
                 \HaaseIT\HCSF\Helper::redirectToPage($sPURL);
             }
 
-            $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_greeting') . '<br><br>';
-            $this->P->oPayload->cl_html .= '<a href="' . $sPURL . '">' . $this->textcats->T('misc_paysofortueberweisung') . '</a>';
+            $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_greeting').'<br><br>';
+            $this->P->oPayload->cl_html .= '<a href="'.$sPURL.'">'.$this->textcats->T('misc_paysofortueberweisung').'</a>';
         } else {
             $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_paymentnotavailable');
         }

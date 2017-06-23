@@ -32,7 +32,7 @@ class Resendverificationmail extends Base
         if (CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
-            $sql = 'SELECT ' . DB_ADDRESSFIELDS . ', cust_emailverificationcode FROM customer';
+            $sql = 'SELECT '.DB_ADDRESSFIELDS.', cust_emailverificationcode FROM customer';
             $sql .= ' WHERE cust_email = :email AND cust_emailverified = \'n\'';
 
             /** @var \PDOStatement $hResult */

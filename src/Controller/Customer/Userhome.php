@@ -83,7 +83,7 @@ class Userhome extends Base
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
-                        $sErr .= $this->textcats->T('userprofile_emailalreadyinuse') . '<br>';
+                        $sErr .= $this->textcats->T('userprofile_emailalreadyinuse').'<br>';
                     }
                     $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
 
@@ -113,7 +113,7 @@ class Userhome extends Base
                             $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'customer', 'cust_id');
                             $hResult = $this->db->prepare($sql);
                             foreach ($aData as $sKey => $sValue) {
-                                $hResult->bindValue(':' . $sKey, $sValue);
+                                $hResult->bindValue(':'.$sKey, $sValue);
                             }
                             $hResult->execute();
                             $aPData['infochangessaved'] = true;

@@ -123,7 +123,7 @@ class Shoppingcart extends Base
 
         if (HelperConfig::$shop['email_orderconfirmation_embed_itemimages_method'] === 'glide') {
             $sPathToImage = '/'.HelperConfig::$core['directory_images'].'/'.HelperConfig::$shop['directory_images_items'].'/';
-            $sImageroot = PATH_BASEDIR . HelperConfig::$core['directory_glide_master'];
+            $sImageroot = PATH_BASEDIR.HelperConfig::$core['directory_glide_master'];
 
             if (
                 is_file($sImageroot.substr($sPathToImage.$aV['img'], strlen(HelperConfig::$core['directory_images']) + 1))
@@ -134,7 +134,7 @@ class Shoppingcart extends Base
                     'cache' => PATH_GLIDECACHE,
                     'max_image_size' => HelperConfig::$core['glide_max_imagesize'],
                 ]);
-                $glideserver->setBaseUrl('/' . HelperConfig::$core['directory_images'] . '/');
+                $glideserver->setBaseUrl('/'.HelperConfig::$core['directory_images'].'/');
                 $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV['img'], HelperConfig::$shop['email_orderconfirmation_embed_itemimages_glideparams']);
                 $TMP = explode(',', $base64Img);
                 $binImg = base64_decode($TMP[1]);
@@ -147,7 +147,7 @@ class Shoppingcart extends Base
                 .HelperConfig::$shop['directory_images_items_email'].'/';
             if ($aImgInfo = getimagesize($sPathToImage.$aV['img'])) {
                 $binImg = file_get_contents($sPathToImage.$aV['img']);
-                $base64Img = 'data:' . $aImgInfo['mime'] . ';base64,';
+                $base64Img = 'data:'.$aImgInfo['mime'].';base64,';
                 $base64Img .= base64_encode($binImg);
             }
         }
@@ -289,13 +289,13 @@ class Shoppingcart extends Base
                 && isset(HelperConfig::$shop['paypal_interactive'])
                 && HelperConfig::$shop['paypal_interactive']
             ) {
-                return '/_misc/paypal.html?id=' . $iInsertID;
+                return '/_misc/paypal.html?id='.$iInsertID;
             } elseif ($postpaymentmethod === 'sofortueberweisung') {
-                return '/_misc/sofortueberweisung.html?id=' . $iInsertID;
+                return '/_misc/sofortueberweisung.html?id='.$iInsertID;
             }
         }
 
-        return '/_misc/checkedout.html?id=' . $iInsertID;
+        return '/_misc/checkedout.html?id='.$iInsertID;
     }
 
     /**
@@ -322,14 +322,14 @@ class Shoppingcart extends Base
 
         Helper::mailWrapper(
             filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL),
-            $this->textcats->T('shoppingcart_mail_subject') . ' ' . $iInsertID,
+            $this->textcats->T('shoppingcart_mail_subject').' '.$iInsertID,
             $sMailbody_they,
             $this->imagestosend,
             $aFilesToSend
         );
         Helper::mailWrapper(
             HelperConfig::$core['email_sender'],
-            'Bestellung im Webshop Nr: ' . $iInsertID,
+            'Bestellung im Webshop Nr: '.$iInsertID,
             $sMailbody_us,
             $this->imagestosend
         );
@@ -340,9 +340,9 @@ class Shoppingcart extends Base
      */
     private function writeCheckoutToFile($sMailbody_us)
     {
-        $fp = fopen(PATH_LOGS . 'shoplog_' . date('Y-m-d') . '.html', 'a');
+        $fp = fopen(PATH_LOGS.'shoplog_'.date('Y-m-d').'.html', 'a');
         // Write $somecontent to our opened file.
-        fwrite($fp, $sMailbody_us . "\n\n-------------------------------------------------------------------------\n\n");
+        fwrite($fp, $sMailbody_us."\n\n-------------------------------------------------------------------------\n\n");
         fclose($fp);
     }
 
@@ -428,15 +428,15 @@ class Shoppingcart extends Base
                 ($getmsg === 'updated' && !empty($getcartkey) && !empty($getamount))
                 || ($getmsg === 'removed' && !empty($getcartkey))
             ) {
-                $return .= $this->textcats->T('shoppingcart_msg_' . $getmsg . '_1') . ' ';
+                $return .= $this->textcats->T('shoppingcart_msg_'.$getmsg.'_1').' ';
                 if (isset(HelperConfig::$shop['custom_order_fields']) && mb_strpos($getcartkey, '|') !== false) {
                     $mCartkeys = explode('|', $getcartkey);
                     foreach ($mCartkeys as $sKey => $sValue) {
                         if ($sKey == 0) {
-                            $return .= $sValue . ', ';
+                            $return .= $sValue.', ';
                         } else {
                             $TMP = explode(':', $sValue);
-                            $return .= $this->textcats->T('shoppingcart_item_' . $TMP[0]) . ' ' . $TMP[1] . ', ';
+                            $return .= $this->textcats->T('shoppingcart_item_'.$TMP[0]).' '.$TMP[1].', ';
                             unset($TMP);
                         }
                     }
@@ -444,7 +444,7 @@ class Shoppingcart extends Base
                 } else {
                     $return .= $getcartkey;
                 }
-                $return.= ' ' . $this->textcats->T('shoppingcart_msg_'.$getmsg.'_2');
+                $return.= ' '.$this->textcats->T('shoppingcart_msg_'.$getmsg.'_2');
                 if ($getmsg === 'updated') {
                     $return .= ' '.$getamount;
                 }

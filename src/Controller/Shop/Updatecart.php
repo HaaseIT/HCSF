@@ -94,7 +94,7 @@ class Updatecart extends Base
                                 unset($sTMP);
 
                                 if (isset($_REQUEST[$sValue]) && in_array($_REQUEST[$sValue], $aOptions)) {
-                                    $sCartKey .= '|' . $sValue . ':' . $_REQUEST[$sValue];
+                                    $sCartKey .= '|'.$sValue.':'.$_REQUEST[$sValue];
                                 } else {
                                     $this->replyToCartUpdate('requiredfieldmissing');
                                 }
