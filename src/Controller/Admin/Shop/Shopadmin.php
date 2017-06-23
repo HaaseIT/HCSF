@@ -343,7 +343,7 @@ class Shopadmin extends Base
                 $aSData['customerform'] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
                     HelperConfig::$lang,
                     'shopadmin',
-                    '',
+                    [],
                     $aUserdata
                 );
 
@@ -378,7 +378,7 @@ class Shopadmin extends Base
                         $aItemsCarttable,
                         true,
                         $aSData['orderdata']['o_group'],
-                        '',
+                        [],
                         $aSData['orderdata']['o_vatfull'],
                         $aSData['orderdata']['o_vatreduced']
                     ),

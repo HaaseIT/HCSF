@@ -109,7 +109,7 @@ class Myorders extends Base
                         $aItemsforShoppingcarttable,
                         true,
                         '',
-                        '',
+                        [],
                         $aOrder['o_vatfull'],
                         $aOrder['o_vatreduced']
                     );

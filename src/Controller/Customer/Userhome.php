@@ -70,7 +70,7 @@ class Userhome extends Base
                 $aPData['display_logingreeting'] = true;
             }
             if (filter_input(INPUT_GET, 'editprofile') !== null) {
-                $sErr = '';
+                $aErr = [];
 
                 if (filter_input(INPUT_POST, 'doEdit') === 'yes') {
                     $sql = 'SELECT '.DB_ADDRESSFIELDS.' FROM customer WHERE cust_id != :id AND cust_email = :email';
@@ -83,11 +83,11 @@ class Userhome extends Base
                     $hResult->execute();
                     $iRows = $hResult->rowCount();
                     if ($iRows == 1) {
-                        $sErr .= $this->textcats->T('userprofile_emailalreadyinuse').'<br>';
+                        $aErr['adrform_error_emailalreadytaken'] = true;
                     }
-                    $sErr = CHelper::validateCustomerForm(HelperConfig::$lang, $sErr, true);
+                    $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
 
-                    if ($sErr == '') {
+                    if (empty($aErr)) {
                         if (HelperConfig::$customer['allow_edituserprofile']) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
@@ -125,7 +125,7 @@ class Userhome extends Base
                 $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
                     HelperConfig::$lang,
                     'editprofile',
-                    $sErr
+                    $aErr
                 );
                 //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->textcats->T("userprofile_infoeditemail"); // Future implementation
             } else {
