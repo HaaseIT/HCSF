@@ -34,6 +34,11 @@ class Shoppingcart extends Base
     private $textcats;
 
     /**
+     * @var array
+     */
+    private $imagestosend = [];
+
+    /**
      * Shoppingcart constructor.
      * @param \Zend\ServiceManager\ServiceManager $serviceManager
      */
@@ -65,7 +70,7 @@ class Shoppingcart extends Base
                 if (filter_input(INPUT_POST, 'doCheckout') === 'yes') {
                     $aErr = $this->validateCheckout($aErr);
                     if (count($aErr) === 0) {
-                        $this->doCheckout();
+                        \HaaseIT\HCSF\Helper::redirectToPage($this->doCheckout());
                     }
                 }
 
@@ -229,11 +234,6 @@ class Shoppingcart extends Base
         ];
     }
 
-    /**
-     * @var array
-     */
-    private $imagestosend = [];
-
     private function writeCheckoutToDB()
     {
         /** @var \Doctrine\DBAL\Connection $dbal */
@@ -264,18 +264,13 @@ class Shoppingcart extends Base
             print '<p>Unable to complete transaction!</p>';
             error_log($e);
             $dbal->rollBack();
-
-            throw new \Exception('Unable to submit order!');
         }
     }
 
     private function doCheckout()
     {
-        try {
-            $iInsertID = $this->writeCheckoutToDB();
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-        }
+        $iInsertID = $this->writeCheckoutToDB();
+
         $sMailbody_us = $this->buildOrderMailBody(false, $iInsertID);
         $sMailbody_they = $this->buildOrderMailBody(true, $iInsertID);
 
@@ -288,24 +283,19 @@ class Shoppingcart extends Base
         unset($_SESSION['cart'], $_SESSION['cartpricesums'], $_SESSION['sondercart']);
 
         $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
-        if (
-            $postpaymentmethod !== null
-            && isset(HelperConfig::$shop['paypal_interactive'])
-            && $postpaymentmethod === 'paypal'
-            && in_array('paypal', HelperConfig::$shop['paymentmethods'], true) !== false
-            && HelperConfig::$shop['paypal_interactive']
-        ) {
-            $redirectto = '/_misc/paypal.html?id=' . $iInsertID;
-        } elseif (
-            $postpaymentmethod !== null
-            && $postpaymentmethod === 'sofortueberweisung'
-            && in_array('sofortueberweisung', HelperConfig::$shop['paymentmethods'], true) !== false
-        ) {
-            $redirectto = '/_misc/sofortueberweisung.html?id=' . $iInsertID;
-        } else {
-            $redirectto = '/_misc/checkedout.html?id=' . $iInsertID;
+        if ($postpaymentmethod !== null) {
+            if (
+                $postpaymentmethod === 'paypal'
+                && isset(HelperConfig::$shop['paypal_interactive'])
+                && HelperConfig::$shop['paypal_interactive']
+            ) {
+                return '/_misc/paypal.html?id=' . $iInsertID;
+            } elseif ($postpaymentmethod === 'sofortueberweisung') {
+                return '/_misc/sofortueberweisung.html?id=' . $iInsertID;
+            }
         }
-        \HaaseIT\HCSF\Helper::redirectToPage($redirectto);
+
+        return '/_misc/checkedout.html?id=' . $iInsertID;
     }
 
     /**
