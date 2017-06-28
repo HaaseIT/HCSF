@@ -420,7 +420,7 @@ class Shoppingcart extends Base
         $return = '';
         $getmsg = filter_input(INPUT_GET, 'msg');
         $getcartkey = filter_input(INPUT_GET, 'cartkey', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        $getamount = filter_input(INPUT_GET, 'cartkey', FILTER_SANITIZE_NUMBER_INT);
+        $getamount = filter_input(INPUT_GET, 'amount', FILTER_SANITIZE_NUMBER_INT);
         if (!empty($getmsg)) {
             if (
                 ($getmsg === 'updated' && !empty($getcartkey) && !empty($getamount))
