@@ -17,6 +17,7 @@
 maintenancemode: true
 textcatsverbose: false
 debug: false
+dirname_docroot: web
 enable_module_shop: true
 enable_module_customer: true
 enable_sandbox: false

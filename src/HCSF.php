@@ -12,13 +12,29 @@ class HCSF
      */
     protected $serviceManager;
 
-    public function __construct()
+    /**
+     * HCSF constructor.
+     * @param string $basedir
+     */
+    public function __construct($basedir)
     {
         define('HCSF_BASEDIR', dirname(__DIR__).DIRECTORY_SEPARATOR);
         define('DB_ADDRESSFIELDS', 'cust_id, cust_no, cust_email, cust_corp, cust_name, cust_street, cust_zip, cust_town, cust_phone, cust_cellphone, cust_fax, cust_country, cust_group, cust_active, cust_emailverified, cust_tosaccepted, cust_cancellationdisclaimeraccepted');
         define('DB_ITEMFIELDS', 'itm_no, itm_name, itm_price, itm_vatid, itm_rg, itm_img, itm_group, itm_data, itm_weight, itml_name_override, itml_text1, itml_text2, itm_index');
         define('DB_ITEMGROUPFIELDS', 'itmg_no, itmg_name, itmg_img, itmgt_shorttext, itmgt_details');
         define('FILE_PAYPALLOG', 'ipnlog.txt');
+        define('CLI', php_sapi_name() === 'cli');
+
+        define("PATH_BASEDIR", $basedir.DIRECTORY_SEPARATOR);
+        define("PATH_LOGS", PATH_BASEDIR.'hcsflogs/');
+        define("PATH_CACHE", PATH_BASEDIR.'cache/');
+        define("DIRNAME_TEMPLATECACHE", 'templates');
+        define("PATH_TEMPLATECACHE", PATH_CACHE.DIRNAME_TEMPLATECACHE);
+        define("PATH_PURIFIERCACHE", PATH_CACHE.'htmlpurifier/');
+        define("DIRNAME_GLIDECACHE", 'glide');
+        define("PATH_GLIDECACHE", PATH_CACHE.DIRNAME_GLIDECACHE);
+
+        $foo = get_defined_constants();
 
         // set scale for bcmath
         bcscale(6);
@@ -28,14 +44,19 @@ class HCSF
     {
         $this->serviceManager = new ServiceManager();
 
-        $this->setupRequest();
+        if (!CLI) {
+            $this->setupRequest();
+        }
 
         HelperConfig::init();
+        define("PATH_DOCROOT", PATH_BASEDIR.HelperConfig::$core['dirname_docroot']);
         if (HelperConfig::$core['debug']) {
             \HaaseIT\Toolbox\Tools::$bEnableDebug = true;
         }
 
-        $this->setupSession();
+        if (!CLI) {
+            $this->setupSession();
+        }
 
         date_default_timezone_set(HelperConfig::$core['defaulttimezone']);
 
@@ -45,13 +66,15 @@ class HCSF
             return null;
         });
 
-        if (!HelperConfig::$core['maintenancemode']) {
+        if (!HelperConfig::$core['maintenancemode'] || CLI) {
             $this->setupDB();
             $this->setupTextcats();
             HelperConfig::loadNavigation($this->serviceManager);
         }
 
-        $this->setupTwig();
+        if (!CLI) {
+            $this->setupTwig();
+        }
 
         if (HelperConfig::$core['enable_module_shop']) {
             $this->serviceManager->setFactory('oItem', function (ServiceManager $serviceManager) {
@@ -59,8 +82,12 @@ class HCSF
             });
         }
 
-        $router = new \HaaseIT\HCSF\Router($this->serviceManager);
-        return $router->getPage();
+        if (!CLI) {
+            $router = new \HaaseIT\HCSF\Router($this->serviceManager);
+            return $router->getPage();
+        }
+
+        return true;
     }
 
     protected function setupRequest()
