@@ -107,7 +107,7 @@ class Base
         $adminusers = $this->config->getSecret('admin_users');
         if ($this->requireAdminAuthAdminHome && (empty($adminusers) || !count($adminusers))) {
             return true;
-        } elseif (count($adminusers) {
+        } elseif (count($adminusers)) {
             $user = filter_input(INPUT_SERVER, 'PHP_AUTH_USER');
             $pass = filter_input(INPUT_SERVER, 'PHP_AUTH_PW');
             if (filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION') !== null) { // fix for php cgi mode
