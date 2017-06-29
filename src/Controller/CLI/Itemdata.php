@@ -72,16 +72,23 @@ class Itemdata
     protected function encodeItemData()
     {
         foreach ($this->items as $key => $item) {
-            $this->items[$key]['itm_data'] = json_encode($item['itm_data'], JSON_PRETTY_PRINT);
+            $this->items[$key]['itm_data'] = json_encode($item['itm_data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
     }
 
     public function addDataWhere($field, $needle, $newfield, $content)
     {
         foreach ($this->items as $key => $item) {
-            if (!empty($item['itm_data']->$field) && $item['itm_data']->$field == $needle) {
-                $this->items[$key]['itm_data']->$newfield = $content;
-                $this->itemschanged[$key] = true;
+            if ($needle !== false) {
+                if (!empty($item['itm_data']->$field) && $item['itm_data']->$field == $needle) {
+                    $this->items[$key]['itm_data']->$newfield = $content;
+                    $this->itemschanged[$key] = true;
+                }
+            } else {
+                if (!empty($item['itm_data']->$field)) {
+                    $this->items[$key]['itm_data']->$newfield = $content;
+                    $this->itemschanged[$key] = true;
+                }
             }
         }
     }
