@@ -41,44 +41,42 @@ class Updatecart extends Base
                 HelperConfig::$shop['show_pricesonlytologgedin']
                 && !\HaaseIT\HCSF\Customer\Helper::getUserData()
             )
-            || !isset($_SERVER['HTTP_REFERER'])
+            || filter_input(INPUT_SERVER, 'HTTP_REFERER') === null
         ) {
             $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
-            $iAmount = '';
-            if (isset($_REQUEST['amount'])) {
-                $iAmount = $_REQUEST['amount'];
-            }
+            $iAmount = filter_input(INPUT_POST, 'amount', FILTER_SANITIZE_NUMBER_INT);
+            $postitemno = filter_input(INPUT_POST, 'itemno', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            if (empty($_REQUEST['itemno']) || !is_numeric($iAmount)) {
+            if (empty($postitemno) || !is_numeric($iAmount)) {
                 $this->replyToCartUpdate('noitemnooramount');
             } else {
                 $iAmount = floor($iAmount);
 
                 // Check if this item exists
-                $aData = $this->serviceManager->get('oItem')->sortItems('', $_REQUEST['itemno']);
+                $aData = $this->serviceManager->get('oItem')->sortItems('', $postitemno);
                 if (!isset($aData)) {
                     $this->replyToCartUpdate('itemnotfound');
                 } else {
                     // are there additional items to this item, if so, check if they are valid, too.
-                    if (!empty($_POST['additionalitems'])) {
-                        $additionalitems = filter_input(INPUT_POST, 'additionalitems', FILTER_SANITIZE_SPECIAL_CHARS);
+                    $postadditionalitems = filter_input(INPUT_POST, 'additionalitems', FILTER_SANITIZE_SPECIAL_CHARS);
+                    if (!empty($postadditionalitems)) {
 
-                        if (strpos($additionalitems, '~') !== false) {
-                            $additionalitems = explode('~', $additionalitems);
+                        if (strpos($postadditionalitems, '~') !== false) {
+                            $postadditionalitems = explode('~', $postadditionalitems);
                         } else {
-                            $additionalitems = [$additionalitems];
+                            $postadditionalitems = [$postadditionalitems];
                         }
 
-                        $additionaldata = $this->serviceManager->get('oItem')->sortItems('', $additionalitems);
+                        $additionaldata = $this->serviceManager->get('oItem')->sortItems('', $postadditionalitems);
 
-                        if (count($additionalitems) != count($additionaldata['item'])) {
+                        if (count($postadditionalitems) != count($additionaldata['item'])) {
                             $this->replyToCartUpdate('itemnotfound');
                         }
                     }
 
                     // build the key for this item for the shoppingcart
-                    $sItemno = $aData['item'][$_REQUEST['itemno']]['itm_no'];
+                    $sItemno = $aData['item'][$postitemno]['itm_no'];
                     $sCartKey = $sItemno;
 
                     if (isset(HelperConfig::$shop['custom_order_fields'])) {
@@ -87,14 +85,15 @@ class Updatecart extends Base
                                 $aOptions = [];
                                 $TMP = explode('|', $aData['item'][$sItemno]['itm_data'][$sValue]);
                                 foreach ($TMP as $sTMPValue) {
-                                    if (trim($sTMPValue) != '') {
+                                    if (!empty($sTMPValue)) {
                                         $aOptions[] = $sTMPValue;
                                     }
                                 }
                                 unset($sTMP);
 
-                                if (isset($_REQUEST[$sValue]) && in_array($_REQUEST[$sValue], $aOptions)) {
-                                    $sCartKey .= '|'.$sValue.':'.$_REQUEST[$sValue];
+                                $currentpost = filter_input(INPUT_POST, $sValue);
+                                if ($currentpost !== null && in_array($currentpost, $aOptions)) {
+                                    $sCartKey .= '|'.$sValue.':'.$currentpost;
                                 } else {
                                     $this->replyToCartUpdate('requiredfieldmissing');
                                 }
@@ -113,11 +112,12 @@ class Updatecart extends Base
                         'name' => $aData['item'][$sItemno]['itm_name'],
                         'img' => $aData['item'][$sItemno]['itm_img'],
                     ];
-                    if (!empty($_POST['action']) && $_POST['action'] === 'add') {
+
+                    if (filter_input(INPUT_POST, 'action') === 'add') {
                         $this->addItemToCart($sCartKey, $aItem);
 
-                        if (!empty($additionalitems)) {
-                            foreach ($additionalitems as $additionalitem) {
+                        if (!empty($postadditionalitems)) {
+                            foreach ($postadditionalitems as $additionalitem) {
                                 $this->addItemToCart(
                                     $additionalitem,
                                     [
@@ -159,7 +159,7 @@ class Updatecart extends Base
      * @param array $aMore
      */
     private function replyToCartUpdate($sReply, $aMore = []) {
-        if (isset($_REQUEST['ajax'])) {
+        if (filter_input(INPUT_GET, 'ajax') !== null) {
             $aAR = [
                 'cart' => $_SESSION['cart'],
                 'reply' => $sReply,
@@ -178,7 +178,7 @@ class Updatecart extends Base
             if (count($aMore)) {
                 $aMSG = array_merge($aMSG, $aMore);
             }
-            header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars($_SERVER['HTTP_REFERER'], $aMSG, true, false));
+            header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars(filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_SANITIZE_URL), $aMSG, true, false));
         }
         \HaaseIT\HCSF\Helper::terminateScript();
     }

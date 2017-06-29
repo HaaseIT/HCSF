@@ -60,15 +60,15 @@ class Myorders extends Base
 
             $this->P->cb_customcontenttemplate = 'shop/myorders';
 
-            if (isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'show') {
+            if (filter_input(INPUT_GET, 'id') !== null && filter_input(INPUT_GET, 'action') === 'show') {
                 $iId = \filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
-                $sql = 'SELECT * FROM '.'orders WHERE o_id = :id AND o_custno = \''.$_SESSION['user']['cust_no'].'\' AND o_ordercompleted != \'d\'';
+                $sql = 'SELECT * FROM ' . 'orders WHERE o_id = :id AND o_custno = \'' . $_SESSION['user']['cust_no'] . '\' AND o_ordercompleted != \'d\'';
                 $hResult = $this->db->prepare($sql);
                 $hResult->bindValue(':id', $iId);
                 $hResult->execute();
 
-                if ($hResult->rowCount() == 1) {
+                if ($hResult->rowCount() === 1) {
                     $aOrder = $hResult->fetch();
 
                     $this->P->cb_customdata['orderdata']['ordertimestamp'] = date(
@@ -76,8 +76,8 @@ class Myorders extends Base
                         $aOrder['o_ordertimestamp']
                     );
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder['o_remarks'];
-                    $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->textcats->T('order_paymentmethod_'.$aOrder['o_paymentmethod']);
-                    $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder['o_paymentcompleted'] == 'y') ? $this->textcats->T('myorders_paymentstatus_completed') : $this->textcats->T('myorders_paymentstatus_open'));
+                    $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->textcats->T('order_paymentmethod_' . $aOrder['o_paymentmethod']);
+                    $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder['o_paymentcompleted'] === 'y') ? $this->textcats->T('myorders_paymentstatus_completed') : $this->textcats->T('myorders_paymentstatus_open'));
                     $this->P->cb_customdata['orderdata']['orderstatus'] = SHelper::showOrderStatusText($this->textcats, $aOrder['o_ordercompleted']);
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder['o_shipping_service'];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder['o_shipping_trackingno'];

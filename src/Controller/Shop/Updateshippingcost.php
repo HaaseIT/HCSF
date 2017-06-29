@@ -37,7 +37,7 @@ class Updateshippingcost extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        $_SESSION['formsave_addrform']['country'] = $_POST['country'];
+        $_SESSION['formsave_addrform']['country'] = filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION['cart']);
 
         header('Content-Type: text/html; charset=UTF-8');
