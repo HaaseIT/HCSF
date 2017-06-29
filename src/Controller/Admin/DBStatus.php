@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
@@ -68,7 +67,7 @@ class DBStatus extends Base
         $this->handleContent();
         $this->handleContentArchive();
 
-        if (HelperConfig::$core['enable_module_shop']) {
+        if ($this->config->getCore('enable_module_shop')) {
             $this->handleItems();
             $this->handleItemGroups();
             $this->handleOrderItems();

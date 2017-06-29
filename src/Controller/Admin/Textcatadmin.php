@@ -20,7 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
-use HaaseIT\HCSF\HelperConfig;
+
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
@@ -86,7 +86,7 @@ class Textcatadmin extends Base
                 // if post:edit is set, update
                 if (filter_input(INPUT_POST, 'edit') === 'do') {
                     $this->textcats->purifier = false;
-                    if (HelperConfig::$core['textcat_enable_purifier']) {
+                    if ($this->config->getCore('textcat_enable_purifier')) {
                         $this->textcats->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
                     }
                     $this->textcats->saveText(
@@ -116,7 +116,7 @@ class Textcatadmin extends Base
                     ->where('tcl_id = ?')
                     ->andWhere('tcl_lang = ?')
                     ->setParameter(0, $aData['tcl_id'])
-                    ->setParameter(1, HelperConfig::$lang)
+                    ->setParameter(1, $this->config->getLang())
                     ->orderBy('tcla_timestamp', 'DESC')
                 ;
                 $statement = $queryBuilder->execute();

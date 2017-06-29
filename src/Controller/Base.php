@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 class Base
@@ -57,12 +56,18 @@ class Base
     protected $requireModuleShop = false;
 
     /**
+     * @var \HaaseIT\HCSF\HelperConfig
+     */
+    protected $config;
+
+    /**
      * Base constructor.
      * @param ServiceManager $serviceManager
      */
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
+        $this->config = $serviceManager->get('config');
     }
 
     /**
@@ -74,21 +79,10 @@ class Base
         if ($this->requireAdminAuth) {
             $this->requireAdminAuth();
         }
-        if (
-            $this->requireModuleCustomer
-            && (
-                empty(HelperConfig::$core['enable_module_customer'])
-                || !HelperConfig::$core['enable_module_customer']
-            )
-        ) {
+        if ($this->requireModuleCustomer && !$this->config->getCore('enable_module_customer')) {
             throw new \Exception(404);
         }
-        if (
-            $this->requireModuleShop
-            && (
-                empty(HelperConfig::$core['enable_module_shop'])
-                || !HelperConfig::$core['enable_module_shop'])
-        ) {
+        if ($this->requireModuleShop && !$this->config->getCore('enable_module_shop')) {
             throw new \Exception(404);
         }
         $this->preparePage();
@@ -104,16 +98,10 @@ class Base
      * @return bool
      */
     private function requireAdminAuth() {
-        if (
-            $this->requireAdminAuthAdminHome
-            && (
-                empty(HelperConfig::$secrets['admin_users'])
-                || !count(HelperConfig::$secrets['admin_users'])
-            )
-        ) {
+        $adminusers = $this->config->getSecret('admin_users');
+        if ($this->requireAdminAuthAdminHome && (empty($adminusers) || !count($adminusers))) {
             return true;
-        } elseif (count(HelperConfig::$secrets['admin_users'])) {
-
+        } elseif (count($adminusers) {
             $user = filter_input(INPUT_SERVER, 'PHP_AUTH_USER');
             $pass = filter_input(INPUT_SERVER, 'PHP_AUTH_PW');
             if (filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION') !== null) { // fix for php cgi mode
@@ -122,20 +110,20 @@ class Base
 
             if (!empty($user) && !empty($pass)) {
                 $validated = !empty(
-                    HelperConfig::$secrets['admin_users'][$user])
-                    && password_verify($pass, HelperConfig::$secrets['admin_users'][$user]
+                    $adminusers[$user])
+                    && password_verify($pass, $adminusers[$user]
                 );
             } else {
                 $validated = false;
             }
 
             if (!$validated) {
-                header('WWW-Authenticate: Basic realm="'.HelperConfig::$secrets['admin_authrealm'].'"');
+                header('WWW-Authenticate: Basic realm="'.$this->config->getSecret('admin_authrealm').'"');
                 header('HTTP/1.0 401 Unauthorized');
                 \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
             }
         } else {
-            header('WWW-Authenticate: Basic realm="'.HelperConfig::$secrets['admin_authrealm'].'"');
+            header('WWW-Authenticate: Basic realm="'.$this->config->getSecret('admin_authrealm').'"');
             header('HTTP/1.0 401 Unauthorized');
             \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
         }

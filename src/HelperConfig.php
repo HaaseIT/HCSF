@@ -279,8 +279,12 @@ class HelperConfig
      * @param string $setting
      * @return mixed
      */
-    public function getNavigation($setting)
+    public function getNavigation($setting = false)
     {
+        if (!$setting) {
+            return $this->navigation;
+        }
+
         return !empty($this->navigation[$setting]) ? $this->navigation[$setting] : false;
     }
 }

@@ -20,7 +20,7 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
-use HaaseIT\HCSF\HelperConfig;
+
 use HaaseIT\HCSF\UserPage;
 use Zend\ServiceManager\ServiceManager;
 
@@ -120,7 +120,8 @@ class Pageadmin extends Base
      */
     protected function showPageselect() {
         $aGroups = [];
-        foreach (HelperConfig::$core['admin_page_groups'] as $sValue) {
+        $adminpagegroups = $this->config->getCore('admin_page_groups');
+        foreach ($adminpagegroups as $sValue) {
             $TMP = explode('|', $sValue);
             $aGroups[$TMP[0]] = $TMP[1];
         }
@@ -180,10 +181,11 @@ class Pageadmin extends Base
                 $Ptoedit = $this->updatePage($Ptoedit);
             }
             $this->P->cb_customdata['page'] = $Ptoedit;
-            $this->P->cb_customdata['admin_page_types'] = HelperConfig::$core['admin_page_types'];
-            $this->P->cb_customdata['admin_page_groups'] = HelperConfig::$core['admin_page_groups'];
+            $this->P->cb_customdata['admin_page_types'] = $this->config->getCore('admin_page_types');
+            $this->P->cb_customdata['admin_page_groups'] = $this->config->getCore('admin_page_groups');
             $aOptions = [''];
-            foreach (HelperConfig::$navigation as $sKey => $aValue) {
+            $navigation = $this->config->getNavigation();
+            foreach ($navigation as $sKey => $aValue) {
                 if ($sKey === 'admin') {
                     continue;
                 }
@@ -205,7 +207,7 @@ class Pageadmin extends Base
                     ->where('cl_id = ?')
                     ->andWhere('cl_lang = ?')
                     ->setParameter(0, $Ptoedit->oPayload->cl_id)
-                    ->setParameter(1, HelperConfig::$lang)
+                    ->setParameter(1, $this->config->getLang())
                     ->orderBy('cla_timestamp', 'DESC')
                 ;
                 $statement = $queryBuilder->execute();
@@ -235,7 +237,7 @@ class Pageadmin extends Base
     protected function updatePage(UserPage $Ptoedit)
     {
         $purifier = false;
-        if (HelperConfig::$core['pagetext_enable_purifier']) {
+        if ($this->config->getCore('pagetext_enable_purifier')) {
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
         }
 
