@@ -105,10 +105,7 @@ class Resetpassword extends Base
     private function handlePasswordReset($aErr, $iID) {
         $postpwd = filter_input(INPUT_POST, 'pwd');
         if (!empty($postpwd)) {
-            if (
-                strlen($postpwd) < HelperConfig::$customer['minimum_length_password']
-                || strlen($postpwd) > HelperConfig::$customer['maximum_length_password']
-            ) {
+            if (strlen($postpwd) < HelperConfig::$customer['minimum_length_password']) {
                 $aErr[] = 'pwlength';
             }
             if ($postpwd !== filter_input(INPUT_POST, 'pwdc')) {

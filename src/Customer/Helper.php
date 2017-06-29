@@ -39,51 +39,61 @@ class Helper
      */
     public static function validateCustomerForm($sLang, $aErr = [], $bEdit = false)
     {
-        if (!isset($_POST['email']) || !\filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        if (empty(filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL))) {
             $aErr['email'] = true;
         }
-        if (HelperConfig::$customer['validate_corpname'] && (!isset($_POST['corpname']) || strlen(trim($_POST['corpname'])) < 3)) {
+        $postcorpname = filter_input(INPUT_POST, 'corpname', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_corpname'] && (empty($postcorpname) || strlen(trim($postcorpname)) < 3)) {
             $aErr['corpname'] = true;
         }
-        if (HelperConfig::$customer['validate_name'] && (!isset($_POST['name']) || strlen(trim($_POST['name'])) < 3)) {
+        $postname = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_name'] && (empty($postname) || strlen(trim($postname)) < 3)) {
             $aErr['name'] = true;
         }
-        if (HelperConfig::$customer['validate_street'] && (!isset($_POST['street']) || strlen(trim($_POST['street'])) < 3)) {
+        $poststreet = filter_input(INPUT_POST, 'street', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_street'] && (empty($poststreet) || strlen(trim($poststreet)) < 3)) {
             $aErr['street'] = true;
         }
-        if (HelperConfig::$customer['validate_zip'] && (!isset($_POST['zip']) || strlen(trim($_POST['zip'])) < 4)) {
+        $postzip = filter_input(INPUT_POST, 'zip', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_zip'] && (empty($postzip) || strlen(trim($postzip)) < 4)) {
             $aErr['zip'] = true;
         }
-        if (HelperConfig::$customer['validate_town'] && (!isset($_POST['town']) || strlen(trim($_POST['town'])) < 3)) {
+        $posttown = filter_input(INPUT_POST, 'town', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_town'] && (empty($posttown) || strlen(trim($posttown)) < 3)) {
             $aErr['town'] = true;
         }
-        if (HelperConfig::$customer['validate_phone'] && (!isset($_POST['phone']) || strlen(trim($_POST['phone'])) < 6)) {
+        $postphone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_phone'] && (empty($postphone) || strlen(trim($postphone)) < 6)) {
             $aErr['phone'] = true;
         }
-        if (HelperConfig::$customer['validate_cellphone'] && (!isset($_POST['cellphone']) || strlen(trim($_POST['cellphone'])) < 11)) {
+        $postcellphone = filter_input(INPUT_POST, 'cellphone', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_cellphone'] && (empty($postcellphone) || strlen(trim($postcellphone)) < 11)) {
             $aErr['cellphone'] = true;
         }
-        if (HelperConfig::$customer['validate_fax'] && (!isset($_POST['fax']) || strlen(trim($_POST['fax']))) < 6) {
+        $postfax = filter_input(INPUT_POST, 'fax', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_fax'] && (empty($postfax) || strlen(trim($postfax)) < 6)) {
             $aErr['fax'] = true;
         }
-        if (HelperConfig::$customer['validate_country'] && (!isset($_POST['country']) || !isset(HelperConfig::$countries['countries_' .$sLang][$_POST['country']]))) {
+        $postcountry = filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (HelperConfig::$customer['validate_country'] && (empty($postcountry) || !isset(HelperConfig::$countries['countries_' .$sLang][$postcountry]))) {
             $aErr['country'] = true;
         }
-        if (!$bEdit && (!isset($_POST['tos']) || $_POST['tos'] !== 'y')) {
+        $posttos = filter_input(INPUT_POST, 'tos');
+        if (!$bEdit && $posttos !== 'y') {
             $aErr['tos'] = true;
         }
-        if (!$bEdit && (!isset( $_POST['cancellationdisclaimer'] ) || $_POST['cancellationdisclaimer'] !== 'y')) {
+        $postcancellationdisclaimer = filter_input(INPUT_POST, 'cancellationdisclaimer');
+        if (!$bEdit && $postcancellationdisclaimer !== 'y') {
             $aErr['cancellationdisclaimer'] = true;
         }
 
-        if (!$bEdit || (isset($_POST['pwd']) && trim($_POST['pwd']) != '')) {
-            if (
-                strlen($_POST['pwd']) < HelperConfig::$customer['minimum_length_password']
-                || strlen($_POST['pwd']) > HelperConfig::$customer['maximum_length_password']
-            ) {
+        $postpwd = filter_input(INPUT_POST, 'pwd');
+        $postpwdc = filter_input(INPUT_POST, 'pwdc');
+        if (!$bEdit || !empty($postpwd)) {
+            if (strlen($postpwd) < HelperConfig::$customer['minimum_length_password']) {
                 $aErr['passwordlength'] = true;
             }
-            if ($_POST['pwd'] != $_POST['pwdc']) {
+            if ($postpwd !== $postpwdc) {
                 $aErr['passwordmatch'] = true;
             }
         }
@@ -259,8 +269,10 @@ class Helper
         if ($bCust) {
             $sSubject = $serviceManager->get('textcats')->T('register_mail_emailverification_subject');
 
-            $aP['link'] = 'http'.(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 's' : '').'://';
-            $aP['link'] .= $_SERVER['SERVER_NAME'].'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
+            $serverhttps = filter_input(INPUT_SERVER, 'HTTPS');
+            $servername = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
+            $aP['link'] = 'http'.($serverhttps === 'on' ? 's' : '').'://';
+            $aP['link'] .= $servername.'/_misc/verifyemail.html?key='.$sEmailVerificationcode;
 
             $sMessage = $serviceManager->get('twig')->render('customer/sendverificationmail.twig', $aP);
         } else {

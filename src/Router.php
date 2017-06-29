@@ -142,21 +142,22 @@ class Router
                 }
             }
 
+            $serverserverprotocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             if (!is_object($this->P) && $this->P == 404) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 404;
 
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_found');
-                header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+                header($serverserverprotocol.' 404 Not Found');
             } elseif (!is_object($this->P) && $this->P == 500) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
                 $this->P->iStatus = 500;
 
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_server_error');
-                header($_SERVER['SERVER_PROTOCOL'].' 500 Internal Server Error');
-            } elseif (is_object($this->P) && $this->P->oPayload == NULL) {// elseif the page has been found but contains no payload...
+                header($serverserverprotocol.' 500 Internal Server Error');
+            } elseif (is_object($this->P) && $this->P->oPayload == null) {// elseif the page has been found but contains no payload...
                 if (
                     !(
                         $this->P->cb_pagetype === 'itemoverview'
@@ -165,9 +166,9 @@ class Router
                     )
                 ) { // no payload is fine if page is one of these
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
-                    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+                    header($serverserverprotocol.' 404 Not Found');
                 }
-            } elseif ($this->P->oPayload->cl_lang != NULL && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
+            } elseif ($this->P->oPayload->cl_lang != null && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang').'<br><br>'.$this->P->oPayload->cl_html;
             }
         }

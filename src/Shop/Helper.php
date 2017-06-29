@@ -162,9 +162,10 @@ class Helper
         $fShippingcost = HelperConfig::$shop['shippingcoststandardrate'];
 
         $sCountry = CHelper::getDefaultCountryByConfig(HelperConfig::$lang);
+        $postdocheckout = filter_input(INPUT_POST, 'doCheckout');
         if (isset($_SESSION['user']['cust_country'])) {
             $sCountry = $_SESSION['user']['cust_country'];
-        } elseif (isset($_POST['doCheckout'], $_POST['country']) && $_POST['doCheckout'] === 'yes') {
+        } elseif (filter_input(INPUT_POST, 'country') !== null && $postdocheckout === 'yes') {
             $sCountry = trim(\HaaseIT\Toolbox\Tools::getFormfield('country'));
         } elseif (isset($_SESSION['formsave_addrform']['country'])) {
             $sCountry = $_SESSION['formsave_addrform']['country'];

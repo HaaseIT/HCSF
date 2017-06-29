@@ -78,42 +78,48 @@ class Items
         $sql = 'SELECT '.DB_ITEMFIELDS.' FROM item_base';
         $sql .= ' LEFT OUTER JOIN item_lang ON item_base.itm_id = item_lang.itml_pid AND itml_lang = :lang';
         $sql .= $this->queryItemWhereClause($mItemIndex, $mItemno);
-        $sql .= ' ORDER BY '.(($sOrderby == '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop['items_orderdirection_default'];
+        $sql .= ' ORDER BY '.(($sOrderby === '') ? 'itm_order, itm_no' : $sOrderby).' '.HelperConfig::$shop['items_orderdirection_default'];
 
         $hResult = $this->db->prepare($sql);
         $hResult->bindValue(':lang', HelperConfig::$lang, \PDO::PARAM_STR);
-        if ($mItemno != '') {
+        $getsearchtext = filter_input(INPUT_GET, 'searchtext', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!empty($mItemno)) {
             if (!is_array($mItemno)) {
                 $hResult->bindValue(':itemno', $mItemno, \PDO::PARAM_STR);
             }
-        } elseif (isset($_REQUEST['searchtext']) && strlen($_REQUEST['searchtext']) > 2) {
-            $sSearchtext = filter_var(trim($_REQUEST['searchtext']), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            if (isset($_REQUEST['artnoexact'])) {
-                $hResult->bindValue(':searchtext', $sSearchtext, \PDO::PARAM_STR);
+        } elseif (!empty($getsearchtext) && strlen(trim($getsearchtext)) > 2) {
+            if (filter_input(INPUT_GET, 'artnoexact') !== null) {
+                $hResult->bindValue(':searchtext', $getsearchtext, \PDO::PARAM_STR);
             }
-            $hResult->bindValue(':searchtextwild1', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild2', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild3', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild4', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild5', '%'.$sSearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild1', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild2', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild3', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild4', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+            $hResult->bindValue(':searchtextwild5', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
 
         return $hResult;
     }
 
+    /**
+     * @param string|array $mItemIndex
+     * @param string|array $mItemno
+     * @return string
+     */
     public function queryItemWhereClause($mItemIndex = '', $mItemno = '')
     {
         $sql = ' WHERE ';
-        if ($mItemno != '') {
+        $getsearchtext = filter_input(INPUT_GET, 'searchtext', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (!empty($mItemno)) {
             if (is_array($mItemno)) {
                 $sItemno = "'".\implode("','", \filter_var_array($mItemno, FILTER_SANITIZE_SPECIAL_CHARS))."'";
                 $sql .= 'item_base.itm_no IN ('.$sItemno.')';
             } else {
                 $sql .= 'item_base.itm_no = :itemno';
             }
-        } elseif (isset($_REQUEST['searchtext']) && \strlen($_REQUEST['searchtext']) > 2) {
-            if (isset($_REQUEST['artnoexact'])) {
+        } elseif (!empty($getsearchtext) && strlen(trim($getsearchtext)) > 2) {
+            if (filter_input(INPUT_GET, 'artnoexact') !== null) {
                 $sql .= 'item_base.itm_no = :searchtext';
             } else {
                 $sql .= '(item_base.itm_no LIKE :searchtextwild1 OR itm_name LIKE :searchtextwild2';

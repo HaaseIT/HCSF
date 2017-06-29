@@ -99,7 +99,7 @@ class HCSF
 
             // cleanup request
             $requesturi = urldecode($request->getRequestTarget());
-            $parsedrequesturi = substr($requesturi, strlen(dirname($_SERVER['PHP_SELF'])));
+            $parsedrequesturi = substr($requesturi, strlen(dirname(filter_input(INPUT_SERVER, 'PHP_SELF'))));
             if (substr($parsedrequesturi, 1, 1) !== '/') {
                 $parsedrequesturi = '/'.$parsedrequesturi;
             }
@@ -109,30 +109,32 @@ class HCSF
 
     protected function setupSession()
     {
-        if (isset($_COOKIE['acceptscookies']) && HelperConfig::$core['enable_module_customer'] && $_COOKIE['acceptscookies'] === 'yes') {
+        if (HelperConfig::$core['enable_module_customer'] && filter_input(INPUT_COOKIE, 'acceptscookies') === 'yes') {
             // Session handling
             // session.use_trans_sid wenn nötig aktivieren
             session_name('sid');
             // Session wenn nötig starten
-            if (session_id() == '') {
+            if (empty(session_id())) {
                 session_start();
             }
 
+            $serverremoteaddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+            $serveruseragent = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT');
             // check if the stored ip and ua equals the clients, if not, reset. if not set at all, reset
             if (!empty($_SESSION['hijackprevention'])) {
                 if (
-                    $_SESSION['hijackprevention']['remote_addr'] != $_SERVER['REMOTE_ADDR']
+                    $_SESSION['hijackprevention']['remote_addr'] != $serverremoteaddr
                     ||
-                    $_SESSION['hijackprevention']['user_agent'] != $_SERVER['HTTP_USER_AGENT']
+                    $_SESSION['hijackprevention']['user_agent'] != $serveruseragent
                 ) {
-                    \session_regenerate_id();
-                    \session_unset();
+                    session_regenerate_id();
+                    session_unset();
                 }
             } else {
-                \session_regenerate_id();
-                \session_unset();
-                $_SESSION['hijackprevention']['remote_addr'] = $_SERVER['REMOTE_ADDR'];
-                $_SESSION['hijackprevention']['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+                session_regenerate_id();
+                session_unset();
+                $_SESSION['hijackprevention']['remote_addr'] = $serverremoteaddr;
+                $_SESSION['hijackprevention']['user_agent'] = $serveruseragent;
             }
         }
     }
