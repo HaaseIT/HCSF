@@ -22,7 +22,6 @@ namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
 
 use \HaaseIT\HCSF\Customer\Helper as CHelper;
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -131,7 +130,7 @@ class Customeradmin extends Base
             $aErr = [];
             if (filter_input(INPUT_POST, 'doEdit') === 'yes') {
                 $sCustno = trim(filter_input(INPUT_POST, 'custno', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
-                if (strlen($sCustno) < HelperConfig::$customer['minimum_length_custno']) {
+                if (strlen($sCustno) < $this->config->getCustomer('minimum_length_custno')) {
                     $aErr['custnoinvalid'] = true;
                 } else {
                     $querybuilder = $this->dbal->createQueryBuilder();
@@ -162,7 +161,7 @@ class Customeradmin extends Base
                     if ($stmt->rowCount() === 1) {
                         $aErr['emailalreadytaken'] = true;
                     }
-                    $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
+                    $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
                     if (count($aErr) === 0) {
                         $querybuilder = $this->dbal->createQueryBuilder();
                         $querybuilder
@@ -222,7 +221,7 @@ class Customeradmin extends Base
             $stmt = $querybuilder->execute();
             if ($stmt->rowCount() === 1) {
                 $aUser = $stmt->fetch();
-                $aPData['customerform'] = CHelper::buildCustomerForm(HelperConfig::$lang, 'admin', $aErr, $aUser);
+                $aPData['customerform'] = CHelper::buildCustomerForm($this->config->getLang(), 'admin', $aErr, $aUser);
             } else {
                 $aInfo['nosuchuserfound'] = true;
             }

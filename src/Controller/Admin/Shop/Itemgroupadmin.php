@@ -84,7 +84,7 @@ class Itemgroupadmin extends Base
                 ->from('itemgroups_text')
                 ->where('itmgt_pid = ? AND itmgt_lang = ?')
                 ->setParameter(0, $iGID)
-                ->setParameter(1, HelperConfig::$lang)
+                ->setParameter(1, $this->config->getLang())
             ;
             $stmt = $querybuilder->execute();
 
@@ -97,7 +97,7 @@ class Itemgroupadmin extends Base
                     ->setValue('itmgt_pid', '?')
                     ->setValue('itmgt_lang', '?')
                     ->setParameter(0, $iGID)
-                    ->setParameter(1, HelperConfig::$lang)
+                    ->setParameter(1, $this->config->getLang())
                 ;
                 $querybuilder->execute();
                 \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
@@ -180,7 +180,7 @@ class Itemgroupadmin extends Base
     private function updateGroup()
     {
         $purifier = false;
-        if (HelperConfig::$shop['itemgrouptext_enable_purifier']) {
+        if ($this->config->getShop('itemgrouptext_enable_purifier')) {
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('itemgroup');
         }
 
@@ -221,7 +221,7 @@ class Itemgroupadmin extends Base
             ->from('itemgroups_text')
             ->where('itmgt_pid = ? AND itmgt_lang = ?')
             ->setParameter(0, $iGID)
-            ->setParameter(1, HelperConfig::$lang)
+            ->setParameter(1, $this->config->getLang())
         ;
         $stmt = $querybuilder->execute();
 
@@ -284,7 +284,7 @@ class Itemgroupadmin extends Base
             ->select('*')
             ->from('itemgroups_base', 'b')
             ->leftJoin('b', 'itemgroups_text', 't', 'b.itmg_id = t.itmgt_pid AND t.itmgt_lang = ?')
-            ->setParameter(0, HelperConfig::$lang)
+            ->setParameter(0, $this->config->getLang())
             ->orderBy('itmg_no')
         ;
 

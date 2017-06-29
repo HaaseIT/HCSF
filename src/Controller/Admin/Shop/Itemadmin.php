@@ -74,7 +74,7 @@ class Itemadmin extends Base
                     ->setValue('itml_pid', '?')
                     ->setValue('itml_lang', '?')
                     ->setParameter(0, $aItemdata['base']['itm_id'])
-                    ->setParameter(1, HelperConfig::$lang)
+                    ->setParameter(1, $this->config->getLang())
                 ;
                 $querybuilder->execute();
 
@@ -222,7 +222,7 @@ class Itemadmin extends Base
 
         $querybuilder
             ->setParameter(':searchstring', $sSearchstring)
-            ->setParameter(':lang', HelperConfig::$lang)
+            ->setParameter(':lang', $this->config->getLang())
         ;
 
         $stmt = $querybuilder->execute();
@@ -296,7 +296,7 @@ class Itemadmin extends Base
             ->from('item_lang')
             ->where('itml_pid = ? AND itml_lang = ?')
             ->setParameter(0, $aItemdata['base']['itm_id'])
-            ->setParameter(1, HelperConfig::$lang)
+            ->setParameter(1, $this->config->getLang())
         ;
         $stmt = $querybuilder->execute();
 
@@ -329,16 +329,16 @@ class Itemadmin extends Base
             'weight' => $aItemdata['base']['itm_weight'],
         ];
 
-        if (!HelperConfig::$shop['vat_disable']) {
+        if (!$this->config->getShop('vat_disable')) {
             $aOptions[] = '|';
-            foreach (HelperConfig::$shop['vat'] as $sKey => $sValue) {
+            foreach ($this->config->getShop('vat') as $sKey => $sValue) {
                 $aOptions[] = $sKey.'|'.$sValue;
             }
             $aData['vatoptions'] = $aOptions;
             unset($aOptions);
         }
         $aData['rgoptions'][] = '';
-        foreach (HelperConfig::$shop['rebate_groups'] as $sKey => $aValue) {
+        foreach ($this->config->getShop('rebate_groups') as $sKey => $aValue) {
             $aData['rgoptions'][] = $sKey;
         }
 
@@ -367,7 +367,7 @@ class Itemadmin extends Base
     private function updateItem()
     {
         $purifier = false;
-        if (HelperConfig::$shop['itemtext_enable_purifier']) {
+        if ($this->config->getShop('itemtext_enable_purifier')) {
             $purifier = \HaaseIT\HCSF\Helper::getPurifier('item');
         }
 
@@ -397,7 +397,7 @@ class Itemadmin extends Base
             ->setParameter(':itm_id', filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT))
         ;
 
-        if (!HelperConfig::$shop['vat_disable']) {
+        if (!$this->config->getShop('vat_disable')) {
             $querybuilder->setParameter(':itm_vatid', filter_input(INPUT_POST, 'vatid', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
         } else {
             $querybuilder->setParameter(':itm_vatid', 'full');
@@ -438,7 +438,7 @@ class Itemadmin extends Base
             ->select('*')
             ->from('itemgroups_base', 'b')
             ->leftJoin('b', 'itemgroups_text', 't', 'b.itmg_id = t.itmgt_pid AND t.itmgt_lang = ?')
-            ->setParameter(0, HelperConfig::$lang)
+            ->setParameter(0, $this->config->getLang())
             ->orderBy('itmg_no')
         ;
 

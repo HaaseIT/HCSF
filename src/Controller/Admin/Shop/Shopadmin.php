@@ -270,26 +270,26 @@ class Shopadmin extends Base
                         'o_cust' => $sName.'<br>'.$aRow['o_zip'].' '.$aRow['o_town'],
                         'o_authed' => $aRow['o_authed'],
                         'o_sumnettoall' => number_format(
-                            $aRow['o_sumnettoall'],
-                                HelperConfig::$core['numberformat_decimals'],
-                                HelperConfig::$core['numberformat_decimal_point'],
-                                HelperConfig::$core['numberformat_thousands_seperator']
+                                $aRow['o_sumnettoall'],
+                                $this->config->getCore('numberformat_decimals'),
+                                $this->config->getCore('numberformat_decimal_point'),
+                                $this->config->getCore('numberformat_thousands_seperator')
                             )
-                            .' '.HelperConfig::$shop['waehrungssymbol']
+                            .' '.$this->config->getShop('waehrungssymbol')
                             .(
                                 ($aRow['o_mindermenge'] != 0 && $aRow['o_mindermenge'] !== '')
                                     ? '<br>+'.number_format(
                                         $aRow['o_mindermenge'],
-                                        HelperConfig::$core['numberformat_decimals'],
-                                        HelperConfig::$core['numberformat_decimal_point'],
-                                        HelperConfig::$core['numberformat_thousands_seperator']
-                                    ).' '.HelperConfig::$shop['waehrungssymbol'] : ''),
+                                        $this->config->getCore('numberformat_decimals'),
+                                        $this->config->getCore('numberformat_decimal_point'),
+                                        $this->config->getCore('numberformat_thousands_seperator')
+                                    ).' '.$this->config->getShop('waehrungssymbol') : ''),
                         'o_order_status' => $sStatus.((trim($aRow['o_lastedit_user']) !== '') ? '<br>'.$aRow['o_lastedit_user'] : ''),
                         'o_ordertime_number' => date(
-                                HelperConfig::$core['locale_format_date_time'],
+                            $this->config->getCore('locale_format_date_time'),
                                 $aRow['o_ordertimestamp']
                             )
-                            .((trim($aRow['o_transaction_no']) != '') ? '<br>'.$aRow['o_transaction_no'] : ''),
+                            .((trim($aRow['o_transaction_no']) !== '') ? '<br>'.$aRow['o_transaction_no'] : ''),
                         'o_order_host_payment' => $sZahlungsmethode.'<br>'.$aRow['o_srv_hostname'],
                     ];
                     if (!($bIgnoreStorno && $aRow['o_ordercompleted'] === 's')) {
@@ -346,14 +346,14 @@ class Shopadmin extends Base
                     'cust_group' => $aSData['orderdata']['o_group'],
                 ];
                 $aSData['customerform'] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
-                    HelperConfig::$lang,
+                    $this->config->getLang(),
                     'shopadmin',
                     [],
                     $aUserdata
                 );
 
                 $aSData['orderdata']['options_shippingservices'] = [''];
-                foreach (HelperConfig::$shop['shipping_services'] as $sValue) {
+                foreach ($this->config->getShop('shipping_services') as $sValue) {
                     $aSData['orderdata']['options_shippingservices'][] = $sValue;
                 }
 
