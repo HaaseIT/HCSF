@@ -64,7 +64,7 @@ class Login extends Base
             }
         }
 
-        if (HelperConfig::$core['enable_module_shop']) {
+        if ($this->config->getCore('enable_module_shop')) {
             \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
         }
     }

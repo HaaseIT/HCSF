@@ -37,7 +37,7 @@ class Checkedout extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (HelperConfig::$shop['show_pricesonlytologgedin'] && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->config->getShop('show_pricesonlytologgedin') && !\HaaseIT\HCSF\Customer\Helper::getUserData()) {
             $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'shop/checkedout';

@@ -82,7 +82,7 @@ class Resetpassword extends Base
                         $this->P->oPayload->cl_html = $this->textcats->T('pwreset_error_expired');
                     } else {
                         $this->P->cb_customcontenttemplate = 'customer/resetpassword';
-                        $this->P->cb_customdata['pwreset']['minpwlength'] = HelperConfig::$customer['minimum_length_password'];
+                        $this->P->cb_customdata['pwreset']['minpwlength'] = $this->config->getCustomer('minimum_length_password');
                         if (filter_input(INPUT_POST, 'doSend') === 'yes') {
                             $aErr = $this->handlePasswordReset($aErr, $aResult['cust_id']);
                             if (count($aErr) === 0) {
@@ -105,7 +105,7 @@ class Resetpassword extends Base
     private function handlePasswordReset($aErr, $iID) {
         $postpwd = filter_input(INPUT_POST, 'pwd');
         if (!empty($postpwd)) {
-            if (strlen($postpwd) < HelperConfig::$customer['minimum_length_password']) {
+            if (strlen($postpwd) < $this->config->getCustomer('minimum_length_password')) {
                 $aErr[] = 'pwlength';
             }
             if ($postpwd !== filter_input(INPUT_POST, 'pwdc')) {

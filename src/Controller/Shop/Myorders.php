@@ -72,7 +72,7 @@ class Myorders extends Base
                     $aOrder = $hResult->fetch();
 
                     $this->P->cb_customdata['orderdata']['ordertimestamp'] = date(
-                        HelperConfig::$core['locale_format_date_time'],
+                        $this->config->getCore('locale_format_date_time'),
                         $aOrder['o_ordertimestamp']
                     );
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder['o_remarks'];
@@ -180,7 +180,7 @@ class Myorders extends Base
                     'o_id' => $aRow['o_id'],
                     'o_order_status' => $sStatus,
                     'o_ordertime' => date(
-                        HelperConfig::$customer['locale_format_date_time'],
+                        $this->config->getCore('locale_format_date_time'),
                         $aRow['o_ordertimestamp']
                     ),
                     'o_paymentmethod' => $sPaymentmethod,

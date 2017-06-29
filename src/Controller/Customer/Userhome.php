@@ -85,10 +85,10 @@ class Userhome extends Base
                     if ($iRows == 1) {
                         $aErr['adrform_error_emailalreadytaken'] = true;
                     }
-                    $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
+                    $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
 
                     if (empty($aErr)) {
-                        if (HelperConfig::$customer['allow_edituserprofile']) {
+                        if ($this->config->getCustomer('allow_edituserprofile')) {
                             $aData = [
                                 //'cust_email' => $sEmail, // disabled until renwewd email verification implemented
                                 'cust_corp' => filter_var(trim(Tools::getFormfield('corpname')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -123,14 +123,14 @@ class Userhome extends Base
                     }
                 }
                 $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
-                    HelperConfig::$lang,
+                    $this->config->getLang(),
                     'editprofile',
                     $aErr
                 );
                 //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->textcats->T("userprofile_infoeditemail"); // Future implementation
             } else {
                 $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
-                    HelperConfig::$lang,
+                    $this->config->getLang(),
                     'userhome'
                 );
             }
