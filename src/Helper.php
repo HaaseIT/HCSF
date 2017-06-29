@@ -55,11 +55,6 @@ class Helper
     protected $shop = [];
 
     /**
-     * @var \HaaseIT\HCSF\Shop\Helper
-     */
-    protected $helperShop;
-
-    /**
      * Helper constructor.
      * @param ServiceManager $serviceManager
      */
@@ -70,7 +65,6 @@ class Helper
         $this->secrets = $this->config->getSecret();
         $this->core = $this->config->getCore();
         $this->shop = $this->config->getShop();
-        $this->helperShop = $serviceManager->get('helpershop');
     }
 
     /**
@@ -261,9 +255,11 @@ class Helper
      */
     public function twigCallback($callback, $parameters)
     {
+        $helperShop = $this->serviceManager->get('helpershop');
+
         $callbacks = [
-            'renderItemStatusIcon' => [$this->helperShop, 'renderItemStatusIcon'],
-            'shopadminMakeCheckbox' => [$this->helperShop, 'shopadminMakeCheckbox'],
+            'renderItemStatusIcon' => [$helperShop, 'renderItemStatusIcon'],
+            'shopadminMakeCheckbox' => [$helperShop, 'shopadminMakeCheckbox'],
         ];
 
         if (!isset($callbacks[$callback])) {

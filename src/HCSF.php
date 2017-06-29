@@ -73,21 +73,25 @@ class HCSF
         $this->serviceManager->setFactory('helper', function (ServiceManager $serviceManager) {
             return new \HaaseIT\HCSF\Helper($serviceManager);
         });
+
+        $this->serviceManager->setFactory('helpercustomer', function (ServiceManager $serviceManager) {
+            return new \HaaseIT\HCSF\Customer\Helper($serviceManager);
+        });
+
+        $this->serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
+            return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
+        });
+
         $this->helper = $this->serviceManager->get('helper');
 
         if ($this->config->getCore('enable_module_customer')) {
-            $this->serviceManager->setFactory('helpercustomer', function (ServiceManager $serviceManager) {
-                return new \HaaseIT\HCSF\Customer\Helper($serviceManager);
-            });
             $this->helperCustomer = $this->serviceManager->get('helpercustomer');
         }
 
         if ($this->config->getCore('enable_module_shop')) {
-            $this->serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
-                return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
-            });
             $this->helperShop = $this->serviceManager->get('helpershop');
         }
+
 
         define("PATH_DOCROOT", PATH_BASEDIR.$this->config->getCore('dirname_docroot'));
         if ($this->config->getCore('debug')) {
