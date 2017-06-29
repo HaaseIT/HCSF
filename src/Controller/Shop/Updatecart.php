@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\HelperConfig;
 
 /**
  * Class Updatecart
@@ -38,7 +37,7 @@ class Updatecart extends Base
 
         if (
             (
-                HelperConfig::$shop['show_pricesonlytologgedin']
+                $this->config->getShop('show_pricesonlytologgedin')
                 && !\HaaseIT\HCSF\Customer\Helper::getUserData()
             )
             || filter_input(INPUT_SERVER, 'HTTP_REFERER') === null
@@ -79,8 +78,8 @@ class Updatecart extends Base
                     $sItemno = $aData['item'][$postitemno]['itm_no'];
                     $sCartKey = $sItemno;
 
-                    if (isset(HelperConfig::$shop['custom_order_fields'])) {
-                        foreach (HelperConfig::$shop['custom_order_fields'] as $sValue) {
+                    if (!empty($this->config->getShop('custom_order_fields'))) {
+                        foreach ($this->config->getShop('custom_order_fields') as $sValue) {
                             if (isset($aData['item'][$sItemno]['itm_data'][$sValue])) {
                                 $aOptions = [];
                                 $TMP = explode('|', $aData['item'][$sItemno]['itm_data'][$sValue]);
@@ -164,10 +163,10 @@ class Updatecart extends Base
                 'cart' => $_SESSION['cart'],
                 'reply' => $sReply,
                 'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']),
-                'currency' => HelperConfig::$shop['waehrungssymbol'],
-                'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
-                'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
-                'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
+                'currency' => $this->config->getShop('waehrungssymbol'),
+                'numberformat_decimals' => $this->config->getCore('numberformat_decimals'),
+                'numberformat_decimal_point' => $this->config->getCore('numberformat_decimal_point'),
+                'numberformat_thousands_seperator' => $this->config->getCore('numberformat_thousands_seperator'),
             ];
             if (count($aMore)) {
                 $aAR = array_merge($aAR, $aMore);

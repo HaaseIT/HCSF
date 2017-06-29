@@ -21,8 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 
-use HaaseIT\HCSF\HelperConfig;
-
 /**
  * Class Updateshippingcost
  * @package HaaseIT\HCSF\Controller\Shop
@@ -42,24 +40,21 @@ class Updateshippingcost extends Base
 
         header('Content-Type: text/html; charset=UTF-8');
         $return = '<div>';
+        $numberformatdecimal = $this->config->getCore('numberformat_decimals');
+        $numberformatdecimalpoint = $this->config->getCore('numberformat_decimal_point');
+        $numberformatdecimalthousandsseperator = $this->config->getCore('numberformat_thousands_seperator');
         $return .= '<div id="shippingcostbrutto_new">'.number_format($_SESSION['cartpricesums']['fVersandkostenbrutto'],
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '<div id="vatfull_new">'.number_format(round($_SESSION['cartpricesums']['fSteuervoll'], 2),
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '<div id="totalbrutto_new">'.number_format(round($_SESSION['cartpricesums']['fGesamtbrutto'], 2),
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '<div id="shippingcostnetto_new">'.number_format($_SESSION['cartpricesums']['fVersandkostennetto'],
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '<div id="vatreduced_new">'.number_format(round($_SESSION['cartpricesums']['fSteuererm'], 2),
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '<div id="totalnetto_new">'.number_format(round($_SESSION['cartpricesums']['fGesamtnetto'], 2),
-                HelperConfig::$core['numberformat_decimals'], HelperConfig::$core['numberformat_decimal_point'],
-                HelperConfig::$core['numberformat_thousands_seperator']).'</div>';
+                $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '</div>';
         \HaaseIT\HCSF\Helper::terminateScript($return);
     }

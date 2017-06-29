@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -78,7 +77,7 @@ class Paypalnotify extends Base
                 $postdata .= $i . '=' . urlencode($v) . '&';
             }
             $postdata .= 'cmd=_notify-validate';
-            $web = parse_url(HelperConfig::$shop['paypal']['url']);
+            $web = parse_url($this->config->getShop('paypal')['url']);
 
             if ($web['scheme'] === 'https') {
                 $web['port'] = 443;
@@ -105,7 +104,7 @@ class Paypalnotify extends Base
                 $info = implode(',', $info);
                 if (!(strpos($info, 'VERIFIED') === false)) {
 
-                    $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\n";
+                    $sLogData .= '-- new entry - '.date($this->config->getCore('locale_format_date_time')) . " --\n\n";
                     $sLogData .= "W00T!\n\n";
                     $sLogData .= \HaaseIT\Toolbox\Tools::debug($_REQUEST, '', true, true) . "\n\n";
 
@@ -123,8 +122,8 @@ class Paypalnotify extends Base
                             filter_input(INPUT_POST, 'payment_status') === 'Completed'
                             && filter_input(INPUT_POST, 'mc_gross') == number_format($fGesamtbrutto, 2, '.', '')
                             && filter_input(INPUT_POST, 'custom') == $aOrder['o_id']
-                            && filter_input(INPUT_POST, 'mc_currency') == HelperConfig::$shop['paypal']['currency_id']
-                            && filter_input(INPUT_POST, 'business') == HelperConfig::$shop['paypal']['business']
+                            && filter_input(INPUT_POST, 'mc_currency') == $this->config->getShop('paypal')['currency_id']
+                            && filter_input(INPUT_POST, 'business') == $this->config->getShop('paypal')['business']
                         ) {
                             $queryBuilder = $this->dbal->createQueryBuilder();
                             $queryBuilder
@@ -143,17 +142,17 @@ class Paypalnotify extends Base
                                     2, '.', '') . "\n";
                             $sLogData .= 'custom: ' . $_REQUEST['custom'] . ' - $aOrder[\'o_id\']: ' . $aOrder['o_id'] . "\n";
                             $sLogData .= 'payment_status: ' . $_REQUEST['payment_status'] . "\n";
-                            $sLogData .= 'mc_currency: ' . $_REQUEST['mc_currency'] . ' - HelperConfig::$shop["paypal"]["currency_id"]: ' . HelperConfig::$shop['paypal']['currency_id'] . "\n";
-                            $sLogData .= 'business: ' . $_REQUEST['receiver_email'] . ' - HelperConfig::$shop["paypal"]["business"]: ' . HelperConfig::$shop['paypal']['business'] . "\n\n";
+                            $sLogData .= 'mc_currency: ' . $_REQUEST['mc_currency'] . ' - HelperConfig::$shop["paypal"]["currency_id"]: ' . $this->config->getShop('paypal')['currency_id'] . "\n";
+                            $sLogData .= 'business: ' . $_REQUEST['receiver_email'] . ' - HelperConfig::$shop["paypal"]["business"]: ' . $this->config->getShop('paypal')['business'] . "\n\n";
                         }
                     } else {
                         // INVALID LOGGING ERROR
-                        $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL\n\n";
+                        $sLogData .= '-- new entry - ' . date($this->config->getCore('locale_format_date_time')) . " --\n\nPHAIL\n\n";
                         $sLogData .= '!!! JEMAND HAT EINE ALTE TXN_ID BENUTZT: ' . $_REQUEST['txn_id'] . " !!!\n\n";
                         $sLogData .= "!!! INVALID !!!\n\n";
                     }
                 } else {
-                    $sLogData .= '-- new entry - ' . date(HelperConfig::$core['locale_format_date_time']) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST['txn_id'] . "\n" . $info . "\n\n";
+                    $sLogData .= '-- new entry - ' . date($this->config->getCore('locale_format_date_time')) . " --\n\nPHAIL - Transaktion fehlgeschlagen. TXNID: " . $_REQUEST['txn_id'] . "\n" . $info . "\n\n";
                 }
 
                 file_put_contents(PATH_LOGS . FILE_PAYPALLOG, $sLogData, FILE_APPEND);

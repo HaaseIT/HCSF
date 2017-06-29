@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use HaaseIT\HCSF\Helper;
 use HaaseIT\HCSF\Customer\Helper as CHelper;
@@ -56,7 +55,7 @@ class Shoppingcart extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'contentnosubnav';
 
-        if (HelperConfig::$shop['show_pricesonlytologgedin'] && !CHelper::getUserData()) {
+        if ($this->config->getShop('show_pricesonlytologgedin') && !CHelper::getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
@@ -89,7 +88,7 @@ class Shoppingcart extends Base
      */
     private function validateCheckout($aErr = [])
     {
-        $aErr = CHelper::validateCustomerForm(HelperConfig::$lang, $aErr, true);
+        $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
         if (!CHelper::getUserData() && filter_input(INPUT_POST, 'tos') !== 'y') {
             $aErr['tos'] = true;
         }
@@ -99,7 +98,7 @@ class Shoppingcart extends Base
         $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
         if (
             $postpaymentmethod === null
-            || in_array($postpaymentmethod, HelperConfig::$shop['paymentmethods'], true) === false
+            || in_array($postpaymentmethod, $this->config->getShop('paymentmethods'), true) === false
         ) {
             $aErr['paymentmethod'] = true;
         }
@@ -121,37 +120,37 @@ class Shoppingcart extends Base
         $base64Img = false;
         $binImg = false;
 
-        if (HelperConfig::$shop['email_orderconfirmation_embed_itemimages_method'] === 'glide') {
-            $sPathToImage = '/'.HelperConfig::$core['directory_images'].'/'.HelperConfig::$shop['directory_images_items'].'/';
-            $sImageroot = PATH_BASEDIR.HelperConfig::$core['directory_glide_master'];
+        if ($this->config->getShop('email_orderconfirmation_embed_itemimages_method') === 'glide') {
+            $sPathToImage = '/'.$this->config->getCore('directory_images').'/'.$this->config->getShop('directory_images_items').'/';
+            $sImageroot = PATH_BASEDIR.$this->config->getCore('directory_glide_master');
 
             if (
-                is_file($sImageroot.substr($sPathToImage.$aV['img'], strlen(HelperConfig::$core['directory_images']) + 1))
-                && $aImgInfo = getimagesize($sImageroot.substr($sPathToImage.$aV['img'], strlen(HelperConfig::$core['directory_images']) + 1))
+                is_file($sImageroot.substr($sPathToImage.$aV['img'], strlen($this->config->getCore('directory_images')) + 1))
+                && $aImgInfo = getimagesize($sImageroot.substr($sPathToImage.$aV['img'], strlen($this->config->getCore('directory_images')) + 1))
             ) {
                 $glideserver = \League\Glide\ServerFactory::create([
                     'source' => $sImageroot,
                     'cache' => PATH_GLIDECACHE,
-                    'max_image_size' => HelperConfig::$core['glide_max_imagesize'],
+                    'max_image_size' => $this->config->getCore('glide_max_imagesize'),
                 ]);
-                $glideserver->setBaseUrl('/'.HelperConfig::$core['directory_images'].'/');
-                $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV['img'], HelperConfig::$shop['email_orderconfirmation_embed_itemimages_glideparams']);
+                $glideserver->setBaseUrl('/'.$this->config->getCore('directory_images').'/');
+                $base64Img = $glideserver->getImageAsBase64($sPathToImage.$aV['img'], $this->config->getShop('email_orderconfirmation_embed_itemimages_glideparams'));
                 $TMP = explode(',', $base64Img);
                 $binImg = base64_decode($TMP[1]);
                 unset($TMP);
             }
         } else {
             $sPathToImage =
-                PATH_DOCROOT.HelperConfig::$core['directory_images'].'/'
-                .HelperConfig::$shop['directory_images_items'].'/'
-                .HelperConfig::$shop['directory_images_items_email'].'/';
+                PATH_DOCROOT.$this->config->getCore('directory_images').'/'
+                .$this->config->getShop('directory_images_items').'/'
+                .$this->config->getShop('directory_images_items_email').'/';
             if ($aImgInfo = getimagesize($sPathToImage.$aV['img'])) {
                 $binImg = file_get_contents($sPathToImage.$aV['img']);
                 $base64Img = 'data:'.$aImgInfo['mime'].';base64,';
                 $base64Img .= base64_encode($binImg);
             }
         }
-        if (HelperConfig::$shop['email_orderconfirmation_embed_itemimages']) {
+        if ($this->config->getShop('email_orderconfirmation_embed_itemimages')) {
             $aImagesToSend['binimg'] = $binImg;
         }
         if (!empty($base64Img)) {
@@ -200,8 +199,8 @@ class Shoppingcart extends Base
             'o_ordercompleted' => 'n',
             'o_paymentcompleted' => 'n',
             'o_srv_hostname' => filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_vatfull' => HelperConfig::$shop['vat']['full'],
-            'o_vatreduced' => HelperConfig::$shop['vat']['reduced'],
+            'o_vatfull' => $this->config->getShop('vat')['full'],
+            'o_vatreduced' => $this->config->getShop('vat')['reduced'],
         ];
     }
 
@@ -222,12 +221,12 @@ class Shoppingcart extends Base
             'oi_price_brutto_use' => $values['price']['brutto_use'],
             'oi_price_netto_sale' => isset($values['price']['netto_sale']) ? $values['price']['netto_sale'] : '',
             'oi_price_netto_rebated' => isset($values['price']['netto_rebated']) ? $values['price']['netto_rebated'] : '',
-            'oi_vat' => HelperConfig::$shop['vat'][$values['vat']],
+            'oi_vat' => $this->config->getShop('vat')[$values['vat']],
             'oi_rg' => $values['rg'],
             'oi_rg_rebate' => isset(
-                HelperConfig::$shop['rebate_groups'][$values['rg']][trim(CHelper::getUserData('cust_group'))]
+                $this->config->getShop('rebate_groups')[$values['rg']][trim(CHelper::getUserData('cust_group'))]
             )
-                ? HelperConfig::$shop['rebate_groups'][$values['rg']][trim(CHelper::getUserData('cust_group'))]
+                ? $this->config->getShop('rebate_groups')[$values['rg']][trim(CHelper::getUserData('cust_group'))]
                 : '',
             'oi_itemname' => $values['name'],
             'oi_img' => $this->imagestosend[$values['img']]['base64img'],
@@ -286,8 +285,7 @@ class Shoppingcart extends Base
         if ($postpaymentmethod !== null) {
             if (
                 $postpaymentmethod === 'paypal'
-                && isset(HelperConfig::$shop['paypal_interactive'])
-                && HelperConfig::$shop['paypal_interactive']
+                && $this->config->getShop('paypal_interactive')
             ) {
                 return '/_misc/paypal.html?id='.$iInsertID;
             } elseif ($postpaymentmethod === 'sofortueberweisung') {
@@ -307,16 +305,16 @@ class Shoppingcart extends Base
     {
         $aFilesToSend = [];
         if (
-            isset(HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_' .HelperConfig::$lang])
+            !empty($this->config->getShop('email_orderconfirmation_attachment_cancellationform_'.$this->config->getLang()))
             && file_exists(
-                PATH_DOCROOT.HelperConfig::$core['directory_emailattachments']
-                .'/'.HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_'
-                .HelperConfig::$lang]
+                PATH_DOCROOT.$this->config->getCore('directory_emailattachments')
+                .'/'.$this->config->getShop('email_orderconfirmation_attachment_cancellationform_'
+                .$this->config->getLang())
             )
         ) {
             $aFilesToSend[] =
-                PATH_DOCROOT.HelperConfig::$core['directory_emailattachments'].'/'
-                .HelperConfig::$shop['email_orderconfirmation_attachment_cancellationform_' .HelperConfig::$lang];
+                PATH_DOCROOT.$this->config->getCore('directory_emailattachments').'/'
+                .$this->config->getShop('email_orderconfirmation_attachment_cancellationform_'.$this->config->getLang());
         }
 
         Helper::mailWrapper(
@@ -327,7 +325,7 @@ class Shoppingcart extends Base
             $aFilesToSend
         );
         Helper::mailWrapper(
-            HelperConfig::$core['email_sender'],
+            $this->config->getCore('email_sender'),
             'Bestellung im Webshop Nr: '.$iInsertID,
             $sMailbody_us,
             $this->imagestosend
@@ -364,10 +362,10 @@ class Shoppingcart extends Base
     {
         $aM = [
             'customdata' => SHelper::buildShoppingCartTable($_SESSION['cart'], true),
-            'currency' => HelperConfig::$shop['waehrungssymbol'],
+            'currency' => $this->config->getShop('waehrungssymbol'),
         ];
-        if (isset(HelperConfig::$shop['custom_order_fields'])) {
-            $aM['custom_order_fields'] = HelperConfig::$shop['custom_order_fields'];
+        if (!empty($this->config->getShop('custom_order_fields'))) {
+            $aM['custom_order_fields'] = $this->config->getShop('custom_order_fields');
         }
 
         $postcustno = trim(filter_input(INPUT_POST, 'custno', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW));
@@ -377,7 +375,7 @@ class Shoppingcart extends Base
         $aData = [
             'customerversion' => $bCust,
             'datetime' => date('d.m.Y - H:i'),
-            'custno' => $postcustno !== null && strlen($postcustno) >= HelperConfig::$customer['minimum_length_custno'] ? $postcustno : '',
+            'custno' => $postcustno !== null && strlen($postcustno) >= $this->config->getCustomer('minimum_length_custno') ? $postcustno : '',
             'corpname' => $this->getPostValue('corpname'),
             'name' => $this->getPostValue('name'),
             'street' => $this->getPostValue('street'),
@@ -390,9 +388,9 @@ class Shoppingcart extends Base
             'country' => !empty($postcountry) ?
             (
                 isset(
-                    HelperConfig::$countries['countries_' .HelperConfig::$lang][$postcountry]
+                    $this->config->getCountries('countries_'.$this->config->getLang())[$postcountry]
                 )
-                    ? HelperConfig::$countries['countries_' .HelperConfig::$lang][$postcountry]
+                    ? $this->config->getCountries('countries_'.$this->config->getLang())[$postcountry]
                     : $postcountry)
             : '',
             'remarks' => $this->getPostValue('remarks'),
@@ -427,7 +425,7 @@ class Shoppingcart extends Base
                 || ($getmsg === 'removed' && !empty($getcartkey))
             ) {
                 $return .= $this->textcats->T('shoppingcart_msg_'.$getmsg.'_1').' ';
-                if (isset(HelperConfig::$shop['custom_order_fields']) && mb_strpos($getcartkey, '|') !== false) {
+                if (!empty($this->config->getShop('custom_order_fields')) && mb_strpos($getcartkey, '|') !== false) {
                     $mCartkeys = explode('|', $getcartkey);
                     foreach ($mCartkeys as $sKey => $sValue) {
                         if ($sKey == 0) {

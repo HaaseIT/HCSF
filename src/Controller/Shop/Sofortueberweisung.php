@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -68,12 +67,12 @@ class Sofortueberweisung extends Base
 
             $sPURL =
                 'https://www.sofortueberweisung.de/payment/start?user_id='
-                .HelperConfig::$shop['sofortueberweisung']['user_id']
-                .'&amp;project_id='.HelperConfig::$shop['sofortueberweisung']['project_id'].'&amp;amount='
+                .$this->config->getShop('sofortueberweisung')['user_id']
+                .'&amp;project_id='.$this->config->getShop('sofortueberweisung')['project_id'].'&amp;amount='
                 .number_format($fGesamtbrutto, 2, '.', '')
-                .'&amp;currency_id='.HelperConfig::$shop['sofortueberweisung']['currency_id'].'&amp;reason_1='
+                .'&amp;currency_id='.$this->config->getShop('sofortueberweisung')['currency_id'].'&amp;reason_1='
                 .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff').' ').$iId;
-            if (HelperConfig::$shop['interactive_paymentmethods_redirect_immediately']) {
+            if ($this->config->getShop('interactive_paymentmethods_redirect_immediately')) {
                 \HaaseIT\HCSF\Helper::redirectToPage($sPURL);
             }
 
