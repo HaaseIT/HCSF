@@ -34,7 +34,7 @@ class ItemsTest extends TestCase
         });
 
         $serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
-            //return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
+            return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
         });
 
         $configreflection = new ReflectionClass($config);
