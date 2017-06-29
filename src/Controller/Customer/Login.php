@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 
 /**
@@ -46,7 +45,7 @@ class Login extends Base
             $mLogin = $this->getLogin();
             if (isset($mLogin['status']) && $mLogin['status'] === 'success') {
                 $this->P->oPayload->cl_html = $textcats->T('login_success').'<br>';
-                \HaaseIT\HCSF\Helper::redirectToPage('/_misc/userhome.html?login=true');
+                $this->helper->redirectToPage('/_misc/userhome.html?login=true');
             } elseif (isset($mLogin['status']) && $mLogin['status'] === 'tosnotaccepted') {
                 $this->P->oPayload->cl_html = $textcats->T('login_fail_tosnotaccepted').'<br>';
                 $this->P->cb_customcontenttemplate = 'customer/login';
@@ -65,7 +64,7 @@ class Login extends Base
         }
 
         if ($this->config->getCore('enable_module_shop')) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
+            $this->helperShop->refreshCartItems($this->serviceManager);
         }
     }
 

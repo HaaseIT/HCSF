@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
-use HaaseIT\HCSF\Customer\Helper as CHelper;
 
 class Resendverificationmail extends Base
 {
@@ -29,7 +28,7 @@ class Resendverificationmail extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (CHelper::getUserData()) {
+        if ($this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
             $sql = 'SELECT '.DB_ADDRESSFIELDS.', cust_emailverificationcode FROM customer';
@@ -44,7 +43,7 @@ class Resendverificationmail extends Base
                 $aRow = $hResult->fetch();
                 $sEmailVerificationcode = $aRow['cust_emailverificationcode'];
 
-                CHelper::sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->serviceManager, true);
+                $this->helperCustomer->sendVerificationMail($sEmailVerificationcode, $aRow['cust_email'], $this->serviceManager, true);
 
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('register_verificationmailresent');
             }

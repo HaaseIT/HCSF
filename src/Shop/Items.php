@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Shop;
 
 
-use HaaseIT\HCSF\Customer\Helper as CHelper;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -40,11 +39,20 @@ class Items
      */
     protected $config;
 
-    // Initialize Class
+    /**
+     * @var \HaaseIT\HCSF\Customer\Helper
+     */
+    protected $helperCustomer;
+
+    /**
+     * Items constructor.
+     * @param ServiceManager $serviceManager
+     */
     public function __construct(ServiceManager $serviceManager)
     {
         $this->db = $serviceManager->get('db');
         $this->config = $serviceManager->get('config');
+        $this->helperCustomer = $serviceManager->get('helpercustomer');
     }
 
     public function getItemPathTree()
@@ -233,8 +241,8 @@ class Items
                 }
             }
             if (
-                $aData['itm_rg'] != ''
-                && isset($this->config->getShop('rebate_groups')[$aData['itm_rg']][CHelper::getUserData('cust_group')])
+                $aData['itm_rg'] !== ''
+                && isset($this->config->getShop('rebate_groups')[$aData['itm_rg']][$this->helperCustomer->getUserData('cust_group')])
             ) {
                 $aPrice['netto_rebated'] =
                     bcmul(
@@ -242,7 +250,7 @@ class Items
                         bcdiv(
                             bcsub(
                                 '100',
-                                (string)$this->config->getShop('rebate_groups')[$aData['itm_rg']][CHelper::getUserData('cust_group')]
+                                (string)$this->config->getShop('rebate_groups')[$aData['itm_rg']][$this->helperCustomer->getUserData('cust_group')]
                             ),
                             '100'
                         )

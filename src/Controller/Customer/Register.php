@@ -21,8 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Customer;
 
 
-use HaaseIT\HCSF\Customer\Helper as CHelper;
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 
 class Register extends Base
@@ -32,14 +30,14 @@ class Register extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (CHelper::getUserData()) {
+        if ($this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('denied_default');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/register';
 
             $aErr = [];
             if (filter_input(INPUT_POST, 'doRegister') === 'yes') {
-                $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr);
+                $aErr = $this->helperCustomer->validateCustomerForm($this->config->getLang(), $aErr);
                 if (count($aErr) == 0) {
                     $sEmail = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
 
@@ -92,25 +90,25 @@ class Register extends Base
                         ;
                         $querybuilder->execute();
 
-                        CHelper::sendVerificationMail($sEmailVerificationcode, $sEmail, $this->serviceManager, true);
+                        $this->helperCustomer->sendVerificationMail($sEmailVerificationcode, $sEmail, $this->serviceManager, true);
                         $aPData['showsuccessmessage'] = true;
                     } else {
                         $aErr['emailalreadytaken'] = true;
-                        $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
+                        $this->P->cb_customdata['customerform'] = $this->helperCustomer->buildCustomerForm(
                             $this->config->getLang(),
                             'register',
                             $aErr
                         );
                     }
                 } else {
-                    $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
+                    $this->P->cb_customdata['customerform'] = $this->helperCustomer->buildCustomerForm(
                         $this->config->getLang(),
                         'register',
                         $aErr
                     );
                 }
             } else {
-                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = $this->helperCustomer->buildCustomerForm(
                     $this->config->getLang(),
                     'register'
                 );

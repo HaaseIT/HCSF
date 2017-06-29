@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
@@ -90,7 +89,7 @@ class Shopadmin extends Base
                 ->setParameter(':o_id', $iID)
             ;
             $querybuilder->execute();
-            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/shopadmin.html?action=edit&id='.$iID);
+            $this->helper->redirectToPage('/_admin/shopadmin.html?action=edit&id='.$iID);
         }
 
         $aPData = [
@@ -345,7 +344,7 @@ class Shopadmin extends Base
                     'cust_country' => $aSData['orderdata']['o_country'],
                     'cust_group' => $aSData['orderdata']['o_group'],
                 ];
-                $aSData['customerform'] = \HaaseIT\HCSF\Customer\Helper::buildCustomerForm(
+                $aSData['customerform'] = $this->helperCustomer->buildCustomerForm(
                     $this->config->getLang(),
                     'shopadmin',
                     [],
@@ -379,7 +378,7 @@ class Shopadmin extends Base
                 }
 
                 $aSData = array_merge(
-                    \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable(
+                    $this->helperShop->buildShoppingCartTable(
                         $aItemsCarttable,
                         true,
                         $aSData['orderdata']['o_group'],

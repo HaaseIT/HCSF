@@ -20,8 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
-use HaaseIT\HCSF\Customer\Helper as CHelper;
-use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
@@ -60,7 +58,7 @@ class Userhome extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (!CHelper::getUserData()) {
+        if (!$this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/customerhome';
@@ -85,7 +83,7 @@ class Userhome extends Base
                     if ($iRows == 1) {
                         $aErr['adrform_error_emailalreadytaken'] = true;
                     }
-                    $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
+                    $aErr = $this->helperCustomer->validateCustomerForm($this->config->getLang(), $aErr, true);
 
                     if (empty($aErr)) {
                         if ($this->config->getCustomer('allow_edituserprofile')) {
@@ -122,14 +120,14 @@ class Userhome extends Base
                         }
                     }
                 }
-                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = $this->helperCustomer->buildCustomerForm(
                     $this->config->getLang(),
                     'editprofile',
                     $aErr
                 );
                 //if (HelperConfig::$customer["allow_edituserprofile"]) $P["lang"]["cl_html"] .= '<br>'.$this->textcats->T("userprofile_infoeditemail"); // Future implementation
             } else {
-                $this->P->cb_customdata['customerform'] = CHelper::buildCustomerForm(
+                $this->P->cb_customdata['customerform'] = $this->helperCustomer->buildCustomerForm(
                     $this->config->getLang(),
                     'userhome'
                 );

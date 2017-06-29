@@ -72,7 +72,7 @@ class HelperConfig
         $this->loadCore();
         $this->loadCountries();
 
-        $this->lang = \HaaseIT\HCSF\Helper::getLanguage();
+        $this->lang = $this->getLanguage();
 
         $this->loadSecrets();
 
@@ -253,7 +253,7 @@ class HelperConfig
             $navstruct = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/navigation.yml'));
         }
 
-        if (!empty($navstruct) && static::$core['navigation_fetch_text_from_textcats']) {
+        if (!empty($navstruct) && $this->core['navigation_fetch_text_from_textcats']) {
             $textcats = $serviceManager->get('textcats');
             $TMP = [];
 
@@ -309,5 +309,44 @@ class HelperConfig
         }
 
         return !empty($this->navigation[$setting]) ? $this->navigation[$setting] : false;
+    }
+
+    /**
+     * @return int|mixed|string
+     */
+    public function getLanguage()
+    {
+        $langavailable = $this->core['lang_available'];
+        if (
+            $this->core['lang_detection_method'] === 'domain'
+            && isset($this->core['lang_by_domain'])
+            && is_array($this->core['lang_by_domain'])
+        ) { // domain based language detection
+            $serverservername = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
+            foreach ($this->core['lang_by_domain'] as $sKey => $sValue) {
+                if ($serverservername == $sValue || $serverservername == 'www.'.$sValue) {
+                    $sLang = $sKey;
+                    break;
+                }
+            }
+        } elseif ($this->core['lang_detection_method'] === 'legacy') { // legacy language detection
+            $sLang = key($langavailable);
+            $getlanguage = filter_input(INPUT_GET, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $cookielanguage = filter_input(INPUT_COOKIE, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $serverhttpaccepptlanguage = filter_input(INPUT_SERVER, '', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if ($getlanguage !== null && array_key_exists($getlanguage, $langavailable)) {
+                $sLang = strtolower($getlanguage);
+                setcookie('language', strtolower($getlanguage), 0, '/');
+            } elseif ($cookielanguage !== null && array_key_exists($cookielanguage, $langavailable)) {
+                $sLang = strtolower($cookielanguage);
+            } elseif ($serverhttpaccepptlanguage !== null && array_key_exists(substr($serverhttpaccepptlanguage, 0, 2), $langavailable)) {
+                $sLang = substr($serverhttpaccepptlanguage, 0, 2);
+            }
+        }
+        if (!isset($sLang)) {
+            $sLang = key($langavailable);
+        }
+
+        return $sLang;
     }
 }

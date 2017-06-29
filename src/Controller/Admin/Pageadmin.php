@@ -82,7 +82,7 @@ class Pageadmin extends Base
         if ($Ptodelete->cb_id != NULL) {
             $Ptodelete->remove();
         } else {
-            \HaaseIT\HCSF\Helper::terminateScript($this->hardcodedtextcats->get('pageadmin_exception_pagetodeletenotfound'));
+            $this->helper->terminateScript($this->hardcodedtextcats->get('pageadmin_exception_pagetodeletenotfound'));
         }
         $this->P->cb_customdata['deleted'] = true;
     }
@@ -101,9 +101,9 @@ class Pageadmin extends Base
                 $Ptoadd = new UserPage($this->serviceManager, $sPagekeytoadd, true);
                 if ($Ptoadd->cb_id == NULL) {
                     if ($Ptoadd->insert($sPagekeytoadd)) {
-                        \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
+                        $this->helper->redirectToPage('/_admin/pageadmin.html?page_key='.$sPagekeytoadd.'&action=edit');
                     } else {
-                        \HaaseIT\HCSF\Helper::terminateScript($this->hardcodedtextcats->get('pageadmin_exception_couldnotinsertpage'));
+                        $this->helper->terminateScript($this->hardcodedtextcats->get('pageadmin_exception_couldnotinsertpage'));
                     }
                 } else {
                     $aErr['keyalreadyinuse'] = true;
@@ -167,9 +167,9 @@ class Pageadmin extends Base
 
         if ($Ptoinsertlang->cb_id != NULL && $Ptoinsertlang->oPayload->cl_id == NULL) {
             $Ptoinsertlang->oPayload->insert($Ptoinsertlang->cb_id);
-            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
+            $this->helper->redirectToPage('/_admin/pageadmin.html?page_key='.$Ptoinsertlang->cb_key.'&action=edit');
         } else {
-            \HaaseIT\HCSF\Helper::terminateScript($this->hardcodedtextcats->get('pageadmin_exception_couldnotinsertlang'));
+            $this->helper->terminateScript($this->hardcodedtextcats->get('pageadmin_exception_couldnotinsertlang'));
         }
     }
 
@@ -230,7 +230,7 @@ class Pageadmin extends Base
                 }
             }
         } else {
-            \HaaseIT\HCSF\Helper::terminateScript($this->hardcodedtextcats->get('pageadmin_exception_pagenotfound'));
+            $this->helper->terminateScript($this->hardcodedtextcats->get('pageadmin_exception_pagenotfound'));
         }
     }
 
@@ -238,7 +238,7 @@ class Pageadmin extends Base
     {
         $purifier = false;
         if ($this->config->getCore('pagetext_enable_purifier')) {
-            $purifier = \HaaseIT\HCSF\Helper::getPurifier('page');
+            $purifier = $this->helper->getPurifier('page');
         }
 
         $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);

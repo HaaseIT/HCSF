@@ -21,9 +21,7 @@
 namespace HaaseIT\HCSF\Shop;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
-use HaaseIT\HCSF\Customer\Helper as CHelper;
 
 /**
  * Class Helper
@@ -46,11 +44,23 @@ class Helper
      */
     protected $shop = [];
 
+    /**
+     * @var \HaaseIT\HCSF\Customer\Helper
+     */
+    protected $helperCustomer;
+
+    /**
+     * @var \HaaseIT\HCSF\Shop\Helper
+     */
+    protected $helperShop;
+
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
         $this->config = $serviceManager->get('config');
         $this->shop = $this->config->getShop();
+        $this->helperCustomer = $serviceManager->get('helpercustomer');
+        $this->helperShop = $serviceManager->get('helpershop');
     }
 
     /**
@@ -183,7 +193,7 @@ class Helper
     {
         $fShippingcost = $this->shop['shippingcoststandardrate'];
 
-        $sCountry = CHelper::getDefaultCountryByConfig($this->config->getLang());
+        $sCountry = $this->helperCustomer->getDefaultCountryByConfig($this->config->getLang());
         $postdocheckout = filter_input(INPUT_POST, 'doCheckout');
         if (isset($_SESSION['user']['cust_country'])) {
             $sCountry = $_SESSION['user']['cust_country'];
@@ -290,7 +300,7 @@ class Helper
         }
 
         if (!$bReadonly && $aData['shoppingcart']['additionalcoststoitems']['bMindesterreicht']) {
-            $aData['customerform'] = CHelper::buildCustomerForm($this->config->getLang(), 'shoppingcart', $aErr);
+            $aData['customerform'] = $this->helperCustomer->buildCustomerForm($this->config->getLang(), 'shoppingcart', $aErr);
         }
 
         return $aData;
@@ -307,8 +317,8 @@ class Helper
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         ];
-        if (isset($_SESSION['cart']) && (!$this->shop['show_pricesonlytologgedin'] || CHelper::getUserData()) && count($_SESSION['cart'])) {
-            $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']);
+        if (isset($_SESSION['cart']) && (!$this->shop['show_pricesonlytologgedin'] || $this->helperCustomer->getUserData()) && count($_SESSION['cart'])) {
+            $aCartsums = $this->helperShop->calculateCartItems($_SESSION['cart']);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION['cart']),
                 'cartsums' => $aCartsums,

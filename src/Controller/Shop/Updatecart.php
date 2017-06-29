@@ -38,7 +38,7 @@ class Updatecart extends Base
         if (
             (
                 $this->config->getShop('show_pricesonlytologgedin')
-                && !\HaaseIT\HCSF\Customer\Helper::getUserData()
+                && !$this->helperCustomer->getUserData()
             )
             || filter_input(INPUT_SERVER, 'HTTP_REFERER') === null
         ) {
@@ -149,7 +149,7 @@ class Updatecart extends Base
                     $this->replyToCartUpdate('added', ['cartkey' => $sCartKey, 'amount' => $iAmount]);
                 }
             }
-            \HaaseIT\HCSF\Helper::terminateScript();
+            $this->helper->terminateScript();
         }
     }
 
@@ -162,7 +162,7 @@ class Updatecart extends Base
             $aAR = [
                 'cart' => $_SESSION['cart'],
                 'reply' => $sReply,
-                'cartsums' => \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']),
+                'cartsums' => $this->helperShop->calculateCartItems($_SESSION['cart']),
                 'currency' => $this->config->getShop('waehrungssymbol'),
                 'numberformat_decimals' => $this->config->getCore('numberformat_decimals'),
                 'numberformat_decimal_point' => $this->config->getCore('numberformat_decimal_point'),
@@ -179,7 +179,7 @@ class Updatecart extends Base
             }
             header('Location: '.\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars(filter_input(INPUT_SERVER, 'HTTP_REFERER', FILTER_SANITIZE_URL), $aMSG, true, false));
         }
-        \HaaseIT\HCSF\Helper::terminateScript();
+        $this->helper->terminateScript();
     }
 
     protected function addItemToCart($cartkey, $item)

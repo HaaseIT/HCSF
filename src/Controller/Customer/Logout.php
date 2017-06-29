@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
-use HaaseIT\HCSF\HelperConfig;
 
 /**
  * Class Logout
@@ -38,7 +37,7 @@ class Logout extends Base
 
         unset($_SESSION['user']);
         if (isset($_SESSION['cart']) && $this->config->getCore('enable_module_shop')) {
-            \HaaseIT\HCSF\Shop\Helper::refreshCartItems($this->serviceManager);
+            $this->helperShop->refreshCartItems($this->serviceManager);
         }
         $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('logout_message');
     }

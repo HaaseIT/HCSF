@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
 
-use \HaaseIT\HCSF\Customer\Helper as CHelper;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -161,7 +160,7 @@ class Customeradmin extends Base
                     if ($stmt->rowCount() === 1) {
                         $aErr['emailalreadytaken'] = true;
                     }
-                    $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
+                    $aErr = $this->helperCustomer->validateCustomerForm($this->config->getLang(), $aErr, true);
                     if (count($aErr) === 0) {
                         $querybuilder = $this->dbal->createQueryBuilder();
                         $querybuilder
@@ -221,7 +220,7 @@ class Customeradmin extends Base
             $stmt = $querybuilder->execute();
             if ($stmt->rowCount() === 1) {
                 $aUser = $stmt->fetch();
-                $aPData['customerform'] = CHelper::buildCustomerForm($this->config->getLang(), 'admin', $aErr, $aUser);
+                $aPData['customerform'] = $this->helperCustomer->buildCustomerForm($this->config->getLang(), 'admin', $aErr, $aUser);
             } else {
                 $aInfo['nosuchuserfound'] = true;
             }

@@ -20,9 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Shop;
 
-use HaaseIT\HCSF\Customer\Helper as CHelper;
-use HaaseIT\HCSF\HelperConfig;
-use HaaseIT\HCSF\Shop\Helper as SHelper;
 use Zend\ServiceManager\ServiceManager;
 
 class Myorders extends Base
@@ -53,7 +50,7 @@ class Myorders extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (!CHelper::getUserData()) {
+        if (!$this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             require_once PATH_BASEDIR.'src/shop/functions.shoppingcart.php';
@@ -78,7 +75,7 @@ class Myorders extends Base
                     $this->P->cb_customdata['orderdata']['orderremarks'] = $aOrder['o_remarks'];
                     $this->P->cb_customdata['orderdata']['paymentmethod'] = $this->textcats->T('order_paymentmethod_' . $aOrder['o_paymentmethod']);
                     $this->P->cb_customdata['orderdata']['paymentcompleted'] = (($aOrder['o_paymentcompleted'] === 'y') ? $this->textcats->T('myorders_paymentstatus_completed') : $this->textcats->T('myorders_paymentstatus_open'));
-                    $this->P->cb_customdata['orderdata']['orderstatus'] = SHelper::showOrderStatusText($this->textcats, $aOrder['o_ordercompleted']);
+                    $this->P->cb_customdata['orderdata']['orderstatus'] = $this->helperShop->showOrderStatusText($this->textcats, $aOrder['o_ordercompleted']);
                     $this->P->cb_customdata['orderdata']['shippingservice'] = $aOrder['o_shipping_service'];
                     $this->P->cb_customdata['orderdata']['trackingno'] = $aOrder['o_shipping_trackingno'];
 
@@ -105,7 +102,7 @@ class Myorders extends Base
                         ];
                     }
 
-                    $aShoppingcart = SHelper::buildShoppingCartTable(
+                    $aShoppingcart = $this->helperShop->buildShoppingCartTable(
                         $aItemsforShoppingcarttable,
                         true,
                         '',
@@ -150,13 +147,13 @@ class Myorders extends Base
         $sql = 'SELECT * FROM orders WHERE o_custno = :custno ORDER BY o_ordertimestamp DESC';
 
         $hResult = $this->db->prepare($sql);
-        $hResult->bindValue(':custno', CHelper::getUserData('cust_no'));
+        $hResult->bindValue(':custno', $this->helperCustomer->getUserData('cust_no'));
         $hResult->execute();
 
         if ($hResult->rowCount() >= 1) {
             $aData = [];
             while ($aRow = $hResult->fetch()) {
-                $sStatus = SHelper::showOrderStatusText($this->textcats, $aRow['o_ordercompleted']);
+                $sStatus = $this->helperShop->showOrderStatusText($this->textcats, $aRow['o_ordercompleted']);
 
                 if ($aRow['o_paymentmethod'] === 'prepay') {
                     $sPaymentmethod = $this->textcats->T('order_paymentmethod_prepay');

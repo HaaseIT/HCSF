@@ -61,6 +61,11 @@ class Base
     protected $config;
 
     /**
+     * @var \HaaseIT\HCSF\Helper
+     */
+    protected $helper;
+
+    /**
      * Base constructor.
      * @param ServiceManager $serviceManager
      */
@@ -68,6 +73,7 @@ class Base
     {
         $this->serviceManager = $serviceManager;
         $this->config = $serviceManager->get('config');
+        $this->helper = $serviceManager->get('helper');
     }
 
     /**
@@ -120,12 +126,13 @@ class Base
             if (!$validated) {
                 header('WWW-Authenticate: Basic realm="'.$this->config->getSecret('admin_authrealm').'"');
                 header('HTTP/1.0 401 Unauthorized');
-                \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
+                $this->helper->terminateScript('Not authorized');
             }
+
         } else {
             header('WWW-Authenticate: Basic realm="'.$this->config->getSecret('admin_authrealm').'"');
             header('HTTP/1.0 401 Unauthorized');
-            \HaaseIT\HCSF\Helper::terminateScript('Not authorized');
+            $this->helper->terminateScript('Not authorized');
         }
     }
 }

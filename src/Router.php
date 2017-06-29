@@ -31,6 +31,11 @@ class Router
     protected $config;
 
     /**
+     * @var \HaaseIT\HCSF\Helper
+     */
+    protected $helper;
+
+    /**
      * Router constructor.
      * @param ServiceManager $serviceManager
      */
@@ -38,6 +43,7 @@ class Router
     {
         $this->serviceManager = $serviceManager;
         $this->config = $serviceManager->get('config');
+        $this->helper = $serviceManager->get('helper');
     }
 
     public function getPage()
@@ -138,7 +144,7 @@ class Router
                 } else { // if it is found, go on
                     // Support for shorturls
                     if ($this->P->cb_pagetype === 'shorturl') {
-                        \HaaseIT\HCSF\Helper::redirectToPage('Location: '.$this->P->cb_pageconfig, true);
+                        $this->helper->redirectToPage('Location: '.$this->P->cb_pageconfig, true);
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {

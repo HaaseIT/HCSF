@@ -69,7 +69,7 @@ class ShopadminExportCSV extends Base
         $ids = filter_input_array(INPUT_POST, ['id' => ['filter' => FILTER_VALIDATE_INT, 'flags' => FILTER_REQUIRE_ARRAY]]);
 
         if ($ids['id'] === false) {
-            \HaaseIT\HCSF\Helper::terminateScript('Invalid input.');
+            $this->helper->terminateScript('Invalid input.');
         }
 
         // fetch orders from db and add to $this->P->cb_customdata

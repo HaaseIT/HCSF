@@ -69,7 +69,7 @@ class Paypalnotify extends Base
 
         if ($statement->rowCount() == 1) {
             $aOrder = $statement->fetch();
-            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = $this->helperShop->calculateTotalFromDB($aOrder);
 
             $postdata = '';
 
@@ -159,6 +159,6 @@ class Paypalnotify extends Base
             }
         }
 
-        \HaaseIT\HCSF\Helper::terminateScript();
+        $this->helper->terminateScript();
     }
 }

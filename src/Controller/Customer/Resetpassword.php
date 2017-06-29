@@ -20,7 +20,6 @@
 
 namespace HaaseIT\HCSF\Controller\Customer;
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -58,7 +57,7 @@ class Resetpassword extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_default');
         } else {
             $getemail = filter_input(INPUT_GET, 'email', FILTER_SANITIZE_EMAIL);

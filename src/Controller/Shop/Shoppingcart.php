@@ -21,9 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 use HaaseIT\Toolbox\Tools;
-use HaaseIT\HCSF\Helper;
-use HaaseIT\HCSF\Customer\Helper as CHelper;
-use HaaseIT\HCSF\Shop\Helper as SHelper;
 
 class Shoppingcart extends Base
 {
@@ -55,7 +52,7 @@ class Shoppingcart extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'contentnosubnav';
 
-        if ($this->config->getShop('show_pricesonlytologgedin') && !CHelper::getUserData()) {
+        if ($this->config->getShop('show_pricesonlytologgedin') && !$this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_notloggedin');
         } else {
             $this->P->cb_customcontenttemplate = 'shop/shoppingcart';
@@ -69,11 +66,11 @@ class Shoppingcart extends Base
                 if (filter_input(INPUT_POST, 'doCheckout') === 'yes') {
                     $aErr = $this->validateCheckout($aErr);
                     if (count($aErr) === 0) {
-                        \HaaseIT\HCSF\Helper::redirectToPage($this->doCheckout());
+                        $this->helper->redirectToPage($this->doCheckout());
                     }
                 }
 
-                $aShoppingcart = SHelper::buildShoppingCartTable($_SESSION['cart'], false, '', $aErr);
+                $aShoppingcart = $this->helperShop->buildShoppingCartTable($_SESSION['cart'], false, '', $aErr);
 
                 $this->P->cb_customdata = $aShoppingcart;
             } else {
@@ -88,11 +85,11 @@ class Shoppingcart extends Base
      */
     private function validateCheckout($aErr = [])
     {
-        $aErr = CHelper::validateCustomerForm($this->config->getLang(), $aErr, true);
-        if (!CHelper::getUserData() && filter_input(INPUT_POST, 'tos') !== 'y') {
+        $aErr = $this->helperCustomer->validateCustomerForm($this->config->getLang(), $aErr, true);
+        if (!$this->helperCustomer->getUserData() && filter_input(INPUT_POST, 'tos') !== 'y') {
             $aErr['tos'] = true;
         }
-        if (!CHelper::getUserData() && filter_input(INPUT_POST, 'cancellationdisclaimer') !== 'y') {
+        if (!$this->helperCustomer->getUserData() && filter_input(INPUT_POST, 'cancellationdisclaimer') !== 'y') {
             $aErr['cancellationdisclaimer'] = true;
         }
         $postpaymentmethod = filter_input(INPUT_POST, 'paymentmethod');
@@ -177,10 +174,10 @@ class Shoppingcart extends Base
             'o_cellphone' => filter_var(trim(Tools::getFormfield('cellphone')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_fax' => filter_var(trim(Tools::getFormfield('fax')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_country' => filter_var(trim(Tools::getFormfield('country')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_group' => trim(CHelper::getUserData('cust_group')),
+            'o_group' => trim($this->helperCustomer->getUserData('cust_group')),
             'o_remarks' => filter_var(trim(Tools::getFormfield('remarks')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
-            'o_tos' => (filter_input(INPUT_POST, 'tos') === 'y' || CHelper::getUserData()) ? 'y' : 'n',
-            'o_cancellationdisclaimer' => (filter_input(INPUT_POST, 'cancellationdisclaimer') === 'y' || CHelper::getUserData()) ? 'y' : 'n',
+            'o_tos' => (filter_input(INPUT_POST, 'tos') === 'y' || $this->helperCustomer->getUserData()) ? 'y' : 'n',
+            'o_cancellationdisclaimer' => (filter_input(INPUT_POST, 'cancellationdisclaimer') === 'y' || $this->helperCustomer->getUserData()) ? 'y' : 'n',
             'o_paymentmethod' => filter_var(trim(Tools::getFormfield('paymentmethod')), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
             'o_sumvoll' => $cartpricesums['sumvoll'],
             'o_sumerm' => $cartpricesums['sumerm'],
@@ -189,10 +186,10 @@ class Shoppingcart extends Base
             'o_taxerm' => $cartpricesums['taxerm'],
             'o_sumbruttoall' => $cartpricesums['sumbruttoall'],
             'o_mindermenge' => isset($cartpricesums['mindergebuehr']) ? $cartpricesums['mindergebuehr'] : '',
-            'o_shippingcost' => SHelper::getShippingcost(),
+            'o_shippingcost' => $this->helperShop->getShippingcost(),
             'o_orderdate' => date('Y-m-d'),
             'o_ordertimestamp' => time(),
-            'o_authed' => CHelper::getUserData() ? 'y' : 'n',
+            'o_authed' => $this->helperCustomer->getUserData() ? 'y' : 'n',
             'o_sessiondata' => serialize($_SESSION),
             'o_postdata' => serialize($_POST),
             'o_remote_address' => filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW),
@@ -224,9 +221,9 @@ class Shoppingcart extends Base
             'oi_vat' => $this->config->getShop('vat')[$values['vat']],
             'oi_rg' => $values['rg'],
             'oi_rg_rebate' => isset(
-                $this->config->getShop('rebate_groups')[$values['rg']][trim(CHelper::getUserData('cust_group'))]
+                $this->config->getShop('rebate_groups')[$values['rg']][trim($this->helperCustomer->getUserData('cust_group'))]
             )
-                ? $this->config->getShop('rebate_groups')[$values['rg']][trim(CHelper::getUserData('cust_group'))]
+                ? $this->config->getShop('rebate_groups')[$values['rg']][trim($this->helperCustomer->getUserData('cust_group'))]
                 : '',
             'oi_itemname' => $values['name'],
             'oi_img' => $this->imagestosend[$values['img']]['base64img'],
@@ -243,12 +240,12 @@ class Shoppingcart extends Base
 
             $aDataOrder = $this->prepareDataOrder();
 
-            $iInsertID = \HaaseIT\HCSF\Helper::autoInsert($dbal, 'orders', $aDataOrder);
+            $iInsertID = $this->helper->autoInsert($dbal, 'orders', $aDataOrder);
 
             foreach ($_SESSION['cart'] as $sK => $aV) {
                 $this->imagestosend[$aV['img']] = $this->getItemImage($aV);
 
-                \HaaseIT\HCSF\Helper::autoInsert(
+                $this->helper->autoInsert(
                     $dbal,
                     'orders_items',
                     $this->buildOrderItemRow($iInsertID, $sK, $aV)
@@ -317,14 +314,14 @@ class Shoppingcart extends Base
                 .$this->config->getShop('email_orderconfirmation_attachment_cancellationform_'.$this->config->getLang());
         }
 
-        Helper::mailWrapper(
+        $this->helper->mailWrapper(
             filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL),
             $this->textcats->T('shoppingcart_mail_subject').' '.$iInsertID,
             $sMailbody_they,
             $this->imagestosend,
             $aFilesToSend
         );
-        Helper::mailWrapper(
+        $this->helper->mailWrapper(
             $this->config->getCore('email_sender'),
             'Bestellung im Webshop Nr: '.$iInsertID,
             $sMailbody_us,
@@ -361,7 +358,7 @@ class Shoppingcart extends Base
     private function buildOrderMailBody($bCust = true, $iId)
     {
         $aM = [
-            'customdata' => SHelper::buildShoppingCartTable($_SESSION['cart'], true),
+            'customdata' => $this->helperShop->buildShoppingCartTable($_SESSION['cart'], true),
             'currency' => $this->config->getShop('waehrungssymbol'),
         ];
         if (!empty($this->config->getShop('custom_order_fields'))) {

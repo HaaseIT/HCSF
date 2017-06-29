@@ -78,7 +78,7 @@ class Itemadmin extends Base
                 ;
                 $querybuilder->execute();
 
-                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.filter_input(INPUT_GET, 'itemno').'&action=showitem');
+                $this->helper->redirectToPage('/_admin/itemadmin.html?itemno='.filter_input(INPUT_GET, 'itemno').'&action=showitem');
             }
         }
         $this->P->cb_customdata['searchform'] = $this->prepareItemlistsearchform();
@@ -141,7 +141,7 @@ class Itemadmin extends Base
                             $statement = $queryBuilder->execute();
                             $row = $statement->fetch();
 
-                            \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemadmin.html?itemno='.$row['itm_no'].'&action=showitem');
+                            $this->helper->redirectToPage('/_admin/itemadmin.html?itemno='.$row['itm_no'].'&action=showitem');
                         }
                     }
                 }
@@ -210,7 +210,7 @@ class Itemadmin extends Base
         } elseif ($getsearchcat === 'index') {
             $querybuilder->where('itm_index LIKE :searchstring');
         } else {
-            \HaaseIT\HCSF\Helper::terminateScript();
+            $this->helper->terminateScript();
         }
 
         $getorderby = filter_input(INPUT_GET, 'orderby');
@@ -368,7 +368,7 @@ class Itemadmin extends Base
     {
         $purifier = false;
         if ($this->config->getShop('itemtext_enable_purifier')) {
-            $purifier = \HaaseIT\HCSF\Helper::getPurifier('item');
+            $purifier = $this->helper->getPurifier('item');
         }
 
         $querybuilder = $this->dbal->createQueryBuilder();

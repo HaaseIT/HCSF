@@ -36,7 +36,7 @@ class Updateshippingcost extends Base
         $this->P->cb_pagetype = 'content';
 
         $_SESSION['formsave_addrform']['country'] = filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        \HaaseIT\HCSF\Shop\Helper::buildShoppingCartTable($_SESSION['cart']);
+        $this->helperShop->buildShoppingCartTable($_SESSION['cart']);
 
         header('Content-Type: text/html; charset=UTF-8');
         $return = '<div>';
@@ -56,6 +56,6 @@ class Updateshippingcost extends Base
         $return .= '<div id="totalnetto_new">'.number_format(round($_SESSION['cartpricesums']['fGesamtnetto'], 2),
                 $numberformatdecimal, $numberformatdecimalpoint, $numberformatdecimalthousandsseperator).'</div>';
         $return .= '</div>';
-        \HaaseIT\HCSF\Helper::terminateScript($return);
+        $this->helper->terminateScript($return);
     }
 }

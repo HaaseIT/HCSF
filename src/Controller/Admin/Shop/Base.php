@@ -30,6 +30,16 @@ use Zend\ServiceManager\ServiceManager;
 class Base extends \HaaseIT\HCSF\Controller\Admin\Base
 {
     /**
+     * @var \HaaseIT\HCSF\Customer\Helper
+     */
+    protected $helperCustomer;
+
+    /**
+     * @var \HaaseIT\HCSF\Shop\Helper
+     */
+    protected $helperShop;
+
+    /**
      * Base constructor.
      * @param ServiceManager $serviceManager
      */
@@ -37,5 +47,7 @@ class Base extends \HaaseIT\HCSF\Controller\Admin\Base
     {
         parent::__construct($serviceManager);
         $this->requireModuleShop = true;
+        $this->helperCustomer = $serviceManager->get('helpercustomer');
+        $this->helperShop = $serviceManager->get('helpershop');
     }
 }

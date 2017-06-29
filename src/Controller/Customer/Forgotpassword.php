@@ -58,7 +58,7 @@ class Forgotpassword extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        if (\HaaseIT\HCSF\Customer\Helper::getUserData()) {
+        if ($this->helperCustomer->getUserData()) {
             $this->P->oPayload->cl_html = $this->textcats->T('denied_default');
         } else {
             $this->P->cb_customcontenttemplate = 'customer/forgotpassword';
@@ -124,7 +124,7 @@ class Forgotpassword extends Base
                     $sMessage .= $serverservername.'/_misc/rp.html?key='.$sResetCode.'&amp;email='.$sTargetAddress.'</a>';
                     $sMessage .= '<br><br>'.$this->textcats->T('forgotpw_mail_text2');
 
-                    \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
+                    $this->helper->mailWrapper($sTargetAddress, $sSubject, $sMessage);
                 }
             }
         }

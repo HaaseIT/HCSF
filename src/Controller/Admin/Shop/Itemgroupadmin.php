@@ -100,7 +100,7 @@ class Itemgroupadmin extends Base
                     ->setParameter(1, $this->config->getLang())
                 ;
                 $querybuilder->execute();
-                \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
+                $this->helper->redirectToPage('/_admin/itemgroupadmin.html?gid='.$iGID.'&action=editgroup');
             }
         }
 
@@ -156,7 +156,7 @@ class Itemgroupadmin extends Base
                     ;
                     $querybuilder->execute();
                     $iLastInsertID = $this->dbal->lastInsertId();
-                    \HaaseIT\HCSF\Helper::redirectToPage('/_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
+                    $this->helper->redirectToPage('/_admin/itemgroupadmin.html?action=editgroup&added&gid='.$iLastInsertID);
                 } else {
                     $this->P->cb_customdata['err'] = $aErr;
                     $this->P->cb_customdata['showform'] = 'add';
@@ -181,7 +181,7 @@ class Itemgroupadmin extends Base
     {
         $purifier = false;
         if ($this->config->getShop('itemgrouptext_enable_purifier')) {
-            $purifier = \HaaseIT\HCSF\Helper::getPurifier('itemgroup');
+            $purifier = $this->helper->getPurifier('itemgroup');
         }
 
         $iGID = filter_input(INPUT_GET, 'gid', FILTER_SANITIZE_NUMBER_INT);

@@ -55,6 +55,11 @@ class Helper
     protected $shop = [];
 
     /**
+     * @var \HaaseIT\HCSF\Shop\Helper
+     */
+    protected $helperShop;
+
+    /**
      * Helper constructor.
      * @param ServiceManager $serviceManager
      */
@@ -65,6 +70,7 @@ class Helper
         $this->secrets = $this->config->getSecret();
         $this->core = $this->config->getCore();
         $this->shop = $this->config->getShop();
+        $this->helperShop = $serviceManager->get('helpershop');
     }
 
     /**
@@ -210,45 +216,6 @@ class Helper
     }
 
     /**
-     * @return int|mixed|string
-     */
-    public function getLanguage()
-    {
-        $langavailable = $this->core['lang_available'];
-        if (
-            $this->core['lang_detection_method'] === 'domain'
-            && isset($this->core['lang_by_domain'])
-            && is_array($this->core['lang_by_domain'])
-        ) { // domain based language detection
-            $serverservername = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
-            foreach ($this->core['lang_by_domain'] as $sKey => $sValue) {
-                if ($serverservername == $sValue || $serverservername == 'www.'.$sValue) {
-                    $sLang = $sKey;
-                    break;
-                }
-            }
-        } elseif ($this->core['lang_detection_method'] === 'legacy') { // legacy language detection
-            $sLang = key($langavailable);
-            $getlanguage = filter_input(INPUT_GET, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            $cookielanguage = filter_input(INPUT_COOKIE, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            $serverhttpaccepptlanguage = filter_input(INPUT_SERVER, '', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            if ($getlanguage !== null && array_key_exists($getlanguage, $langavailable)) {
-                $sLang = strtolower($getlanguage);
-                setcookie('language', strtolower($getlanguage), 0, '/');
-            } elseif ($cookielanguage !== null && array_key_exists($cookielanguage, $langavailable)) {
-                $sLang = strtolower($cookielanguage);
-            } elseif ($serverhttpaccepptlanguage !== null && array_key_exists(substr($serverhttpaccepptlanguage, 0, 2), $langavailable)) {
-                $sLang = substr($serverhttpaccepptlanguage, 0, 2);
-            }
-        }
-        if (!isset($sLang)) {
-            $sLang = key($langavailable);
-        }
-
-        return $sLang;
-    }
-
-    /**
      * @param string $purpose
      * @return bool|\HTMLPurifier
      */
@@ -295,8 +262,8 @@ class Helper
     public function twigCallback($callback, $parameters)
     {
         $callbacks = [
-            'renderItemStatusIcon' => '\HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon',
-            'shopadminMakeCheckbox' => '\HaaseIT\HCSF\Shop\Helper::shopadminMakeCheckbox',
+            'renderItemStatusIcon' => [$this->helperShop, 'renderItemStatusIcon'],
+            'shopadminMakeCheckbox' => [$this->helperShop, 'shopadminMakeCheckbox'],
         ];
 
         if (!isset($callbacks[$callback])) {

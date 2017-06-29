@@ -63,7 +63,7 @@ class Sofortueberweisung extends Base
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = $this->helperShop->calculateTotalFromDB($aOrder);
 
             $sPURL =
                 'https://www.sofortueberweisung.de/payment/start?user_id='
@@ -73,7 +73,7 @@ class Sofortueberweisung extends Base
                 .'&amp;currency_id='.$this->config->getShop('sofortueberweisung')['currency_id'].'&amp;reason_1='
                 .urlencode($this->textcats->T('misc_paysofortueberweisung_ueberweisungsbetreff').' ').$iId;
             if ($this->config->getShop('interactive_paymentmethods_redirect_immediately')) {
-                \HaaseIT\HCSF\Helper::redirectToPage($sPURL);
+                $this->helper->redirectToPage($sPURL);
             }
 
             $this->P->oPayload->cl_html = $this->textcats->T('misc_paysofortueberweisung_greeting').'<br><br>';

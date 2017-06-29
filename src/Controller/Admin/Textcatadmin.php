@@ -87,7 +87,7 @@ class Textcatadmin extends Base
                 if (filter_input(INPUT_POST, 'edit') === 'do') {
                     $this->textcats->purifier = false;
                     if ($this->config->getCore('textcat_enable_purifier')) {
-                        $this->textcats->purifier = \HaaseIT\HCSF\Helper::getPurifier('textcat');
+                        $this->textcats->purifier = $this->helper->getPurifier('textcat');
                     }
                     $this->textcats->saveText(
                         filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_NUMBER_INT),

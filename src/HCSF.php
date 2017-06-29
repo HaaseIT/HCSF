@@ -3,7 +3,6 @@
 namespace HaaseIT\HCSF;
 
 use Zend\ServiceManager\ServiceManager;
-use HaaseIT\HCSF\Shop\Helper as SHelper;
 
 class HCSF
 {
@@ -16,6 +15,21 @@ class HCSF
      * @var HelperConfig
      */
     protected $config;
+
+    /**
+     * @var \HaaseIT\HCSF\Helper
+     */
+    protected $helper;
+
+    /**
+     * @var \HaaseIT\HCSF\Customer\Helper
+     */
+    protected $helperCustomer;
+
+    /**
+     * @var \HaaseIT\HCSF\Shop\Helper
+     */
+    protected $helperShop;
 
     /**
      * HCSF constructor.
@@ -39,8 +53,6 @@ class HCSF
         define("DIRNAME_GLIDECACHE", 'glide');
         define("PATH_GLIDECACHE", PATH_CACHE.DIRNAME_GLIDECACHE);
 
-        $foo = get_defined_constants();
-
         // set scale for bcmath
         bcscale(6);
     }
@@ -61,15 +73,20 @@ class HCSF
         $this->serviceManager->setFactory('helper', function (ServiceManager $serviceManager) {
             return new \HaaseIT\HCSF\Helper($serviceManager);
         });
+        $this->helper = $this->serviceManager->get('helper');
+
         if ($this->config->getCore('enable_module_customer')) {
             $this->serviceManager->setFactory('helpercustomer', function (ServiceManager $serviceManager) {
                 return new \HaaseIT\HCSF\Customer\Helper($serviceManager);
             });
+            $this->helperCustomer = $this->serviceManager->get('helpercustomer');
         }
+
         if ($this->config->getCore('enable_module_shop')) {
             $this->serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
                 return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
             });
+            $this->helperShop = $this->serviceManager->get('helpershop');
         }
 
         define("PATH_DOCROOT", PATH_BASEDIR.$this->config->getCore('dirname_docroot'));
@@ -244,19 +261,19 @@ class HCSF
             if ($this->config->getCore('allow_parsing_of_page_content')) {
                 $twig->addExtension(new \Twig_Extension_StringLoader());
             } else { // make sure, template_from_string is callable
-                $twig->addFunction(new \Twig_SimpleFunction('template_from_string', '\HaaseIT\HCSF\Helper::reachThrough'));
+                $twig->addFunction(new \Twig_SimpleFunction('template_from_string', [$this->helper, 'reachThrough']));
             }
 
             if (!$this->config->getCore('maintenancemode')) {
                 $twig->addFunction(new \Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
             } else {
-                $twig->addFunction(new \Twig_SimpleFunction('T', '\HaaseIT\HCSF\Helper::returnEmptyString'));
+                $twig->addFunction(new \Twig_SimpleFunction('T', [$this->helper, 'returnEmptyString']));
             }
 
             $twig->addFunction(new \Twig_SimpleFunction('HT', [$serviceManager->get('hardcodedtextcats'), 'get']));
             $twig->addFunction(new \Twig_SimpleFunction('gFF', '\HaaseIT\Toolbox\Tools::getFormField'));
-            $twig->addFunction(new \Twig_SimpleFunction('ImgURL', '\HaaseIT\HCSF\Helper::getSignedGlideURL'));
-            $twig->addFunction(new \Twig_SimpleFunction('callback', 'HaaseIT\HCSF\Helper::twigCallback'));
+            $twig->addFunction(new \Twig_SimpleFunction('ImgURL', [$this->helper, 'getSignedGlideURL']));
+            $twig->addFunction(new \Twig_SimpleFunction('callback', [$this->helper, 'twigCallback']));
             $twig->addFunction(new \Twig_SimpleFunction('makeLinkHRefWithAddedGetVars', '\HaaseIT\Toolbox\Tools::makeLinkHRefWithAddedGetVars'));
             $twig->addFilter(new \Twig_SimpleFilter('decodehtmlentity', 'html_entity_decode'));
 
@@ -297,7 +314,7 @@ class HCSF
             'headers' => $P->getHeaders(),
         ];
         if ($this->config->getCore('enable_module_customer')) {
-            $aP['isloggedin'] = \HaaseIT\HCSF\Customer\Helper::getUserData();
+            $aP['isloggedin'] = $this->helperCustomer->getUserData();
             $aP['enable_module_customer'] = true;
         }
         if ($this->config->getCore('enable_module_shop')) {
@@ -347,7 +364,7 @@ class HCSF
 
         // Shopping cart infos
         if ($this->config->getCore('enable_module_shop')) {
-            $aP['cartinfo'] = SHelper::getShoppingcartData();
+            $aP['cartinfo'] = $this->helperShop->getShoppingcartData();
         }
 
         $aP['countrylist'][] = ' | ';
@@ -364,7 +381,7 @@ class HCSF
                 || $aP['pagetype'] === 'itemdetail'
             )
         ) {
-            $aP = SHelper::handleItemPage($this->serviceManager, $P, $aP);
+            $aP = $this->helperShop->handleItemPage($this->serviceManager, $P, $aP);
         }
 
         $aP['content'] = $P->oPayload->cl_html;
@@ -376,7 +393,7 @@ class HCSF
         $aP['lang_by_domain'] = $this->config->getCore('lang_by_domain');
 
         if ($this->config->getCore('debug')) {
-            \HaaseIT\HCSF\Helper::getDebug($aP, $P);
+            $this->helper->getDebug($aP, $P);
             $aP['debugdata'] = \HaaseIT\Toolbox\Tools::$sDebug;
         }
 

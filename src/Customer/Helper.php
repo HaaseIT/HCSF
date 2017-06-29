@@ -59,6 +59,11 @@ class Helper
      */
     protected $shop = [];
 
+    /**
+     * @var \HaaseIT\HCSF\Helper
+     */
+    protected $helper;
+
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
@@ -66,6 +71,7 @@ class Helper
         $this->core = $this->config->getCore();
         $this->countries = $this->config->getCountries();
         $this->shop = $this->config->getShop();
+        $this->helper = $this->serviceManager->get('helper');
     }
 
     /**
@@ -323,7 +329,7 @@ class Helper
             $sTargetAddress = $this->core['email_sender'];
         }
 
-        \HaaseIT\HCSF\Helper::mailWrapper($sTargetAddress, $sSubject, $sMessage);
+        $this->helper->mailWrapper($sTargetAddress, $sSubject, $sMessage);
     }
 
     /**
@@ -336,17 +342,17 @@ class Helper
         if (!$aUserdata) {
             if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
                 return false;
-            } elseif ($sField == '') {
+            } elseif ($sField === '') {
                 return true;
             }
 
-            if ($sField != '' && isset($_SESSION['user'][$sField]) && $_SESSION['user'][$sField] != '') {
+            if ($sField !== '' && isset($_SESSION['user'][$sField]) && $_SESSION['user'][$sField] !== '') {
                 return $_SESSION['user'][$sField];
             }
         } else {
             if (isset($aUserdata[$sField])) {
                 return $aUserdata[$sField];
-            } elseif ($sField = '') {
+            } elseif ($sField === '') {
                 return false;
             }
         }

@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Shop;
 
 
-use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -65,7 +64,7 @@ class Paypal extends Base
 
         if ($hResult->rowCount() == 1) {
             $aOrder = $hResult->fetch();
-            $fGesamtbrutto = \HaaseIT\HCSF\Shop\Helper::calculateTotalFromDB($aOrder);
+            $fGesamtbrutto = $this->helperShop->calculateTotalFromDB($aOrder);
 
             $sPaypalURL = $this->config->getShop('paypal')['url']
                 .'?cmd=_xclick&rm=2&custom='
@@ -74,7 +73,7 @@ class Paypal extends Base
             $sPaypalURL .= '&currency_code='.$this->config->getShop('paypal')['currency_id']
                 .'&amount='.str_replace(',', '.', number_format($fGesamtbrutto, 2, '.', ''));
             if ($this->config->getShop('interactive_paymentmethods_redirect_immediately')) {
-                \HaaseIT\HCSF\Helper::redirectToPage($sPaypalURL);
+                $this->helper->redirectToPage($sPaypalURL);
             }
 
             $this->P->oPayload->cl_html = $this->textcats->T('misc_paypaypal_greeting').'<br><br>';
