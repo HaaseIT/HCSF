@@ -6,14 +6,14 @@ class HardcodedTextTest extends TestCase
     public function testGetHardcodedText()
     {
         $HT = ['test' => 'textstring'];
-        \HaaseIT\HCSF\HardcodedText::init($HT);
-        $this->assertEquals('textstring', \HaaseIT\HCSF\HardcodedText::get('test'));
+        $hardcodedtextcats = new \HaaseIT\HCSF\HardcodedText($HT);
+        $this->assertEquals('textstring', $hardcodedtextcats->get('test'));
     }
 
     public function testGetHardcodedTextFail()
     {
         $HT = ['test' => 'textstring'];
-        \HaaseIT\HCSF\HardcodedText::init($HT);
-        $this->assertEquals('Missing Hardcoded Text: undefined', \HaaseIT\HCSF\HardcodedText::get('undefined'));
+        $hardcodedtextcats = new \HaaseIT\HCSF\HardcodedText($HT);
+        $this->assertEquals('Missing Hardcoded Text: undefined', $hardcodedtextcats->get('undefined'));
     }
 }

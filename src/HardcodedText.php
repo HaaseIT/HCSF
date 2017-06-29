@@ -23,17 +23,17 @@ namespace HaaseIT\HCSF;
 
 class HardcodedText
 {
-    protected static $HT;
+    protected $HT;
 
-    public static function init($HT) {
-        self::$HT = $HT;
+    public function __construct($HT) {
+        $this->HT = $HT;
     }
 
-    public static function get($sKey) {
-        if (isset(self::$HT[$sKey])) {
-            return self::$HT[$sKey];
-        } else {
-            return 'Missing Hardcoded Text: '.$sKey;
+    public function get($sKey) {
+        if (isset($this->HT[$sKey])) {
+            return $this->HT[$sKey];
         }
+
+        return 'Missing Hardcoded Text: '.$sKey;
     }
 }

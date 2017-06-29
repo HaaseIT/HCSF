@@ -201,24 +201,26 @@ class HelperConfig
             unset($navstruct['admin']);
         }
 
-        $navstruct['admin'][HardcodedText::get('admin_nav_home')] = '/_admin/index.html';
+        $hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
+
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_home')] = '/_admin/index.html';
 
         if (static::$core['enable_module_shop']) {
-            $navstruct['admin'][HardcodedText::get('admin_nav_orders')] = '/_admin/shopadmin.html';
-            $navstruct['admin'][HardcodedText::get('admin_nav_items')] = '/_admin/itemadmin.html';
-            $navstruct['admin'][HardcodedText::get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
+            $navstruct['admin'][$hardcodedtextcats->get('admin_nav_orders')] = '/_admin/shopadmin.html';
+            $navstruct['admin'][$hardcodedtextcats->get('admin_nav_items')] = '/_admin/itemadmin.html';
+            $navstruct['admin'][$hardcodedtextcats->get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
         }
 
         if (static::$core['enable_module_customer']) {
-            $navstruct['admin'][HardcodedText::get('admin_nav_customers')] = '/_admin/customeradmin.html';
+            $navstruct['admin'][$hardcodedtextcats->get('admin_nav_customers')] = '/_admin/customeradmin.html';
         }
 
-        $navstruct['admin'][HardcodedText::get('admin_nav_pages')] = '/_admin/pageadmin.html';
-        $navstruct['admin'][HardcodedText::get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
-        $navstruct['admin'][HardcodedText::get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
-        $navstruct['admin'][HardcodedText::get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
-        $navstruct['admin'][HardcodedText::get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
-        $navstruct['admin'][HardcodedText::get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_pages')] = '/_admin/pageadmin.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_textcats')] = '/_admin/textcatadmin.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_cleartemplatecache')] = '/_admin/cleartemplatecache.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_clearimagecache')] = '/_admin/clearimagecache.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
+        $navstruct['admin'][$hardcodedtextcats->get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
 
         static::$navigation = $navstruct;
     }

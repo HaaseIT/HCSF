@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Customer;
 
 
-use HaaseIT\HCSF\HardcodedText;
 use \HaaseIT\HCSF\Customer\Helper as CHelper;
 use HaaseIT\HCSF\HelperConfig;
 use Zend\ServiceManager\ServiceManager;
@@ -38,6 +37,11 @@ class Customeradmin extends Base
     private $dbal;
 
     /**
+     * @var \HaaseIT\HCSF\HardcodedText
+     */
+    private $hardcodedtextcats;
+
+    /**
      * Customeradmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -45,6 +49,7 @@ class Customeradmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
+        $this->hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
     }
 
     /**
@@ -57,13 +62,13 @@ class Customeradmin extends Base
         $this->P->cb_subnav = 'admin';
 
         $CUA = [
-            ['title' => HardcodedText::get('customeradmin_list_no'), 'key' => 'cust_no', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_company'), 'key' => 'cust_corp', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_name'), 'key' => 'cust_name', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_town'), 'key' => 'cust_town', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
-            ['title' => HardcodedText::get('customeradmin_list_active'), 'key' => 'cust_active', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => $this->hardcodedtextcats->get('customeradmin_list_no'), 'key' => 'cust_no', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => $this->hardcodedtextcats->get('customeradmin_list_company'), 'key' => 'cust_corp', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => $this->hardcodedtextcats->get('customeradmin_list_name'), 'key' => 'cust_name', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => $this->hardcodedtextcats->get('customeradmin_list_town'), 'key' => 'cust_town', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
+            ['title' => $this->hardcodedtextcats->get('customeradmin_list_active'), 'key' => 'cust_active', 'width' => '16%', 'linked' => false,'stylehead' => 'text-align: left;',],
             [
-                'title' => HardcodedText::get('customeradmin_list_edit'),
+                'title' => $this->hardcodedtextcats->get('customeradmin_list_edit'),
                 'key' => 'cust_id',
                 'width' => '16%',
                 'linked' => true,

@@ -22,7 +22,6 @@ namespace HaaseIT\HCSF\Customer;
 
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
-use HaaseIT\HCSF\HardcodedText;
 use Zend\ServiceManager\ServiceManager;
 
 /**
@@ -276,9 +275,11 @@ class Helper
 
             $sMessage = $serviceManager->get('twig')->render('customer/sendverificationmail.twig', $aP);
         } else {
-            $sSubject = HardcodedText::get('newcustomerregistration_mail_subject');
-            $sMessage = HardcodedText::get('newcustomerregistration_mail_text1').' ';
-            $sMessage .= $sTargetAddress.HardcodedText::get(
+            $hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
+
+            $sSubject = $hardcodedtextcats->get('newcustomerregistration_mail_subject');
+            $sMessage = $hardcodedtextcats->get('newcustomerregistration_mail_text1').' ';
+            $sMessage .= $sTargetAddress.$hardcodedtextcats->get(
                 'newcustomerregistration_mail_text2').' '.date(HelperConfig::$core['locale_format_date_time']
                 );
             $sTargetAddress = HelperConfig::$core['email_sender'];

@@ -60,7 +60,9 @@ class HCSF
 
         date_default_timezone_set(HelperConfig::$core['defaulttimezone']);
 
-        $this->setupHardcodedTextcats();
+        $this->serviceManager->setFactory('hardcodedtextcats', function () {
+            return $this->setupHardcodedTextcats();
+        });
 
         $this->serviceManager->setFactory('db', function () {
             return null;
@@ -151,7 +153,7 @@ class HCSF
             }
         }
 
-        HardcodedText::init($HT);
+        return new HardcodedText($HT);
     }
 
     protected function setupDB()
@@ -226,7 +228,7 @@ class HCSF
                 $twig->addFunction(new \Twig_SimpleFunction('T', '\HaaseIT\HCSF\Helper::returnEmptyString'));
             }
 
-            $twig->addFunction(new \Twig_SimpleFunction('HT', '\HaaseIT\HCSF\HardcodedText::get'));
+            $twig->addFunction(new \Twig_SimpleFunction('HT', [$serviceManager->get('hardcodedtextcats'), 'get']));
             $twig->addFunction(new \Twig_SimpleFunction('gFF', '\HaaseIT\Toolbox\Tools::getFormField'));
             $twig->addFunction(new \Twig_SimpleFunction('ImgURL', '\HaaseIT\HCSF\Helper::getSignedGlideURL'));
             $twig->addFunction(new \Twig_SimpleFunction('callback', 'HaaseIT\HCSF\Helper::twigCallback'));

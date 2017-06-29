@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 
-use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
@@ -38,6 +37,11 @@ class Itemadmin extends Base
     protected $dbal;
 
     /**
+     * @var \HaaseIT\HCSF\HardcodedText
+     */
+    private $hardcodedtextcats;
+
+    /**
      * Itemadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -45,6 +49,7 @@ class Itemadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
+        $this->hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
     }
 
     /**
@@ -153,13 +158,13 @@ class Itemadmin extends Base
     {
         $aData = [
             'searchcats' => [
-                'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
-                'name|'.HardcodedText::get('itemadmin_search_itemname'),
-                'index|'.HardcodedText::get('itemadmin_search_itemindex'),
+                'nummer|'.$this->hardcodedtextcats->get('itemadmin_search_itemno'),
+                'name|'.$this->hardcodedtextcats->get('itemadmin_search_itemname'),
+                'index|'.$this->hardcodedtextcats->get('itemadmin_search_itemindex'),
             ],
             'orderbys' => [
-                'nummer|'.HardcodedText::get('itemadmin_search_itemno'),
-                'name|'.HardcodedText::get('itemadmin_search_itemname'),
+                'nummer|'.$this->hardcodedtextcats->get('itemadmin_search_itemno'),
+                'name|'.$this->hardcodedtextcats->get('itemadmin_search_itemname'),
             ],
         ];
 
@@ -241,10 +246,10 @@ class Itemadmin extends Base
     private function prepareItemlist($aItemlist)
     {
         $aList = [
-            ['title' => HardcodedText::get('itemadmin_list_active'), 'key' => 'itemindex', 'width' => 30, 'linked' => false, 'callback' => 'renderItemStatusIcon',],
-            ['title' => HardcodedText::get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
-            ['title' => HardcodedText::get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
-            ['title' => HardcodedText::get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
+            ['title' => $this->hardcodedtextcats->get('itemadmin_list_active'), 'key' => 'itemindex', 'width' => 30, 'linked' => false, 'callback' => 'renderItemStatusIcon',],
+            ['title' => $this->hardcodedtextcats->get('itemadmin_list_itemno'), 'key' => 'itemno', 'width' => 100, 'linked' => false,],
+            ['title' => $this->hardcodedtextcats->get('itemadmin_list_name'), 'key' => 'name', 'width' => 350, 'linked' => false,],
+            ['title' => $this->hardcodedtextcats->get('itemadmin_list_edit'), 'key' => 'itemno', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemadmin.html', 'lkeyname' => 'itemno', 'lgetvars' => ['action' => 'showitem'],],
         ];
         $aData = [];
         foreach ($aItemlist['data'] as $aValue) {

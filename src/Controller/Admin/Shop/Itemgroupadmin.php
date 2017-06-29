@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 
-use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
@@ -38,6 +37,11 @@ class Itemgroupadmin extends Base
     private $dbal;
 
     /**
+     * @var \HaaseIT\HCSF\HardcodedText
+     */
+    private $hardcodedtextcats;
+
+    /**
      * Itemgroupadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -45,6 +49,7 @@ class Itemgroupadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
+        $this->hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
     }
 
     /**
@@ -301,9 +306,9 @@ class Itemgroupadmin extends Base
     private function showItemgroups($aGroups)
     {
         $aList = [
-            ['title' => HardcodedText::get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => HardcodedText::get('itemgroupadmin_list_name'), 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
-            ['title' => HardcodedText::get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
+            ['title' => $this->hardcodedtextcats->get('itemgroupadmin_list_no'), 'key' => 'gno', 'width' => 80, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => $this->hardcodedtextcats->get('itemgroupadmin_list_name'), 'key' => 'gname', 'width' => 350, 'linked' => false, 'style-data' => 'padding: 5px 0;'],
+            ['title' => $this->hardcodedtextcats->get('itemgroupadmin_list_edit'), 'key' => 'gid', 'width' => 30, 'linked' => true, 'ltarget' => '/_admin/itemgroupadmin.html', 'lkeyname' => 'gid', 'lgetvars' => ['action' => 'editgroup'], 'style-data' => 'padding: 5px 0;'],
         ];
         if (count($aGroups) > 0) {
             $aData = [];

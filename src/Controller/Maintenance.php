@@ -28,6 +28,7 @@ class Maintenance extends Base
         $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
         $this->P->cb_pagetype = 'content';
 
-        $this->P->oPayload->cl_html = \HaaseIT\HCSF\HardcodedText::get('site_currently_in_maintenance_mode');
+        $hardcodedtextcats = $this->serviceManager->get('hardcodedtextcats');
+        $this->P->oPayload->cl_html = $hardcodedtextcats->get('site_currently_in_maintenance_mode');
     }
 }

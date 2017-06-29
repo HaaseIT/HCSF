@@ -20,19 +20,27 @@
 
 namespace HaaseIT\HCSF\Controller\Admin;
 
-use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
 
 class Textcatadmin extends Base
 {
+    /**
+     * @var \HaaseIT\Toolbox\Textcat
+     */
     private $textcats;
-    
+
+    /**
+     * @var \HaaseIT\HCSF\HardcodedText
+     */
+    private $hardcodedtextcats;
+
     public function __construct(ServiceManager $serviceManager)
     {
         parent::__construct($serviceManager);
         $this->textcats = $serviceManager->get('textcats');
+        $this->hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
     }
 
     public function preparePage()
@@ -50,10 +58,10 @@ class Textcatadmin extends Base
             $aData = $this->textcats->getCompleteTextcatForCurrentLang();
 
             $aListSetting = [
-                ['title' => HardcodedText::get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
-                ['title' => HardcodedText::get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,],
+                ['title' => $this->hardcodedtextcats->get('textcatadmin_list_title_key'), 'key' => 'tc_key', 'width' => '20%', 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('textcatadmin_list_title_text'), 'key' => 'tcl_text', 'width' => '80%', 'linked' => false, 'escapehtmlspecialchars' => true,],
                 [
-                    'title' => HardcodedText::get('textcatadmin_list_title_edit'),
+                    'title' => $this->hardcodedtextcats->get('textcatadmin_list_title_edit'),
                     'key' => 'tc_id',
                     'width' => 35,
                     'linked' => true,

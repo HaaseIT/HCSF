@@ -21,7 +21,6 @@
 namespace HaaseIT\HCSF\Controller\Admin\Shop;
 
 
-use HaaseIT\HCSF\HardcodedText;
 use HaaseIT\HCSF\HelperConfig;
 use HaaseIT\Toolbox\Tools;
 use Zend\ServiceManager\ServiceManager;
@@ -38,6 +37,11 @@ class Shopadmin extends Base
     protected $dbal;
 
     /**
+     * @var \HaaseIT\HCSF\HardcodedText
+     */
+    private $hardcodedtextcats;
+
+    /**
      * Shopadmin constructor.
      * @param ServiceManager $serviceManager
      */
@@ -45,6 +49,7 @@ class Shopadmin extends Base
     {
         parent::__construct($serviceManager);
         $this->dbal = $serviceManager->get('dbal');
+        $this->hardcodedtextcats = $serviceManager->get('hardcodedtextcats');
     }
 
     /**
@@ -101,14 +106,14 @@ class Shopadmin extends Base
         $CSA = [
             'list_orders' => [
                 ['title' => '', 'key' => 'o_id', 'width' => 30, 'linked' => false, 'callback' => 'shopadminMakeCheckbox'],
-                ['title' => HardcodedText::get('shopadmin_list_orderid'), 'key' => 'o_id', 'width' => 30, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_ordertimenumber'), 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_hostpayment'), 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_orderid'), 'key' => 'o_id', 'width' => 30, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_customer'), 'key' => 'o_cust', 'width' => 280, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_sumnettoall'), 'key' => 'o_sumnettoall', 'width' => 75, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_orderstatus'), 'key' => 'o_order_status', 'width' => 80, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_ordertimenumber'), 'key' => 'o_ordertime_number', 'width' => 100, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_hostpayment'), 'key' => 'o_order_host_payment', 'width' => 140, 'linked' => false,],
                 [
-                    'title' => HardcodedText::get('shopadmin_list_edit'),
+                    'title' => $this->hardcodedtextcats->get('shopadmin_list_edit'),
                     'key' => 'o_id',
                     'width' => 45,
                     'linked' => true,
@@ -120,11 +125,11 @@ class Shopadmin extends Base
                 ],
             ],
             'list_orderitems' => [
-                ['title' => HardcodedText::get('shopadmin_list_itemno'), 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_itemname'), 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_itemamount'), 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
-                ['title' => HardcodedText::get('shopadmin_list_itemnetto'), 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
-                ['title' => HardcodedText::get('shopadmin_list_itemsumnetto'), 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_itemno'), 'key' => 'oi_itemno', 'width' => 95, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_itemname'), 'key' => 'oi_itemname', 'width' => 350, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_itemamount'), 'key' => 'oi_amount', 'width' => 50, 'linked' => false, 'style-data' => 'text-align: center;',],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_itemnetto'), 'key' => 'oi_price_netto', 'width' => 70, 'linked' => false,],
+                ['title' => $this->hardcodedtextcats->get('shopadmin_list_itemsumnetto'), 'key' => 'ges_netto', 'width' => 75, 'linked' => false,],
             ],
         ];
 
@@ -221,19 +226,19 @@ class Shopadmin extends Base
                 while ($aRow = $stmt->fetch()) {
                     switch ($aRow['o_ordercompleted']) {
                         case 'y':
-                            $sStatus = '<span style="color: green; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_completed').'</span>';
+                            $sStatus = '<span style="color: green; font-weight: bold;">'.$this->hardcodedtextcats->get('shopadmin_orderstatus_completed').'</span>';
                             break;
                         case 'n':
-                            $sStatus = '<span style="color: orange; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_open').'</span>';
+                            $sStatus = '<span style="color: orange; font-weight: bold;">'.$this->hardcodedtextcats->get('shopadmin_orderstatus_open').'</span>';
                             break;
                         case 'i':
-                            $sStatus = '<span style="color: orange;">'.HardcodedText::get('shopadmin_orderstatus_inwork').'</span>';
+                            $sStatus = '<span style="color: orange;">'.$this->hardcodedtextcats->get('shopadmin_orderstatus_inwork').'</span>';
                             break;
                         case 's':
-                            $sStatus = '<span style="color: red; font-weight: bold;">'.HardcodedText::get('shopadmin_orderstatus_canceled').'</span>';
+                            $sStatus = '<span style="color: red; font-weight: bold;">'.$this->hardcodedtextcats->get('shopadmin_orderstatus_canceled').'</span>';
                             break;
                         case 'd':
-                            $sStatus = HardcodedText::get('shopadmin_orderstatus_deleted');
+                            $sStatus = $this->hardcodedtextcats->get('shopadmin_orderstatus_deleted');
                             break;
                         default:
                             $sStatus = '';
@@ -252,7 +257,7 @@ class Shopadmin extends Base
                     }
                     $sZahlungsmethode .= '</span>';
 
-                    if (trim($aRow['o_corpname']) == '') {
+                    if (trim($aRow['o_corpname']) === '') {
                         $sName = $aRow['o_name'];
                     } else {
                         $sName = $aRow['o_corpname'];
@@ -272,14 +277,14 @@ class Shopadmin extends Base
                             )
                             .' '.HelperConfig::$shop['waehrungssymbol']
                             .(
-                                ($aRow['o_mindermenge'] != 0 && $aRow['o_mindermenge'] != '')
+                                ($aRow['o_mindermenge'] != 0 && $aRow['o_mindermenge'] !== '')
                                     ? '<br>+'.number_format(
                                         $aRow['o_mindermenge'],
                                         HelperConfig::$core['numberformat_decimals'],
                                         HelperConfig::$core['numberformat_decimal_point'],
                                         HelperConfig::$core['numberformat_thousands_seperator']
                                     ).' '.HelperConfig::$shop['waehrungssymbol'] : ''),
-                        'o_order_status' => $sStatus.((trim($aRow['o_lastedit_user']) != '') ? '<br>'.$aRow['o_lastedit_user'] : ''),
+                        'o_order_status' => $sStatus.((trim($aRow['o_lastedit_user']) !== '') ? '<br>'.$aRow['o_lastedit_user'] : ''),
                         'o_ordertime_number' => date(
                                 HelperConfig::$core['locale_format_date_time'],
                                 $aRow['o_ordertimestamp']
