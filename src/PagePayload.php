@@ -25,19 +25,37 @@ use Zend\ServiceManager\ServiceManager;
 
 class PagePayload
 {
+    /**
+     * @var ServiceManager
+     */
     protected $serviceManager;
-    public $cl_lang, $cl_html, $cl_keywords, $cl_description, $cl_title;
 
+    /**
+     * @var \HaaseIT\HCSF\HelperConfig
+     */
+    protected $config;
+
+    public $cl_lang;
+    public $cl_html;
+    public $cl_keywords;
+    public $cl_description;
+    public $cl_title;
+
+    /**
+     * PagePayload constructor.
+     * @param ServiceManager $serviceManager
+     */
     public function __construct(ServiceManager $serviceManager) {
         $this->serviceManager = $serviceManager;
+        $this->config = $serviceManager->get('config');
     }
 
     public function getTitle()
     {
-        if (isset($this->cl_title) && trim($this->cl_title) != '') {
+        if (!empty($this->cl_title)) {
             return $this->cl_title;
-        } else {
-            return HelperConfig::$core['default_pagetitle'];
         }
+
+        return $this->config->getCore('default_pagetitle');
     }
 }

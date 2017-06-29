@@ -26,17 +26,23 @@ class Router
     private $serviceManager;
 
     /**
+     * @var \HaaseIT\HCSF\HelperConfig
+     */
+    protected $config;
+
+    /**
      * Router constructor.
      * @param ServiceManager $serviceManager
      */
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
+        $this->config = $serviceManager->get('config');
     }
 
     public function getPage()
     {
-        if (HelperConfig::$core['maintenancemode']) {
+        if ($this->config->getCore('maintenancemode')) {
             try {
                 $controller = new \HaaseIT\HCSF\Controller\Maintenance($this->serviceManager);
                 $this->P = $controller->getPage();
@@ -77,7 +83,7 @@ class Router
                 '/_misc/paypal.html' => 'Shop\\Paypal',
                 '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
             ];
-            if (HelperConfig::$core['enable_sandbox']) {
+            if ($this->config->getCore('enable_sandbox')) {
                 $map['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
             }
             $this->P = 404;
@@ -88,7 +94,7 @@ class Router
             if (!empty($map[$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\'.$map[$this->sPath];
             } else {
-                if ($aPath[1] == HelperConfig::$core['directory_images']) {
+                if ($aPath[1] == $this->config->getCore('directory_images')) {
                     $class = Controller\Glide::class;
                 }
             }
@@ -104,7 +110,7 @@ class Router
 
                 }
             } else {
-                if (HelperConfig::$core['enable_module_shop']) {
+                if ($this->config->getCore('enable_module_shop')) {
                     $aRoutingoverride = $this->getRoutingoverride($aPath);
                 }
 
@@ -168,7 +174,7 @@ class Router
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
                     header($serverserverprotocol.' 404 Not Found');
                 }
-            } elseif ($this->P->oPayload->cl_lang != null && $this->P->oPayload->cl_lang != HelperConfig::$lang) { // if the page is available but not in the current language, display info
+            } elseif ($this->P->oPayload->cl_lang != null && $this->P->oPayload->cl_lang != $this->config->getLang()) { // if the page is available but not in the current language, display info
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang').'<br><br>'.$this->P->oPayload->cl_html;
             }
         }

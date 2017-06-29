@@ -32,63 +32,68 @@ class HelperConfig
     /**
      * @var array
      */
-    public static $core = [];
+    private $core = [];
 
     /**
      * @var array
      */
-    public static $secrets = [];
+    private $secrets = [];
 
     /**
      * @var array
      */
-    public static $countries = [];
+    private $countries = [];
 
     /**
      * @var array
      */
-    public static $shop = [];
+    private $shop = [];
 
     /**
      * @var array
      */
-    public static $customer = [];
+    private $customer = [];
 
     /**
      * @var array
      */
-    public static $navigation = [];
+    private $navigation = [];
 
     /**
      * @var string
      */
-    public static $lang = '';
+    private $lang;
 
     /**
      *
      */
-    public static function init()
+    public function __construct()
     {
-        static::loadCore();
-        static::loadCountries();
+        $this->loadCore();
+        $this->loadCountries();
 
-        static::$lang = \HaaseIT\HCSF\Helper::getLanguage();
+        $this->lang = \HaaseIT\HCSF\Helper::getLanguage();
 
-        static::loadSecrets();
+        $this->loadSecrets();
 
-        if (static::$core['enable_module_customer']) {
-            static::loadCustomer();
+        if ($this->core['enable_module_customer']) {
+            $this->loadCustomer();
         }
 
-        if (static::$core['enable_module_shop']) {
-            static::loadShop();
+        if ($this->core['enable_module_shop']) {
+            $this->loadShop();
         }
+    }
+
+    public function getLang()
+    {
+        return $this->lang;
     }
 
     /**
      *
      */
-    private static function loadCore()
+    private function loadCore()
     {
         $core = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/core.yml'));
         if (is_file(PATH_BASEDIR.'config/core.yml')) {
@@ -111,52 +116,88 @@ class HelperConfig
             $core['enable_module_customer'] = true;
         }
 
-        static::$core = $core;
+        $this->core = $core;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getCore($setting)
+    {
+        return !empty($this->core[$setting]) ? $this->core[$setting] : false;
     }
 
     /**
      *
      */
-    private static function loadCountries()
+    private function loadCountries()
     {
         $countries = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/countries.yml'));
         if (is_file(PATH_BASEDIR.'config/countries.yml')) {
             $countries = array_merge($countries, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/countries.yml')));
         }
 
-        static::$countries = $countries;
+        $this->countries = $countries;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getCountries($setting)
+    {
+        return !empty($this->countries[$setting]) ? $this->countries[$setting] : false;
     }
 
     /**
      *
      */
-    private static function loadSecrets()
+    private function loadSecrets()
     {
         $secrets = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/secrets.yml'));
         if (is_file(PATH_BASEDIR.'config/secrets.yml')) {
             $secrets = array_merge($secrets, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/secrets.yml')));
         }
 
-        static::$secrets = $secrets;
+        $this->secrets = $secrets;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getSecret($setting)
+    {
+        return !empty($this->secrets[$setting]) ? $this->secrets[$setting] : false;
     }
 
     /**
      *
      */
-    private static function loadCustomer()
+    private function loadCustomer()
     {
         $customer = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/customer.yml'));
         if (is_file(PATH_BASEDIR.'/config/customer.yml')) {
             $customer = array_merge($customer, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customer.yml')));
         }
 
-        static::$customer = $customer;
+        $this->customer = $customer;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getCustomer($setting)
+    {
+        return !empty($this->customer[$setting]) ? $this->customer[$setting] : false;
     }
 
     /**
      *
      */
-    private static function loadShop()
+    private function loadShop()
     {
         $shop = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/shop.yml'));
         if (is_file(PATH_BASEDIR.'config/shop.yml')) {
@@ -166,13 +207,22 @@ class HelperConfig
             $shop['vat'] = ['full' => 0, 'reduced' => 0];
         }
 
-        static::$shop = $shop;
+        $this->shop = $shop;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getShop($setting)
+    {
+        return !empty($this->shop[$setting]) ? $this->shop[$setting] : false;
     }
 
     /**
      * @param ServiceManager $serviceManager
      */
-    public static function loadNavigation(ServiceManager $serviceManager)
+    public function loadNavigation(ServiceManager $serviceManager)
     {
         if (is_file(PATH_BASEDIR.'config/navigation.yml')) {
             $navstruct = Yaml::parse(file_get_contents(PATH_BASEDIR.'config/navigation.yml'));
@@ -205,13 +255,13 @@ class HelperConfig
 
         $navstruct['admin'][$hardcodedtextcats->get('admin_nav_home')] = '/_admin/index.html';
 
-        if (static::$core['enable_module_shop']) {
+        if ($this->core['enable_module_shop']) {
             $navstruct['admin'][$hardcodedtextcats->get('admin_nav_orders')] = '/_admin/shopadmin.html';
             $navstruct['admin'][$hardcodedtextcats->get('admin_nav_items')] = '/_admin/itemadmin.html';
             $navstruct['admin'][$hardcodedtextcats->get('admin_nav_itemgroups')] = '/_admin/itemgroupadmin.html';
         }
 
-        if (static::$core['enable_module_customer']) {
+        if ($this->core['enable_module_customer']) {
             $navstruct['admin'][$hardcodedtextcats->get('admin_nav_customers')] = '/_admin/customeradmin.html';
         }
 
@@ -222,6 +272,15 @@ class HelperConfig
         $navstruct['admin'][$hardcodedtextcats->get('admin_nav_phpinfo')] = '/_admin/phpinfo.html';
         $navstruct['admin'][$hardcodedtextcats->get('admin_nav_dbstatus')] = '/_admin/dbstatus.html';
 
-        static::$navigation = $navstruct;
+        $this->navigation = $navstruct;
+    }
+
+    /**
+     * @param string $setting
+     * @return mixed
+     */
+    public function getNavigation($setting)
+    {
+        return !empty($this->navigation[$setting]) ? $this->navigation[$setting] : false;
     }
 }

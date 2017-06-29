@@ -69,7 +69,7 @@ class UserPagePayload extends PagePayload
                 ->where('cl_cb = ?')
                 ->andWhere('cl_lang = ?')
                 ->setParameter(0, $iParentID)
-                ->setParameter(1, HelperConfig::$lang)
+                ->setParameter(1, $this->config->getLang())
             ;
             $stmt = $querybuilder->execute();
             $stmt->setFetchMode(\PDO::FETCH_INTO, $this);
@@ -78,7 +78,7 @@ class UserPagePayload extends PagePayload
                 $stmt->fetch();
             } elseif (!$bReturnRaw) { // if raw data is required, don't try to fetch default lang data
                 // if the current language data is not available, lets see if we can get the default languages data
-                $lang_available = HelperConfig::$core['lang_available'];
+                $lang_available = $this->config->getCore('lang_available');
                 $querybuilder
                     ->setParameter(0, $iParentID)
                     ->setParameter(1, key($lang_available))
@@ -126,7 +126,7 @@ class UserPagePayload extends PagePayload
             ->setValue('cl_cb', '?')
             ->setValue('cl_lang', '?')
             ->setParameter(0, $iParentID)
-            ->setParameter(1, HelperConfig::$lang)
+            ->setParameter(1, $this->config->getLang())
         ;
 
         return $querybuilder->execute();

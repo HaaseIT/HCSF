@@ -13,6 +13,11 @@ class HCSF
     protected $serviceManager;
 
     /**
+     * @var HelperConfig
+     */
+    protected $config;
+
+    /**
      * HCSF constructor.
      * @param string $basedir
      */
@@ -48,9 +53,13 @@ class HCSF
             $this->setupRequest();
         }
 
-        HelperConfig::init();
-        define("PATH_DOCROOT", PATH_BASEDIR.HelperConfig::$core['dirname_docroot']);
-        if (HelperConfig::$core['debug']) {
+        $this->serviceManager->setFactory('config', function () {
+            return new HelperConfig();
+        });
+        $this->config = $this->serviceManager->get('config');
+
+        define("PATH_DOCROOT", PATH_BASEDIR.$this->config->getCore('dirname_docroot'));
+        if ($this->config->getCore('debug')) {
             \HaaseIT\Toolbox\Tools::$bEnableDebug = true;
         }
 
@@ -58,7 +67,7 @@ class HCSF
             $this->setupSession();
         }
 
-        date_default_timezone_set(HelperConfig::$core['defaulttimezone']);
+        date_default_timezone_set($this->config->getCore('defaulttimezone'));
 
         $this->serviceManager->setFactory('hardcodedtextcats', function () {
             return $this->setupHardcodedTextcats();
@@ -68,17 +77,17 @@ class HCSF
             return null;
         });
 
-        if (!HelperConfig::$core['maintenancemode'] || CLI) {
+        if (!$this->config->getCore('maintenancemode') || CLI) {
             $this->setupDB();
             $this->setupTextcats();
-            HelperConfig::loadNavigation($this->serviceManager);
+            $this->config->loadNavigation($this->serviceManager);
         }
 
         if (!CLI) {
             $this->setupTwig();
         }
 
-        if (HelperConfig::$core['enable_module_shop']) {
+        if ($this->config->getCore('enable_module_shop')) {
             $this->serviceManager->setFactory('oItem', function (ServiceManager $serviceManager) {
                 return new \HaaseIT\HCSF\Shop\Items($serviceManager);
             });
@@ -111,7 +120,7 @@ class HCSF
 
     protected function setupSession()
     {
-        if (HelperConfig::$core['enable_module_customer'] && filter_input(INPUT_COOKIE, 'acceptscookies') === 'yes') {
+        if ($this->config->getCore('enable_module_customer') && filter_input(INPUT_COOKIE, 'acceptscookies') === 'yes') {
             // Session handling
             // session.use_trans_sid wenn nötig aktivieren
             session_name('sid');
@@ -143,11 +152,13 @@ class HCSF
 
     protected function setupHardcodedTextcats()
     {
-        if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php')) {
-            $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.HelperConfig::$lang.'.php';
+        $lang = $this->config->getLang();
+        $langavailable = $this->config->getCore('lang_available');
+        if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.$lang.'.php')) {
+            $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.$lang.'.php';
         } else {
-            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core['lang_available']).'.php')) {
-                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key(HelperConfig::$core['lang_available']).'.php';
+            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key($langavailable).'.php')) {
+                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key($langavailable).'.php';
             } else {
                 $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/de.php';
             }
@@ -163,11 +174,11 @@ class HCSF
 
             $connectionParams = [
                 'url' =>
-                    HelperConfig::$secrets['db_type'].'://'
-                    .HelperConfig::$secrets['db_user'].':'
-                    .HelperConfig::$secrets['db_password'].'@'
-                    .HelperConfig::$secrets['db_server'].'/'
-                    .HelperConfig::$secrets['db_name'],
+                    $this->config->getSecret('db_type').'://'
+                    .$this->config->getSecret('db_user').':'
+                    .$this->config->getSecret('db_password').'@'
+                    .$this->config->getSecret('db_server').'/'
+                    .$this->config->getSecret('db_name'),
                 'charset' => 'UTF8',
                 'driverOptions' => [
                     \PDO::ATTR_EMULATE_PREPARES => false,
@@ -187,12 +198,12 @@ class HCSF
     protected function setupTextcats()
     {
         $this->serviceManager->setFactory('textcats', function (ServiceManager $serviceManager) {
-            $langavailable = HelperConfig::$core['lang_available'];
+            $langavailable = $this->config->getCore('lang_available');
             $textcats = new \HaaseIT\Toolbox\Textcat(
-                HelperConfig::$lang,
+                $this->config->getLang(),
                 $serviceManager->get('db'),
                 key($langavailable),
-                HelperConfig::$core['textcatsverbose'],
+                $this->config->getCore('textcatsverbose'),
                 PATH_LOGS
             );
             $textcats->loadTextcats();
@@ -208,21 +219,21 @@ class HCSF
 
             $twig_options = [
                 'autoescape' => false,
-                'debug' => HelperConfig::$core['debug'] ? true : false,
+                'debug' => $this->config->getCore('debug') ? true : false,
             ];
-            if (HelperConfig::$core['templatecache_enable'] &&
+            if ($this->config->getCore('templatecache_enable') &&
                 is_dir(PATH_TEMPLATECACHE) && is_writable(PATH_TEMPLATECACHE)) {
                 $twig_options['cache'] = PATH_TEMPLATECACHE;
             }
             $twig = new \Twig_Environment($loader, $twig_options);
 
-            if (HelperConfig::$core['allow_parsing_of_page_content']) {
+            if ($this->config->getCore('allow_parsing_of_page_content')) {
                 $twig->addExtension(new \Twig_Extension_StringLoader());
             } else { // make sure, template_from_string is callable
                 $twig->addFunction(new \Twig_SimpleFunction('template_from_string', '\HaaseIT\HCSF\Helper::reachThrough'));
             }
 
-            if (!HelperConfig::$core['maintenancemode']) {
+            if (!$this->config->getCore('maintenancemode')) {
                 $twig->addFunction(new \Twig_SimpleFunction('T', [$serviceManager->get('textcats'), 'T']));
             } else {
                 $twig->addFunction(new \Twig_SimpleFunction('T', '\HaaseIT\HCSF\Helper::returnEmptyString'));
@@ -256,36 +267,36 @@ class HCSF
         $requesturi = $this->serviceManager->get('request')->getRequestTarget();
 
         $aP = [
-            'language' => HelperConfig::$lang,
+            'language' => $this->config->getLang(),
             'pageconfig' => $P->cb_pageconfig,
             'pagetype' => $P->cb_pagetype,
             'subnavkey' => $P->cb_subnav,
             'requesturi' => $requesturi,
             'requesturiarray' => parse_url($requesturi),
-            'locale_format_date' => HelperConfig::$core['locale_format_date'],
-            'locale_format_date_time' => HelperConfig::$core['locale_format_date_time'],
-            'maintenancemode' => HelperConfig::$core['maintenancemode'],
-            'numberformat_decimals' => HelperConfig::$core['numberformat_decimals'],
-            'numberformat_decimal_point' => HelperConfig::$core['numberformat_decimal_point'],
-            'numberformat_thousands_seperator' => HelperConfig::$core['numberformat_thousands_seperator'],
+            'locale_format_date' => $this->config->getCore('locale_format_date'),
+            'locale_format_date_time' => $this->config->getCore('locale_format_date_time'),
+            'maintenancemode' => $this->config->getCore('maintenancemode'),
+            'numberformat_decimals' => $this->config->getCore('numberformat_decimals'),
+            'numberformat_decimal_point' => $this->config->getCore('numberformat_decimal_point'),
+            'numberformat_thousands_seperator' => $this->config->getCore('numberformat_thousands_seperator'),
             'customroottemplate' => $P->getCustomRootTemplate(),
             'headers' => $P->getHeaders(),
         ];
-        if (HelperConfig::$core['enable_module_customer']) {
+        if ($this->config->getCore('enable_module_customer')) {
             $aP['isloggedin'] = \HaaseIT\HCSF\Customer\Helper::getUserData();
             $aP['enable_module_customer'] = true;
         }
-        if (HelperConfig::$core['enable_module_shop']) {
-            $aP['currency'] = HelperConfig::$shop['waehrungssymbol'];
-            $aP['orderamounts'] = HelperConfig::$shop['orderamounts'];
-            if (isset(HelperConfig::$shop['vat']['full'])) {
-                $aP['vatfull'] = HelperConfig::$shop['vat']['full'];
+        if ($this->config->getCore('enable_module_shop')) {
+            $aP['currency'] = $this->config->getShop('waehrungssymbol');
+            $aP['orderamounts'] = $this->config->getShop('orderamounts');
+            if (!empty($this->config->getShop('vat')['full'])) {
+                $aP['vatfull'] = $this->config->getShop('vat')['full'];
             }
-            if (isset(HelperConfig::$shop['vat']['reduced'])) {
-                $aP['vatreduced'] = HelperConfig::$shop['vat']['reduced'];
+            if (!empty($this->config->getShop('vat')['reduced'])) {
+                $aP['vatreduced'] = $this->config->getShop('vat')['reduced'];
             }
-            if (isset(HelperConfig::$shop['custom_order_fields'])) {
-                $aP['custom_order_fields'] = HelperConfig::$shop['custom_order_fields'];
+            if (!empty($this->config->getShop('custom_order_fields'))) {
+                $aP['custom_order_fields'] = $this->config->getShop('custom_order_fields');
             }
             $aP['enable_module_shop'] = true;
         }
@@ -294,24 +305,25 @@ class HCSF
         } else {
             $aP['path'] = pathinfo($aP['requesturi']);
         }
-        if ($P->cb_customcontenttemplate != NULL) {
+        if ($P->cb_customcontenttemplate != null) {
             $aP['customcontenttemplate'] = $P->cb_customcontenttemplate;
         }
-        if ($P->cb_customdata != NULL) {
+        if ($P->cb_customdata != null) {
             $aP['customdata'] = $P->cb_customdata;
         }
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $aP['referer'] = $_SERVER['HTTP_REFERER'];
+        $serverhttpreferer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
+        if ($serverhttpreferer !== null) {
+            $aP['referer'] = $serverhttpreferer;
         }
 
         // if there is no subnav defined but there is a default subnav defined, use it
         // subnavkey can be used in the templates to find out, where we are
-        if ((!isset($aP['subnavkey']) || $aP['subnavkey'] == '') && HelperConfig::$core['subnav_default'] != '') {
-            $aP['subnavkey'] = HelperConfig::$core['subnav_default'];
-            $P->cb_subnav = HelperConfig::$core['subnav_default'];
+        if (empty($aP['subnavkey']) && !empty($this->config->getCore('subnav_default'))) {
+            $aP['subnavkey'] = $this->config->getCore('subnav_default');
+            $P->cb_subnav = $this->config->getCore('subnav_default');
         }
-        if ($P->cb_subnav != NULL && isset(HelperConfig::$navigation[$P->cb_subnav])) {
-            $aP['subnav'] = HelperConfig::$navigation[$P->cb_subnav];
+        if ($P->cb_subnav != null && !empty($this->config->getNavigation($P->cb_subnav))) {
+            $aP['subnav'] = $this->config->getNavigation($P->cb_subnav);
         }
 
         // Get page title, meta-keywords, meta-description
@@ -320,17 +332,18 @@ class HCSF
         $aP['description'] = $P->oPayload->cl_description;
 
         // Shopping cart infos
-        if (HelperConfig::$core['enable_module_shop']) {
+        if ($this->config->getCore('enable_module_shop')) {
             $aP['cartinfo'] = SHelper::getShoppingcartData();
         }
 
         $aP['countrylist'][] = ' | ';
-        foreach (HelperConfig::$countries['countries_' .HelperConfig::$lang] as $sKey => $sValue) {
+        $configcountries = $this->config->getCountries('countries_' .$this->config->getLang());
+        foreach ($configcountries as $sKey => $sValue) {
             $aP['countrylist'][] = $sKey.'|'.$sValue;
         }
 
         if (
-            HelperConfig::$core['enable_module_shop']
+            $this->config->getCore('enable_module_shop')
             && (
                 $aP['pagetype'] === 'itemoverview'
                 || $aP['pagetype'] === 'itemoverviewgrpd'
@@ -344,11 +357,11 @@ class HCSF
 
         $aP['content'] = str_replace('@', '&#064;', $aP['content']); // Change @ to HTML Entity -> maybe less spam mails
 
-        $aP['lang_available'] = HelperConfig::$core['lang_available'];
-        $aP['lang_detection_method'] = HelperConfig::$core['lang_detection_method'];
-        $aP['lang_by_domain'] = HelperConfig::$core['lang_by_domain'];
+        $aP['lang_available'] = $this->config->getCore('lang_available');
+        $aP['lang_detection_method'] = $this->config->getCore('lang_detection_method');
+        $aP['lang_by_domain'] = $this->config->getCore('lang_by_domain');
 
-        if (HelperConfig::$core['debug']) {
+        if ($this->config->getCore('debug')) {
             \HaaseIT\HCSF\Helper::getDebug($aP, $P);
             $aP['debugdata'] = \HaaseIT\Toolbox\Tools::$sDebug;
         }
