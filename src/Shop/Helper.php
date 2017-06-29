@@ -49,18 +49,12 @@ class Helper
      */
     protected $helperCustomer;
 
-    /**
-     * @var \HaaseIT\HCSF\Shop\Helper
-     */
-    protected $helperShop;
-
     public function __construct(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
         $this->config = $serviceManager->get('config');
         $this->shop = $this->config->getShop();
         $this->helperCustomer = $serviceManager->get('helpercustomer');
-        $this->helperShop = $serviceManager->get('helpershop');
     }
 
     /**
@@ -318,7 +312,7 @@ class Helper
             'cartsumbrutto' => 0,
         ];
         if (isset($_SESSION['cart']) && (!$this->shop['show_pricesonlytologgedin'] || $this->helperCustomer->getUserData()) && count($_SESSION['cart'])) {
-            $aCartsums = $this->helperShop->calculateCartItems($_SESSION['cart']);
+            $aCartsums = $this->calculateCartItems($_SESSION['cart']);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION['cart']),
                 'cartsums' => $aCartsums,
