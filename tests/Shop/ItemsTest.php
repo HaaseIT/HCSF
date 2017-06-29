@@ -20,14 +20,37 @@ class ItemsTest extends TestCase
         $serviceManager->setFactory('db', function () {
             return null;
         });
+        $serviceManager->setFactory('config', function () {
+            return new HelperConfig();
+        });
+        $config = $serviceManager->get('config');
 
-        HelperConfig::$shop = [
+        $serviceManager->setFactory('helper', function (ServiceManager $serviceManager) {
+            return new \HaaseIT\HCSF\Helper($serviceManager);
+        });
+
+        $serviceManager->setFactory('helpercustomer', function (ServiceManager $serviceManager) {
+            return new \HaaseIT\HCSF\Customer\Helper($serviceManager);
+        });
+
+        $serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
+            //return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
+        });
+
+        $configreflection = new ReflectionClass($config);
+        $configreflectionShop = $configreflection->getProperty('shop');
+        $configreflectionShop->setAccessible(true);
+        $configreflectionLang = $configreflection->getProperty('lang');
+        $configreflectionLang->setAccessible(true);
+
+
+        $configreflectionShop->setValue($config, [
             'vat' => [
                 'full' => 0,
                 'reduced' => 0,
             ],
-        ];
-        HelperConfig::$lang = 'de';
+        ]);
+        $configreflectionLang->setValue($config, 'de');
 
         $items = new Items($serviceManager);
 
@@ -47,7 +70,7 @@ class ItemsTest extends TestCase
         $this->assertArrayNotHasKey('netto_rebated', $aPrice);
 
         // set vat to normal values
-        HelperConfig::$shop = [
+        $configreflectionShop->setValue($config, [
             'vat' => [
                 'full' => 19,
                 'reduced' => 7,
@@ -57,7 +80,7 @@ class ItemsTest extends TestCase
                     'grosskunde' => 7,
                 ],
             ],
-        ];
+        ]);
         $items = new Items($serviceManager);
 
         // regular price, no rebate, reduced vat
