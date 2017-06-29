@@ -21,6 +21,7 @@
 namespace HaaseIT\HCSF;
 
 use HaaseIT\Toolbox\Tools;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Class Helper
@@ -29,25 +30,63 @@ use HaaseIT\Toolbox\Tools;
 class Helper
 {
     /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    /**
+     * @var \HaaseIT\HCSF\HelperConfig
+     */
+    protected $config;
+
+    /**
+     * @var array
+     */
+    protected $core = [];
+
+    /**
+     * @var array
+     */
+    protected $secrets = [];
+
+    /**
+     * @var array
+     */
+    protected $shop = [];
+
+    /**
+     * Helper constructor.
+     * @param ServiceManager $serviceManager
+     */
+    public function __construct(ServiceManager $serviceManager)
+    {
+        $this->serviceManager = $serviceManager;
+        $this->config = $serviceManager->get('config');
+        $this->secrets = $this->config->getSecret();
+        $this->core = $this->config->getCore();
+        $this->shop = $this->config->getShop();
+    }
+
+    /**
      * @param string $target
      * @param bool $replace
      * @param int $http_response_header
      * @return void|false
      */
-    public static function redirectToPage($target = '', $replace = false, $http_response_header = 302)
+    public function redirectToPage($target = '', $replace = false, $http_response_header = 302)
     {
         if (empty($target)) {
             return false;
         }
 
         header('Location: '.$target, $replace, $http_response_header);
-        self::terminateScript();
+        $this->terminateScript();
     }
 
     /**
      * @param string $message
      */
-    public static function terminateScript($message = '')
+    public function terminateScript($message = '')
     {
         die($message);
     }
@@ -58,9 +97,9 @@ class Helper
      * @param int $height
      * @return bool|string
      */
-    public static function getSignedGlideURL($file, $width = 0, $height = 0)
+    public function getSignedGlideURL($file, $width = 0, $height = 0)
     {
-        $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', HelperConfig::$secrets['glide_signkey']);
+        $urlBuilder = \League\Glide\Urls\UrlBuilderFactory::create('', $this->secrets['glide_signkey']);
 
         $param = [];
         if ($width == 0 && $height == 0) {
@@ -87,32 +126,32 @@ class Helper
      * @param array $aFilesToAttach
      * @return bool
      */
-    public static function mailWrapper($to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
+    public function mailWrapper($to, $subject = '(No subject)', $message = '', $aImagesToEmbed = [], $aFilesToAttach = []) {
         $mail = new \PHPMailer;
         $mail->CharSet = 'UTF-8';
 
         $mail->isMail();
-        if (HelperConfig::$core['mail_method'] === 'sendmail') {
+        if ($this->core['mail_method'] === 'sendmail') {
             $mail->isSendmail();
-        } elseif (HelperConfig::$core['mail_method'] === 'smtp') {
+        } elseif ($this->core['mail_method'] === 'smtp') {
             $mail->isSMTP();
-            $mail->Host = HelperConfig::$secrets['mail_smtp_server'];
-            $mail->Port = HelperConfig::$secrets['mail_smtp_port'];
-            if (HelperConfig::$secrets['mail_smtp_auth'] === true) {
+            $mail->Host = $this->secrets['mail_smtp_server'];
+            $mail->Port = $this->secrets['mail_smtp_port'];
+            if ($this->secrets['mail_smtp_auth'] === true) {
                 $mail->SMTPAuth = true;
-                $mail->Username = HelperConfig::$secrets['mail_smtp_auth_user'];
-                $mail->Password = HelperConfig::$secrets['mail_smtp_auth_pwd'];
-                if (HelperConfig::$secrets['mail_smtp_secure']) {
+                $mail->Username = $this->secrets['mail_smtp_auth_user'];
+                $mail->Password = $this->secrets['mail_smtp_auth_pwd'];
+                if ($this->secrets['mail_smtp_secure']) {
                     $mail->SMTPSecure = 'tls';
-                    if (HelperConfig::$secrets['mail_smtp_secure_method'] === 'ssl') {
+                    if ($this->secrets['mail_smtp_secure_method'] === 'ssl') {
                         $mail->SMTPSecure = 'ssl';
                     }
                 }
             }
         }
 
-        $mail->From = HelperConfig::$core['email_sender'];
-        $mail->FromName = HelperConfig::$core['email_sendername'];
+        $mail->From = $this->core['email_sender'];
+        $mail->FromName = $this->core['email_sendername'];
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
@@ -141,14 +180,14 @@ class Helper
      * @param $string
      * @return mixed
      */
-    public static function reachThrough($string) {
+    public function reachThrough($string) {
         return $string;
     }
     // don't remove this, this is the fallback for unavailable twig functions
     /**
      * @return string
      */
-    public static function returnEmptyString() {
+    public function returnEmptyString() {
         return '';
     }
 
@@ -156,7 +195,7 @@ class Helper
      * @param array $aP
      * @param Page $P
      */
-    public static function getDebug($aP, $P)
+    public function getDebug($aP, $P)
     {
         if (!empty($_POST)) {
             Tools::debug($_POST, '$_POST');
@@ -173,22 +212,22 @@ class Helper
     /**
      * @return int|mixed|string
      */
-    public static function getLanguage()
+    public function getLanguage()
     {
-        $langavailable = HelperConfig::$core['lang_available'];
+        $langavailable = $this->core['lang_available'];
         if (
-            HelperConfig::$core['lang_detection_method'] === 'domain'
-            && isset(HelperConfig::$core['lang_by_domain'])
-            && is_array(HelperConfig::$core['lang_by_domain'])
+            $this->core['lang_detection_method'] === 'domain'
+            && isset($this->core['lang_by_domain'])
+            && is_array($this->core['lang_by_domain'])
         ) { // domain based language detection
             $serverservername = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
-            foreach (HelperConfig::$core['lang_by_domain'] as $sKey => $sValue) {
+            foreach ($this->core['lang_by_domain'] as $sKey => $sValue) {
                 if ($serverservername == $sValue || $serverservername == 'www.'.$sValue) {
                     $sLang = $sKey;
                     break;
                 }
             }
-        } elseif (HelperConfig::$core['lang_detection_method'] === 'legacy') { // legacy language detection
+        } elseif ($this->core['lang_detection_method'] === 'legacy') { // legacy language detection
             $sLang = key($langavailable);
             $getlanguage = filter_input(INPUT_GET, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             $cookielanguage = filter_input(INPUT_COOKIE, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
@@ -213,12 +252,12 @@ class Helper
      * @param string $purpose
      * @return bool|\HTMLPurifier
      */
-    public static function getPurifier($purpose)
+    public function getPurifier($purpose)
     {
         $purifier_config = \HTMLPurifier_Config::createDefault();
         $purifier_config->set('Core.Encoding', 'UTF-8');
         $purifier_config->set('Cache.SerializerPath', PATH_PURIFIERCACHE);
-        $purifier_config->set('HTML.Doctype', HelperConfig::$core['purifier_doctype']);
+        $purifier_config->set('HTML.Doctype', $this->core['purifier_doctype']);
 
         if ($purpose === 'textcat') {
             $configkey = 'textcat';
@@ -236,10 +275,10 @@ class Helper
             return false;
         }
 
-        if (!empty(HelperConfig::${$configsection}[$configkey.'_unsafe_html_whitelist'])) {
-            $purifier_config->set('HTML.Allowed', HelperConfig::${$configsection}[$configkey.'_unsafe_html_whitelist']);
+        if (!empty($this->{$configsection}[$configkey.'_unsafe_html_whitelist'])) {
+            $purifier_config->set('HTML.Allowed', $this->{$configsection}[$configkey.'_unsafe_html_whitelist']);
         }
-        if (!empty(HelperConfig::${$configsection}[$configkey.'_loose_filtering'])) {
+        if (!empty($this->{$configsection}[$configkey.'_loose_filtering'])) {
             $purifier_config->set('HTML.Trusted', true);
             $purifier_config->set('Attr.EnableID', true);
             $purifier_config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
@@ -253,7 +292,7 @@ class Helper
      * @param $parameters
      * @return bool|mixed
      */
-    public static function twigCallback($callback, $parameters)
+    public function twigCallback($callback, $parameters)
     {
         $callbacks = [
             'renderItemStatusIcon' => '\HaaseIT\HCSF\Shop\Helper::renderItemStatusIcon',
@@ -273,7 +312,7 @@ class Helper
      * @param array $data
      * @return string
      */
-    public static function autoInsert(\Doctrine\DBAL\Connection $dbal, $table, array $data)
+    public function autoInsert(\Doctrine\DBAL\Connection $dbal, $table, array $data)
     {
         /** @var \Doctrine\DBAL\Query\QueryBuilder $querybuilder */
         $querybuilder = $dbal->createQueryBuilder();

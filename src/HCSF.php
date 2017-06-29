@@ -58,6 +58,20 @@ class HCSF
         });
         $this->config = $this->serviceManager->get('config');
 
+        $this->serviceManager->setFactory('helper', function (ServiceManager $serviceManager) {
+            return new \HaaseIT\HCSF\Helper($serviceManager);
+        });
+        if ($this->config->getCore('enable_module_customer')) {
+            $this->serviceManager->setFactory('helpercustomer', function (ServiceManager $serviceManager) {
+                return new \HaaseIT\HCSF\Customer\Helper($serviceManager);
+            });
+        }
+        if ($this->config->getCore('enable_module_shop')) {
+            $this->serviceManager->setFactory('helpershop', function (ServiceManager $serviceManager) {
+                return new \HaaseIT\HCSF\Shop\Helper($serviceManager);
+            });
+        }
+
         define("PATH_DOCROOT", PATH_BASEDIR.$this->config->getCore('dirname_docroot'));
         if ($this->config->getCore('debug')) {
             \HaaseIT\Toolbox\Tools::$bEnableDebug = true;

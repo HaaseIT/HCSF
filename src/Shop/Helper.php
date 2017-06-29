@@ -32,11 +32,33 @@ use HaaseIT\HCSF\Customer\Helper as CHelper;
 class Helper
 {
     /**
+     * @var ServiceManager
+     */
+    protected $serviceManager;
+
+    /**
+     * @var \HaaseIT\HCSF\HelperConfig
+     */
+    protected $config;
+
+    /**
+     * @var array
+     */
+    protected $shop = [];
+
+    public function __construct(ServiceManager $serviceManager)
+    {
+        $this->serviceManager = $serviceManager;
+        $this->config = $serviceManager->get('config');
+        $this->shop = $this->config->getShop();
+    }
+
+    /**
      * @param \HaaseIT\Toolbox\Textcat $textcats
      * @param string $sStatusShort
      * @return bool|string
      */
-    public static function showOrderStatusText(\HaaseIT\Toolbox\Textcat $textcats, $sStatusShort)
+    public function showOrderStatusText(\HaaseIT\Toolbox\Textcat $textcats, $sStatusShort)
     {
         $mapping = [
             'y' => 'order_status_completed',
@@ -57,7 +79,7 @@ class Helper
      * @param array $aOrder
      * @return float
      */
-    public static function calculateTotalFromDB($aOrder)
+    public function calculateTotalFromDB($aOrder)
     {
         $fGesamtnetto = $aOrder['o_sumnettoall'];
         $fVoll = $aOrder['o_sumvoll'];
@@ -83,7 +105,7 @@ class Helper
      * @param int $iVATreduced
      * @return array
      */
-    public static function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
+    public function addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced)
     {
         $fGesamtnetto = $aSumme['sumvoll'] + $aSumme['sumerm'];
         $fSteuervoll = $aSumme['sumvoll'] * $iVATfull / 100;
@@ -110,35 +132,35 @@ class Helper
         $aOrder['bMindesterreicht'] = true;
         $aOrder['fMindergebuehr'] = 0;
         $aOrder['iMindergebuehr_id'] = 0;
-        if ($fGesamtnettoitems < HelperConfig::$shop['minimumorderamountnet']) {
+        if ($fGesamtnettoitems < $this->shop['minimumorderamountnet']) {
             $aOrder['bMindesterreicht'] = false;
             $aOrder['iMindergebuehr_id'] = 0;
-        } elseif ($fGesamtnettoitems < HelperConfig::$shop['reducedorderamountnet1']) {
+        } elseif ($fGesamtnettoitems < $this->shop['reducedorderamountnet1']) {
             $aOrder['iMindergebuehr_id'] = 1;
 
-        } elseif ($fGesamtnettoitems < HelperConfig::$shop['reducedorderamountnet2']) {
+        } elseif ($fGesamtnettoitems < $this->shop['reducedorderamountnet2']) {
             $aOrder['iMindergebuehr_id'] = 2;
         }
 
         if ($aOrder['iMindergebuehr_id'] > 0) {
-            $aOrder['fVoll'] += HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
-            $aOrder['fGesamtnetto'] += HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
+            $aOrder['fVoll'] += $this->shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
+            $aOrder['fGesamtnetto'] += $this->shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
             $aOrder['fSteuervoll'] = $aOrder['fVoll'] * $iVATfull / 100;
             $aOrder['fGesamtbrutto'] = $aOrder['fGesamtnetto'] + $aOrder['fSteuervoll'] + $aOrder['fSteuererm'];
-            $aOrder['fMindergebuehr'] = HelperConfig::$shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
+            $aOrder['fMindergebuehr'] = $this->shop['reducedorderamountfee'.$aOrder['iMindergebuehr_id']];
         }
 
         $aOrder['fVersandkosten'] = 0;
         if (
-            isset(HelperConfig::$shop['shippingcoststandardrate'])
-            && HelperConfig::$shop['shippingcoststandardrate'] != 0
+            isset($this->shop['shippingcoststandardrate'])
+            && $this->shop['shippingcoststandardrate'] != 0
             &&
             (
                 (
-                    !isset(HelperConfig::$shop['mindestbetragversandfrei'])
-                    || !HelperConfig::$shop['mindestbetragversandfrei']
+                    !isset($this->shop['mindestbetragversandfrei'])
+                    || !$this->shop['mindestbetragversandfrei']
                 )
-                || $fGesamtnettoitems < HelperConfig::$shop['mindestbetragversandfrei']
+                || $fGesamtnettoitems < $this->shop['mindestbetragversandfrei']
             )
         ) {
             $aOrder['fVersandkostennetto'] = self::getShippingcost();
@@ -157,11 +179,11 @@ class Helper
     /**
      * @return mixed
      */
-    public static function getShippingcost()
+    public function getShippingcost()
     {
-        $fShippingcost = HelperConfig::$shop['shippingcoststandardrate'];
+        $fShippingcost = $this->shop['shippingcoststandardrate'];
 
-        $sCountry = CHelper::getDefaultCountryByConfig(HelperConfig::$lang);
+        $sCountry = CHelper::getDefaultCountryByConfig($this->config->getLang());
         $postdocheckout = filter_input(INPUT_POST, 'doCheckout');
         if (isset($_SESSION['user']['cust_country'])) {
             $sCountry = $_SESSION['user']['cust_country'];
@@ -171,7 +193,7 @@ class Helper
             $sCountry = $_SESSION['formsave_addrform']['country'];
         }
 
-        foreach (HelperConfig::$shop['shippingcosts'] as $aValue) {
+        foreach ($this->shop['shippingcosts'] as $aValue) {
             if (isset($aValue['countries'][$sCountry])) {
                 $fShippingcost = $aValue['cost'];
                 break;
@@ -185,7 +207,7 @@ class Helper
      * @param array $aCart
      * @return array
      */
-    public static function calculateCartItems($aCart)
+    public function calculateCartItems($aCart)
     {
         $fErm = 0;
         $fVoll = 0;
@@ -197,12 +219,12 @@ class Helper
             // will not add up to total price
             if ($aValue['vat'] !== 'reduced') {
                 $fVoll += ($aValue['amount'] * $aValue['price']['netto_use']);
-                $fTaxVoll += ($aValue['amount'] * $aValue['price']['netto_use'] * (HelperConfig::$shop['vat']['full'] / 100));
+                $fTaxVoll += ($aValue['amount'] * $aValue['price']['netto_use'] * ($this->shop['vat']['full'] / 100));
                 continue;
             }
 
             $fErm += ($aValue['amount'] * $aValue['price']['netto_use']);
-            $fTaxErm += ($aValue['amount'] * $aValue['price']['netto_use'] * (HelperConfig::$shop['vat']['reduced'] / 100));
+            $fTaxErm += ($aValue['amount'] * $aValue['price']['netto_use'] * ($this->shop['vat']['reduced'] / 100));
         }
 
         return [
@@ -216,12 +238,12 @@ class Helper
     /**
      * @param ServiceManager $serviceManager
      */
-    public static function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
+    public function refreshCartItems(ServiceManager $serviceManager) // bei login/logout ändern sich ggf die preise, shoppingcart neu berechnen
     {
         if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
             foreach ($_SESSION['cart'] as $sKey => $aValue) {
                 $sItemkey = $sKey;
-                if (!empty(HelperConfig::$shop['custom_order_fields'])) {
+                if (!empty($this->shop['custom_order_fields'])) {
                     $TMP = explode('|', $sKey);
                     $sItemkey = $TMP[0];
                     unset($TMP);
@@ -241,25 +263,25 @@ class Helper
      * @param string $iVATreduced
      * @return mixed
      */
-    public static function buildShoppingCartTable(array $aCart, $bReadonly = false, $sCustomergroup = '', $aErr = [], $iVATfull = '', $iVATreduced = '')
+    public function buildShoppingCartTable(array $aCart, $bReadonly = false, $sCustomergroup = '', $aErr = [], $iVATfull = '', $iVATreduced = '')
     {
         if ($iVATfull === '' && $iVATreduced === '') {
-            $iVATfull = HelperConfig::$shop['vat']['full'];
-            $iVATreduced = HelperConfig::$shop['vat']['reduced'];
+            $iVATfull = $this->shop['vat']['full'];
+            $iVATreduced = $this->shop['vat']['reduced'];
         }
         $aSumme = self::calculateCartItems($aCart);
         $aData['shoppingcart'] = [
             'readonly' => $bReadonly,
             'customergroup' => $sCustomergroup,
             'cart' => $aCart,
-            'rebategroups' => HelperConfig::$shop['rebate_groups'],
+            'rebategroups' => $this->shop['rebate_groups'],
             'additionalcoststoitems' => self::addAdditionalCostsToItems($aSumme, $iVATfull, $iVATreduced),
-            'minimumorderamountnet' => HelperConfig::$shop['minimumorderamountnet'],
-            'reducedorderamountnet1' => HelperConfig::$shop['reducedorderamountnet1'],
-            'reducedorderamountnet2' => HelperConfig::$shop['reducedorderamountnet2'],
-            'reducedorderamountfee1' => HelperConfig::$shop['reducedorderamountfee1'],
-            'reducedorderamountfee2' => HelperConfig::$shop['reducedorderamountfee2'],
-            'minimumamountforfreeshipping' => HelperConfig::$shop['minimumamountforfreeshipping'],
+            'minimumorderamountnet' => $this->shop['minimumorderamountnet'],
+            'reducedorderamountnet1' => $this->shop['reducedorderamountnet1'],
+            'reducedorderamountnet2' => $this->shop['reducedorderamountnet2'],
+            'reducedorderamountfee1' => $this->shop['reducedorderamountfee1'],
+            'reducedorderamountfee2' => $this->shop['reducedorderamountfee2'],
+            'minimumamountforfreeshipping' => $this->shop['minimumamountforfreeshipping'],
         ];
 
         if (!$bReadonly) {
@@ -268,7 +290,7 @@ class Helper
         }
 
         if (!$bReadonly && $aData['shoppingcart']['additionalcoststoitems']['bMindesterreicht']) {
-            $aData['customerform'] = CHelper::buildCustomerForm(HelperConfig::$lang, 'shoppingcart', $aErr);
+            $aData['customerform'] = CHelper::buildCustomerForm($this->config->getLang(), 'shoppingcart', $aErr);
         }
 
         return $aData;
@@ -277,7 +299,7 @@ class Helper
     /**
      * @return array
      */
-    public static function getShoppingcartData()
+    public function getShoppingcartData()
     {
         $aCartinfo = [
             'numberofitems' => 0,
@@ -285,7 +307,7 @@ class Helper
             'cartsumnetto' => 0,
             'cartsumbrutto' => 0,
         ];
-        if (isset($_SESSION['cart']) && (!HelperConfig::$shop['show_pricesonlytologgedin'] || CHelper::getUserData()) && count($_SESSION['cart'])) {
+        if (isset($_SESSION['cart']) && (!$this->shop['show_pricesonlytologgedin'] || CHelper::getUserData()) && count($_SESSION['cart'])) {
             $aCartsums = \HaaseIT\HCSF\Shop\Helper::calculateCartItems($_SESSION['cart']);
             $aCartinfo = [
                 'numberofitems' => count($_SESSION['cart']),
@@ -317,7 +339,7 @@ class Helper
      * @param array $itemindexpathtree
      * @return array
      */
-    public static function getItemSuggestions(
+    public function getItemSuggestions(
         Items $oItem,
         $aPossibleSuggestions,
         $sSetSuggestions,
@@ -361,7 +383,7 @@ class Helper
                 $suggestions[$aSuggestionsKey]['path'] = $itemindexpathtree[$aSuggestionsValue['itm_index']];
             }
         }
-        if (HelperConfig::$shop['itemdetail_suggestions_shuffle']) {
+        if ($this->shop['itemdetail_suggestions_shuffle']) {
             shuffle($suggestions);
         }
 
@@ -374,7 +396,7 @@ class Helper
      * @param Items $oItem
      * @return array
      */
-    public static function prepareSuggestions($sSetSuggestions, array $aPossibleSuggestions, Items $oItem)
+    public function prepareSuggestions($sSetSuggestions, array $aPossibleSuggestions, Items $oItem)
     {
         // prepare defined suggestions
         $sSetSuggestions = trim($sSetSuggestions);
@@ -434,11 +456,11 @@ class Helper
      * @param array $suggestions
      * @return array
      */
-    public static function fillSuggestions($suggestions)
+    public function fillSuggestions($suggestions)
     {
         $iNumberOfSuggestions = count($suggestions['default']);
-        if ($iNumberOfSuggestions > HelperConfig::$shop['itemdetail_suggestions']) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
-            $aKeysSuggestions = array_rand($suggestions['default'], HelperConfig::$shop['itemdetail_suggestions']); // get the array keys that will stay
+        if ($iNumberOfSuggestions > $this->shop['itemdetail_suggestions']) { // if there are more suggestions than should be displayed, randomly pick as many as to be shown
+            $aKeysSuggestions = array_rand($suggestions['default'], $this->shop['itemdetail_suggestions']); // get the array keys that will stay
             foreach ($suggestions['default'] as $aSuggestionsKey => $aSuggestionsValue) { // iterate suggestions and remove those that which will not be kept
                 if (!in_array($aSuggestionsKey, $aKeysSuggestions)) {
                     unset($suggestions['default'][$aSuggestionsKey]);
@@ -452,10 +474,10 @@ class Helper
         $numAdditionalSuggs = count($suggestions['additional']);
         if (
             $numAdditionalSuggs > 0
-            && $iNumberOfSuggestions < HelperConfig::$shop['itemdetail_suggestions']
+            && $iNumberOfSuggestions < $this->shop['itemdetail_suggestions']
         ) { // if there are less suggestions than should be displayed and there are additional available
             // how many more are needed?
-            $addSuggsRequired = HelperConfig::$shop['itemdetail_suggestions'] - $iNumberOfSuggestions;
+            $addSuggsRequired = $this->shop['itemdetail_suggestions'] - $iNumberOfSuggestions;
             // see if there are more available than required, if so, pick as many as needed
             if ($numAdditionalSuggs > $addSuggsRequired) {
                 // since array_rand returns a string and no array if there is only one row picked, we have to do this awkward dance
@@ -489,7 +511,7 @@ class Helper
      * @param array $aP
      * @return mixed
      */
-    public static function handleItemPage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P, array $aP)
+    public function handleItemPage(ServiceManager $serviceManager, \HaaseIT\HCSF\Page $P, array $aP)
     {
         $mItemIndex = '';
         if (isset($P->cb_pageconfig->itemindex)) {
@@ -524,7 +546,7 @@ class Helper
      * @param Items $oItem
      * @return mixed
      */
-    public static function seekItem(\HaaseIT\HCSF\Page $P, array $aP, Items $oItem)
+    public function seekItem(\HaaseIT\HCSF\Page $P, array $aP, Items $oItem)
     {
         // Change pagetype to itemoverview, will be changed back to itemdetail once the item is found
         // if it is not found, we will show the overview
@@ -560,7 +582,7 @@ class Helper
                 }
 
                 // build item suggestions if needed
-                if (HelperConfig::$shop['itemdetail_suggestions'] > 0) {
+                if ($this->shop['itemdetail_suggestions'] > 0) {
                     $aP['item']['suggestions'] = self::getItemSuggestions(
                         $oItem,
                         $aP['items']['item'],
@@ -582,7 +604,7 @@ class Helper
      * @param string $itemindex
      * @return string
      */
-    public static function renderItemStatusIcon($itemindex)
+    public function renderItemStatusIcon($itemindex)
     {
         if (trim($itemindex) === '') {
             return '0';
@@ -598,7 +620,7 @@ class Helper
      * @param $id
      * @return string
      */
-    public static function shopadminMakeCheckbox($id)
+    public function shopadminMakeCheckbox($id)
     {
         return '<input type="checkbox" name="id[]" value="'.$id.'">';
     }

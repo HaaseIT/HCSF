@@ -85,6 +85,9 @@ class HelperConfig
         }
     }
 
+    /**
+     * @return string
+     */
     public function getLang()
     {
         return $this->lang;
@@ -120,11 +123,15 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|false $setting
      * @return mixed
      */
-    public function getCore($setting)
+    public function getCore($setting = false)
     {
+        if (!$setting) {
+            return $this->core;
+        }
+
         return !empty($this->core[$setting]) ? $this->core[$setting] : false;
     }
 
@@ -142,11 +149,15 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|false $setting
      * @return mixed
      */
-    public function getCountries($setting)
+    public function getCountries($setting = false)
     {
+        if (!$setting) {
+            return $this->countries;
+        }
+
         return !empty($this->countries[$setting]) ? $this->countries[$setting] : false;
     }
 
@@ -164,11 +175,15 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|false $setting
      * @return mixed
      */
-    public function getSecret($setting)
+    public function getSecret($setting = false)
     {
+        if (!$setting) {
+            return $this->secrets;
+        }
+
         return !empty($this->secrets[$setting]) ? $this->secrets[$setting] : false;
     }
 
@@ -186,11 +201,15 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|bool $setting
      * @return mixed
      */
-    public function getCustomer($setting)
+    public function getCustomer($setting = false)
     {
+        if (!$setting) {
+            return $this->customer;
+        }
+
         return !empty($this->customer[$setting]) ? $this->customer[$setting] : false;
     }
 
@@ -211,11 +230,15 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|false $setting
      * @return mixed
      */
-    public function getShop($setting)
+    public function getShop($setting = false)
     {
+        if (!$setting) {
+            return $this->shop;
+        }
+
         return !empty($this->shop[$setting]) ? $this->shop[$setting] : false;
     }
 
@@ -276,7 +299,7 @@ class HelperConfig
     }
 
     /**
-     * @param string $setting
+     * @param string|false $setting
      * @return mixed
      */
     public function getNavigation($setting = false)
