@@ -103,12 +103,13 @@ class Items
         } elseif (!empty($getsearchtext) && strlen(trim($getsearchtext)) > 2) {
             if (filter_input(INPUT_GET, 'artnoexact') !== null) {
                 $hResult->bindValue(':searchtext', $getsearchtext, \PDO::PARAM_STR);
+            } else {
+                $hResult->bindValue(':searchtextwild1', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+                $hResult->bindValue(':searchtextwild2', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+                $hResult->bindValue(':searchtextwild3', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+                $hResult->bindValue(':searchtextwild4', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
+                $hResult->bindValue(':searchtextwild5', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
             }
-            $hResult->bindValue(':searchtextwild1', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild2', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild3', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild4', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
-            $hResult->bindValue(':searchtextwild5', '%'.$getsearchtext.'%', \PDO::PARAM_STR);
         }
         $hResult->execute();
 
@@ -156,18 +157,24 @@ class Items
         return $sql;
     }
 
+    /**
+     * @param string $mItemIndex
+     * @param string $mItemno
+     * @param bool $bEnableItemGroups
+     * @return bool|array
+     */
     public function sortItems($mItemIndex = '', $mItemno = '', $bEnableItemGroups = false)
     {
-        if ($mItemno != '') {
+        if ($mItemno !== '') {
             if (\is_array($mItemno)) {
                 $TMP = [];
                 foreach ($mItemno as $sKey => $sValue) {
-                    $TMP[$sKey] = \filter_var(\trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                    $TMP[$sKey] = filter_var(\trim($sValue), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
                 }
                 $mItemno = $TMP;
                 unset($TMP);
             } else {
-                $mItemno = \filter_var(\trim($mItemno), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+                $mItemno = filter_var(\trim($mItemno), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             }
         }
 

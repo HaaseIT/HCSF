@@ -522,9 +522,21 @@ class Helper
             $mItemIndex = $P->cb_pageconfig->itemindex;
         }
 
+        /** @var \HaaseIT\HCSF\Shop\Items $oItem */
         $oItem = $serviceManager->get('oItem');
 
         $aP['items'] = $oItem->sortItems($mItemIndex, '', ($aP['pagetype'] === 'itemoverviewgrpd'));
+
+        // this is a way to link directly to an itemdetailpage
+        if (
+            count($aP['items']['item']) === 1
+            && filter_input(INPUT_GET, 'artnoexact') !== null
+            && filter_input(INPUT_GET, 'itemdetail') !== null
+        ) {
+            $aP['pagetype'] = 'itemdetail';
+            $P->cb_pageconfig->itemno = current($aP['items']['item'])['itm_no'];
+        }
+
         if ($aP['pagetype'] === 'itemdetail') {
 
             $aP['itemindexpathtreeforsuggestions'] = $oItem->getItemPathTree();
@@ -537,8 +549,7 @@ class Helper
                     }
                 }
             }
-
-            $aP = static::seekItem($P, $aP, $oItem);
+            $aP = $this->seekItem($P, $aP, $oItem);
         }
 
         return $aP;

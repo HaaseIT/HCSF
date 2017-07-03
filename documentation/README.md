@@ -2,3 +2,4 @@
 - [Requirements](./Requirements.md)
 - [Configuration files](./configfiles/)
 - [Admin panel](./administration/)
+- [Some tricks](./Tricks.md)
