@@ -243,7 +243,7 @@ class Pageadmin extends Base
 
         $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $Ptoedit->cb_group = filter_input(INPUT_POST, 'page_group', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        $Ptoedit->cb_pageconfig = filter_input(INPUT_POST, 'page_config', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $Ptoedit->cb_pageconfig = filter_input(INPUT_POST, 'page_config', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_NO_ENCODE_QUOTES);
         $Ptoedit->cb_subnav = filter_input(INPUT_POST, 'page_subnav', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $Ptoedit->purifier = $purifier;
         $Ptoedit->write();
