@@ -534,6 +534,9 @@ class Helper
             && filter_input(INPUT_GET, 'itemdetail') !== null
         ) {
             $aP['pagetype'] = 'itemdetail';
+            if (!is_object($P->cb_pageconfig)) {
+                $P->cb_pageconfig = new \stdClass();
+            }
             $P->cb_pageconfig->itemno = current($aP['items']['item'])['itm_no'];
         }
 
