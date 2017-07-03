@@ -114,6 +114,7 @@
             <br>
         {% endif %}
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding" id="itemadmin-submit">{{ HT('itemadmin_submit') }}</button>
+        <a href="/_misc/itemsearch.html?searchtext={{ customdata.item.itemno }}&artnoexact&itemdetail" target="_blank">{{ HT('itemadmin_linktoitemdetail') }}</a>
     </form>
 {% elseif customdata.showaddform %}
     {{ customdata.err.itemnotooshort ? HT('itemadmin_msg_itemnotooshort')~'<br><br>' : '' }}

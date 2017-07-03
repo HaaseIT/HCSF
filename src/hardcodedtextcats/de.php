@@ -63,6 +63,7 @@ return [
     'itemadmin_lang_text2_tooltip' => 'Der sekundäre Artikeltext, HTML Quelltext, unsichere Tags werden herausgefiltert.',
 
     'itemadmin_submit' => 'Speichern',
+    'itemadmin_linktoitemdetail' => 'Zur Artikeldetailseite (neues Fenster)',
 
     'itemadmin_add_itemno' => 'Artikelnummer',
     'itemadmin_add_submit' => 'Artikel anlegen',
