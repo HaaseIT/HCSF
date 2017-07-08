@@ -48,6 +48,7 @@ class Router
 
     public function getPage()
     {
+        // Maintenance page
         if ($this->config->getCore('maintenancemode')) {
             try {
                 $controller = new \HaaseIT\HCSF\Controller\Maintenance($this->serviceManager);
@@ -56,64 +57,33 @@ class Router
                 $this->P = $e->getMessage();
             }
         } else {
-            $map = [
-                '/_admin/index.html' => 'Admin\\Index',
-                '/_admin/' => 'Admin\\Index',
-                '/_admin' => 'Admin\\Index',
-                '/_admin/cleartemplatecache.html' => 'Admin\\ClearTemplateCache',
-                '/_admin/clearimagecache.html' => 'Admin\\ClearImageCache',
-                '/_admin/phpinfo.html' => 'Admin\\Phpinfo',
-                '/_admin/pageadmin.html' => 'Admin\\Pageadmin',
-                '/_admin/textcatadmin.html' => 'Admin\\Textcatadmin',
-                '/_admin/customeradmin.html' => 'Admin\\Customer\\Customeradmin',
-                '/_admin/itemadmin.html' => 'Admin\\Shop\\Itemadmin',
-                '/_admin/shopadmin.html' => 'Admin\\Shop\\Shopadmin',
-                '/_admin/shopadmin_export.csv' => 'Admin\\Shop\\ShopadminExportCSV',
-                '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
-                '/_admin/dbstatus.html' => 'Admin\\DBStatus',
-                '/_misc/login.html' => 'Customer\\Login',
-                '/_misc/logout.html' => 'Customer\\Logout',
-                '/_misc/userhome.html' => 'Customer\\Userhome',
-                '/_misc/register.html' => 'Customer\\Register',
-                '/_misc/forgotpassword.html' => 'Customer\\Forgotpassword',
-                '/_misc/rp.html' => 'Customer\\Resetpassword',
-                '/_misc/verifyemail.html' => 'Customer\\Verifyemail',
-                '/_misc/resendverificationmail.html' => 'Customer\\Resendverificationmail',
-                '/_misc/myorders.html' => 'Shop\\Myorders',
-                '/_misc/itemsearch.html' => 'Shop\\Itemsearch',
-                '/_misc/checkedout.html' => 'Shop\\Checkedout',
-                '/_misc/updateshippingcost.html' => 'Shop\\Updateshippingcost',
-                '/_misc/shoppingcart.html' => 'Shop\\Shoppingcart',
-                '/_misc/update-cart.html' => 'Shop\\Updatecart',
-                '/_misc/sofortueberweisung.html' => 'Shop\\Sofortueberweisung',
-                '/_misc/paypal.html' => 'Shop\\Paypal',
-                '/_misc/paypal_notify.html' => 'Shop\\Paypalnotify',
-            ];
+            $routes = require __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'routes.php';
             if ($this->config->getCore('enable_sandbox')) {
-                $map['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
+                $routes['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
             }
-            $this->P = 404;
             $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
             $this->sPath = $aURL['path'];
 
             $aPath = explode('/', $this->sPath);
-            if (!empty($map[$this->sPath])) {
-                $class = '\\HaaseIT\\HCSF\\Controller\\'.$map[$this->sPath];
+            if (!empty($routes[$this->sPath])) {
+                $class = '\\HaaseIT\\HCSF\\Controller\\'.$routes[$this->sPath];
             } else {
-                if ($aPath[1] == $this->config->getCore('directory_images')) {
+                if ($aPath[1] === $this->config->getCore('directory_images')) {
                     $class = Controller\Glide::class;
                 }
             }
 
             if (!empty($class)) {
+                // Core Page
                 try {
+                    /** @var Controller\Base $controller */
                     $controller = new $class($this->serviceManager, $aPath);
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
-                    $this->P = 500;
+                    $this->P = new Page();
+                    $this->P->setStatus(500);
                     // todo: write error message
                     //echo $e->getMessage();
-
                 }
             } else {
                 if ($this->config->getCore('enable_module_shop')) {
@@ -123,12 +93,12 @@ class Router
                 $this->P = new UserPage($this->serviceManager, $this->sPath);
 
                 // go and look if the page can be loaded yet
-                if ($this->P->cb_id == NULL) {
+                if ($this->P->cb_id === NULL) {
                     /*
                     If the last part of the path doesn't include a dot (.) and is not empty, apend a slash.
                     If there is already a slash at the end, the last part of the path array will be empty.
                      */
-                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] != '') {
+                    if (mb_strpos($aPath[count($aPath) - 1], '.') === false && $aPath[count($aPath) - 1] !== '') {
                         $this->sPath .= '/';
                     }
 
@@ -139,12 +109,13 @@ class Router
                     $this->P = new UserPage($this->serviceManager, $this->sPath);
                 }
 
-                if ($this->P->cb_id == NULL) { // if the page is still not found, unset the page object
-                    $this->P = 404;
+                if ($this->P->cb_id === NULL) { // if the page is still not found, unset the page object
+                    $this->P->setStatus(404);
                 } else { // if it is found, go on
                     // Support for shorturls
                     if ($this->P->cb_pagetype === 'shorturl') {
-                        $this->helper->redirectToPage('Location: '.$this->P->cb_pageconfig, true);
+                        $this->P->setStatus(302);
+                        $this->P->addHeader('Location: '.$this->P->cb_pageconfig);
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {
@@ -155,32 +126,28 @@ class Router
             }
 
             $serverserverprotocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            if (!is_object($this->P) && $this->P == 404) {
+            if ($this->P->getStatus() === 404) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
-                $this->P->iStatus = 404;
-
+                $this->P->setStatus(404);
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_found');
-                header($serverserverprotocol.' 404 Not Found');
-            } elseif (!is_object($this->P) && $this->P == 500) {
+            } elseif ($this->P->getStatus() === 500) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
-                $this->P->iStatus = 500;
-
+                $this->P->setStatus(500);
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_server_error');
-                header($serverserverprotocol.' 500 Internal Server Error');
-            } elseif (is_object($this->P) && $this->P->oPayload == null) {// elseif the page has been found but contains no payload...
+            } elseif (is_object($this->P) && $this->P->oPayload === null) {// elseif the page has been found but contains no payload...
                 if (
-                    !(
+                    !( // no payload is fine if page is one of these
                         $this->P->cb_pagetype === 'itemoverview'
                         || $this->P->cb_pagetype === 'itemoverviewgrpd'
                         || $this->P->cb_pagetype === 'itemdetail'
                     )
-                ) { // no payload is fine if page is one of these
+                ) {
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
-                    header($serverserverprotocol.' 404 Not Found');
+                    $this->P->setStatus(404);
                 }
-            } elseif ($this->P->oPayload->cl_lang != null && $this->P->oPayload->cl_lang != $this->config->getLang()) { // if the page is available but not in the current language, display info
+            } elseif ($this->P->oPayload->cl_lang !== null && $this->P->oPayload->cl_lang !== $this->config->getLang()) { // if the page is available but not in the current language, display info
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_page_not_available_lang').'<br><br>'.$this->P->oPayload->cl_html;
             }
         }
@@ -193,7 +160,7 @@ class Router
         // /xxxx/item/0010.html
         $aTMP['parts_in_path'] = count($aPath);
         // if the last dir in path is 'item' and the last part of the path is not empty
-        if ($aPath[$aTMP['parts_in_path'] - 2] === 'item' && $aPath[$aTMP['parts_in_path'] - 1] != '') {
+        if ($aPath[$aTMP['parts_in_path'] - 2] === 'item' && $aPath[$aTMP['parts_in_path'] - 1] !== '') {
 
             // explode the filename by .
             $aTMP['exploded_request_file'] = explode('.', $aPath[$aTMP['parts_in_path'] - 1]);

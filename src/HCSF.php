@@ -189,13 +189,13 @@ class HCSF
     {
         $lang = $this->config->getLang();
         $langavailable = $this->config->getCore('lang_available');
-        if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.$lang.'.php')) {
-            $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.$lang.'.php';
+        if (file_exists(HCSF_BASEDIR.'src/config/hardcodedtextcats/'.$lang.'.php')) {
+            $HT = require HCSF_BASEDIR.'src/config/hardcodedtextcats/'.$lang.'.php';
         } else {
-            if (file_exists(HCSF_BASEDIR.'src/hardcodedtextcats/'.key($langavailable).'.php')) {
-                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/'.key($langavailable).'.php';
+            if (file_exists(HCSF_BASEDIR.'src/config/hardcodedtextcats/'.key($langavailable).'.php')) {
+                $HT = require HCSF_BASEDIR.'src/config/hardcodedtextcats/'.key($langavailable).'.php';
             } else {
-                $HT = require HCSF_BASEDIR.'src/hardcodedtextcats/de.php';
+                $HT = require HCSF_BASEDIR.'src/config/hardcodedtextcats/de.php';
             }
         }
 

@@ -69,7 +69,7 @@ class UserPage extends Page
     {
         //if (!$bReturnRaw) $this->container = $container;
         $this->serviceManager = $serviceManager;
-        $this->iStatus = 200;
+        $this->status = 200;
         $this->bReturnRaw = $bReturnRaw;
         $this->dbal = $this->serviceManager->get('dbal');
 

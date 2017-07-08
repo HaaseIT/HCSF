@@ -59,7 +59,7 @@ class Page
     /**
      * @var int
      */
-    public $iStatus;
+    protected $status = 200;
 
     /**
      * @var \HaaseIT\HCSF\PagePayload
@@ -89,8 +89,35 @@ class Page
         return $this->customroottemplate;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders()
     {
         return $this->headers;
+    }
+
+    /**
+     * @param string $header
+     */
+    public function addHeader($header)
+    {
+        $this->headers[] = $header;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 }

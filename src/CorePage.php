@@ -37,7 +37,7 @@ class CorePage extends Page
      */
     public function __construct(ServiceManager $serviceManager, $headers = [], $customroottemplate = '')
     {
-        $this->iStatus = 200;
+        $this->status = 200;
         $this->headers = $headers;
         $this->serviceManager = $serviceManager;
         $this->customroottemplate = $customroottemplate;
