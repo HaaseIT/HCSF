@@ -82,6 +82,48 @@ class Page
     protected $headers = [];
 
     /**
+     * @var string
+     */
+    protected $contenttype = 'text/html; charset=utf-8';
+
+    /**
+     * @var bool
+     */
+    protected $renderwithtemplate = true;
+
+    /**
+     * @return string
+     */
+    public function getContenttype()
+    {
+        return $this->contenttype;
+    }
+
+    /**
+     * @param string $contenttype
+     */
+    public function setContenttype($contenttype)
+    {
+        $this->contenttype = $contenttype;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRenderwithtemplate()
+    {
+        return $this->renderwithtemplate;
+    }
+
+    /**
+     * @param bool $renderwithtemplate
+     */
+    public function setRenderwithtemplate($renderwithtemplate)
+    {
+        $this->renderwithtemplate = $renderwithtemplate;
+    }
+
+    /**
      * @return string
      */
     public function getCustomRootTemplate()
