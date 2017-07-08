@@ -57,10 +57,10 @@ class Glide extends Base
                 $this->helper->terminateScript();
 
             } catch (\League\Glide\Signatures\SignatureException $e) {
-                $this->P = 404;
+                $this->P->setStatus(404);
             }
         } else {
-            $this->P = 404;
+            $this->P->setStatus(404);
         }
 
         return $this->P;
