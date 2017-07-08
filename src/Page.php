@@ -142,9 +142,9 @@ class Page
     /**
      * @param string $header
      */
-    public function addHeader($header)
+    public function setHeader($key, $header)
     {
-        $this->headers[] = $header;
+        $this->headers[$key] = $header;
     }
 
     /**

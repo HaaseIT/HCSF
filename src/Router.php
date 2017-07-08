@@ -115,7 +115,7 @@ class Router
                     // Support for shorturls
                     if ($this->P->cb_pagetype === 'shorturl') {
                         $this->P->setStatus(302);
-                        $this->P->addHeader('Location: '.$this->P->cb_pageconfig);
+                        $this->P->setHeader('Location', $this->P->cb_pageconfig);
                     }
 
                     if (isset($this->P, $aRoutingoverride) && count($aRoutingoverride)) {
