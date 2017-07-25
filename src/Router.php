@@ -59,16 +59,25 @@ class Router
         } else {
             $routes = require __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'routes.php';
             if ($this->config->getCore('enable_sandbox')) {
-                $routes['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
+                $routes['literal']['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
             }
             $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
             $this->sPath = $aURL['path'];
 
             $aPath = explode('/', $this->sPath);
-            if (!empty($routes[$this->sPath])) {
+            if (!empty($routes['literal'][$this->sPath])) {
                 $class = '\\HaaseIT\\HCSF\\Controller\\'.$routes[$this->sPath];
             } else {
-                if ($aPath[1] === $this->config->getCore('directory_images')) {
+                if (!empty($routes['regex'])) {
+                    foreach ($routes['regex'] as $regex) {
+                        $result = preg_match('(^' . $regex['regex'] . '$)', $this->sPath, $matches);
+                        if ($result) {
+                            $class = $regex['controller'];
+                            break;
+                        }
+                    }
+                }
+                if (empty($result) && $aPath[1] === $this->config->getCore('directory_images')) {
                     $class = Controller\Glide::class;
                 }
             }
@@ -77,7 +86,7 @@ class Router
                 // Core Page
                 try {
                     /** @var Controller\Base $controller */
-                    $controller = new $class($this->serviceManager, $aPath);
+                    $controller = new $class($this->serviceManager, $aPath, (!empty($matches) ? $matches : false));
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = new Page();
@@ -125,7 +134,6 @@ class Router
                 }
             }
 
-            $serverserverprotocol = filter_input(INPUT_SERVER, 'SERVER_PROTOCOL', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             if ($this->P->getStatus() === 404) {
                 $this->P = new CorePage($this->serviceManager);
                 $this->P->cb_pagetype = 'error';
@@ -137,13 +145,14 @@ class Router
                 $this->P->setStatus(500);
                 $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_server_error');
             } elseif (is_object($this->P) && $this->P->oPayload === null) {// elseif the page has been found but contains no payload...
-                if (
-                    !( // no payload is fine if page is one of these
-                        $this->P->cb_pagetype === 'itemoverview'
-                        || $this->P->cb_pagetype === 'itemoverviewgrpd'
-                        || $this->P->cb_pagetype === 'itemdetail'
-                    )
-                ) {
+                // no payload is fine if page is one of these
+                $pagetypesnocontent = [
+                    'itemoverviewjson',
+                    'itemoverview',
+                    'itemoverviewgrpd',
+                    'itemdetail',
+                ];
+                if (!in_array($this->P->cb_pagetype, $pagetypesnocontent, true)) {
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
                     $this->P->setStatus(404);
                 }

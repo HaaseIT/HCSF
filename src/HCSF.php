@@ -377,15 +377,16 @@ class HCSF
             $aP['countrylist'][] = $sKey.'|'.$sValue;
         }
 
-        if (
-            $this->config->getCore('enable_module_shop')
-            && (
+        if ($this->config->getCore('enable_module_shop')) {
+            if (
                 $aP['pagetype'] === 'itemoverview'
                 || $aP['pagetype'] === 'itemoverviewgrpd'
                 || $aP['pagetype'] === 'itemdetail'
-            )
-        ) {
-            $aP = $this->helperShop->handleItemPage($this->serviceManager, $P, $aP);
+            ) {
+                $aP = $this->helperShop->handleItemPage($this->serviceManager, $P, $aP);
+            } elseif ($aP['pagetype'] === 'itemoverviewjson') {
+                // todo
+            }
         }
 
         $aP['content'] = $P->oPayload->cl_html;
