@@ -22,7 +22,7 @@
     "ext-gd": "*",
     "ext-filter": "*",
     "twig/twig": "^1.24.0",
-    "phpmailer/phpmailer": "^5.2.16",
+    "phpmailer/phpmailer": "^5.2.24",
     "symfony/yaml": "^3.1.1",
     "haaseit/toolbox": "^2.0.0",
     "ezyang/htmlpurifier": "^4.8.0",
