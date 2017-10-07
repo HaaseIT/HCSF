@@ -21,15 +21,15 @@ email_orderconfirmation_embed_itemimages_glideparams:
 email_orderconfirmation_embed_itemimages_method: glide # glide or path
 items_orderdirection_default: ASC # ASC or DESC
 paypal:
-business: paypalseller@domain.tld
-url: 'https://www.sandbox.paypal.com/de/cgi-bin/webscr'
-auth_token: XXXXXXXXXXXXX
-currency_id: EUR
+  business: paypalseller@domain.tld
+  url: 'https://www.sandbox.paypal.com/de/cgi-bin/webscr'
+  auth_token: XXXXXXXXXXXXX
+  currency_id: EUR
 paypal_interactive: true
 sofortueberweisung:
-user_id: '12345'
-project_id: '12345'
-currency_id: EUR
+  user_id: '12345'
+  project_id: '12345'
+  currency_id: EUR
 paymentmethods:
   - paypal
   - sofortueberweisung
