@@ -136,7 +136,12 @@ var ppp = PAYPAL.apps.PPP({
 "approvalUrl": "$approvalLink",
 "placeholder": "ppplus",
 "mode": "sandbox",
-"country": "DE"
+"country": "DE",
+"thirdPartyPaymentMethods":
+	[{"redirectUrl":"https://dev13.haase-it.com/_misc/vorkasse.php",
+		"methodName": "Überweisung",
+		"imageUrl": ""
+}]
 });
 </script>
 HTML;
