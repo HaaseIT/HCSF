@@ -66,7 +66,7 @@ class Router
 
             $aPath = explode('/', $this->sPath);
             if (!empty($routes['literal'][$this->sPath])) {
-                $class = '\\HaaseIT\\HCSF\\Controller\\'.$routes[$this->sPath];
+                $class = '\\HaaseIT\\HCSF\\Controller\\'.$routes['literal'][$this->sPath];
             } else {
                 if (!empty($routes['regex'])) {
                     foreach ($routes['regex'] as $regex) {

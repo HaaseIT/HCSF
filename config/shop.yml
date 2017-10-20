@@ -30,7 +30,13 @@ sofortueberweisung:
   user_id: '12345'
   project_id: '12345'
   currency_id: EUR
+paypalrestv1:
+  business: paypalseller@domain.tld
+  url: 'https://api.sandbox.paypal.com' # Prod: https://api.paypal.com
+  clientid: XXXXXXXXXXXXX
+  secret: XXXXXXXXXXXX
 paymentmethods:
+  - paypalrestv1
   - paypal
   - sofortueberweisung
   - nachnahme

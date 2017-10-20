@@ -21,13 +21,14 @@
 namespace HaaseIT\HCSF\Controller;
 
 
-use Zend\ServiceManager\ServiceManager;
-
 class Sandbox extends Base
 {
-    public function __construct(ServiceManager $serviceManager)
+    public function preparePage()
     {
-        parent::__construct($serviceManager);
-    }
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
+        $this->P->cb_pagetype = 'content';
 
+        $hardcodedtextcats = $this->serviceManager->get('hardcodedtextcats');
+        $this->P->oPayload->cl_html = $hardcodedtextcats->get('site_currently_in_maintenance_mode');
+    }
 }
