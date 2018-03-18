@@ -31,17 +31,25 @@
     <form action="{{ requesturi }}" method="get" name="form_page" class="pure-form pure-form-stacked">
         <input type="hidden" name="action" value="edit">
         <fieldset>
-            <div class="pure-u-1-5">
-                <label for="select_groups">{{ HT('pageadmin_choose_pagegroup') }}</label>
-                {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
-            </div><div class="pure-u-4-5">
-                <label for="select_page_key">{{ HT('pageadmin_choose_page') }}</label>
-                {{ macro.select('page_key', ['|'~HT('pageadmin_choose_pagegroup_first')], '', 'select_page_key', 'pure-u-1', false, 15) }}
+            <div class="row">
+                <div class="col-2">
+                    <label for="select_groups">{{ HT('pageadmin_choose_pagegroup') }}</label><br>
+                    {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
+                </div>
+                <div class="col">
+                    <label for="select_page_key">{{ HT('pageadmin_choose_page') }}</label><br>
+                    {{ macro.select('page_key', ['|'~HT('pageadmin_choose_pagegroup_first')], '', 'select_page_key', 'pure-u-1', false, 15) }}
+                </div>
             </div>
         </fieldset>
-        <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_choose_submit') }}</button>
+        <div class="row">
+            <div class="col">
+                <button type="submit"
+                        class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_choose_submit') }}</button>
+                <p><a href="{{ requesturiarray.path }}?action=addpage">{{ HT('pageadmin_choose_add') }}</a></p>
+            </div>
+        </div>
     </form>
-    <p><a href="{{ requesturiarray.path }}?action=addpage">{{ HT('pageadmin_choose_add') }}</a></p>
 {% endif %}
 {% if customdata.page is defined %}
     <style type="text/css">
