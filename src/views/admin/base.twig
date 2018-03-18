@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/_assets/vendor/bootstrap/dist/css/bootstrap.css">
+
+    <title>HCSF by Haase IT</title>
+
+</head>
+<body>
+
+{% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
+    {% include 'admin/' ~ customcontenttemplate ~ '.twig' %}
+{% else %}
+    {{ content }}
+{% endif %}
+<script src="/_assets/vendor/jquery/dist/jquery.slim.min.js"></script>
+<script src="/_assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+<script src="/_assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

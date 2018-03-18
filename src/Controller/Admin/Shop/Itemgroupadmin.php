@@ -57,7 +57,7 @@ class Itemgroupadmin extends Base
      */
     public function preparePage()
     {
-        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager);
+        $this->P = new \HaaseIT\HCSF\CorePage($this->serviceManager, [], 'admin/base.twig');
         $this->P->cb_pagetype = 'content';
         $this->P->cb_subnav = 'admin';
 
