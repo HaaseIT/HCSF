@@ -110,8 +110,8 @@ class Base
         } elseif (count($adminusers)) {
             $user = filter_input(INPUT_SERVER, 'PHP_AUTH_USER');
             $pass = filter_input(INPUT_SERVER, 'PHP_AUTH_PW');
-            if (filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION') !== null) { // fix for php cgi mode
-                list($user, $pass) = explode(':' , base64_decode(substr(filter_input(INPUT_SERVER, 'REDIRECT_HTTP_AUTHORIZATION'), 6)));
+            if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
+                list($user, $pass) = explode(':' , base64_decode(substr(filter_var($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], FILTER_SANITIZE_STRING), 6)));
             }
 
             if (!empty($user) && !empty($pass)) {
