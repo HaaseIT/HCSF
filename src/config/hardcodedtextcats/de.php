@@ -143,7 +143,7 @@ return [
     'adminhome_directory_3' => ', und das Schreiben in den Ordner ist',
     'adminhome_apache' => 'Apache Webserver',
     'adminhome_apache_modrewrite' => 'Das Apache-Modul mod_rewrite ist',
-    'adminhome_encryptiontool' => 'Verschlüsselungstool für Admin Passwörter (diese müssen in der Datei config/secrets.local.yml gesetzt werden)',
+    'adminhome_encryptiontool' => 'Verschlüsselungstool für Admin Passwörter (diese müssen in der Datei config/secrets.yml gesetzt werden)',
     'adminhome_encryptiontool_label' => 'Das zu verschlüsselnde Passwort:',
     'adminhome_encryptiontool_submit' => 'Absenden',
     'adminhome_encryptiontool_result_1' => 'Das verschlüsselte Wert für',
