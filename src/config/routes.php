@@ -16,6 +16,7 @@ return [
         '/_admin/shopadmin_export.csv' => 'Admin\\Shop\\ShopadminExportCSV',
         '/_admin/itemgroupadmin.html' => 'Admin\\Shop\\Itemgroupadmin',
         '/_admin/dbstatus.html' => 'Admin\\DBStatus',
+        '/_admin/screen.css' => 'Admin\\Stylesheet',
         '/_misc/login.html' => 'Customer\\Login',
         '/_misc/logout.html' => 'Customer\\Logout',
         '/_misc/userhome.html' => 'Customer\\Userhome',
