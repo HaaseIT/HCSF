@@ -17,35 +17,35 @@
             });
         });
         {% for key, value in customdata.pageselect.tree %}
-        var children_{{ key }} = new Array();
-        {% set i = 0 %}
-        {% for subvalue in value %}
-        children_{{ key }}[{{ i }}]  = new list("{{ subvalue.cb_key }}", "{{ subvalue.cb_key }}");
-        {% set i = i + 1 %}
-        {% endfor %}
+            var children_{{ key }} = new Array();
+            {% set i = 0 %}
+            {% for subvalue in value %}
+                children_{{ key }}[{{ i }}]  = new list("{{ subvalue.cb_key }}", "{{ subvalue.cb_key }}");
+                {% set i = i + 1 %}
+            {% endfor %}
         {% endfor %}
     </script>
     <style>
         #select_groups, #select_page_key {height: 15.5em;}
     </style>
-    <form action="{{ requesturi }}" method="get" name="form_page" class="pure-form pure-form-stacked">
+    <form action="{{ requesturi }}" method="get" name="form_page">
         <input type="hidden" name="action" value="edit">
         <fieldset>
             <div class="row">
-                <div class="col-2">
+                <div class="col-3">
                     <label for="select_groups">{{ HT('pageadmin_choose_pagegroup') }}</label><br>
-                    {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'pure-u-1', false, 15) }}
+                    {{ macro.select('groups', customdata.pageselect.options_groups, '', 'select_groups', 'col', false, 15) }}
                 </div>
                 <div class="col">
                     <label for="select_page_key">{{ HT('pageadmin_choose_page') }}</label><br>
-                    {{ macro.select('page_key', ['|'~HT('pageadmin_choose_pagegroup_first')], '', 'select_page_key', 'pure-u-1', false, 15) }}
+                    {{ macro.select('page_key', ['|'~HT('pageadmin_choose_pagegroup_first')], '', 'select_page_key', 'col', false, 15) }}
                 </div>
             </div>
         </fieldset>
         <div class="row">
             <div class="col">
                 <button type="submit"
-                        class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_choose_submit') }}</button>
+                        class="formfieldwithoutpadding">{{ HT('pageadmin_choose_submit') }}</button>
                 <p><a href="{{ requesturiarray.path }}?action=addpage">{{ HT('pageadmin_choose_add') }}</a></p>
             </div>
         </div>
@@ -56,7 +56,7 @@
         #page_html{height: 20em;}
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js" type="text/javascript" charset="utf-8"></script>
-    <form action="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&action=edit" method="post" class="pure-form pure-form-stacked">
+    <form action="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&action=edit" method="post">
         <input type="hidden" name="action_a" value="true">
         <div class="small">
             <h3>{{ HT('pageadmin_edit_currentpage') }} {{ customdata.page.cb_key }}</h3>
@@ -68,7 +68,7 @@
     <fieldset>
         <legend>{{ HT('pageadmin_edit_languagespecific') }}</legend>
         <label for="page_html">{{ HT('pageadmin_edit_pagecontent') }} <span tooltip="{{ HT('pageadmin_edit_pagecontent_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-        <textarea name="page_html" class="pure-u-1" id="page_html">{{ customdata.page.oPayload.cl_html }}</textarea>
+        <textarea name="page_html" class="col" id="page_html">{{ customdata.page.oPayload.cl_html }}</textarea>
         <div id="page_html_editor" style="position: relative; width: 100%; height: 30em;"></div>
         <script>
             var editor = ace.edit("page_html_editor");
@@ -82,25 +82,25 @@
         </script>
 
         <label for="page_title">{{ HT('pageadmin_edit_pagetitle') }} <span tooltip="{{ HT('pageadmin_edit_pagetitle_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-        <input type="text" name="page_title" id="page_title" value="{{ customdata.page.oPayload.cl_title }}" class="pure-u-1">
+        <input type="text" name="page_title" id="page_title" value="{{ customdata.page.oPayload.cl_title }}" class="col">
         <label for="page_description">{{ HT('pageadmin_edit_metadescription') }} <span tooltip="{{ HT('pageadmin_edit_metadescription_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-        <input type="text" name="page_description" id="page_description" value="{{ customdata.page.oPayload.cl_description }}" class="pure-u-1">
+        <input type="text" name="page_description" id="page_description" value="{{ customdata.page.oPayload.cl_description }}" class="col">
         <label for="page_keywords">{{ HT('pageadmin_edit_metakeywords') }} <span tooltip="{{ HT('pageadmin_edit_metakeywords_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-        <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.oPayload.cl_keywords }}" class="pure-u-1">
+        <input type="text" name="page_keywords" id="page_keywords" value="{{ customdata.page.oPayload.cl_keywords }}" class="col">
     </fieldset>
     {% else %}
     <p>
-        <a class="pure-button button-green pure-u-1" href="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&amp;action=insert_lang">{{ HT('pagedamin_edit_nolanguagespecificdataexists') }}</a>
+        <a class="col" href="{{ requesturiarray.path }}?page_key={{ customdata.page.cb_key }}&amp;action=insert_lang">{{ HT('pagedamin_edit_nolanguagespecificdataexists') }}</a>
     </p>
     {% endif %}
         <fieldset>
             <legend>{{ HT('pageadmin_edit_basedata') }}</legend>
             <label for="page_type">{{ HT('pageadmin_edit_pagetype') }} <span tooltip="{{ HT('pageadmin_edit_pagetype_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-            {{ macro.select('page_type', customdata.admin_page_types, customdata.page.cb_pagetype, 'page_type', 'pure-u-1') }}
+            {{ macro.select('page_type', customdata.admin_page_types, customdata.page.cb_pagetype, 'page_type', 'col') }}
             <label for="page_group">{{ HT('pageadmin_edit_pagegroup') }} <span tooltip="{{ HT('pageadmin_edit_pagegroup_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-            {{ macro.select('page_group', customdata.admin_page_groups, customdata.page.cb_group, 'page_group', 'pure-u-1') }}
+            {{ macro.select('page_group', customdata.admin_page_groups, customdata.page.cb_group, 'page_group', 'col') }}
             <label for="page_config">{{ HT('pageadmin_edit_pageconfig') }} <span tooltip="{{ HT('pageadmin_edit_pageconfig_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-            <textarea name="page_config" class="pure-u-1" id="page_config">{{ customdata.page.cb_pageconfig }}</textarea>
+            <textarea name="page_config" class="col" id="page_config">{{ customdata.page.cb_pageconfig }}</textarea>
         <div id="page_config_editor" style="position: relative; width: 100%; height: 15em;"></div>
         <script>
             var editorpageconfig = ace.edit("page_config_editor");
@@ -115,7 +115,7 @@
 
 
             <label for="page_subnav">{{ HT('pageadmin_edit_subnavarea') }} <span tooltip="{{ HT('pageadmin_edit_subnavarea_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle"></i></span></label>
-            {{ macro.select('page_subnav', customdata.subnavarea_options, customdata.page.cb_subnav, 'page_subnav', 'pure-u-1') }}
+            {{ macro.select('page_subnav', customdata.subnavarea_options, customdata.page.cb_subnav, 'page_subnav', 'col') }}
         </fieldset>
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_edit_submit') }}</button>
     </form>
@@ -125,7 +125,7 @@
     <legend>{{ HT('pageadmin_edit_deletetitle') }}</legend>
             <label for="page-delete-confirm" class="pure-checkbox">
             <input type="checkbox" name="delete" value="do" id="page-delete-confirm"> {{ HT('pageadmin_edit_deleteconfirm') }}</label>
-    <button type="submit" class="pure-button pure-button-primary pure-u-1-2">{{ HT('pageadmin_edit_deletesubmit') }}</button>
+    <button type="submit" class="pure-button pure-button-primary col-2">{{ HT('pageadmin_edit_deletesubmit') }}</button>
 
         </fieldset>
     </form>
@@ -139,7 +139,7 @@
     <form action="/_admin/pageadmin.html?action=addpage" method="POST" name="addpage" class="pure-form pure-form-stacked">
         <input type="hidden" name="addpage" value="do">
         <label for="pagekey">{{ HT('pageadmin_add_pagekey') }} <span tooltip="{{ HT('pageadmin_add_pagekey_tooltip') }}" style="cursor: help;"><i class="fa fa-question-circle "></i></span></label>
-        <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="pure-u-1" id="pagekey">
+        <input type="text" name="pagekey" value="{{ gFF("pagekey") }}" class="col" id="pagekey">
         <button type="submit" class="pure-button pure-button-primary formfieldwithoutpadding">{{ HT('pageadmin_add_submit') }}</button>
     </form>
 {% endif %}

@@ -1,10 +1,10 @@
-<h1>{{ HT('adminhome_title') }}</h1>
+<h2>{{ HT('adminhome_title') }}</h2>
 <p>{{ HT('adminhome_teaser') }}</p>
-<h3>{{ HT('adminhome_phpextensions') }}</h3>
+<h4>{{ HT('adminhome_phpextensions') }}</h4>
 
 <p>{{ HT('adminhome_phpextensions_filter') }} {{ customdata.filter_enabled ? '<span style="color:green">'~HT('adminhome_enabled') :  '<span style="color:red">'~HT('adminhome_disabled') }}</span>{{ HT('fullstop') }}</p>
 
-<h3>{{ HT('adminhome_directories') }}</h3>
+<h4>{{ HT('adminhome_directories') }}</h4>
 
 <p>{{ HT('adminhome_templatecache') }} {{ customdata.path_templatecache }} {{ HT('adminhome_directory_2') }}
     {% if customdata.path_templatecache_exists %}
@@ -36,7 +36,7 @@
 {% endif %}
 
 {% if customdata.check_mod_rewrite %}
-    <h3>{{ HT('adminhome_apache') }}</h3>
+    <h4>{{ HT('adminhome_apache') }}</h4>
     <p>{{ HT('adminhome_apache_modrewrite') }} {{ customdata.mod_rewrite_available ? '<span style="color:green">' : '<span style="color:red">'~HT('adminhome_not')~' ' }}{{ HT('adminhome_enabled') }}</span>{{ HT('fullstop') }}</p>
 {% endif %}
 
@@ -45,15 +45,15 @@
     <fieldset>
         <legend>{{ HT('adminhome_encryptiontool') }}</legend>
     <label for="string">{{ HT('adminhome_encryptiontool_label') }}</label><br>
-    <input type="text" id="string" name="string" class="pure-u-1-2" value="{{ gFF("string") }}" autocomplete="off">
-        <button type="submit" class="pure-button pure-button-primary pure-u-1-2">{{ HT('adminhome_encryptiontool_submit') }}</button>
+    <input type="text" id="string" name="string" class="col-6" value="{{ gFF("string") }}" autocomplete="off">
+        <button type="submit" class="pure-button pure-button-primary col-6">{{ HT('adminhome_encryptiontool_submit') }}</button>
     </fieldset>
 </form>
 
 {% if customdata.encrypted_string %}
 <p>
     {{ HT('adminhome_encryptiontool_result_1') }} <em>{{ gFF("string") }}</em> {{ HT('adminhome_encryptiontool_result_2') }}<br>
-    <form class="pure-form"><input type="text" readonly value="{{ customdata.encrypted_string }}" class="pure-u-1-2"></form>
+    <form class="pure-form"><input type="text" readonly value="{{ customdata.encrypted_string }}" class="col-6"></form>
 </p>
 {% endif %}
 

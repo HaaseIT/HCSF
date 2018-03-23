@@ -7,31 +7,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="/_assets/vendor/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/_admin/screen.css">
 
     <title>HCSF by Haase IT</title>
 
     <script src="/_assets/vendor/jquery/dist/jquery.slim.min.js"></script>
     <script src="/_assets/vendor/popper.js/dist/umd/popper.min.js"></script>
     <script src="/_assets/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+
 </head>
 <body>
-<div class="row">
-    {% if subnav is defined %}
-        <div class="col-2">
-            <ul>
-                {% for title, link in subnav %}
-                    <li class="pure-menu-item{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} pure-menu-selected{% endif %}"><a href="{{link}}" class="pure-menu-link">{{title}}</a></li>
-                {% endfor %}
-            </ul>
+<div class="admincontainer">
+    <div class="row">
+        <div class="col">
+            <h1>HCSF by Haase IT</h1>
         </div>
-    {% endif %}
-
-    <div class="col">
-        {% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
-            {% include 'admin/' ~ customcontenttemplate ~ '.twig' %}
-        {% else %}
-            {{ content }}
+    </div>
+</div>
+<div class="admincontainer">
+    <div class="row">
+        {% if subnav is defined %}
+            <div class="col-2 navigation">
+                <ul>
+                    {% for title, link in subnav %}
+                        <li class="pure-menu-item{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} pure-menu-selected{% endif %}"><a href="{{link}}" class="pure-menu-link">{{title}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endif %}
+
+        <div class="col">
+            {% if (customcontenttemplate is defined and customcontenttemplate|trim != '') %}
+                {% include 'admin/' ~ customcontenttemplate ~ '.twig' %}
+            {% else %}
+                {{ content }}
+            {% endif %}
+        </div>
     </div>
 </div>
 </body>
