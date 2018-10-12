@@ -20,7 +20,6 @@ debug: false
 dirname_docroot: web
 enable_module_shop: true
 enable_module_customer: true
-enable_sandbox: true
 defaulttimezone: Europe/Berlin
 default_pagetitle: Sitetitle
 templatecache_enable: false

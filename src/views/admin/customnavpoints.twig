@@ -1,0 +1,17 @@
+{#
+This file is meant for adding custom points to the admin navigation. The contents are meant as an example.
+Copy this file to your customization/views/admin/ directory and uncomment/edit the <ul> below.
+#}
+{#
+{%
+    set customsubnav = {
+        'fubar': '/_admin/fubar.html',
+        'fuu': '/_admin/fuu.html'
+    }
+%}
+<ul>
+    {% for title, link in customsubnav %}
+        <li{{ requesturiarray.path == link ? ' class="active"' : '' }}><a href="{{link}}">{{title}}</a></li>
+    {% endfor %}
+</ul>
+#}

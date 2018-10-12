@@ -30,9 +30,12 @@
             <div class="col-2 navigation">
                 <ul>
                     {% for title, link in subnav %}
-                        <li class="pure-menu-item{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} pure-menu-selected{% endif %}"><a href="{{link}}" class="pure-menu-link">{{title}}</a></li>
+                        <li{{ requesturiarray.path == link ? ' class="active"' : '' }}><a href="{{link}}">{{title}}</a></li>
                     {% endfor %}
                 </ul>
+
+                {% include 'admin/customnavpoints.twig' %}
+
                 <ul>
                     {% if lang_detection_method == 'domain' %}
                         {% for currentkey, current in lang_available %}

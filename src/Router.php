@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mhaase
- * Date: 14.01.16
- * Time: 23:04
- */
 
 namespace HaaseIT\HCSF;
 
-
 use Zend\ServiceManager\ServiceManager;
+use Symfony\Component\Yaml\Yaml;
 
 class Router
 {
@@ -58,8 +52,15 @@ class Router
             }
         } else {
             $routes = require __DIR__.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'routes.php';
-            if ($this->config->getCore('enable_sandbox')) {
-                $routes['literal']['/_misc/sandbox.html'] = 'Sandbox'; // dev sandbox for testing new functionality
+            $customRoutesFile = PATH_BASEDIR . 'customization/routes.yml';
+            if (is_file($customRoutesFile)) {
+                try{
+                    $customRoutes = Yaml::parse(file_get_contents($customRoutesFile));
+                    $routes['literal'] = array_merge($routes['literal'], $customRoutes['literal']);
+                    $routes['regex'] = array_merge($routes['regex'], $customRoutes['regex']);
+                } catch (\Exception $e) {
+                    // todo: log error
+                }
             }
             $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
             $this->sPath = $aURL['path'];
