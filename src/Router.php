@@ -90,6 +90,7 @@ class Router
                     $this->P = $controller->getPage();
                 } catch (\Exception $e) {
                     $this->P = new Page();
+//                    die($e->getMessage());
                     $this->P->setStatus(500);
                     // todo: write error message
                     //echo $e->getMessage();

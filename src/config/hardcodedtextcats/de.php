@@ -124,6 +124,8 @@ return [
 
     'pageadmin_archive_lang_title' => 'Archivierte Versionen dieser Seite (Sprachabhängige Daten):',
 
+    'pageadmin_page_from_file' => 'Seiten-HTML aus Datei laden:',
+
     'adminhome_enabled' => 'aktiviert',
     'adminhome_disabled' => 'deaktiviert',
     'adminhome_not' => 'NICHT',

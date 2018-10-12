@@ -183,6 +183,7 @@ class Pageadmin extends Base
             $this->P->cb_customdata['page'] = $Ptoedit;
             $this->P->cb_customdata['admin_page_types'] = $this->config->getCore('admin_page_types');
             $this->P->cb_customdata['admin_page_groups'] = $this->config->getCore('admin_page_groups');
+            $this->P->cb_customdata['allow_page_from_file'] = $this->config->getCore('allow_pages_from_file');
             $aOptions = [''];
             $navigation = $this->config->getNavigation();
             foreach ($navigation as $sKey => $aValue) {
@@ -239,6 +240,14 @@ class Pageadmin extends Base
         $purifier = false;
         if ($this->config->getCore('pagetext_enable_purifier')) {
             $purifier = $this->helper->getPurifier('page');
+        }
+
+        $Ptoedit->cb_html_from_file = false;
+        if ($this->config->getCore('allow_pages_from_file')) {
+            $htmlFromFile = filter_input(INPUT_POST, 'page_from_file', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            if ($htmlFromFile == 'y') {
+                $Ptoedit->cb_html_from_file = true;
+            }
         }
 
         $Ptoedit->cb_pagetype = filter_input(INPUT_POST, 'page_type', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);

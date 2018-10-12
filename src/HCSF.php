@@ -250,7 +250,7 @@ class HCSF
     protected function setupTwig()
     {
         $this->serviceManager->setFactory('twig', function (ServiceManager $serviceManager) {
-            $loader = new \Twig_Loader_Filesystem([PATH_BASEDIR.'customviews', HCSF_BASEDIR.'src/views/']);
+            $loader = new \Twig_Loader_Filesystem([PATH_BASEDIR.'customization/views', HCSF_BASEDIR.'src/views/']);
 
             $twig_options = [
                 'autoescape' => false,

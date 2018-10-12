@@ -33,6 +33,17 @@
                         <li class="pure-menu-item{% if requesturi matches '~^'~link~'item/([0-9a-zA-Z]+)\\.html(\\?.+)?~' or requesturi matches '~^'~link~'(index.html)?(\\?.+)?~' %} pure-menu-selected{% endif %}"><a href="{{link}}" class="pure-menu-link">{{title}}</a></li>
                     {% endfor %}
                 </ul>
+                <ul>
+                    {% if lang_detection_method == 'domain' %}
+                        {% for currentkey, current in lang_available %}
+                            {% if currentkey != language %}<li><a href="//{{ makeLinkHRefWithAddedGetVars(lang_by_domain[currentkey]~requesturiarray.path) }}">{{ T("misc_language_"~currentkey) }}</a></li>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for currentkey, current in lang_available %}
+                            {% if currentkey != language %}<li><a href="{{ makeLinkHRefWithAddedGetVars('', {'language': currentkey}) }}">{{ T("misc_language_"~currentkey) }}</a></li>{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </ul>
             </div>
         {% endif %}
 

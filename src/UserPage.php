@@ -50,6 +50,11 @@ class UserPage extends Page
     public $cb_group;
 
     /**
+     * @var bool
+     */
+    public $cb_html_from_file;
+
+    /**
      * @var \HTMLPurifier
      */
     public $purifier;
@@ -83,7 +88,7 @@ class UserPage extends Page
             // first get base data
             $querybuilder = $this->dbal->createQueryBuilder();
             $querybuilder
-                ->select('cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav')
+                ->select('cb_id, cb_key, cb_group, cb_pagetype, cb_pageconfig, cb_subnav, cb_html_from_file')
                 ->from('content_base')
                 ->where('cb_key = ?')
                 ->setParameter(0, $sPagekey)
@@ -109,7 +114,7 @@ class UserPage extends Page
      */
     protected function getPayload()
     {
-        return new UserPagePayload($this->serviceManager, $this->cb_id, $this->bReturnRaw);
+        return new UserPagePayload($this->serviceManager, $this->cb_id, $this->bReturnRaw, $this);
     }
 
     /**
@@ -124,12 +129,14 @@ class UserPage extends Page
             ->set('cb_group', '?')
             ->set('cb_pageconfig', '?')
             ->set('cb_subnav', '?')
+            ->set('cb_html_from_file', '?')
             ->where('cb_key = ?')
             ->setParameter(0, filter_var($this->cb_pagetype, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
             ->setParameter(1, filter_var($this->cb_group, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
             ->setParameter(2, $this->cb_pageconfig)
             ->setParameter(3, filter_var($this->cb_subnav, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW))
-            ->setParameter(4, $this->cb_key)
+            ->setParameter(4, ($this->cb_html_from_file) ? 'Y' : 'N')
+            ->setParameter(5, $this->cb_key)
         ;
 
         return $querybuilder->execute();

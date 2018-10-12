@@ -55,8 +55,9 @@ class UserPagePayload extends PagePayload
      * @param ServiceManager $serviceManager
      * @param $iParentID
      * @param bool $bReturnRaw
+     * @param UserPage $basePage
      */
-    public function __construct(ServiceManager $serviceManager, $iParentID, $bReturnRaw = false) {
+    public function __construct(ServiceManager $serviceManager, $iParentID, $bReturnRaw = false, UserPage $basePage = null) {
         parent::__construct($serviceManager);
 
         $this->dbal = $this->serviceManager->get('dbal');
@@ -88,6 +89,15 @@ class UserPagePayload extends PagePayload
 
                 if ($stmt->rowCount() === 1) {
                     $stmt->fetch();
+                }
+            }
+
+            // if this page is set to load from file and loading from file is allowed, try to load it from file.
+            // if file is not available, fall back to db content
+            if (!$bReturnRaw && $this->config->getCore('allow_pages_from_file') && $basePage->cb_html_from_file === 'Y') {
+                $filePath = PATH_BASEDIR . 'customization/pages/' . $this->config->getLang() . $basePage->cb_key;
+                if (is_file($filePath)) {
+                    $this->cl_html = file_get_contents($filePath);
                 }
             }
         }

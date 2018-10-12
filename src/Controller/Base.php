@@ -104,13 +104,16 @@ class Base
      * @return bool
      */
     private function requireAdminAuth() {
+
         $adminusers = $this->config->getSecret('admin_users');
         if ($this->requireAdminAuthAdminHome && (empty($adminusers) || !count($adminusers))) {
             return true;
         } elseif (count($adminusers)) {
-            $user = filter_input(INPUT_SERVER, 'PHP_AUTH_USER');
-            $pass = filter_input(INPUT_SERVER, 'PHP_AUTH_PW');
+            $user = filter_var($_SERVER['PHP_AUTH_USER'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $pass = filter_var($_SERVER['PHP_AUTH_PW'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+
             if (!empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) { // fix for php cgi mode
+                //die($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
                 list($user, $pass) = explode(':' , base64_decode(substr(filter_var($_SERVER['REDIRECT_HTTP_AUTHORIZATION'], FILTER_SANITIZE_STRING), 6)));
             }
 
@@ -118,7 +121,7 @@ class Base
                 $validated = !empty(
                     $adminusers[$user])
                     && password_verify($pass, $adminusers[$user]
-                );
+                    );
             } else {
                 $validated = false;
             }
@@ -130,6 +133,7 @@ class Base
             }
 
         } else {
+//            die('foo');
             header('WWW-Authenticate: Basic realm="'.$this->config->getSecret('admin_authrealm').'"');
             header('HTTP/1.0 401 Unauthorized');
             $this->helper->terminateScript('Not authorized');

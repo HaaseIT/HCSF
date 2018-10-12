@@ -71,3 +71,6 @@ directory_glide_master: glideimgmaster
 glide_max_imagesize: 1000000 # the maximum allowed imagesize for glide operations in pixels total
 allow_parsing_of_page_content: false
 mail_method: mail # mail (uses the PHP mail() function) / sendmail (uses the systems sendmail) / smtp (use a smtp server, configure server details below)
+
+### experimental features
+allow_pages_from_file: false

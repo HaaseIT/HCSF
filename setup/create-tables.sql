@@ -2,13 +2,17 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS content_base;
-CREATE TABLE IF NOT EXISTS content_base (
-cb_id int(11) NOT NULL,
-  cb_key varchar(80) NOT NULL,
-  cb_group varchar(80) NOT NULL,
-  cb_pagetype varchar(16) NOT NULL DEFAULT 'content',
-  cb_pageconfig text NOT NULL,
-  cb_subnav varchar(32) NOT NULL
+CREATE TABLE `content_base` (
+	`cb_id` INT(11) NOT NULL AUTO_INCREMENT,
+	`cb_key` VARCHAR(80) NOT NULL,
+	`cb_group` VARCHAR(80) NOT NULL,
+	`cb_pagetype` VARCHAR(16) NOT NULL DEFAULT 'content',
+	`cb_pageconfig` TEXT NOT NULL,
+	`cb_subnav` VARCHAR(32) NOT NULL,
+	`cb_html_from_file` ENUM('Y','N') NOT NULL DEFAULT 'N',
+	PRIMARY KEY (`cb_id`),
+	UNIQUE INDEX `cm_key` (`cb_key`),
+	INDEX `cm_pagetype` (`cb_pagetype`)
 ) COLLATE='utf8_general_ci' ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS content_lang;
