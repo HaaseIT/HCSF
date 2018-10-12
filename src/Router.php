@@ -56,8 +56,12 @@ class Router
             if (is_file($customRoutesFile)) {
                 try{
                     $customRoutes = Yaml::parse(file_get_contents($customRoutesFile));
-                    $routes['literal'] = array_merge($routes['literal'], $customRoutes['literal']);
-                    $routes['regex'] = array_merge($routes['regex'], $customRoutes['regex']);
+                    if (!empty($customRoutes['literal'])) {
+                        $routes['literal'] = array_merge($routes['literal'], $customRoutes['literal']);
+                    }
+                    if (!empty($customRoutes['regex'])) {
+                        $routes['regex'] = array_merge($routes['regex'], $customRoutes['regex']);
+                    }
                 } catch (\Exception $e) {
                     // todo: log error
                 }
