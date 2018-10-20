@@ -91,6 +91,10 @@ class Helper
         die($message);
     }
 
+    /**
+     * @param $number
+     * @return string
+     */
     public function formatNumber($number)
     {
         return number_format(
