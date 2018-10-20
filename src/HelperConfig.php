@@ -32,37 +32,42 @@ class HelperConfig
     /**
      * @var array
      */
-    private $core = [];
+    protected $core = [];
 
     /**
      * @var array
      */
-    private $secrets = [];
+    protected $secrets = [];
 
     /**
      * @var array
      */
-    private $countries = [];
+    protected $countries = [];
 
     /**
      * @var array
      */
-    private $shop = [];
+    protected $shop = [];
 
     /**
      * @var array
      */
-    private $customer = [];
+    protected $customer = [];
 
     /**
      * @var array
      */
-    private $navigation = [];
+    protected $navigation = [];
 
     /**
      * @var string
      */
-    private $lang;
+    protected $lang;
+
+    /**
+     * @var array
+     */
+    protected $customization = [];
 
     /**
      *
@@ -83,6 +88,8 @@ class HelperConfig
         if ($this->core['enable_module_shop']) {
             $this->loadShop();
         }
+
+        $this->loadCustomization();
     }
 
     /**
@@ -96,7 +103,7 @@ class HelperConfig
     /**
      *
      */
-    private function loadCore()
+    protected function loadCore()
     {
         $core = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/core.yml'));
         if (is_file(PATH_BASEDIR.'config/core.yml')) {
@@ -138,7 +145,7 @@ class HelperConfig
     /**
      *
      */
-    private function loadCountries()
+    protected function loadCountries()
     {
         $countries = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/countries.yml'));
         if (is_file(PATH_BASEDIR.'config/countries.yml')) {
@@ -164,7 +171,7 @@ class HelperConfig
     /**
      *
      */
-    private function loadSecrets()
+    protected function loadSecrets()
     {
         $secrets = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/secrets.yml'));
         if (is_file(PATH_BASEDIR.'config/secrets.yml')) {
@@ -190,7 +197,7 @@ class HelperConfig
     /**
      *
      */
-    private function loadCustomer()
+    protected function loadCustomer()
     {
         $customer = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/customer.yml'));
         if (is_file(PATH_BASEDIR.'/config/customer.yml')) {
@@ -216,7 +223,7 @@ class HelperConfig
     /**
      *
      */
-    private function loadShop()
+    protected function loadShop()
     {
         $shop = Yaml::parse(file_get_contents(HCSF_BASEDIR.'config/shop.yml'));
         if (is_file(PATH_BASEDIR.'config/shop.yml')) {
@@ -348,5 +355,28 @@ class HelperConfig
         }
 
         return $sLang;
+    }
+
+    protected function loadCustomization()
+    {
+        $customization = [];
+
+        if (is_file(PATH_BASEDIR.'config/customization.yml')) {
+            $customization = array_merge($customization, Yaml::parse(file_get_contents(PATH_BASEDIR.'config/customization.yml')));
+        }
+
+        $this->customization = $customization;
+    }
+
+    /**
+     * @param bool $setting
+     * @return array|bool|mixed
+     */
+    public function getCustomization($setting = false) {
+        if (!$setting) {
+            return $this->customization;
+        }
+
+        return !empty($this->customization[$setting]) ? $this->customization[$setting] : false;
     }
 }
