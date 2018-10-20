@@ -91,6 +91,16 @@ class Helper
         die($message);
     }
 
+    public function formatNumber($number)
+    {
+        return number_format(
+            $number,
+            $this->config->getCore('numberformat_decimals'),
+            $this->config->getCore('numberformat_decimal_point'),
+            $this->config->getCore('numberformat_thousands_seperator')
+        );
+    }
+
     /**
      * @param $file
      * @param int $width
