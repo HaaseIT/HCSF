@@ -294,4 +294,23 @@ return [
     'dbstatus_title' => 'DB Status',
     'dbstatus_orphanedrowsinfo' => 'Anzahl der verwaisten Datensätze in',
     'dbstatus_orphanedrowsremove' => 'Klicken Sie hier um sie zu löschen.',
+
+    'weekdays' => [
+        'Montag',
+        'Dienstag',
+        'Mittwoch',
+        'Donnerstag',
+        'Freitag',
+        'Samstag',
+        'Sonntag',
+    ],
+    'weekdays_short' => [
+        'Mo',
+        'Di',
+        'Mi',
+        'Do',
+        'Fr',
+        'Sa',
+        'So',
+    ],
 ];
