@@ -77,7 +77,7 @@ class Router
                     foreach ($routes['regex'] as $regex) {
                         $result = preg_match('(^' . $regex['regex'] . '$)', $this->sPath, $matches);
                         if ($result) {
-                            $class = $regex['controller'];
+                            $class = '\\HaaseIT\\HCSF\\Controller\\' . $regex['controller'];
                             break;
                         }
                     }
