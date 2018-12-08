@@ -155,7 +155,13 @@ class HCSF
 
     protected function setupSession()
     {
-        if ($this->config->getCore('enable_module_customer') && filter_input(INPUT_COOKIE, 'acceptscookies') === 'yes') {
+        if (
+            (
+                $this->config->getCore('enable_module_customer')
+                || $this->config->getCore('override_enable_session')
+            )
+            && filter_input(INPUT_COOKIE, 'acceptscookies') === 'yes'
+        ) {
             // Session handling
             // session.use_trans_sid wenn nötig aktivieren
             session_name('sid');
