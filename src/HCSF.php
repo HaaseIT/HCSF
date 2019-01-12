@@ -368,7 +368,10 @@ class HCSF
         }
 
         // Get page title, meta-keywords, meta-description
-        $aP['pagetitle'] = $P->oPayload->getTitle();
+        $aP['pagetitle'] = '';
+        if (method_exists($P->oPayload, 'getTitle')) {
+            $aP['pagetitle'] = $P->oPayload->getTitle();
+        }
         $aP['keywords'] = $P->oPayload->cl_keywords;
         $aP['description'] = $P->oPayload->cl_description;
 

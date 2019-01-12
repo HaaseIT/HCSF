@@ -157,6 +157,7 @@ class Router
                     'itemoverview',
                     'itemoverviewgrpd',
                     'itemdetail',
+                    'shorturl',
                 ];
                 if (!in_array($this->P->cb_pagetype, $pagetypesnocontent, true)) {
                     $this->P->oPayload->cl_html = $this->serviceManager->get('textcats')->T('misc_content_not_found');
