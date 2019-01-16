@@ -143,13 +143,7 @@ class HCSF
         $this->serviceManager->setFactory('request', function () {
             $request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
 
-            // cleanup request
-            $requesturi = urldecode($request->getRequestTarget());
-            $parsedrequesturi = substr($requesturi, strlen(dirname(filter_input(INPUT_SERVER, 'PHP_SELF'))));
-            if (substr($parsedrequesturi, 1, 1) !== '/') {
-                $parsedrequesturi = '/'.$parsedrequesturi;
-            }
-            return $request->withRequestTarget($parsedrequesturi);
+            return $request;
         });
     }
 
@@ -305,7 +299,7 @@ class HCSF
      */
     public function generatePage(Page $P)
     {
-        $requesturi = $this->serviceManager->get('request')->getRequestTarget();
+        $requesturi = $this->helper->getCleanRequestTarget();
 
         $aP = [
             'language' => $this->config->getLang(),

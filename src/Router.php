@@ -66,7 +66,7 @@ class Router
                     // todo: log error
                 }
             }
-            $aURL = parse_url($this->serviceManager->get('request')->getRequestTarget());
+            $aURL = parse_url($this->helper->getCleanRequestTarget());
             $this->sPath = $aURL['path'];
 
             $aPath = explode('/', $this->sPath);

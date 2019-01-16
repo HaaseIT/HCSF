@@ -67,6 +67,19 @@ class Helper
         $this->shop = $this->config->getShop();
     }
 
+    public function getCleanRequestTarget() {
+        $request = $this->serviceManager->get('request');
+
+        // cleanup request
+        $requesturi = urldecode($request->getRequestTarget());
+        $parsedrequesturi = substr($requesturi, strlen(dirname(filter_input(INPUT_SERVER, 'PHP_SELF'))));
+        if (substr($parsedrequesturi, 1, 1) !== '/') {
+            $parsedrequesturi = '/'.$parsedrequesturi;
+        }
+
+        return $parsedrequesturi;
+    }
+
     /**
      * @param string $target
      * @param bool $replace
@@ -279,7 +292,7 @@ class Helper
         if (!isset($callbacks[$callback])) {
             return false;
         }
-        
+
         return call_user_func($callbacks[$callback], $parameters);
     }
 
