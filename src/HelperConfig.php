@@ -340,7 +340,7 @@ class HelperConfig
             $sLang = key($langavailable);
             $getlanguage = filter_input(INPUT_GET, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             $cookielanguage = filter_input(INPUT_COOKIE, 'language', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-            $serverhttpaccepptlanguage = filter_input(INPUT_SERVER, '', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+            $serverhttpaccepptlanguage = filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
             if ($getlanguage !== null && array_key_exists($getlanguage, $langavailable)) {
                 $sLang = strtolower($getlanguage);
                 setcookie('language', strtolower($getlanguage), 0, '/');
